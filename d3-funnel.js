@@ -23,7 +23,7 @@
 	 * @param {int}    options.curveHeight The height of the curves. Only functional if isCurved
 	 *                                     is set.
 	 * @param {string} options.fillType    The section background type. Either "solid" or "gradient".
-	 * @param {bool}   options.isPyramid   Whether or not the funnel should be inverted to a pyramid.
+	 * @param {bool}   options.isInverted  Whether or not the funnel should be inverted to a pyramid.
 	 */
 	function D3Funnel ( data, options )
 	{
@@ -40,7 +40,7 @@
 			isCurved : false,
 			curveHeight : 20,
 			fillType : "solid",
-			isPyramid : false
+			isInverted : false
 		};
 		var settings = defaults;
 		var keys = Object.keys ( options );
@@ -61,16 +61,16 @@
 		this.isCurved = settings.isCurved;
 		this.curveHeight = settings.curveHeight;
 		this.fillType = settings.fillType;
-		this.isPyramid = settings.isPyramid;
+		this.isInverted = settings.isInverted;
 
-		// Calculate the change in x and y
-		var bottomCenter = ( this.width - this.bottomWidth ) / 2;
+		// Calculate the bottom left x position
+		this.bottomLeftX = ( this.width - this.bottomWidth ) / 2;
 
 		// Change in x direction
 		// Will be sharper if there is a pinch
 		this.dx = this.bottomPinch > 0 ?
-			bottomCenter / ( data.length - this.bottomPinch ) :
-			bottomCenter / data.length;
+			this.bottomLeftX / ( data.length - this.bottomPinch ) :
+			this.bottomLeftX / data.length;
 		// Change in y direction
 		// Curved chart needs reserved pixels to account for curvature
 		this.dy = this.isCurved ?
@@ -107,24 +107,10 @@
 			this._defineColorGradients ( svg, colorScale );
 		}  // End if
 
-		// Add top oval
+		// Add top oval if curved
 		if ( this.isCurved )
 		{
-
-			// Create path from top-most section
-			var paths = sectionPaths [ 0 ];
-			var path = "M" + paths [ 0 ][ 0 ] + "," + paths [ 0 ][ 1 ] +
-				" Q" + paths [ 1 ][ 0 ] + "," + ( paths [ 1 ][ 1 ] + this.curveHeight - 10 ) +
-				" " + paths [ 2 ][ 0 ] + "," + paths [ 2 ][ 1 ] +
-				" M" + this.width + ",10" +
-				" Q" + ( this.width / 2 ) + ",0" +
-				" 0,10";
-
-			// Draw top oval
-			svg.append ( "path" )
-				.attr ( "fill", shadeColor ( colorScale ( 0 ), -0.4 ) )
-				.attr ( "d", path );
-
+			this._drawTopOval ( svg, sectionPaths, colorScale );
 		}  // End if
 
 		// Add each block section
@@ -201,6 +187,13 @@
 		var prevRightX = this.width;
 		var prevHeight = 0;
 
+		// Start from the bottom for inverted
+		if ( this.isInverted )
+		{
+			prevLeftX = this.bottomLeftX;
+			prevRightX = this.width - this.bottomLeftX;
+		}  // End if
+
 		// Initialize next positions
 		var nextLeftX = 0;
 		var nextRightX = 0;
@@ -219,20 +212,39 @@
 		for ( var i = 0; i < this.data.length; i++ )
 		{
 
-			// Check if we've reached the bottom of the pinch
-			// If so, stop chaning on x
+			// Stop velocity for pinched sections
 			if ( this.bottomPinch > 0 )
 			{
-				if ( i >= this.data.length - this.bottomPinch )
+
+				// Check if we've reached the bottom of the pinch
+				// If so, stop changing on x
+				if ( !this.isInverted )
 				{
-					dx = 0;
+					if ( i >= this.data.length - this.bottomPinch )
+					{
+						dx = 0;
+					}  // End if
+				}
+				// Pinch at the first sections relating to the bottom pinch
+				// Revert back to normal velocity after pinch
+				else
+				{
+					dx = i < this.bottomPinch ? 0 : this.dx;
 				}  // End if
+
 			}  // End if
 
 			// Calculate the position of next section
 			var nextLeftX = prevLeftX + dx;
 			var nextRightX = prevRightX - dx;
 			var nextHeight = prevHeight + dy;
+
+			// Expand outward if inverted
+			if ( this.isInverted )
+			{
+				nextLeftX = prevLeftX - dx;
+				nextRightX = prevRightX + dx;
+			}  // End if
 
 			// Plot curved lines
 			if ( this.isCurved )
@@ -334,6 +346,42 @@
 		}  // End for
 
 	};  // End _defineColorGradients
+
+	/**
+	 * Draw the top oval of a curved funnel.
+	 *
+	 * @param {Object}   svg
+	 * @param {array}    sectionPaths
+	 * @param {function} colorScale
+	 */
+	D3Funnel.prototype._drawTopOval = function ( svg, sectionPaths, colorScale )
+	{
+
+		var leftX = 0;
+		var rightX = this.width;
+		var centerX = this.width / 2;
+
+		if ( this.isInverted )
+		{
+			leftX = this.bottomLeftX;
+			rightX = this.width - this.bottomLeftX;
+		}  // End if
+
+		// Create path form top-most section
+		var paths = sectionPaths [ 0 ];
+		var path = "M" + leftX + "," + paths [ 0 ][ 1 ] +
+			" Q" + centerX + "," + ( paths [ 1 ][ 1 ] + this.curveHeight - 10 ) +
+			" " + rightX + "," + paths [ 2 ][ 1 ] +
+			" M" + rightX + ",10" +
+			" Q" + centerX + ",0" +
+			" " + leftX + ",10";
+
+		// Draw top oval
+		svg.append ( "path" )
+			.attr ( "fill", shadeColor ( colorScale ( 0 ), -0.4 ) )
+			.attr ( "d", path );
+
+	};  // End _drawTopOval
 
 	/**
 	 * Shade a color to the given percentage.
