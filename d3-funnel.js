@@ -42,6 +42,26 @@
 			fillType : "solid",
 			isPyramid : false
 		};
+		var settings = defaults;
+		var keys = Object.keys ( options );
+
+		// Overwrite default settings with user options
+		for ( var i = 0; i < keys.length; i++ )
+		{
+			settings [ keys [ i ] ] = options [ keys [ i ] ];
+		}  // End for
+
+		this.data = data;
+
+		// Initialize funnel chart settings
+		this.width = settings.width;
+		this.height = settings.height;
+		this.bottomWidth = settings.bottomWidth;
+		this.bottomPinch = settings.bottomPinch;
+		this.isCurved = settings.isCurved;
+		this.curveHeight = settings.curveHeight;
+		this.fillType = settings.fillType;
+		this.isPyramid = settings.isPyramid;
 
 	}  // End D3Funnel
 
