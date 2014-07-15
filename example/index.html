@@ -16,6 +16,7 @@
 			<p>Funnel examples</p>
 			<select id="picker" onchange="onChange ()">
 				<option value="0">Basic</option>
+				<option value="1">Curved</option>
 			</select>
 			<div id="funnel"></div>
 		</div>
@@ -28,13 +29,19 @@
 				[ "Applicants", "8,493" ],
 				[ "Pre-screened", "4,456" ],
 				[ "Interviewed", "1,120" ],
-				[ "Hired", "436" ],
+				[ "Hired", "436" ]
 			];
 			var options = [
 				{
 					width : 350,
 					height : 400,
 					bottomWidth : 150
+				},
+				{
+					width : 350,
+					height : 400,
+					bottomWidth : 150,
+					isCurved : true
 				}
 			];
 

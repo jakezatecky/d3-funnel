@@ -4,8 +4,6 @@ A list of ideas to add to the D3Funnel.
 
 * Add the following configuration options:
 	* `bottomPinch`: How many sections at the bottom to be "pinched" to the `bottomWidth`.
-	* `isCurved`: Whether or not the chart should appear curved.
-		* `curveHeight`: How "curvy" the chart should be. Only valid when `isCurved` set.
 	* `fillType`: Whether the background of the sections should be solid or gradient. Possibly should also allow custom
 	  colors or gradient definitions for each section to be set as part of the data initialization.
 	* `isPyramid`: Whether to invert the funnel chart to be a pyramid (or a flask in case of pinch!).

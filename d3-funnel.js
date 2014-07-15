@@ -95,6 +95,26 @@
 		var colorScale = d3.scale.category10 ();
 		var sectionPaths = this._makePaths ();
 
+		// Add top oval
+		if ( this.isCurved )
+		{
+
+			// Create path from top-most section
+			var paths = sectionPaths [ 0 ];
+			var path = "M" + paths [ 0 ][ 0 ] + "," + paths [ 0 ][ 1 ] +
+				" Q" + paths [ 1 ][ 0 ] + "," + ( paths [ 1 ][ 1 ] + this.curveHeight - 10 ) +
+				" " + paths [ 2 ][ 0 ] + "," + paths [ 2 ][ 1 ] +
+				" M" + this.width + ",10" +
+				" Q" + ( this.width / 2 ) + ",0" +
+				" 0,10";
+
+			// Draw top oval -- need to darken the top color
+			svg.append ( "path" )
+				.attr ( "fill", colorScale ( 0 ) )
+				.attr ( "d", path );
+
+		}  // End if
+
 		// Add each block section
 		for ( var i = 0; i < sectionPaths.length; i++ )
 		{
@@ -168,6 +188,12 @@
 
 		var middle = this.width / 2;
 
+		// Move down if there is an initial curve
+		if ( this.isCurved )
+		{
+			prevHeight = 10;
+		}  // End if
+
 		// Create the path definition for each funnel section
 		// Remember to loop back to the beginning point for a closed path
 		for ( var i = 0; i < this.data.length; i++ )
@@ -178,14 +204,44 @@
 			var nextRightX = prevRightX - this.dx;
 			var nextHeight = prevHeight + this.dy;
 
+			// Plot curved lines
+			if ( this.isCurved )
+			{
+
+				paths.push ( [
+					// Top Bezier curve
+					[ prevLeftX, prevHeight, "M" ],
+					[ middle, prevHeight + ( this.curveHeight - 10 ), "Q" ],
+					[ prevRightX, prevHeight, "" ],
+					// Right line
+					[ nextRightX, nextHeight, "L" ],
+					// Bottom Bezier curve
+					[ nextRightX, nextHeight, "M" ],
+					[ middle, nextHeight + this.curveHeight, "Q" ],
+					[ nextLeftX, nextHeight, "" ],
+					// Left line
+					[ prevLeftX, prevHeight, "L" ]
+				] );
+
+			}
 			// Plot straight lines
-			paths.push ( [
-				[ prevLeftX, prevHeight, "M" ],
-				[ prevRightX, prevHeight, "L" ],
-				[ nextRightX, nextHeight, "L" ],
-				[ nextLeftX, nextHeight, "L" ],
-				[ prevLeftX, prevHeight, "L" ],
-			] );
+			else
+			{
+
+				paths.push ( [
+					// Start position
+					[ prevLeftX, prevHeight, "M" ],
+					// Move to right
+					[ prevRightX, prevHeight, "L" ],
+					// Move down
+					[ nextRightX, nextHeight, "L" ],
+					// Move to left
+					[ nextLeftX, nextHeight, "L" ],
+					// Wrap back to top
+					[ prevLeftX, prevHeight, "L" ],
+				] );
+
+			} // End if
 
 			// Set the next section's previous position
 			prevLeftX = nextLeftX;
