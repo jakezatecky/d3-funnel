@@ -67,7 +67,10 @@
 		var bottomCenter = ( this.width - this.bottomWidth ) / 2;
 
 		// Change in x direction
-		this.dx = bottomCenter / data.length;
+		// Will be sharper if there is a pinch
+		this.dx = this.bottomPinch > 0 ?
+			bottomCenter / ( data.length - this.bottomPinch ) :
+			bottomCenter / data.length;
 		// Change in y direction
 		// Curved chart needs reserved pixels to account for curvature
 		this.dy = this.isCurved ?
@@ -181,6 +184,10 @@
 
 		var paths = [];
 
+		// Initialize velocity
+		var dx = this.dx;
+		var dy = this.dy;
+
 		// Initialize starting positions
 		var prevLeftX = 0;
 		var prevRightX = this.width;
@@ -204,10 +211,20 @@
 		for ( var i = 0; i < this.data.length; i++ )
 		{
 
+			// Check if we've reached the bottom of the pinch
+			// If so, stop chaning on x
+			if ( this.bottomPinch > 0 )
+			{
+				if ( i >= this.data.length - this.bottomPinch )
+				{
+					dx = 0;
+				}  // End if
+			}  // End if
+
 			// Calculate the position of next section
-			var nextLeftX = prevLeftX + this.dx;
-			var nextRightX = prevRightX - this.dx;
-			var nextHeight = prevHeight + this.dy;
+			var nextLeftX = prevLeftX + dx;
+			var nextRightX = prevRightX - dx;
+			var nextHeight = prevHeight + dy;
 
 			// Plot curved lines
 			if ( this.isCurved )
