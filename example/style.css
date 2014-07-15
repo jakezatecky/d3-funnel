@@ -1,0 +1,15 @@
+body
+{
+	text-align : center;
+}
+.container
+{
+	padding : 10px;
+	width : 350px;
+	margin : 0 auto;
+}
+select
+{
+	padding : 8px;
+	margin-bottom : 10px;
+}
