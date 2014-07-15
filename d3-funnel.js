@@ -63,6 +63,14 @@
 		this.fillType = settings.fillType;
 		this.isPyramid = settings.isPyramid;
 
+		// Calculate the change in x and y
+		var bottomCenter = ( this.width - this.bottomWidth ) / 2;
+
+		// Change in x direction
+		this.dx = bottomCenter / data.length;
+		// Change in y direction
+		this.dy = this.height / data.length;
+
 	}  // End D3Funnel
 
 	/**
