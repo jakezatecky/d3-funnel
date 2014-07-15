@@ -69,7 +69,10 @@
 		// Change in x direction
 		this.dx = bottomCenter / data.length;
 		// Change in y direction
-		this.dy = this.height / data.length;
+		// Curved chart needs reserved pixels to account for curvature
+		this.dy = this.isCurved ?
+			( this.height - this.curveHeight ) / data.length :
+			this.height / data.length;
 
 	}  // End D3Funnel
 
@@ -148,8 +151,10 @@
 
 			// Add the section label
 			var textStr = this.data [ i ][ 0 ] + ": " + this.data [ i ][ 1 ];
-			var textX = this.width / 2;  // Center the text
-			var textY = ( this.dy * ( 2 * i + 1 ) ) / 2;  // Average height of bases
+			var textX = this.width / 2;   // Center the text
+			var textY = !this.isCurved ?  // Average height of bases
+				( this.dy * ( 2 * i + 1 ) ) / 2 :
+				( paths [ 1 ][ 1 ] + paths [ 3 ][ 1 ] ) / 2;
 
 			svg.append ( "text" )
 				.text ( textStr )
