@@ -95,6 +95,53 @@
 		var colorScale = d3.scale.category10 ();
 		var sectionPaths = this._makePaths ();
 
+		// Add each block section
+		for ( var i = 0; i < sectionPaths.length; i++ )
+		{
+
+			// Set the background color
+			var fill = colorScale ( i );
+
+			// Prepare data to assign to the section
+			var data = {
+				index : i,
+				record : self.data [ i ]
+			};
+
+			// Construct path string
+			var paths = sectionPaths [ i ];
+			var pathStr = "";
+			var path = [];
+
+			// Iterate through each point
+			for ( var j = 0; j < paths.length; j++ )
+			{
+				path = paths [ j ];
+				pathStr += path [ 2 ] + path [ 0 ] + "," + path [ 1 ] + " ";
+			}  // End for
+
+			// Draw the sections's path and append the data
+			svg.append ( "path" )
+				.attr ( "fill", fill )
+				.attr ( "d", pathStr )
+				.data ( [ data ] );
+
+			// Add the section label
+			var textStr = this.data [ i ][ 0 ] + ": " + this.data [ i ][ 1 ];
+			var textX = this.width / 2;  // Center the text
+			var textY = ( this.dy * ( 2 * i + 1 ) ) / 2;  // Average height of bases
+
+			svg.append ( "text" )
+				.text ( textStr )
+				.attr ( "x", textX )
+				.attr ( "y", textY )
+				.attr ( "text-anchor", "middle" )
+				.attr ( "dominant-baseline", "middle" )
+				.attr ( "fill", "#fff" )
+				.style ( "font-size", "14px" );
+
+		}  // End for
+
 
 	};  // End draw
 
@@ -127,9 +174,9 @@
 		{
 
 			// Calculate the position of next section
-			var nextLeftX = prevLeftX + dx;
-			var nextRightX = prevRightX - dx;
-			var nextHeight = prevHeight + dy;
+			var nextLeftX = prevLeftX + this.dx;
+			var nextRightX = prevRightX - this.dx;
+			var nextHeight = prevHeight + this.dy;
 
 			// Plot straight lines
 			paths.push ( [
