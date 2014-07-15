@@ -101,6 +101,12 @@
 		var colorScale = d3.scale.category10 ();
 		var sectionPaths = this._makePaths ();
 
+		// Define color gradients
+		if ( this.fillType === "gradient" )
+		{
+			this._defineColorGradients ( svg, colorScale );
+		}  // End if
+
 		// Add top oval
 		if ( this.isCurved )
 		{
@@ -126,7 +132,9 @@
 		{
 
 			// Set the background color
-			var fill = colorScale ( i );
+			var fill = this.fillType !== "gradient" ?
+				 colorScale ( i ) :
+				"url(#gradient-" + i + ")";
 
 			// Prepare data to assign to the section
 			var data = {
@@ -275,6 +283,57 @@
 		return paths;
 
 	};  // End _makePaths
+
+	/**
+	 * Define the linear color gradients.
+	 *
+	 * @param {Object}   svg
+	 * @param {function} colorScale
+	 */
+	D3Funnel.prototype._defineColorGradients = function ( svg, colorScale )
+	{
+
+		var defs = svg.append ( "defs" );
+
+		// Create a gradient for each section
+		for ( var i = 0; i < this.data.length; i++ )
+		{
+
+			var color = colorScale ( i );
+			var shade = shadeColor ( color, -0.25 );
+
+			// Create linear gradient
+			var gradient = defs.append ( "linearGradient" )
+				.attr ( {
+					id : "gradient-" + i,
+					cx : "50%",
+					cy : "50%",
+					r : "50%",
+					fx : "50%",
+					fy : "50%"
+				} );
+
+			// Define the gradient stops
+			var stops = [
+				[ 0, shade ],
+				[ 40, color ],
+				[ 60, color ],
+				[ 100, shade ]
+			];
+
+			// Add the gradient stops
+			for ( var j = 0; j < stops.length; j++ )
+			{
+				var stop = stops [ j ];
+				gradient.append ( "stop" ).attr ( {
+					offset : stop [ 0 ] + "%",
+					style : "stop-color:" + stop [ 1 ]
+				} );
+			}  // End for
+
+		}  // End for
+
+	};  // End _defineColorGradients
 
 	/**
 	 * Shade a color to the given percentage.
