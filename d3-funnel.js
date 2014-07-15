@@ -108,9 +108,9 @@
 				" Q" + ( this.width / 2 ) + ",0" +
 				" 0,10";
 
-			// Draw top oval -- need to darken the top color
+			// Draw top oval
 			svg.append ( "path" )
-				.attr ( "fill", colorScale ( 0 ) )
+				.attr ( "fill", shadeColor ( colorScale ( 0 ), -0.4 ) )
 				.attr ( "d", path );
 
 		}  // End if
@@ -253,6 +253,29 @@
 		return paths;
 
 	};  // End _makePaths
+
+	/**
+	 * Shade a color to the given percentage.
+	 *
+ 	 * @param {string} color A hex color.
+ 	 * @param {float}  shade The shade adjustment. Can be positive or negative.
+	 */
+	function shadeColor ( color, shade )
+	{
+
+		var f = parseInt ( color.slice ( 1 ), 16 );
+		var t = shade < 0 ? 0 : 255;
+		var p = shade < 0 ? shade * -1 : shade;
+		var R = f >> 16, G = f >> 8 & 0x00FF;
+		var B = f & 0x0000FF;
+
+		var converted = ( 0x1000000 + ( Math.round ( ( t - R ) * p ) + R ) *
+			0x10000 + ( Math.round ( ( t - G ) * p ) + G ) *
+			0x100 + ( Math.round ( ( t - B ) * p ) + B ) );
+
+		return "#" + converted.toString ( 16 ).slice ( 1 );
+
+	}  // End shadeColor
 
 	global.D3Funnel = D3Funnel;
 
