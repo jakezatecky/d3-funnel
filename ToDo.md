@@ -3,9 +3,6 @@
 A list of ideas to add to the D3Funnel.
 
 * Add the following configuration options:
-	* `width`: The chart's initial width.
-	* `height`: The chart's total height.
-	* `bottomWidth`: The width of the bottom of the chart.
 	* `bottomPinch`: How many sections at the bottom to be "pinched" to the `bottomWidth`.
 	* `isCurved`: Whether or not the chart should appear curved.
 		* `curveHeight`: How "curvy" the chart should be. Only valid when `isCurved` set.
