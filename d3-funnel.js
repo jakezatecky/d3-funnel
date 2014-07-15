@@ -28,6 +28,21 @@
 	function D3Funnel ( data, options )
 	{
 
+		// Initialize options if not set
+		options = typeof options !== "undefined" ? options : {};
+
+		// Default configuration values
+		var defaults = {
+			width : 350,
+			height : 400,
+			bottomWidth : 200,
+			bottomPinch : 0,
+			isCurved : false,
+			curveHeight : 20,
+			fillType : "solid",
+			isPyramid : false
+		};
+
 	}  // End D3Funnel
 
 	/**
