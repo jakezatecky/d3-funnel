@@ -85,7 +85,71 @@
 		// Remove any previous drawings
 		d3.select ( selector ).selectAll ( "svg" ).remove ();
 
+		// Add the SVG and group element
+		var svg = d3.select ( selector )
+			.append ( "svg" )
+			.attr ( "width", this.width )
+			.attr ( "height", this.height )
+			.append ( "g" );
+
+		var colorScale = d3.scale.category10 ();
+		var sectionPaths = this._makePaths ();
+
+
 	};  // End draw
+
+	/**
+	 * Create the paths to be used to define the discrete funnel sections and returns
+	 * the results in an array.
+	 *
+	 * @return {array}
+	 */
+	D3Funnel.prototype._makePaths = function ()
+	{
+
+		var paths = [];
+
+		// Initialize starting positions
+		var prevLeftX = 0;
+		var prevRightX = this.width;
+		var prevHeight = 0;
+
+		// Initialize next positions
+		var nextLeftX = 0;
+		var nextRightX = 0;
+		var nextHeight = 0;
+
+		var middle = this.width / 2;
+
+		// Create the path definition for each funnel section
+		// Remember to loop back to the beginning point for a closed path
+		for ( var i = 0; i < this.data.length; i++ )
+		{
+
+			// Calculate the position of next section
+			var nextLeftX = prevLeftX + dx;
+			var nextRightX = prevRightX - dx;
+			var nextHeight = prevHeight + dy;
+
+			// Plot straight lines
+			paths.push ( [
+				[ prevLeftX, prevHeight, "M" ],
+				[ prevRightX, prevHeight, "L" ],
+				[ nextRightX, nextHeight, "L" ],
+				[ nextLeftX, nextHeight, "L" ],
+				[ prevLeftX, prevHeight, "L" ],
+			] );
+
+			// Set the next section's previous position
+			prevLeftX = nextLeftX;
+			prevRightX = nextRightX;
+			prevHeight = nextHeight;
+
+		}  // End for
+
+		return paths;
+
+	};  // End _makePaths
 
 	global.D3Funnel = D3Funnel;
 
