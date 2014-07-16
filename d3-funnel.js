@@ -1,6 +1,7 @@
 ( function ( global ) {
 
 	/* global d3 */
+  /* jshint bitwise: false */
 	"use strict";
 
 	/**
@@ -125,7 +126,7 @@
 			// Prepare data to assign to the section
 			var data = {
 				index : i,
-				record : self.data [ i ]
+				record : this.data [ i ]
 			};
 
 			// Construct path string
@@ -235,9 +236,9 @@
 			}  // End if
 
 			// Calculate the position of next section
-			var nextLeftX = prevLeftX + dx;
-			var nextRightX = prevRightX - dx;
-			var nextHeight = prevHeight + dy;
+			nextLeftX = prevLeftX + dx;
+			nextRightX = prevRightX - dx;
+			nextHeight = prevHeight + dy;
 
 			// Expand outward if inverted
 			if ( this.isInverted )
