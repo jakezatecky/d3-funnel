@@ -2,6 +2,10 @@
 
 A JavaScript library for rendering funnel charts using the D3.js library. Inspired by smilli/d3-funnel-charts.
 
+# Examples
+
+An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/master/example/index.html).
+
 # Usage
 
 To use this library, you must include both D3.js and the d3-funnel.js source file.
