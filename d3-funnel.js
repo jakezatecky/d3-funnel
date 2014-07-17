@@ -15,9 +15,8 @@
 	 *
 	 * @param {int}    options.width       Initial width. Specified in pixels.
 	 * @param {int}    options.height      Chart height. Specified in pixels.
-	 * @param {int}    options.bottomWidth Specifies the width, in pixels, that the bottom of the
-	 *                                     funnel chart should be. This will affect the overall
-	 *                                     appareance of the chart.
+	 * @param {int}    options.bottomWidth Specifies the width percent the bottom should be in
+	 *                                     relation to the chart's overall width.
 	 * @param {int}    options.bottomPinch How many sections (from the bottom) should be "pinched"
 	 *                                     to have fixed width defined by options.bottomWidth.
 	 * @param {bool}   options.isCurved    Whether or not the funnel is curved.
@@ -45,7 +44,7 @@
 		var defaults = {
 			width : 350,
 			height : 400,
-			bottomWidth : 200,
+			bottomWidth : 1/3,
 			bottomPinch : 0,
 			isCurved : false,
 			curveHeight : 20,
@@ -83,7 +82,7 @@
 		// Initialize funnel chart settings
 		this.width = settings.width;
 		this.height = settings.height;
-		this.bottomWidth = settings.bottomWidth;
+		this.bottomWidth = settings.width * settings.bottomWidth;
 		this.bottomPinch = settings.bottomPinch;
 		this.isCurved = settings.isCurved;
 		this.curveHeight = settings.curveHeight;

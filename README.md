@@ -27,7 +27,7 @@ var data = [
 var options = {
 	width : 350,
 	height : 400,
-	bottomWidth : 200
+	bottomWidth : 1/3
 };
 
 var chart = new D3Funnel ( data, options );
