@@ -29,6 +29,15 @@
 	function D3Funnel ( data, options )
 	{
 
+		if ( !this._isArray ( data ) || data.length === 0 ||
+			!this._isArray ( data [ 0 ] ) || data [ 0 ].length < 2 )
+		{
+			throw {
+				name : "D3 Funnel Data Error",
+				message : "Funnel initialization data is not valid."
+			};
+		}  // End if
+
 		// Initialize options if not set
 		options = typeof options !== "undefined" ? options : {};
 
@@ -79,6 +88,20 @@
 			this.height / data.length;
 
 	}  // End D3Funnel
+
+	/**
+	 * Check if the supplied value is an array.
+	 *
+	 * @param {mixed} value
+	 *
+	 * @return {bool}
+	 */
+	D3Funnel.prototype._isArray = function ( value )
+	{
+
+		return Object.prototype.toString.call ( value ) === "[object Array]";
+
+	};  // End _isArray
 
 	/**
 	 * Draw the chart on the target element. This will clear any content of the target element
