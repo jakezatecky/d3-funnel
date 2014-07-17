@@ -18,6 +18,12 @@ To use this library, you must include both D3.js and the d3-funnel.js source fil
 Drawing the funnel is relatively easy.
 
 ```` javascript
+var data = [
+	[ "Plants", "5,000" ],
+	[ "Flowers", "2,500" ],
+	[ "Perennials", "200" ],
+	[ "Roses", "50" ]
+];
 var options = {
 	width : 350,
 	height : 400,
