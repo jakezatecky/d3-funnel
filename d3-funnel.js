@@ -63,6 +63,23 @@
 
 		this.data = data;
 
+		var colorScale = d3.scale.category10 ();
+
+		// Initialize the colors
+		for ( var i = 0; i < this.data.length; i++ )
+		{
+
+			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+			// If a color is not set for the record, add one
+			if ( typeof this.data [ i ][ 2 ] === "undefined" ||
+				!hexExpression.test ( this.data [ i ][ 2 ] ) )
+			{
+				this.data [ i ][ 2 ] = colorScale ( i );
+			}  // End if
+
+		}  // End for
+
 		// Initialize funnel chart settings
 		this.width = settings.width;
 		this.height = settings.height;
@@ -122,19 +139,18 @@
 			.attr ( "height", this.height )
 			.append ( "g" );
 
-		var colorScale = d3.scale.category10 ();
 		var sectionPaths = this._makePaths ();
 
 		// Define color gradients
 		if ( this.fillType === "gradient" )
 		{
-			this._defineColorGradients ( svg, colorScale );
+			this._defineColorGradients ( svg );
 		}  // End if
 
 		// Add top oval if curved
 		if ( this.isCurved )
 		{
-			this._drawTopOval ( svg, sectionPaths, colorScale );
+			this._drawTopOval ( svg, sectionPaths );
 		}  // End if
 
 		// Add each block section
@@ -143,7 +159,7 @@
 
 			// Set the background color
 			var fill = this.fillType !== "gradient" ?
-				 colorScale ( i ) :
+				 this.data [ i ][ 2 ] :
 				"url(#gradient-" + i + ")";
 
 			// Prepare data to assign to the section
@@ -323,10 +339,9 @@
 	/**
 	 * Define the linear color gradients.
 	 *
-	 * @param {Object}   svg
-	 * @param {function} colorScale
+	 * @param {Object} svg
 	 */
-	D3Funnel.prototype._defineColorGradients = function ( svg, colorScale )
+	D3Funnel.prototype._defineColorGradients = function ( svg )
 	{
 
 		var defs = svg.append ( "defs" );
@@ -335,7 +350,7 @@
 		for ( var i = 0; i < this.data.length; i++ )
 		{
 
-			var color = colorScale ( i );
+			var color = this.data [ i ][ 2 ];
 			var shade = shadeColor ( color, -0.25 );
 
 			// Create linear gradient
@@ -374,11 +389,10 @@
 	/**
 	 * Draw the top oval of a curved funnel.
 	 *
-	 * @param {Object}   svg
-	 * @param {array}    sectionPaths
-	 * @param {function} colorScale
+	 * @param {Object} svg
+	 * @param {array}  sectionPaths
 	 */
-	D3Funnel.prototype._drawTopOval = function ( svg, sectionPaths, colorScale )
+	D3Funnel.prototype._drawTopOval = function ( svg, sectionPaths )
 	{
 
 		var leftX = 0;
@@ -402,7 +416,7 @@
 
 		// Draw top oval
 		svg.append ( "path" )
-			.attr ( "fill", shadeColor ( colorScale ( 0 ), -0.4 ) )
+			.attr ( "fill", shadeColor ( this.data [ 0 ][ 2 ], -0.4 ) )
 			.attr ( "d", path );
 
 	};  // End _drawTopOval
