@@ -1,29 +1,30 @@
 ( function ( global ) {
 
 	/* global d3 */
-  /* jshint bitwise: false */
+	/* jshint bitwise: false */
 	"use strict";
 
 	/**
 	 * D3Funnel
 	 *
-	 * An object representing a D3-driven funnel chart. Instantiates the funnel's configuration
-	 * and data parameters.
+	 * An object representing a D3-driven funnel chart. Instantiates the funnel's configuration and
+	 * data parameters.
 	 *
 	 * @param {array}  data    A list of rows containing a category and a count.
 	 * @param {Object} options An optional configuration object for chart options.
 	 *
-	 * @param {int}    options.width       Initial width. Specified in pixels.
-	 * @param {int}    options.height      Chart height. Specified in pixels.
-	 * @param {int}    options.bottomWidth Specifies the width percent the bottom should be in
-	 *                                     relation to the chart's overall width.
-	 * @param {int}    options.bottomPinch How many sections (from the bottom) should be "pinched"
-	 *                                     to have fixed width defined by options.bottomWidth.
-	 * @param {bool}   options.isCurved    Whether or not the funnel is curved.
-	 * @param {int}    options.curveHeight The height of the curves. Only functional if isCurved
-	 *                                     is set.
-	 * @param {string} options.fillType    The section background type. Either "solid" or "gradient".
-	 * @param {bool}   options.isInverted  Whether or not the funnel should be inverted to a pyramid.
+	 * @param {int}    options.width        Initial width. Specified in pixels.
+	 * @param {int}    options.height       Chart height. Specified in pixels.
+	 * @param {int}    options.bottomWidth  Specifies the width percent the bottom should be in
+	 *                                      relation to the chart's overall width.
+	 * @param {int}    options.bottomPinch  How many sections (from the bottom) should be "pinched"
+	 *                                      to have fixed width defined by options.bottomWidth.
+	 * @param {bool}   options.isCurved     Whether or not the funnel is curved.
+	 * @param {int}    options.curveHeight  The height of the curves. Only functional if isCurved
+	 *                                      is set.
+	 * @param {string} options.fillType     The section background type. Either "solid" or "gradient".
+	 * @param {bool}   options.isInverted   Whether or not the funnel should be inverted to a pyramid.
+	 * @param {bool}   options.hoverEffects Whether or not the funnel hover effects should be shown.
 	 */
 	function D3Funnel ( data, options )
 	{
@@ -49,7 +50,8 @@
 			isCurved : false,
 			curveHeight : 20,
 			fillType : "solid",
-			isInverted : false
+			isInverted : false,
+			hoverEffects : false
 		};
 		var settings = defaults;
 		var keys = Object.keys ( options );
@@ -88,6 +90,7 @@
 		this.curveHeight = settings.curveHeight;
 		this.fillType = settings.fillType;
 		this.isInverted = settings.isInverted;
+		this.hoverEffects = settings.hoverEffects;
 
 		// Calculate the bottom left x position
 		this.bottomLeftX = ( this.width - this.bottomWidth ) / 2;
@@ -137,6 +140,8 @@
 			.attr ( "width", this.width )
 			.attr ( "height", this.height )
 			.append ( "g" );
+		var group = {};
+		var path = {};
 
 		var sectionPaths = this._makePaths ();
 
@@ -164,7 +169,10 @@
 			// Prepare data to assign to the section
 			var data = {
 				index : i,
-				record : this.data [ i ]
+				label : this.data [ i ][ 0 ],
+				value : this.data [ i ][ 1 ],
+				baseColor : this.data [ i ][ 2 ],
+				fill : fill
 			};
 
 			// Construct path string
@@ -179,11 +187,20 @@
 				pathStr += path [ 2 ] + path [ 0 ] + "," + path [ 1 ] + " ";
 			}  // End for
 
+			group = svg.append ( "g" );
+
 			// Draw the sections's path and append the data
-			svg.append ( "path" )
+			path = group.append ( "path" )
 				.attr ( "fill", fill )
 				.attr ( "d", pathStr )
 				.data ( [ data ] );
+
+			// Add the hover events
+			if ( this.hoverEffects )
+			{
+				path.on ( "mouseover", this._onMouseOver )
+					.on ( "mouseout", this._onMouseOut );
+			}  // End if
 
 			// Add the section label
 			var textStr = this.data [ i ][ 0 ] + ": " + this.data [ i ][ 1 ];
@@ -192,13 +209,16 @@
 				( this.dy * ( 2 * i + 1 ) ) / 2 :
 				( paths [ 1 ][ 1 ] + paths [ 3 ][ 1 ] ) / 2;
 
-			svg.append ( "text" )
+			group.append ( "text" )
 				.text ( textStr )
-				.attr ( "x", textX )
-				.attr ( "y", textY )
-				.attr ( "text-anchor", "middle" )
-				.attr ( "dominant-baseline", "middle" )
-				.attr ( "fill", "#fff" )
+				.attr ( {
+					"x" : textX,
+					"y" : textY,
+					"text-anchor" : "middle",
+					"dominant-baseline" : "middle",
+					"fill" : "#fff",
+					"pointer-events" : "none"
+				} )
 				.style ( "font-size", "14px" );
 
 		}  // End for
@@ -419,6 +439,26 @@
 			.attr ( "d", path );
 
 	};  // End _drawTopOval
+
+	/**
+	 * @param {Object} data
+	 */
+	D3Funnel.prototype._onMouseOver = function ( data )
+	{
+
+		d3.select ( this ).attr ( "fill", shadeColor ( data.baseColor, -0.2 ) );
+
+	};  // End _onMouseOver
+
+	/**
+	 * @param {Object} data
+	 */
+	D3Funnel.prototype._onMouseOut = function ( data )
+	{
+
+		d3.select ( this ).attr ( "fill", data.fill );
+
+	};  // End _onMouseOut
 
 	/**
 	 * Shade a color to the given percentage.
