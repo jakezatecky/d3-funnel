@@ -6,7 +6,7 @@ improvements that can be specified through initialization options.
 
 # Examples
 
-An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/master/example/index.html).
+An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/0.3.2/example/index.html).
 
 # Usage
 
