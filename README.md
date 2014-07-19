@@ -1,6 +1,8 @@
 # D3 Funnel
 
-A JavaScript library for rendering funnel charts using the D3.js library. Inspired by smilli/d3-funnel-charts.
+d3-funnel.js is a JavaScript library for rendering SVG funnel and pyramid charts using the D3.js framework. This libray
+was initially inspired by [smilli/d3-funnel-charts](https://github.com/smilli/d3-funnel-charts), but includes many
+improvements that can be specified through initialization options.
 
 # Examples
 
