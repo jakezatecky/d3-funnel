@@ -55,9 +55,10 @@
 		};
 		var settings = defaults;
 		var keys = Object.keys ( options );
+		var i = 0;
 
 		// Overwrite default settings with user options
-		for ( var i = 0; i < keys.length; i++ )
+		for ( i = 0; i < keys.length; i++ )
 		{
 			settings [ keys [ i ] ] = options [ keys [ i ] ];
 		}  // End for
@@ -66,8 +67,8 @@
 
 		var colorScale = d3.scale.category10 ();
 
-		// Initialize the colors
-		for ( var i = 0; i < this.data.length; i++ )
+		// Initialize the colors for each block section
+		for ( i = 0; i < this.data.length; i++ )
 		{
 
 			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -178,7 +179,6 @@
 			// Construct path string
 			var paths = sectionPaths [ i ];
 			var pathStr = "";
-			var path = [];
 
 			// Iterate through each point
 			for ( var j = 0; j < paths.length; j++ )
