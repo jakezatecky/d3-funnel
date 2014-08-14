@@ -7,42 +7,18 @@
 	/**
 	 * D3Funnel
 	 *
-	 * An object representing a D3-driven funnel chart. Instantiates the funnel's configuration and
-	 * data parameters.
+	 * An object representing a D3-driven funnel chart.
 	 *
-	 * @param {array}  data    A list of rows containing a category and a count.
-	 * @param {Object} options An optional configuration object for chart options.
+	 * @param {string} selector A selector for element to contain the funnel.
 	 *
-	 * @param {int}    options.width        Initial width. Specified in pixels.
-	 * @param {int}    options.height       Chart height. Specified in pixels.
-	 * @param {int}    options.bottomWidth  Specifies the width percent the bottom should be in
-	 *                                      relation to the chart's overall width.
-	 * @param {int}    options.bottomPinch  How many sections (from the bottom) should be "pinched"
-	 *                                      to have fixed width defined by options.bottomWidth.
-	 * @param {bool}   options.isCurved     Whether or not the funnel is curved.
-	 * @param {int}    options.curveHeight  The height of the curves. Only functional if isCurved
-	 *                                      is set.
-	 * @param {string} options.fillType     The section background type. Either "solid" or "gradient".
-	 * @param {bool}   options.isInverted   Whether or not the funnel should be inverted to a pyramid.
-	 * @param {bool}   options.hoverEffects Whether or not the funnel hover effects should be shown.
 	 */
-	function D3Funnel ( data, options )
+	function D3Funnel ( selector )
 	{
 
-		if ( !this._isArray ( data ) || data.length === 0 ||
-			!this._isArray ( data [ 0 ] ) || data [ 0 ].length < 2 )
-		{
-			throw {
-				name : "D3 Funnel Data Error",
-				message : "Funnel initialization data is not valid."
-			};
-		}  // End if
-
-		// Initialize options if not set
-		options = typeof options !== "undefined" ? options : {};
+		this.selector = selector;
 
 		// Default configuration values
-		var defaults = {
+		this.defaults = {
 			width : 350,
 			height : 400,
 			bottomWidth : 1/3,
@@ -53,59 +29,6 @@
 			isInverted : false,
 			hoverEffects : false
 		};
-		var settings = defaults;
-		var keys = Object.keys ( options );
-		var i = 0;
-
-		// Overwrite default settings with user options
-		for ( i = 0; i < keys.length; i++ )
-		{
-			settings [ keys [ i ] ] = options [ keys [ i ] ];
-		}  // End for
-
-		this.data = data;
-
-		var colorScale = d3.scale.category10 ();
-
-		// Initialize the colors for each block section
-		for ( i = 0; i < this.data.length; i++ )
-		{
-
-			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-
-			// If a color is not set for the record, add one
-			if ( typeof this.data [ i ][ 2 ] === "undefined" ||
-				!hexExpression.test ( this.data [ i ][ 2 ] ) )
-			{
-				this.data [ i ][ 2 ] = colorScale ( i );
-			}  // End if
-
-		}  // End for
-
-		// Initialize funnel chart settings
-		this.width = settings.width;
-		this.height = settings.height;
-		this.bottomWidth = settings.width * settings.bottomWidth;
-		this.bottomPinch = settings.bottomPinch;
-		this.isCurved = settings.isCurved;
-		this.curveHeight = settings.curveHeight;
-		this.fillType = settings.fillType;
-		this.isInverted = settings.isInverted;
-		this.hoverEffects = settings.hoverEffects;
-
-		// Calculate the bottom left x position
-		this.bottomLeftX = ( this.width - this.bottomWidth ) / 2;
-
-		// Change in x direction
-		// Will be sharper if there is a pinch
-		this.dx = this.bottomPinch > 0 ?
-			this.bottomLeftX / ( data.length - this.bottomPinch ) :
-			this.bottomLeftX / data.length;
-		// Change in y direction
-		// Curved chart needs reserved pixels to account for curvature
-		this.dy = this.isCurved ?
-			( this.height - this.curveHeight ) / data.length :
-			this.height / data.length;
 
 	}  // End D3Funnel
 
@@ -124,19 +47,36 @@
 	};  // End _isArray
 
 	/**
-	 * Draw the chart on the target element. This will clear any content of the target element
-	 * and write a new funnel chart on top of it given the initialization options.
+	 * Draw onto the container with the data and configuration specified. This will clear any previous
+	 * SVG element in the container and draw a new funnel chart on top of it.
 	 *
-	 * @param {string} selector A valid D3 selector.
+	 * @param {array}  data    A list of rows containing a category and a count.
+	 * @param {Object} options An optional configuration object for chart options.
+	 *
+	 * @param {int}    options.width        Initial width. Specified in pixels.
+	 * @param {int}    options.height       Chart height. Specified in pixels.
+	 * @param {int}    options.bottomWidth  Specifies the width percent the bottom should be in
+	 *                                      relation to the chart's overall width.
+	 * @param {int}    options.bottomPinch  How many sections (from the bottom) should be "pinched"
+	 *                                      to have fixed width defined by options.bottomWidth.
+	 * @param {bool}   options.isCurved     Whether or not the funnel is curved.
+	 * @param {int}    options.curveHeight  The height of the curves. Only functional if isCurved
+	 *                                      is set.
+	 * @param {string} options.fillType     The section background type. Either "solid" or "gradient".
+	 * @param {bool}   options.isInverted   Whether or not the funnel should be inverted to a pyramid.
+	 * @param {bool}   options.hoverEffects Whether or not the funnel hover effects should be shown.
 	 */
-	D3Funnel.prototype.draw = function ( selector )
+	D3Funnel.prototype.draw = function ( data, options )
 	{
 
+		// Initialize chart options
+		this._initialize ( data, options );
+
 		// Remove any previous drawings
-		d3.select ( selector ).selectAll ( "svg" ).remove ();
+		d3.select ( this.selector ).selectAll ( "svg" ).remove ();
 
 		// Add the SVG and group element
-		var svg = d3.select ( selector )
+		var svg = d3.select ( this.selector )
 			.append ( "svg" )
 			.attr ( "width", this.width )
 			.attr ( "height", this.height )
@@ -225,6 +165,84 @@
 
 
 	};  // End draw
+
+	/**
+	 * Initialize and calculate important variables for drawing the chart.
+	 *
+	 * @param {array}  data
+	 * @param {Object} options
+	 */
+	D3Funnel.prototype._initialize = function ( data, options )
+	{
+
+		if ( !this._isArray ( data ) || data.length === 0 ||
+			!this._isArray ( data [ 0 ] ) || data [ 0 ].length < 2 )
+		{
+			throw {
+				name : "D3 Funnel Data Error",
+				message : "Funnel data is not valid."
+			};
+		}  // End if
+
+		this.data = data;
+		// Initialize options if not set
+		options = typeof options !== "undefined" ? options : {};
+
+		// Counter
+		var i = 0;
+
+		// Prepare the configuration settings based on the defaults
+		var settings = $.extend ( {}, this.defaults );
+
+		// Overwrite default settings with user options
+		var keys = Object.keys ( options );
+		for ( i = 0; i < keys.length; i++ )
+		{
+			settings [ keys [ i ] ] = options [ keys [ i ] ];
+		}  // End for
+
+		// Initialize the colors for each block section
+		var colorScale = d3.scale.category10 ();
+		for ( i = 0; i < this.data.length; i++ )
+		{
+
+			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+			// If a color is not set for the record, add one
+			if ( typeof this.data [ i ][ 2 ] === "undefined" ||
+				!hexExpression.test ( this.data [ i ][ 2 ] ) )
+			{
+				this.data [ i ][ 2 ] = colorScale ( i );
+			}  // End if
+
+		}  // End for
+
+		// Initialize funnel chart settings
+		this.width = settings.width;
+		this.height = settings.height;
+		this.bottomWidth = settings.width * settings.bottomWidth;
+		this.bottomPinch = settings.bottomPinch;
+		this.isCurved = settings.isCurved;
+		this.curveHeight = settings.curveHeight;
+		this.fillType = settings.fillType;
+		this.isInverted = settings.isInverted;
+		this.hoverEffects = settings.hoverEffects;
+
+		// Calculate the bottom left x position
+		this.bottomLeftX = ( this.width - this.bottomWidth ) / 2;
+
+		// Change in x direction
+		// Will be sharper if there is a pinch
+		this.dx = this.bottomPinch > 0 ?
+			this.bottomLeftX / ( data.length - this.bottomPinch ) :
+			this.bottomLeftX / data.length;
+		// Change in y direction
+		// Curved chart needs reserved pixels to account for curvature
+		this.dy = this.isCurved ?
+			( this.height - this.curveHeight ) / data.length :
+			this.height / data.length;
+
+	};  // End _initialize
 
 	/**
 	 * Create the paths to be used to define the discrete funnel sections and returns

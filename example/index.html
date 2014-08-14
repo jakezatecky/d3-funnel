@@ -14,7 +14,7 @@
 	<body>
 		<div class="container">
 			<p>Funnel examples</p>
-			<select id="picker" onchange="onChange ()">
+			<select id="picker">
 				<option value="0">Basic</option>
 				<option value="1">Curved</option>
 				<option value="2">Pinched</option>
@@ -28,74 +28,51 @@
 		</div>
 
 		<script src="vendor/d3.min.js"></script>
+		<script src="vendor/jquery-1.11.1.min.js"></script>
 		<script src="../d3-funnel.js?1"></script>
 
 		<script>
-			var data = [
-				[ "Applicants", "8,493" ],
-				[ "Pre-screened", "4,456" ],
-				[ "Interviewed", "1,120" ],
-				[ "Hired", "436" ]
-			];
-			var options = [
-				{
-					width : 350,
-					height : 400
-				},
-				{
-					width : 350,
-					height : 400,
-					isCurved : true
-				},
-				{
-					width : 350,
-					height : 400,
-					bottomPinch : 1
-				},
-				{
-					width : 350,
-					height : 400,
-					fillType : "gradient"
-				},
-				{
-					width : 350,
-					height : 400,
-					isInverted : true
-				},
-				{
-					width : 350,
-					height : 400,
-					hoverEffects : true
-				},
-				{
-					width : 350,
-					height : 400,
-					isCurved : true,
-					bottomPinch : 1,
-					fillType : "gradient",
-					hoverEffects : true
-				},
-				{
-					width : 350,
-					height : 400,
-					isCurved : true,
-					bottomPinch : 1,
-					fillType : "gradient",
-					isInverted : true,
-					hoverEffects : true
-				}
-			];
-
-			function onChange ()
+			$( function ()
 			{
+				function drawChart ()
+				{
 
-				var index = document.getElementById ( "picker" ).value;
-				var chart = new D3Funnel ( data, options [ index ] );
-				chart.draw ( "#funnel" );
+					var data = [
+						[ "Applicants", "8,493" ],
+						[ "Pre-screened", "4,456" ],
+						[ "Interviewed", "1,120" ],
+						[ "Hired", "436" ]
+					];
+					var options = [
+						{},
+						{ isCurved : true },
+						{ bottomPinch : 1 },
+						{ fillType : "gradient" },
+						{ isInverted : true },
+						{ hoverEffects : true },
+						{
+							isCurved : true,
+							bottomPinch : 1,
+							fillType : "gradient",
+							hoverEffects : true
+						},
+						{
+							bottomPinch : 1,
+							fillType : "gradient",
+							isInverted : true,
+							hoverEffects : true
+						}
+					];
 
-			}  // End onChange
+					var index = $( "#picker" ).val ();
+					var chart = new D3Funnel ( "#funnel" );
+					chart.draw ( data, options [ index ] );
 
-			onChange ();
+				}  // End drawChart
+
+				drawChart ();
+				$( "#picker" ).change ( function () { drawChart (); } );
+			} );
 		</script>
 	</body>
 </html>

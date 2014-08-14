@@ -6,13 +6,14 @@ improvements that can be specified through initialization options.
 
 # Examples
 
-An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/0.3.2/example/index.html).
+An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/0.4.0/example/index.html).
 
 # Usage
 
-To use this library, you must include both D3.js and the d3-funnel.js source file.
+To use this library, you must include include jQuery and D3 in addition to the `d3-funnel.js` source file.
 
 ```` html
+<script src="jquery-1.11.1.min.js"></script>
 <script src="d3.min.js"></script>
 <script src="d3-funnel.js"></script>
 ````
@@ -26,20 +27,18 @@ var data = [
 	[ "Perennials", "200" ],
 	[ "Roses", "50" ]
 ];
-var options = {
-	width : 350,
-	height : 400,
-	bottomWidth : 1/3
-};
 
-var chart = new D3Funnel ( data, options );
-chart.draw ( "#funnel" );
+var chart = new D3Funnel ( "#funnel" );
+chart.draw ( data );
 ````
 
 More advanced options also exist.
 
 ```` javascript
 var advanced = {
+	width : 350,          // In pixels
+	height : 400,         // In pixels
+	bottomWidth : 1/3,    // The percent of total width the bottom should be
 	bottomPinch : 0,      // How many sections to pinch
 	isCurved : false,     // Whether the funnel is curved
 	curveHeight : 20,     // The curvature amount
