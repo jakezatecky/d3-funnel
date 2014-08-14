@@ -36,8 +36,8 @@ More advanced options also exist.
 
 ```` javascript
 var advanced = {
-	width : 350,          // In pixels
-	height : 400,         // In pixels
+	width : 350,          // In pixels; defaults to container's width (if non-zero)
+	height : 400,         // In pixels; defaults to container's height (if non-zero)
 	bottomWidth : 1/3,    // The percent of total width the bottom should be
 	bottomPinch : 0,      // How many sections to pinch
 	isCurved : false,     // Whether the funnel is curved

@@ -4,9 +4,15 @@ body
 }
 .container
 {
+	width : 400px;
 	padding : 10px;
+	margin : 0px auto;
+}
+#funnel
+{
 	width : 350px;
-	margin : 0 auto;
+	height : 400px;
+	margin : 0px auto;
 }
 select
 {

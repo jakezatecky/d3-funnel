@@ -192,7 +192,10 @@
 		var i = 0;
 
 		// Prepare the configuration settings based on the defaults
+		// Set the default width and height based on the container
 		var settings = $.extend ( {}, this.defaults );
+		settings.width  = $( this.selector ).width ();
+		settings.height = $( this.selector ).height ();
 
 		// Overwrite default settings with user options
 		var keys = Object.keys ( options );
@@ -200,6 +203,17 @@
 		{
 			settings [ keys [ i ] ] = options [ keys [ i ] ];
 		}  // End for
+
+		// In the case that the width or height is not valid, set
+		// the width/height as its default hard-coded value
+		if ( settings.width <= 0 )
+		{
+			settings.width = this.defaults.width;
+		}  // End if
+		if ( settings.height <= 0 )
+		{
+			settings.height = this.defaults.height;
+		}  // End if
 
 		// Initialize the colors for each block section
 		var colorScale = d3.scale.category10 ();
