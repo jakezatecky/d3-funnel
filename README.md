@@ -7,7 +7,7 @@ options.
 
 # Examples
 
-An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/0.4.0/example/index.html).
+An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/0.5.0/example/index.html).
 
 # Usage
 
