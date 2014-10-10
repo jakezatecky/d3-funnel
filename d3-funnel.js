@@ -146,8 +146,8 @@
 			var textStr = this.data [ i ][ 0 ] + ": " + this.data [ i ][ 1 ];
 			var textX = this.width / 2;   // Center the text
 			var textY = !this.isCurved ?  // Average height of bases
-				( this.dy * ( 2 * i + 1 ) ) / 2 :
-				( paths [ 1 ][ 1 ] + paths [ 3 ][ 1 ] ) / 2;
+				( paths [ 1 ][ 1 ] + paths [ 2 ][ 1 ] ) / 2 :
+				( paths [ 2 ][ 1 ] + paths [ 3 ][ 1 ] ) / 2;
 
 			group.append ( "text" )
 				.text ( textStr )
@@ -298,10 +298,42 @@
 			prevHeight = 10;
 		}  // End if
 
+		var topBase = this.width;
+		var bottomBase = 0;
+
+		var totalArea = this.height * (this.width + this.bottomWidth) / 2;
+		var slope = 2 * this.height / (this.width - this.bottomWidth);
+
+		var totalCount = 0;
+
+		// Harvest total count
+		// Remove any commas that could interfere with the parser
+		for (var i = 0; i < this.data.length; i++) {
+			var count = this.data[i][1].replace(/\,/g, "");
+			totalCount += parseFloat(count);
+		}  // End for
+
 		// Create the path definition for each funnel section
 		// Remember to loop back to the beginning point for a closed path
 		for ( var i = 0; i < this.data.length; i++ )
 		{
+
+			var count = this.data[i][1].replace(/\,/g, "");
+			count = parseFloat(count);
+
+			// Calculate dynamic shapes based on area
+			if (true) {
+
+				var ratio = count / totalCount;
+				var area  = ratio * totalArea;
+
+				var bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area))/slope);
+				dx = (topBase / 2) - (bottomBase / 2);
+				dy = (area * 2) / (topBase + bottomBase);
+
+				topBase = bottomBase;
+
+			}  // End if
 
 			// Stop velocity for pinched sections
 			if ( this.bottomPinch > 0 )
@@ -340,7 +372,6 @@
 			// Plot curved lines
 			if ( this.isCurved )
 			{
-
 				paths.push ( [
 					// Top Bezier curve
 					[ prevLeftX, prevHeight, "M" ],
@@ -355,12 +386,10 @@
 					// Left line
 					[ prevLeftX, prevHeight, "L" ]
 				] );
-
 			}
 			// Plot straight lines
 			else
 			{
-
 				paths.push ( [
 					// Start position
 					[ prevLeftX, prevHeight, "M" ],
@@ -373,7 +402,6 @@
 					// Wrap back to top
 					[ prevLeftX, prevHeight, "L" ],
 				] );
-
 			} // End if
 
 			// Set the next section's previous position
