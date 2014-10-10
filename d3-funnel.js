@@ -45,24 +45,32 @@
 	};  // End _isArray
 
 	/**
-	 * Draw onto the container with the data and configuration specified. This will clear any previous
-	 * SVG element in the container and draw a new funnel chart on top of it.
+	 * Draw onto the container with the data and configuration specified. This
+	 * will clear any previous SVG element in the container and draw a new
+	 * funnel chart on top of it.
 	 *
-	 * @param {array}  data    A list of rows containing a category and a count.
-	 * @param {Object} options An optional configuration object for chart options.
+	 * @param {array}  data    A list of rows containing a category, a count,
+	 *                         and optionally a color (in hex).
+	 * @param {Object} options An optional configuration object for chart
+	 *                         options.
 	 *
 	 * @param {int}    options.width        Initial width. Specified in pixels.
 	 * @param {int}    options.height       Chart height. Specified in pixels.
-	 * @param {int}    options.bottomWidth  Specifies the width percent the bottom should be in
-	 *                                      relation to the chart's overall width.
-	 * @param {int}    options.bottomPinch  How many sections (from the bottom) should be "pinched"
-	 *                                      to have fixed width defined by options.bottomWidth.
+	 * @param {int}    options.bottomWidth  Specifies the width percent the
+	 *                                      bottom should be in relation to the
+	 *                                      chart's overall width.
+	 * @param {int}    options.bottomPinch  How many sections (from the bottom)
+	 *                                      should be "pinched" to have fixed
+	 *                                      width defined by options.bottomWidth.
 	 * @param {bool}   options.isCurved     Whether or not the funnel is curved.
-	 * @param {int}    options.curveHeight  The height of the curves. Only functional if isCurved
-	 *                                      is set.
-	 * @param {string} options.fillType     The section background type. Either "solid" or "gradient".
-	 * @param {bool}   options.isInverted   Whether or not the funnel should be inverted to a pyramid.
-	 * @param {bool}   options.hoverEffects Whether or not the funnel hover effects should be shown.
+	 * @param {int}    options.curveHeight  The height of the curves. Only
+	 *                                      functional if isCurve is set.
+	 * @param {string} options.fillType     The section background type. Either
+	 *                                      "solid" or "gradient".
+	 * @param {bool}   options.isInverted   Whether or not the funnel should be
+	 *                                      inverted to a pyramid.
+	 * @param {bool}   options.hoverEffects Whether or not the funnel hover
+	 *                                      effects should be shown.
 	 */
 	D3Funnel.prototype.draw = function(data, options) {
 
@@ -97,9 +105,9 @@
 		for (var i = 0; i < sectionPaths.length; i++) {
 
 			// Set the background color
-			var fill = this.fillType !== "gradient" ?
-				 this.data[i][2] :
-				"url(#gradient-" + i + ")";
+			var fill = this.fillType !== "gradient"
+				?  this.data[i][2]
+				: "url(#gradient-" + i + ")";
 
 			// Prepare data to assign to the section
 			var data = {
@@ -138,9 +146,9 @@
 			// Add the section label
 			var textStr = this.data[i][0] + ": " + this.data[i][1];
 			var textX   = this.width / 2;   // Center the text
-			var textY   = !this.isCurved ?  // Average height of bases
-				(paths[1][1] + paths[2][1]) / 2 :
-				(paths[2][1] + paths[3][1]) / 2;
+			var textY   = !this.isCurved    // Average height of bases
+				? (paths[1][1] + paths[2][1]) / 2
+				: (paths[2][1] + paths[3][1]) / 2;
 
 			group.append("text")
 				.text(textStr)
@@ -233,20 +241,20 @@
 
 		// Change in x direction
 		// Will be sharper if there is a pinch
-		this.dx = this.bottomPinch > 0 ?
-			this.bottomLeftX / (data.length - this.bottomPinch) :
-			this.bottomLeftX / data.length;
+		this.dx = this.bottomPinch > 0
+			? this.bottomLeftX / (data.length - this.bottomPinch)
+			: this.bottomLeftX / data.length;
 		// Change in y direction
 		// Curved chart needs reserved pixels to account for curvature
-		this.dy = this.isCurved ?
-			(this.height - this.curveHeight) / data.length :
-			this.height / data.length;
+		this.dy = this.isCurved
+			? (this.height - this.curveHeight) / data.length
+			: this.height / data.length;
 
 	};  // End _initialize
 
 	/**
-	 * Create the paths to be used to define the discrete funnel sections and returns
-	 * the results in an array.
+	 * Create the paths to be used to define the discrete funnel sections and
+	 * returns the results in an array.
 	 *
 	 * @return {array}
 	 */
