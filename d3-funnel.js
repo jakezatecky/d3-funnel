@@ -1,6 +1,6 @@
 (function(global) {
 
-	/* global d3 */
+	/* global d3, $ */
 	/* jshint bitwise: false */
 	"use strict";
 
@@ -105,12 +105,12 @@
 		for (var i = 0; i < sectionPaths.length; i++) {
 
 			// Set the background color
-			var fill = this.fillType !== "gradient"
-				?  this.data[i][2]
-				: "url(#gradient-" + i + ")";
+			var fill = this.fillType !== "gradient" ?
+				this.data[i][2] :
+				"url(#gradient-" + i + ")";
 
 			// Prepare data to assign to the section
-			var data = {
+			data = {
 				index: i,
 				label: this.data[i][0],
 				value: this.data[i][1],
@@ -146,9 +146,9 @@
 			// Add the section label
 			var textStr = this.data[i][0] + ": " + this.data[i][1];
 			var textX   = this.width / 2;   // Center the text
-			var textY   = !this.isCurved    // Average height of bases
-				? (paths[1][1] + paths[2][1]) / 2
-				: (paths[2][1] + paths[3][1]) / 2;
+			var textY   = !this.isCurved ?  // Average height of bases
+				(paths[1][1] + paths[2][1]) / 2 :
+				(paths[2][1] + paths[3][1]) / 2;
 
 			group.append("text")
 				.text(textStr)
@@ -241,14 +241,14 @@
 
 		// Change in x direction
 		// Will be sharper if there is a pinch
-		this.dx = this.bottomPinch > 0
-			? this.bottomLeftX / (data.length - this.bottomPinch)
-			: this.bottomLeftX / data.length;
+		this.dx = this.bottomPinch > 0 ?
+			this.bottomLeftX / (data.length - this.bottomPinch) :
+			this.bottomLeftX / data.length;
 		// Change in y direction
 		// Curved chart needs reserved pixels to account for curvature
-		this.dy = this.isCurved
-			? (this.height - this.curveHeight) / data.length
-			: this.height / data.length;
+		this.dy = this.isCurved ?
+			(this.height - this.curveHeight) / data.length :
+			this.height / data.length;
 
 	};  // End _initialize
 
@@ -296,19 +296,20 @@
 		var slope = 2 * this.height / (this.width - this.bottomWidth);
 
 		var totalCount = 0;
+		var count = 0;
 
 		// Harvest total count
 		// Remove any commas that could interfere with the parser
 		for (var i = 0; i < this.data.length; i++) {
-			var count = this.data[i][1].replace(/\,/g, "");
+			count = this.data[i][1].replace(/\,/g, "");
 			totalCount += parseFloat(count);
 		}  // End for
 
 		// Create the path definition for each funnel section
 		// Remember to loop back to the beginning point for a closed path
-		for (var i = 0; i < this.data.length; i++) {
+		for (i = 0; i < this.data.length; i++) {
 
-			var count = this.data[i][1].replace(/\,/g, "");
+			count = this.data[i][1].replace(/\,/g, "");
 			count = parseFloat(count);
 
 			// Calculate dynamic shapes based on area
@@ -317,7 +318,7 @@
 				var ratio = count / totalCount;
 				var area  = ratio * totalArea;
 
-				var bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area))/slope);
+				bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area))/slope);
 				dx = (topBase / 2) - (bottomBase / 2);
 				dy = (area * 2) / (topBase + bottomBase);
 
