@@ -48,6 +48,8 @@ var advanced = {
 	fillType: "solid",   // Either "solid" or "gradient"
 	isInverted: false,   // Whether the funnel is inverted
 	hoverEffects: false  // Whether the funnel has effects on hover
+	dynamicArea: false   // Whether the funnel should calculate the blocks by
+	                     // the count values rather than equal heights
 };
 ```
 
