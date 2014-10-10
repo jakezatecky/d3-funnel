@@ -72,17 +72,26 @@
 							dynamicArea: true
 						},
 						{
+							isCurved: true,
 							bottomPinch: 1,
 							fillType: "gradient",
 							isInverted: true,
-							hoverEffects: true,
-							dynamicArea: true
+							hoverEffects: true
 						}
 					];
 
 					var index = $("#picker").val();
 					var chart = new D3Funnel("#funnel");
-					chart.draw(data, options[index]);
+
+					// Reverse the dataset if the isInverted option is present
+					// Keep in mind that because the larger component has shorter
+					// width, it must compensate with a much larger height!
+					if ("isInverted" in options[index]) {
+						chart.draw(data.reverse(), options[index]);
+					// Otherwise, just use the regular data
+					} else {
+						chart.draw(data, options[index]);
+					}  // End if
 
 				}  // End drawChart
 

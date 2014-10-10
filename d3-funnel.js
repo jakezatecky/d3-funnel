@@ -344,7 +344,14 @@
 				// Pinch at the first sections relating to the bottom pinch
 				// Revert back to normal velocity after pinch
 				else {
-					dx = i < this.bottomPinch ? 0 : this.dx;
+					// Revert velocity back to the intial if we are using
+					// static area's (prevents zero velocity if isInverted
+					// and bottomPinch are non trivial and dynamicArea is false)
+					if (!this.dynamicArea) {
+						dx = this.dx;
+					}  // End if
+
+					dx = i < this.bottomPinch ? 0 : dx;
 				}  // End if
 
 			}  // End if
