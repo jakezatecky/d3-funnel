@@ -38,40 +38,52 @@
 				{
 
 					var data = [
-						[ "Applicants", "12,000" ],
-						[ "Pre-screened", "4,000" ],
-						[ "Interviewed", "2,500" ],
-						[ "Hired", "1500" ]
+						["Applicants",   "12,000"],
+						["Pre-screened", "4,000"],
+						["Interviewed",  "2,500"],
+						["Hired",        "1500"]
 					];
 					var options = [
 						{},
-						{ isCurved : true },
-						{ bottomPinch : 1 },
-						{ fillType : "gradient" },
-						{ isInverted : true },
-						{ hoverEffects : true },
 						{
-							isCurved : true,
-							bottomPinch : 1,
-							fillType : "gradient",
-							hoverEffects : true
+							isCurved: true
 						},
 						{
-							bottomPinch : 1,
-							fillType : "gradient",
-							isInverted : true,
-							hoverEffects : true
+							bottomPinch: 1
+						},
+						{
+							fillType: "gradient"
+						},
+						{
+							isInverted: true
+						},
+						{
+							hoverEffects: true
+						},
+						{
+							isCurved: true,
+							bottomPinch: 1,
+							fillType: "gradient",
+							hoverEffects: true
+						},
+						{
+							bottomPinch: 1,
+							fillType: "gradient",
+							isInverted: true,
+							hoverEffects: true
 						}
 					];
 
-					var index = $( "#picker" ).val ();
-					var chart = new D3Funnel ( "#funnel" );
-					chart.draw ( data, options [ index ] );
+					var index = $("#picker").val();
+					var chart = new D3Funnel("#funnel");
+					chart.draw(data, options[index]);
 
 				}  // End drawChart
 
-				drawChart ();
-				$( "#picker" ).change ( function () { drawChart (); } );
+				drawChart();
+				$("#picker").change(function() {
+					drawChart();
+				});
 			} );
 		</script>
 	</body>

@@ -1,21 +1,17 @@
-body
-{
-	text-align : center;
+body {
+	text-align: center;
 }
-.container
-{
-	width : 400px;
-	padding : 10px;
-	margin : 0px auto;
+.container {
+	width: 400px;
+	padding: 10px;
+	margin: 0px auto;
 }
-#funnel
-{
-	width : 300px;
-	height : 400px;
-	margin : 0px auto;
+#funnel {
+	width: 300px;
+	height: 400px;
+	margin: 0px auto;
 }
-select
-{
-	padding : 8px;
-	margin-bottom : 10px;
+select {
+	padding: 8px;
+	margin-bottom: 10px;
 }
