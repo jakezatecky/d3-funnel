@@ -26,7 +26,8 @@
 			curveHeight: 20,
 			fillType: "solid",
 			isInverted: false,
-			hoverEffects: false
+			hoverEffects: false,
+			dynamicArea: false
 		};
 
 	}  // End D3Funnel
@@ -71,6 +72,9 @@
 	 *                                      inverted to a pyramid.
 	 * @param {bool}   options.hoverEffects Whether or not the funnel hover
 	 *                                      effects should be shown.
+	 * @param {bool}   options.dynamicArea  Whether or not the area should be
+	 *                                      dynamically calculated based on
+	 *                                      data counts.
 	 */
 	D3Funnel.prototype.draw = function(data, options) {
 
@@ -235,6 +239,7 @@
 		this.fillType = settings.fillType;
 		this.isInverted = settings.isInverted;
 		this.hoverEffects = settings.hoverEffects;
+		this.dynamicArea = settings.dynamicArea;
 
 		// Calculate the bottom left x position
 		this.bottomLeftX = (this.width - this.bottomWidth) / 2;
@@ -313,7 +318,7 @@
 			count = parseFloat(count);
 
 			// Calculate dynamic shapes based on area
-			if (true) {
+			if (this.dynamicArea) {
 
 				var ratio = count / totalCount;
 				var area  = ratio * totalArea;
