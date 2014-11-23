@@ -319,16 +319,18 @@
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
-
 				var ratio = count / totalCount;
 				var area  = ratio * totalArea;
 
-				bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area))/slope);
+				bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area)) / slope);
 				dx = (topBase / 2) - (bottomBase / 2);
 				dy = (area * 2) / (topBase + bottomBase);
 
-				topBase = bottomBase;
+				if (this.isCurved) {
+					dy = dy - (this.curveHeight/this.data.length);
+				}  // End if
 
+				topBase = bottomBase;
 			}  // End if
 
 			// Stop velocity for pinched sections
