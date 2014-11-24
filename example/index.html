@@ -33,37 +33,23 @@
 		<script src="../d3-funnel.js?1"></script>
 
 		<script>
-			$( function ()
-			{
-				function drawChart ()
+			$(function() {
+				function drawChart()
 				{
-
 					var data = [
 						["Applicants",   "12,000"],
 						["Pre-screened", "4,000"],
 						["Interviewed",  "2,500"],
-						["Hired",        "1500"]
+						["Hired",        "1,500"]
 					];
 					var options = [
 						{},
-						{
-							isCurved: true
-						},
-						{
-							bottomPinch: 1
-						},
-						{
-							fillType: "gradient"
-						},
-						{
-							isInverted: true
-						},
-						{
-							hoverEffects: true
-						},
-						{
-							dynamicArea: true
-						},
+						{ isCurved: true },
+						{ bottomPinch: 1 },
+						{ fillType: "gradient" },
+						{ isInverted: true },
+						{ hoverEffects: true },
+						{ dynamicArea: true },
 						{
 							isCurved: true,
 							bottomPinch: 2,
@@ -92,14 +78,13 @@
 					} else {
 						chart.draw(data, options[index]);
 					}  // End if
-
 				}  // End drawChart
 
 				drawChart();
 				$("#picker").change(function() {
 					drawChart();
 				});
-			} );
+			});
 		</script>
 	</body>
 </html>
