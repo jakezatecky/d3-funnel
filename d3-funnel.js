@@ -429,12 +429,7 @@
 			// Create linear gradient
 			var gradient = defs.append("linearGradient")
 				.attr({
-					id: "gradient-" + i,
-					cx: "50%",
-					cy: "50%",
-					r:  "50%",
-					fx: "50%",
-					fy: "50%"
+					id: "gradient-" + i
 				});
 
 			// Define the gradient stops
