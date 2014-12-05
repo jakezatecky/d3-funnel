@@ -10,7 +10,6 @@
 	 * An object representing a D3-driven funnel chart.
 	 *
 	 * @param {string} selector A selector for element to contain the funnel.
-	 *
 	 */
 	function D3Funnel(selector) {
 
@@ -167,7 +166,6 @@
 				.style("font-size", "14px");
 
 		}  // End for
-
 
 	};  // End draw
 
