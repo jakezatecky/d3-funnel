@@ -24,8 +24,8 @@ Drawing the funnel is relatively easy:
 
 ``` javascript
 var data = [
-    ["Plants",     5,000],
-    ["Flowers",    2,500],
+    ["Plants",     5000],
+    ["Flowers",    2500],
     ["Perennials", 200],
     ["Roses",      50]
 ];
