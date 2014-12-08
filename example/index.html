@@ -17,6 +17,7 @@
 				<option value="inverted">Inverted</option>
 				<option value="hover">Hover Effects</option>
 				<option value="dynamic">Dynamic Area</option>
+				<option value="color">Custom Color</option>
 				<option value="works1">The Works 1</option>
 				<option value="works2">The Works 2</option>
 			</select>
@@ -31,12 +32,26 @@
 			$(function() {
 				function drawChart()
 				{
-					var data = [
-						["Applicants",   "12,000"],
-						["Pre-screened", "4,000"],
-						["Interviewed",  "2,500"],
-						["Hired",        "1,500"]
-					];
+					var index = $("#picker").val();
+
+					var data = [];
+
+					if (index !== "color") {
+						data = [
+							["Applicants",   "12,000"],
+							["Pre-screened", "4,000"],
+							["Interviewed",  "2,500"],
+							["Hired",        "1,500"]
+						];
+					} else {
+						data = [
+							["Teal",      "12,000", "#008080"],
+							["Byzantium", "4,000",  "#702963"],
+							["Persimmon", "2,500",  "#ff634d"],
+							["Azure",     "1,500",  "#007fff"]
+						];
+					}
+
 					var options = {
 						"basic": {},
 						"curved": {
@@ -57,6 +72,7 @@
 						"dynamic": {
 							dynamicArea: true
 						},
+						"color": {},
 						"works1": {
 							isCurved: true,
 							bottomPinch: 2,
@@ -73,7 +89,6 @@
 						}
 					};
 
-					var index = $("#picker").val();
 					var chart = new D3Funnel("#funnel");
 
 					// Reverse the dataset if the isInverted option is present
@@ -84,8 +99,8 @@
 					// Otherwise, just use the regular data
 					} else {
 						chart.draw(data, options[index]);
-					}  // End if
-				}  // End drawChart
+					}
+				}
 
 				drawChart();
 				$("#picker").change(function() {

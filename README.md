@@ -53,6 +53,17 @@ var options = {
 chart.draw(data, options);
 ```
 
+You can also specify overriding colors for any data point (hex only):
+
+``` javascript
+var data =[
+    ["Teal",      12000, "#008080"],
+    ["Byzantium", 4000,  "#702963"],
+    ["Persimmon", 2500,  "#ff634d"],
+    ["Azure",     1500,  "#007fff"]
+];
+```
+
 # License
 
 MIT license.
