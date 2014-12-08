@@ -15,15 +15,15 @@
 		<div class="container">
 			<p>Funnel examples</p>
 			<select id="picker">
-				<option value="0">Basic</option>
-				<option value="1">Curved</option>
-				<option value="2">Pinched</option>
-				<option value="3">Gradient</option>
-				<option value="4">Inverted</option>
-				<option value="5">Hover Effects</option>
-				<option value="6">Dynamic Area</option>
-				<option value="7">The Works 1</option>
-				<option value="8">The Works 2</option>
+				<option value="basic">Basic</option>
+				<option value="curved">Curved</option>
+				<option value="pinch">Pinched</option>
+				<option value="gradient">Gradient</option>
+				<option value="inverted">Inverted</option>
+				<option value="hover">Hover Effects</option>
+				<option value="dynamic">Dynamic Area</option>
+				<option value="works1">The Works 1</option>
+				<option value="works2">The Works 2</option>
 			</select>
 			<div id="funnel"></div>
 		</div>
@@ -42,29 +42,41 @@
 						["Interviewed",  "2,500"],
 						["Hired",        "1,500"]
 					];
-					var options = [
-						{},
-						{ isCurved: true },
-						{ bottomPinch: 1 },
-						{ fillType: "gradient" },
-						{ isInverted: true },
-						{ hoverEffects: true },
-						{ dynamicArea: true },
-						{
+					var options = {
+						"basic": {},
+						"curved": {
+							isCurved: true
+						},
+						"pinch": {
+							bottomPinch: 1
+						},
+						"gradient": {
+							fillType: "gradient"
+						},
+						"inverted": {
+							isInverted: true
+						},
+						"hover": {
+							hoverEffects: true
+						},
+						"dynamic": {
+							dynamicArea: true
+						},
+						"works1": {
 							isCurved: true,
 							bottomPinch: 2,
 							fillType: "gradient",
 							hoverEffects: true,
 							dynamicArea: true
 						},
-						{
+						"works2": {
 							isCurved: true,
 							bottomPinch: 1,
 							fillType: "gradient",
 							isInverted: true,
 							hoverEffects: true
 						}
-					];
+					};
 
 					var index = $("#picker").val();
 					var chart = new D3Funnel("#funnel");
