@@ -185,16 +185,17 @@
 			};
 		}  // End if
 
-		this.data = data;
 		// Initialize options if not set
 		options = typeof options !== "undefined" ? options : {};
+
+		this.data = data;
 
 		// Counter
 		var i = 0;
 
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
-		var settings = $.extend({}, this.defaults);
+		var settings = $.extend(true, this.defaults);
 		settings.width  = $(this.selector).width();
 		settings.height = $(this.selector).height();
 
