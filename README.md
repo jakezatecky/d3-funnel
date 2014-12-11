@@ -7,7 +7,7 @@ options.
 
 # Examples
 
-An example showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/master/example/index.html).
+An example page showing some of the possible options can be found [here](https://cdn.rawgit.com/jakezatecky/d3-funnel/master/example/index.html).
 
 # Usage
 
@@ -20,7 +20,17 @@ To use this library, you must include include jQuery and D3 in addition to the
 <script src="d3-funnel.js"></script>
 ```
 
-Drawing the funnel is relatively easy:
+## Basic
+
+Drawing the funnel is relatively easy.
+
+### HTML
+
+``` html
+<div id="funnel"></div>
+```
+
+### JavaScript
 
 ``` javascript
 var data = [
@@ -34,7 +44,10 @@ var chart = new D3Funnel("#funnel");
 chart.draw(data);
 ```
 
-More advanced options also exist:
+## Advanced
+
+The following options may also be specified through the second parameter to
+`D3Funnel.draw`:
 
 ``` javascript
 var options = {
@@ -56,7 +69,7 @@ chart.draw(data, options);
 You can also specify overriding colors for any data point (hex only):
 
 ``` javascript
-var data =[
+var data = [
     ["Teal",      12000, "#008080"],
     ["Byzantium", 4000,  "#702963"],
     ["Persimmon", 2500,  "#ff634d"],
