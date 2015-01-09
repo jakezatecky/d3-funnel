@@ -147,7 +147,7 @@
 			}  // End if
 
 			// Add the section label
-			var textStr = this.data[i][0] + ": " + this.data[i][1];
+			var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
 			var textX   = this.width / 2;   // Center the text
 			var textY   = !this.isCurved ?  // Average height of bases
 				(paths[1][1] + paths[2][1]) / 2 :
@@ -303,18 +303,15 @@
 		var count = 0;
 
 		// Harvest total count
-		// Remove any commas that could interfere with the parser
 		for (var i = 0; i < this.data.length; i++) {
-			count = this.data[i][1].replace(/\,/g, "");
-			totalCount += parseFloat(count);
-		}  // End for
+			totalCount += this.data[i][1];
+		}
 
 		// Create the path definition for each funnel section
 		// Remember to loop back to the beginning point for a closed path
 		for (i = 0; i < this.data.length; i++) {
 
-			count = this.data[i][1].replace(/\,/g, "");
-			count = parseFloat(count);
+			count = this.data[i][1];
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
