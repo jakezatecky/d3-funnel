@@ -1,6 +1,6 @@
 (function(global) {
 
-	/* global d3, $ */
+	/* global d3 */
 	/* jshint bitwise: false */
 	"use strict";
 
@@ -43,6 +43,26 @@
 		return Object.prototype.toString.call(value) === "[object Array]";
 
 	};  // End _isArray
+
+	/**
+	 * Extends an object with the members of another.
+	 *
+	 * @param {Object} a The object to be extended.
+	 * @param {Object} b The object to clone from.
+	 *
+	 * @return {Object}
+	 */
+	D3Funnel.prototype._extend = function(a, b) {
+
+		var prop;
+		for (prop in b) {
+			if (b.hasOwnProperty(prop)) {
+				a[prop] = b[prop];
+			}
+		}
+		return a;
+
+	};  // End _extend
 
 	/**
 	 * Draw onto the container with the data and configuration specified. This
@@ -195,9 +215,9 @@
 
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
-		var settings = $.extend(true, this.defaults);
-		settings.width  = $(this.selector).width();
-		settings.height = $(this.selector).height();
+		var settings = this._extend({}, this.defaults);
+		settings.width  = parseInt(d3.select(this.selector).style("width"), 10);
+		settings.height = parseInt(d3.select(this.selector).style("height"), 10);
 
 		// Overwrite default settings with user options
 		var keys = Object.keys(options);

@@ -9,11 +9,10 @@ to get a showcasing of the several possible options.
 
 # Usage
 
-To use this library, you must include include [jQuery][jquery] and [D3.js][d3]
-in addition to the D3Funnel source file.
+To use this library, you must include include [D3.js][d3] and the D3Funnel
+source file.
 
 ``` html
-<script src="jquery-1.11.1.min.js"></script>
 <script src="d3.min.js"></script>
 <script src="d3-funnel.js"></script>
 ```
@@ -81,4 +80,3 @@ MIT license.
 
 [d3]: http://d3js.org/
 [examples]: https://cdn.rawgit.com/jakezatecky/d3-funnel/master/examples/index.html
-[jquery]: http://jquery.com
