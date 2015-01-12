@@ -1,16 +1,16 @@
 # D3 Funnel
 
-**D3Funnel** is an extensible, open-source JavaScript library for rendering funnel
-charts using the [D3.js][d3] library.
+**D3Funnel** is an extensible, open-source JavaScript library for rendering
+funnel charts using the [D3.js][d3] library.
 
-D3Funnel is focused on providing practical and visually appealing funnels through a
-variety of customization options. Check out the [examples page][examples] to get a
-showcasing of the several possible options.
+D3Funnel is focused on providing practical and visually appealing funnels
+through a variety of customization options. Check out the [examples page][examples]
+to get a showcasing of the several possible options.
 
 # Usage
 
-To use this library, you must include include [jQuery][jquery] and [D3.js][d3] in
-addition to the D3Funnel source file.
+To use this library, you must include include [jQuery][jquery] and [D3.js][d3]
+in addition to the D3Funnel source file.
 
 ``` html
 <script src="jquery-1.11.1.min.js"></script>
