@@ -4,7 +4,7 @@
 charts using the [D3.js][d3] library.
 
 D3Funnel is focused on providing practical and visually appealing funnels through a
-variety of customization options. Check out the [example page][example] to get a
+variety of customization options. Check out the [examples page][examples] to get a
 showcasing of the several possible options.
 
 # Usage
@@ -80,5 +80,5 @@ var data = [
 MIT license.
 
 [d3]: http://d3js.org/
-[example]: https://cdn.rawgit.com/jakezatecky/d3-funnel/master/example/index.html
+[examples]: https://cdn.rawgit.com/jakezatecky/d3-funnel/master/examples/index.html
 [jquery]: http://jquery.com
