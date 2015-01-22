@@ -25,7 +25,10 @@
 			fillType: "solid",
 			isInverted: false,
 			hoverEffects: false,
-			dynamicArea: false
+			dynamicArea: false,
+			label: {
+				fontSize: "14px"
+			}
 		};
 	}
 
@@ -88,6 +91,8 @@
 	 * @param {bool}   options.dynamicArea  Whether or not the area should be
 	 *                                      dynamically calculated based on
 	 *                                      data counts.
+	 * @param {Object} options.label
+	 * @param {Object} options.label.fontSize
 	 */
 	D3Funnel.prototype.draw = function(data, options) {
 		// Initialize chart options
@@ -175,7 +180,7 @@
 					"fill": "#fff",
 					"pointer-events": "none"
 				})
-				.style("font-size", "14px");
+				.style("font-size", this.label.fontSize);
 		}
 	};
 
@@ -211,8 +216,18 @@
 		// Overwrite default settings with user options
 		var keys = Object.keys(options);
 		for (i = 0; i < keys.length; i++) {
-			settings[keys[i]] = options[keys[i]];
+			if (keys[i] !== "label") {
+				settings[keys[i]] = options[keys[i]];
+			}
 		}
+
+		// Label settings
+		if ("label" in options) {
+			if ("fontSize" in options.label) {
+				settings.label.fontSize = options.label.fontSize;
+			}
+		}
+		this.label = settings.label;
 
 		// In the case that the width or height is not valid, set
 		// the width/height as its default hard-coded value
