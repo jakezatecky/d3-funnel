@@ -12,7 +12,6 @@
 	 * @param {string} selector A selector for element to contain the funnel.
 	 */
 	function D3Funnel(selector) {
-
 		this.selector = selector;
 
 		// Default configuration values
@@ -28,8 +27,7 @@
 			hoverEffects: false,
 			dynamicArea: false
 		};
-
-	}  // End D3Funnel
+	}
 
 	/**
 	 * Check if the supplied value is an array.
@@ -39,10 +37,8 @@
 	 * @return {bool}
 	 */
 	D3Funnel.prototype._isArray = function(value) {
-
 		return Object.prototype.toString.call(value) === "[object Array]";
-
-	};  // End _isArray
+	};
 
 	/**
 	 * Extends an object with the members of another.
@@ -53,7 +49,6 @@
 	 * @return {Object}
 	 */
 	D3Funnel.prototype._extend = function(a, b) {
-
 		var prop;
 		for (prop in b) {
 			if (b.hasOwnProperty(prop)) {
@@ -61,8 +56,7 @@
 			}
 		}
 		return a;
-
-	};  // End _extend
+	};
 
 	/**
 	 * Draw onto the container with the data and configuration specified. This
@@ -96,7 +90,6 @@
 	 *                                      data counts.
 	 */
 	D3Funnel.prototype.draw = function(data, options) {
-
 		// Initialize chart options
 		this._initialize(data, options);
 
@@ -117,16 +110,15 @@
 		// Define color gradients
 		if (this.fillType === "gradient") {
 			this._defineColorGradients(svg);
-		}  // End if
+		}
 
 		// Add top oval if curved
 		if (this.isCurved) {
 			this._drawTopOval(svg, sectionPaths);
-		}  // End if
+		}
 
 		// Add each block section
 		for (var i = 0; i < sectionPaths.length; i++) {
-
 			// Set the background color
 			var fill = this.fillType !== "gradient" ?
 				this.data[i][2] :
@@ -149,7 +141,7 @@
 			for (var j = 0; j < paths.length; j++) {
 				path = paths[j];
 				pathStr += path[2] + path[0] + "," + path[1] + " ";
-			}  // End for
+			}
 
 			// Create a group just for this block
 			group = svg.append("g");
@@ -164,7 +156,7 @@
 			if (this.hoverEffects) {
 				path.on("mouseover", this._onMouseOver)
 					.on("mouseout", this._onMouseOut);
-			}  // End if
+			}
 
 			// Add the section label
 			var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
@@ -184,10 +176,8 @@
 					"pointer-events": "none"
 				})
 				.style("font-size", "14px");
-
-		}  // End for
-
-	};  // End draw
+		}
+	};
 
 	/**
 	 * Initialize and calculate important variables for drawing the chart.
@@ -196,14 +186,13 @@
 	 * @param {Object} options
 	 */
 	D3Funnel.prototype._initialize = function(data, options) {
-
 		if (!this._isArray(data) || data.length === 0 ||
 			!this._isArray(data[0]) || data[0].length < 2) {
 			throw {
 				name: "D3 Funnel Data Error",
 				message: "Funnel data is not valid."
 			};
-		}  // End if
+		}
 
 		// Initialize options if not set
 		options = typeof options !== "undefined" ? options : {};
@@ -223,30 +212,28 @@
 		var keys = Object.keys(options);
 		for (i = 0; i < keys.length; i++) {
 			settings[keys[i]] = options[keys[i]];
-		}  // End for
+		}
 
 		// In the case that the width or height is not valid, set
 		// the width/height as its default hard-coded value
 		if (settings.width <= 0) {
 			settings.width = this.defaults.width;
-		}  // End if
+		}
 		if (settings.height <= 0) {
 			settings.height = this.defaults.height;
-		}  // End if
+		}
 
 		// Initialize the colors for each block section
 		var colorScale = d3.scale.category10();
 		for (i = 0; i < this.data.length; i++) {
-
 			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 			// If a color is not set for the record, add one
 			if (typeof this.data[i][2] === "undefined" ||
 				!hexExpression.test(this.data[i][2])) {
 				this.data[i][2] = colorScale(i);
-			}  // End if
-
-		}  // End for
+			}
+		}
 
 		// Initialize funnel chart settings
 		this.width = settings.width;
@@ -273,8 +260,7 @@
 		this.dy = this.isCurved ?
 			(this.height - this.curveHeight) / data.length :
 			this.height / data.length;
-
-	};  // End _initialize
+	};
 
 	/**
 	 * Create the paths to be used to define the discrete funnel sections and
@@ -283,7 +269,6 @@
 	 * @return {array}
 	 */
 	D3Funnel.prototype._makePaths = function() {
-
 		var paths = [];
 
 		// Initialize velocity
@@ -299,7 +284,7 @@
 		if (this.isInverted) {
 			prevLeftX = this.bottomLeftX;
 			prevRightX = this.width - this.bottomLeftX;
-		}  // End if
+		}
 
 		// Initialize next positions
 		var nextLeftX = 0;
@@ -311,7 +296,7 @@
 		// Move down if there is an initial curve
 		if (this.isCurved) {
 			prevHeight = 10;
-		}  // End if
+		}
 
 		var topBase = this.width;
 		var bottomBase = 0;
@@ -330,7 +315,6 @@
 		// Create the path definition for each funnel section
 		// Remember to loop back to the beginning point for a closed path
 		for (i = 0; i < this.data.length; i++) {
-
 			count = this.data[i][1];
 
 			// Calculate dynamic shapes based on area
@@ -344,10 +328,10 @@
 
 				if (this.isCurved) {
 					dy = dy - (this.curveHeight/this.data.length);
-				}  // End if
+				}
 
 				topBase = bottomBase;
-			}  // End if
+			}
 
 			// Stop velocity for pinched sections
 			if (this.bottomPinch > 0) {
@@ -357,7 +341,7 @@
 				if (!this.isInverted) {
 					if (i >= this.data.length - this.bottomPinch) {
 						dx = 0;
-					}  // End if
+					}
 				}
 				// Pinch at the first sections relating to the bottom pinch
 				// Revert back to normal velocity after pinch
@@ -367,12 +351,11 @@
 					// and bottomPinch are non trivial and dynamicArea is false)
 					if (!this.dynamicArea) {
 						dx = this.dx;
-					}  // End if
+					}
 
 					dx = i < this.bottomPinch ? 0 : dx;
-				}  // End if
-
-			}  // End if
+				}
+			}
 
 			// Calculate the position of next section
 			nextLeftX = prevLeftX + dx;
@@ -383,7 +366,7 @@
 			if (this.isInverted) {
 				nextLeftX = prevLeftX - dx;
 				nextRightX = prevRightX + dx;
-			}  // End if
+			}
 
 			// Plot curved lines
 			if (this.isCurved) {
@@ -416,18 +399,16 @@
 					// Wrap back to top
 					[prevLeftX, prevHeight, "L"],
 				]);
-			} // End if
+			}
 
 			// Set the next section's previous position
 			prevLeftX = nextLeftX;
 			prevRightX = nextRightX;
 			prevHeight = nextHeight;
-
-		}  // End for
+		}
 
 		return paths;
-
-	};  // End _makePaths
+	};
 
 	/**
 	 * Define the linear color gradients.
@@ -435,12 +416,10 @@
 	 * @param {Object} svg
 	 */
 	D3Funnel.prototype._defineColorGradients = function(svg) {
-
 		var defs = svg.append("defs");
 
 		// Create a gradient for each section
 		for (var i = 0; i < this.data.length; i++) {
-
 			var color = this.data[i][2];
 			var shade = shadeColor(color, -0.25);
 
@@ -465,11 +444,9 @@
 					offset: stop[0] + "%",
 					style:  "stop-color:" + stop[1]
 				});
-			}  // End for
-
-		}  // End for
-
-	};  // End _defineColorGradients
+			}
+		}
+	};
 
 	/**
 	 * Draw the top oval of a curved funnel.
@@ -478,7 +455,6 @@
 	 * @param {array}  sectionPaths
 	 */
 	D3Funnel.prototype._drawTopOval = function(svg, sectionPaths) {
-
 		var leftX = 0;
 		var rightX = this.width;
 		var centerX = this.width / 2;
@@ -486,7 +462,7 @@
 		if (this.isInverted) {
 			leftX = this.bottomLeftX;
 			rightX = this.width - this.bottomLeftX;
-		}  // End if
+		}
 
 		// Create path form top-most section
 		var paths = sectionPaths[0];
@@ -501,26 +477,21 @@
 		svg.append("path")
 			.attr("fill", shadeColor(this.data[0][2], -0.4))
 			.attr("d", path);
-
-	};  // End _drawTopOval
+	};
 
 	/**
 	 * @param {Object} data
 	 */
 	D3Funnel.prototype._onMouseOver = function(data) {
-
 		d3.select(this).attr("fill", shadeColor(data.baseColor, -0.2));
-
-	};  // End _onMouseOver
+	};
 
 	/**
 	 * @param {Object} data
 	 */
 	D3Funnel.prototype._onMouseOut = function(data) {
-
 		d3.select(this).attr("fill", data.fill);
-
-	};  // End _onMouseOut
+	};
 
 	/**
 	 * Shade a color to the given percentage.
@@ -529,7 +500,6 @@
  	 * @param {float}  shade The shade adjustment. Can be positive or negative.
 	 */
 	function shadeColor(color, shade) {
-
 		var f = parseInt(color.slice(1), 16);
 		var t = shade < 0 ? 0 : 255;
 		var p = shade < 0 ? shade * -1 : shade;
@@ -541,8 +511,7 @@
 			0x100 + (Math.round((t - B) * p) + B));
 
 		return "#" + converted.toString(16).slice(1);
-
-	}  // End shadeColor
+	}
 
 	global.D3Funnel = D3Funnel;
 
