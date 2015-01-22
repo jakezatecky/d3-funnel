@@ -10,16 +10,16 @@
 		<div class="container">
 			<p>Funnel examples</p>
 			<select id="picker">
-				<option value="basic">Basic</option>
+				<option value="basic">No options</option>
 				<option value="curved">Curved</option>
 				<option value="pinch">Pinched</option>
 				<option value="gradient">Gradient</option>
 				<option value="inverted">Inverted</option>
-				<option value="hover">Hover Effects</option>
-				<option value="dynamic">Dynamic Area</option>
-				<option value="color">Custom Color</option>
-				<option value="works1">The Works 1</option>
-				<option value="works2">The Works 2</option>
+				<option value="hover">Hover effects</option>
+				<option value="dynamic">Dynamic area</option>
+				<option value="label">Styling labels</option>
+				<option value="color">Custom colors</option>
+				<option value="works">The Works</option>
 			</select>
 			<div id="funnel"></div>
 		</div>
@@ -72,20 +72,18 @@
 						"dynamic": {
 							dynamicArea: true
 						},
+						"label": {
+							label: {
+								fontSize: "16px"
+							}
+						},
 						"color": {},
-						"works1": {
+						"works": {
 							isCurved: true,
 							bottomPinch: 2,
 							fillType: "gradient",
 							hoverEffects: true,
 							dynamicArea: true
-						},
-						"works2": {
-							isCurved: true,
-							bottomPinch: 1,
-							fillType: "gradient",
-							isInverted: true,
-							hoverEffects: true
 						}
 					};
 
