@@ -1,0 +1,17 @@
+{
+  "name": "d3-funnel",
+  "version": "0.6.2",
+  "description": "A library for rendering SVG funnel charts using D3.js",
+  "author": "Jake Zatecky",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jakezatecky/d3-funnel"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-contrib-uglify": "~0.5.0"
+  }
+}
