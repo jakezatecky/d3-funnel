@@ -1,6 +1,6 @@
 {
   "name": "d3-funnel",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "A library for rendering SVG funnel charts using D3.js",
   "author": "Jake Zatecky",
   "license": "MIT",
