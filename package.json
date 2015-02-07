@@ -8,6 +8,8 @@
     "type": "git",
     "url": "https://github.com/jakezatecky/d3-funnel"
   },
+  "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
+  "main": "src/d3-funnel/d3-funnel.js",
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "~0.10.0",
