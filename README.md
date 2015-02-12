@@ -82,4 +82,4 @@ var data = [
 MIT license.
 
 [d3]: http://d3js.org/
-[examples]: https://cdn.rawgit.com/jakezatecky/d3-funnel/master/examples/index.html
+[examples]: http://jakezatecky.github.io/d3-funnel/

@@ -101,9 +101,7 @@
 				}
 
 				drawChart();
-				$("#picker").change(function() {
-					drawChart();
-				});
+				$("#picker").change(drawChart);
 			});
 		</script>
 	</body>
