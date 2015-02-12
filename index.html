@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>D3-funnel by jakezatecky</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>D3-funnel</h1>
+        <h2>A JavaScript library for rendering SVG funnel charts using the D3.js framework.</h2>
+        <a href="https://github.com/jakezatecky/d3-funnel" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="d3-funnel" class="anchor" href="#d3-funnel" aria-hidden="true"><span class="octicon octicon-link"></span></a>D3 Funnel</h1>
+
+<p><strong>D3Funnel</strong> is an extensible, open-source JavaScript library for rendering
+funnel charts using the <a href="http://d3js.org/">D3.js</a> library.</p>
+
+<p>D3Funnel is focused on providing practical and visually appealing funnels
+through a variety of customization options. Check out the <a href="https://cdn.rawgit.com/jakezatecky/d3-funnel/master/examples/index.html">examples page</a>
+to get a showcasing of the several possible options.</p>
+
+<h1>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
+
+<p>To use this library, you must include include <a href="http://d3js.org/">D3.js</a> and the D3Funnel
+source file:</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>d3.min.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>d3-funnel.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+<h2>
+<a id="basic" class="anchor" href="#basic" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic</h2>
+
+<p>Drawing the funnel is relatively easy:</p>
+
+<h3>
+<a id="html" class="anchor" href="#html" aria-hidden="true"><span class="octicon octicon-link"></span></a>HTML</h3>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s1"><span class="pl-pds">"</span>funnel<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<h3>
+<a id="javascript" class="anchor" href="#javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>JavaScript</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> data <span class="pl-k">=</span> [
+    [<span class="pl-s1"><span class="pl-pds">"</span>Plants<span class="pl-pds">"</span></span>,     <span class="pl-c1">5000</span>],
+    [<span class="pl-s1"><span class="pl-pds">"</span>Flowers<span class="pl-pds">"</span></span>,    <span class="pl-c1">2500</span>],
+    [<span class="pl-s1"><span class="pl-pds">"</span>Perennials<span class="pl-pds">"</span></span>, <span class="pl-c1">200</span>],
+    [<span class="pl-s1"><span class="pl-pds">"</span>Roses<span class="pl-pds">"</span></span>,      <span class="pl-c1">50</span>]
+];
+
+<span class="pl-s">var</span> chart <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">D3Funnel</span>(<span class="pl-s1"><span class="pl-pds">"</span>#funnel<span class="pl-pds">"</span></span>);
+chart.draw(data);</pre></div>
+
+<h2>
+<a id="advanced" class="anchor" href="#advanced" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advanced</h2>
+
+<p>The following options may also be specified through the second parameter to
+<code>D3Funnel.draw</code>:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> options <span class="pl-k">=</span> {
+    width<span class="pl-k">:</span> <span class="pl-c1">350</span>,           <span class="pl-c">// In pixels; defaults to container's width (if non-zero)</span>
+    height<span class="pl-k">:</span> <span class="pl-c1">400</span>,          <span class="pl-c">// In pixels; defaults to container's height (if non-zero)</span>
+    bottomWidth<span class="pl-k">:</span> <span class="pl-c1">1</span>/<span class="pl-c1">3</span>,     <span class="pl-c">// The percent of total width the bottom should be</span>
+    bottomPinch<span class="pl-k">:</span> <span class="pl-c1">0</span>,       <span class="pl-c">// How many sections to pinch</span>
+    isCurved<span class="pl-k">:</span> <span class="pl-c1">false</span>,      <span class="pl-c">// Whether the funnel is curved</span>
+    curveHeight<span class="pl-k">:</span> <span class="pl-c1">20</span>,      <span class="pl-c">// The curvature amount</span>
+    fillType<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>solid<span class="pl-pds">"</span></span>,    <span class="pl-c">// Either "solid" or "gradient"</span>
+    isInverted<span class="pl-k">:</span> <span class="pl-c1">false</span>,    <span class="pl-c">// Whether the funnel is inverted</span>
+    hoverEffects<span class="pl-k">:</span> <span class="pl-c1">false</span>,  <span class="pl-c">// Whether the funnel has effects on hover</span>
+    dynamicArea<span class="pl-k">:</span> <span class="pl-c1">false</span> ,  <span class="pl-c">// Whether the funnel should calculate the blocks by</span>
+                          <span class="pl-c">// the count values rather than equal heights</span>
+    label<span class="pl-k">:</span> {
+        fontSize<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>14px<span class="pl-pds">"</span></span>  <span class="pl-c">// Any valid font size</span>
+    }
+};
+chart.draw(data, options);</pre></div>
+
+<p>You can also specify overriding colors for any data point (hex only):</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> data <span class="pl-k">=</span> [
+    [<span class="pl-s1"><span class="pl-pds">"</span>Teal<span class="pl-pds">"</span></span>,      <span class="pl-c1">12000</span>, <span class="pl-s1"><span class="pl-pds">"</span>#008080<span class="pl-pds">"</span></span>],
+    [<span class="pl-s1"><span class="pl-pds">"</span>Byzantium<span class="pl-pds">"</span></span>, <span class="pl-c1">4000</span>,  <span class="pl-s1"><span class="pl-pds">"</span>#702963<span class="pl-pds">"</span></span>],
+    [<span class="pl-s1"><span class="pl-pds">"</span>Persimmon<span class="pl-pds">"</span></span>, <span class="pl-c1">2500</span>,  <span class="pl-s1"><span class="pl-pds">"</span>#ff634d<span class="pl-pds">"</span></span>],
+    [<span class="pl-s1"><span class="pl-pds">"</span>Azure<span class="pl-pds">"</span></span>,     <span class="pl-c1">1500</span>,  <span class="pl-s1"><span class="pl-pds">"</span>#007fff<span class="pl-pds">"</span></span>]
+];</pre></div>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>MIT license.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/jakezatecky/d3-funnel/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/jakezatecky/d3-funnel/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/jakezatecky/d3-funnel"></a> is maintained by <a href="https://github.com/jakezatecky">jakezatecky</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
