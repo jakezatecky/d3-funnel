@@ -10,7 +10,7 @@ to get a showcasing of the several possible options.
 # Usage
 
 To use this library, you must include include [D3.js][d3] and the D3Funnel
-source file.
+source file:
 
 ``` html
 <script src="d3.min.js"></script>
@@ -19,7 +19,7 @@ source file.
 
 ## Basic
 
-Drawing the funnel is relatively easy.
+Drawing the funnel is relatively easy:
 
 ### HTML
 
@@ -83,4 +83,4 @@ var data = [
 MIT license.
 
 [d3]: http://d3js.org/
-[examples]: https://cdn.rawgit.com/jakezatecky/d3-funnel/master/examples/index.html
+[examples]: http://jakezatecky.github.io/d3-funnel/

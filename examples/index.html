@@ -27,7 +27,7 @@
 
 		<script src="vendor/d3.min.js"></script>
 		<script src="vendor/jquery-1.11.1.min.js"></script>
-		<script src="../d3-funnel.js?1"></script>
+		<script src="../src/d3-funnel/d3-funnel.js?1"></script>
 
 		<script>
 			$(function() {
@@ -106,9 +106,7 @@
 				}
 
 				drawChart();
-				$("#picker").change(function() {
-					drawChart();
-				});
+				$("#picker").change(drawChart);
 			});
 		</script>
 	</body>
