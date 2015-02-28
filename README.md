@@ -59,6 +59,7 @@ var options = {
     hoverEffects: false,  // Whether the funnel has effects on hover
     dynamicArea: false ,  // Whether the funnel should calculate the blocks by
                           // the count values rather than equal heights
+    animation: false,     // Whether there should be a load animation
     label: {
         fontSize: "14px"  // Any valid font size
     }

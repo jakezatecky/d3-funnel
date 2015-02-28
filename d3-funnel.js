@@ -11,7 +11,8 @@
 	 *
 	 * @param {string} selector A selector for element to contain the funnel.
 	 */
-	function D3Funnel(selector) {
+	function D3Funnel(selector)
+	{
 		this.selector = selector;
 
 		// Default configuration values
@@ -26,6 +27,7 @@
 			isInverted: false,
 			hoverEffects: false,
 			dynamicArea: false,
+			animation: false,
 			label: {
 				fontSize: "14px"
 			}
@@ -39,7 +41,8 @@
 	 *
 	 * @return {bool}
 	 */
-	D3Funnel.prototype._isArray = function(value) {
+	D3Funnel.prototype.__isArray = function(value)
+	{
 		return Object.prototype.toString.call(value) === "[object Array]";
 	};
 
@@ -51,7 +54,8 @@
 	 *
 	 * @return {Object}
 	 */
-	D3Funnel.prototype._extend = function(a, b) {
+	D3Funnel.prototype.__extend = function(a, b)
+	{
 		var prop;
 		for (prop in b) {
 			if (b.hasOwnProperty(prop)) {
@@ -91,97 +95,223 @@
 	 * @param {bool}   options.dynamicArea  Whether or not the area should be
 	 *                                      dynamically calculated based on
 	 *                                      data counts.
+	 * @param {bool}   options.animation    Whether or not there should be a
+	 *                                      load animation.
 	 * @param {Object} options.label
 	 * @param {Object} options.label.fontSize
 	 */
-	D3Funnel.prototype.draw = function(data, options) {
+	D3Funnel.prototype.draw = function(data, options)
+	{
 		// Initialize chart options
-		this._initialize(data, options);
+		this.__initialize(data, options);
 
 		// Remove any previous drawings
 		d3.select(this.selector).selectAll("svg").remove();
 
 		// Add the SVG and group element
-		var svg = d3.select(this.selector)
+		this.svg = d3.select(this.selector)
 			.append("svg")
 			.attr("width", this.width)
 			.attr("height", this.height)
 			.append("g");
-		var group = {};
-		var path  = {};
 
-		var sectionPaths = this._makePaths();
+		this.sectionPaths = this.__makePaths();
 
 		// Define color gradients
 		if (this.fillType === "gradient") {
-			this._defineColorGradients(svg);
+			this.__defineColorGradients(this.svg);
 		}
 
 		// Add top oval if curved
 		if (this.isCurved) {
-			this._drawTopOval(svg, sectionPaths);
+			this.__drawTopOval(this.svg, this.sectionPaths);
 		}
 
 		// Add each block section
-		for (var i = 0; i < sectionPaths.length; i++) {
-			// Set the background color
-			var fill = this.fillType !== "gradient" ?
-				this.data[i][2] :
-				"url(#gradient-" + i + ")";
+		this.__drawSection(0);
+	};
 
-			// Prepare data to assign to the section
-			data = {
-				index: i,
-				label: this.data[i][0],
-				value: this.data[i][1],
-				baseColor: this.data[i][2],
-				fill: fill
-			};
-
-			// Construct path string
-			var paths = sectionPaths[i];
-			var pathStr = "";
-
-			// Iterate through each point
-			for (var j = 0; j < paths.length; j++) {
-				path = paths[j];
-				pathStr += path[2] + path[0] + "," + path[1] + " ";
-			}
-
-			// Create a group just for this block
-			group = svg.append("g");
-
-			// Draw the sections's path and append the data
-			path = group.append("path")
-				.attr("fill", fill)
-				.attr("d", pathStr)
-				.data([data]);
-
-			// Add the hover events
-			if (this.hoverEffects) {
-				path.on("mouseover", this._onMouseOver)
-					.on("mouseout", this._onMouseOut);
-			}
-
-			// Add the section label
-			var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
-			var textX   = this.width / 2;   // Center the text
-			var textY   = !this.isCurved ?  // Average height of bases
-				(paths[1][1] + paths[2][1]) / 2 :
-				(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
-
-			group.append("text")
-				.text(textStr)
-				.attr({
-					"x": textX,
-					"y": textY,
-					"text-anchor": "middle",
-					"dominant-baseline": "middle",
-					"fill": "#fff",
-					"pointer-events": "none"
-				})
-				.style("font-size", this.label.fontSize);
+	/**
+	 * Draw the next section in the iteration.
+	 *
+	 * @param {int} index
+	 */
+	D3Funnel.prototype.__drawSection = function(index)
+	{
+		if (index === this.data.length) {
+			return;
 		}
+
+		// Create a group just for this block
+		var group = this.svg.append("g");
+
+		// Fetch path element
+		var path = this.__getSectionPath(group, index);
+		path.data(this.__getSectionData(index));
+
+		// Add animation components
+		if (this.animation !== false) {
+			var self = this;
+			path.transition()
+				.duration(200)
+				.ease("linear")
+				.attr("fill", this.__getColor(index))
+				.attr("d", this.__getPathDefinition(index))
+				.each("end", function() {
+					self.__drawSection(index + 1);
+				});
+		} else {
+			path.attr("fill", this.__getColor(index))
+				.attr("d", this.__getPathDefinition(index));
+			this.__drawSection(index + 1);
+		}
+
+		console.log(":(");
+
+
+		// Add the hover events
+		if (this.hoverEffects) {
+			path.on("mouseover", this.__onMouseOver)
+				.on("mouseout", this.__onMouseOut);
+		}
+
+		this.__addSectionLabel(group, index);
+	};
+
+	/**
+	 * Return the color for the given index.
+	 *
+	 * @param {int} index
+	 */
+	D3Funnel.prototype.__getColor = function(index)
+	{
+		if (this.fillType === "solid") {
+			return this.data[index][2];
+		} else {
+			return "url(#gradient-" + index + ")";
+		}
+	};
+
+	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 *
+	 * @return {Object}
+	 */
+	D3Funnel.prototype.__getSectionPath = function(group, index)
+	{
+		var path = group.append("path");
+
+		if (this.animation !== false) {
+			this.__addBeforeTransition(path, index);
+		}
+
+		return path;
+	};
+
+	/**
+	 * Set the attributes of a path element before its animation.
+	 *
+	 * @param {Object} path
+	 * @param {int}    index
+	 */
+	D3Funnel.prototype.__addBeforeTransition = function(path, index)
+	{
+		var paths = this.sectionPaths[index];
+
+		var beforePath = "";
+		var beforeFill = "";
+
+		// Construct the top of the trapezoid and leave the other elements
+		// hovering around to expand downward on animation
+		if (!this.isCurved) {
+			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
+				" L" + paths[1][0] + "," + paths[1][1] +
+				" L" + paths[1][0] + "," + paths[1][1] +
+				" L" + paths[0][0] + "," + paths[0][1];
+		} else {
+			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
+				" Q" + paths[1][0] + "," + paths[1][1] +
+				" " + paths[2][0] + "," + paths[2][1] +
+				" L" + paths[2][0] + "," + paths[2][1] +
+				" M" + paths[2][0] + "," + paths[2][1] +
+				" Q" + paths[1][0] + "," + paths[1][1] +
+				" " + paths[0][0] + "," + paths[0][1];
+		}
+
+		// Use previous fill color, if available
+		if (this.fillType === "solid") {
+			beforeFill = index > 0 ? this.__getColor(index - 1) : this.__getColor(index);
+		// Use current background if gradient (gradients do not transition)
+		} else {
+			beforeFill = this.__getColor(index);
+		}
+
+		path.attr("d", beforePath)
+			.attr("fill", beforeFill);
+	};
+
+	/**
+	 * @param {int} index
+	 *
+	 * @return {array}
+	 */
+	D3Funnel.prototype.__getSectionData = function(index)
+	{
+		return [{
+			index: index,
+			label: this.data[index][0],
+			value: this.data[index][1],
+			baseColor: this.data[index][2],
+			fill: this.__getColor(index)
+		}];
+	};
+
+	/**
+	 * @param {int} index
+	 *
+	 * @return {string}
+	 */
+	D3Funnel.prototype.__getPathDefinition = function(index)
+	{
+		var pathStr = "";
+		var point = [];
+		var paths = this.sectionPaths[index];
+
+		for (var j = 0; j < paths.length; j++) {
+			point = paths[j];
+			pathStr += point[2] + point[0] + "," + point[1] + " ";
+		}
+
+		return pathStr;
+	};
+
+	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 */
+	D3Funnel.prototype.__addSectionLabel = function(group, index)
+	{
+		var i = index;
+		var paths = this.sectionPaths[index];
+		var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
+
+		var textX = this.width / 2;   // Center the text
+		var textY = !this.isCurved ?  // Average height of bases
+			(paths[1][1] + paths[2][1]) / 2 :
+			(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+
+		group.append("text")
+			.text(textStr)
+			.attr({
+				"x": textX,
+				"y": textY,
+				"text-anchor": "middle",
+				"dominant-baseline": "middle",
+				"fill": "#fff",
+				"pointer-events": "none"
+			})
+			.style("font-size", this.label.fontSize);
 	};
 
 	/**
@@ -190,9 +320,10 @@
 	 * @param {array}  data
 	 * @param {Object} options
 	 */
-	D3Funnel.prototype._initialize = function(data, options) {
-		if (!this._isArray(data) || data.length === 0 ||
-			!this._isArray(data[0]) || data[0].length < 2) {
+	D3Funnel.prototype.__initialize = function(data, options)
+	{
+		if (!this.__isArray(data) || data.length === 0 ||
+			!this.__isArray(data[0]) || data[0].length < 2) {
 			throw {
 				name: "D3 Funnel Data Error",
 				message: "Funnel data is not valid."
@@ -209,7 +340,7 @@
 
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
-		var settings = this._extend({}, this.defaults);
+		var settings = this.__extend({}, this.defaults);
 		settings.width  = parseInt(d3.select(this.selector).style("width"), 10);
 		settings.height = parseInt(d3.select(this.selector).style("height"), 10);
 
@@ -244,8 +375,7 @@
 			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 			// If a color is not set for the record, add one
-			if (typeof this.data[i][2] === "undefined" ||
-				!hexExpression.test(this.data[i][2])) {
+			if (!("2" in this.data[i]) || !hexExpression.test(this.data[i][2])) {
 				this.data[i][2] = colorScale(i);
 			}
 		}
@@ -261,6 +391,7 @@
 		this.isInverted = settings.isInverted;
 		this.hoverEffects = settings.hoverEffects;
 		this.dynamicArea = settings.dynamicArea;
+		this.animation = settings.animation;
 
 		// Calculate the bottom left x position
 		this.bottomLeftX = (this.width - this.bottomWidth) / 2;
@@ -283,7 +414,8 @@
 	 *
 	 * @return {array}
 	 */
-	D3Funnel.prototype._makePaths = function() {
+	D3Funnel.prototype.__makePaths = function()
+	{
 		var paths = [];
 
 		// Initialize velocity
@@ -430,7 +562,8 @@
 	 *
 	 * @param {Object} svg
 	 */
-	D3Funnel.prototype._defineColorGradients = function(svg) {
+	D3Funnel.prototype.__defineColorGradients = function(svg)
+	{
 		var defs = svg.append("defs");
 
 		// Create a gradient for each section
@@ -469,7 +602,8 @@
 	 * @param {Object} svg
 	 * @param {array}  sectionPaths
 	 */
-	D3Funnel.prototype._drawTopOval = function(svg, sectionPaths) {
+	D3Funnel.prototype.__drawTopOval = function(svg, sectionPaths)
+	{
 		var leftX = 0;
 		var rightX = this.width;
 		var centerX = this.width / 2;
@@ -497,14 +631,16 @@
 	/**
 	 * @param {Object} data
 	 */
-	D3Funnel.prototype._onMouseOver = function(data) {
+	D3Funnel.prototype.__onMouseOver = function(data)
+	{
 		d3.select(this).attr("fill", shadeColor(data.baseColor, -0.2));
 	};
 
 	/**
 	 * @param {Object} data
 	 */
-	D3Funnel.prototype._onMouseOut = function(data) {
+	D3Funnel.prototype.__onMouseOut = function(data)
+	{
 		d3.select(this).attr("fill", data.fill);
 	};
 
@@ -514,7 +650,8 @@
  	 * @param {string} color A hex color.
  	 * @param {float}  shade The shade adjustment. Can be positive or negative.
 	 */
-	function shadeColor(color, shade) {
+	function shadeColor(color, shade)
+	{
 		var f = parseInt(color.slice(1), 16);
 		var t = shade < 0 ? 0 : 255;
 		var p = shade < 0 ? shade * -1 : shade;
