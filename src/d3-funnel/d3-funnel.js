@@ -95,8 +95,8 @@
 	 * @param {bool}   options.dynamicArea  Whether or not the area should be
 	 *                                      dynamically calculated based on
 	 *                                      data counts.
-	 * @param {bool}   options.animation    Whether or not there should be a
-	 *                                      load animation.
+	 * @param {int}    options.animation    The load animation speed. If empty,
+	 *                                      there will be no load animation.
 	 * @param {Object} options.label
 	 * @param {Object} options.label.fontSize
 	 */
@@ -153,7 +153,7 @@
 		if (this.animation !== false) {
 			var self = this;
 			path.transition()
-				.duration(200)
+				.duration(this.animation)
 				.ease("linear")
 				.attr("fill", this.__getColor(index))
 				.attr("d", this.__getPathDefinition(index))
