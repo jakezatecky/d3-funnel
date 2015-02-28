@@ -54,36 +54,40 @@
           </div>
           <div class="col-right">
             <form>
-              <label for="curved">
-                <input type="checkbox" value="curved" id="curved" checked>
+              <label>
+                <input type="checkbox" value="curved" checked>
                 Curved
               </label>
-              <label for="pinched">
-                <input type="checkbox" value="pinched" id="pinched" checked>
+              <label>
+                <input type="checkbox" value="pinched" checked>
                 Pinched
               </label>
-              <label for="gradient">
-                <input type="checkbox" value="gradient" id="gradient">
+              <label>
+                <input type="checkbox" value="gradient">
                 Gradient
               </label>
-              <label for="inverted">
-                <input type="checkbox" value="inverted" id="inverted">
+              <label>
+                <input type="checkbox" value="inverted">
                 Inverted
               </label>
-              <label for="hover">
-                <input type="checkbox" value="hover" id="hover">
+              <label>
+                <input type="checkbox" value="hover">
                 Hover Effects
               </label>
-              <label for="dynamic">
-                <input type="checkbox" value="dynamic" id="dynamic">
+              <label>
+                <input type="checkbox" value="dynamic">
                 Dynamic Area
               </label>
-              <label for="label">
-                <input type="checkbox" value="label" id="label">
+              <label>
+                <input type="checkbox" value="animation">
+                Load Animation
+              </label>
+              <label>
+                <input type="checkbox" value="label">
                 Style Labels
               </label>
-              <label for="color">
-                <input type="checkbox" value="color" id="color">
+              <label>
+                <input type="checkbox" value="color">
                 Custom Color
               </label>
             </form>
@@ -101,13 +105,13 @@
 
     <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
-    <script src="https://cdn.rawgit.com/jakezatecky/d3-funnel/master/src/d3-funnel/d3-funnel.js?1"></script>
+    <script src="https://rawgit.com/jakezatecky/d3-funnel/master/src/d3-funnel/d3-funnel.js"></script>
     <script>
       $(function() {
         function drawChart()
         {
           var data = [];
-          if (!$("#color").is(":checked")) {
+          if (!$('[value="color"]').is(":checked")) {
             data = [
               ["Applicants",   12000],
               ["Pre-screened", 4000],
@@ -143,6 +147,9 @@
             },
             "dynamic": {
               dynamicArea: true
+            },
+            "animation": {
+              animation: 200
             },
             "label": {
               label: {
