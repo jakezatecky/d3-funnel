@@ -77,6 +77,7 @@ var data = [
     ["Persimmon", 2500,  "#ff634d"],
     ["Azure",     1500,  "#007fff"]
 ];
+```
 
 Further more, you can even set colors for any data point label (hex only):
 
