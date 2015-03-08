@@ -11,7 +11,7 @@
 	 *
 	 * @param {string} selector A selector for element to contain the funnel.
 	 */
-	function D3Funnel(selector)
+	var D3Funnel = function(selector)
 	{
 		this.selector = selector;
 
@@ -32,7 +32,7 @@
 				fontSize: "14px"
 			}
 		};
-	}
+	};
 
 	/**
 	 * Check if the supplied value is an array.
@@ -667,4 +667,4 @@
 
 	global.D3Funnel = D3Funnel;
 
-})(this);
+})(window);
