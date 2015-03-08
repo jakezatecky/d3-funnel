@@ -61,7 +61,8 @@ var options = {
                           // the count values rather than equal heights
     animation: false,     // The load animation speed in millseconds
     label: {
-        fontSize: "14px"  // Any valid font size
+        fontSize: "14px", // Any valid font size,
+        fill: "#000"      // Hex color to change default #fff label color
     }
 };
 chart.draw(data, options);
@@ -75,6 +76,17 @@ var data = [
     ["Byzantium", 4000,  "#702963"],
     ["Persimmon", 2500,  "#ff634d"],
     ["Azure",     1500,  "#007fff"]
+];
+```
+
+Further more, you can even set colors for any data point label (hex only):
+
+``` javascript
+var data = [
+    ["Teal",      12000, "#008080" "#080800"],
+    ["Byzantium", 4000,  "#702963"],            // Defaults to options.label.fill label color
+    ["Persimmon", 2500,  "#ff634d" "#6f34fd"],
+    ["Azure",     1500,  "#007fff" "#07fff0"]
 ];
 ```
 
