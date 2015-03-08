@@ -29,7 +29,8 @@
 			dynamicArea: false,
 			animation: false,
 			label: {
-				fontSize: "14px"
+				fontSize: "14px",
+				fill: "#fff"
 			}
 		};
 	};
@@ -295,6 +296,7 @@
 		var i = index;
 		var paths = this.sectionPaths[index];
 		var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
+		var textFill = this.data[i][3] || this.label.fill;
 
 		var textX = this.width / 2;   // Center the text
 		var textY = !this.isCurved ?  // Average height of bases
@@ -308,7 +310,7 @@
 				"y": textY,
 				"text-anchor": "middle",
 				"dominant-baseline": "middle",
-				"fill": "#fff",
+				"fill": textFill,
 				"pointer-events": "none"
 			})
 			.style("font-size", this.label.fontSize);
@@ -354,8 +356,12 @@
 
 		// Label settings
 		if ("label" in options) {
-			if ("fontSize" in options.label) {
-				settings.label.fontSize = options.label.fontSize;
+			var validLabelOptions = /fontSize|fill/;
+			var labelOption;
+			for (labelOption in options.label) {
+				if (labelOption.match(validLabelOptions)) {
+					settings.label[labelOption] = options.label[labelOption];
+				}
 			}
 		}
 		this.label = settings.label;
