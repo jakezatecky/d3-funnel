@@ -44,7 +44,7 @@ chart.draw(data);
 ## Advanced
 
 The following options may also be specified through the second parameter to
-`D3Funnel.draw`:
+`D3Funnel.draw` (default values shown):
 
 ``` javascript
 var options = {
@@ -59,10 +59,10 @@ var options = {
     hoverEffects: false,  // Whether the funnel has effects on hover
     dynamicArea: false ,  // Whether the funnel should calculate the blocks by
                           // the count values rather than equal heights
-    animation: false,     // The load animation speed in millseconds
+    animation: false,     // The load animation speed in milliseconds
     label: {
-        fontSize: "14px", // Any valid font size,
-        fill: "#000"      // Hex color to change default #fff label color
+        fontSize: "14px", // Any valid font size
+        fill: "#fff"      // Any valid hex color
     }
 };
 chart.draw(data, options);
@@ -79,12 +79,12 @@ var data = [
 ];
 ```
 
-Further more, you can even set colors for any data point label (hex only):
+Furthermore, you can even set colors for any data point label (hex only):
 
 ``` javascript
 var data = [
     ["Teal",      12000, "#008080" "#080800"],
-    ["Byzantium", 4000,  "#702963"],            // Defaults to options.label.fill label color
+    ["Byzantium", 4000,  "#702963"],            // Defaults to options.label.fill
     ["Persimmon", 2500,  "#ff634d" "#6f34fd"],
     ["Azure",     1500,  "#007fff" "#07fff0"]
 ];
