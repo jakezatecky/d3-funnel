@@ -20,6 +20,7 @@
 				<option value="animation">Animation</option>
 				<option value="label">Styling labels</option>
 				<option value="color">Custom colors</option>
+				<option value="labelsColor">Custom label colors</option>
 				<option value="works">The Works</option>
 			</select>
 			<div id="funnel"></div>
@@ -35,22 +36,29 @@
 				{
 					var index = $("#picker").val();
 
-					var data = [];
-
-					if (index !== "color") {
-						data = [
-							["Applicants",   12000],
-							["Pre-screened", 4000],
-							["Interviewed",  2500],
-							["Hired",        1500]
-						];
-					} else {
+					var data = [
+						["Applicants",   12000],
+						["Pre-screened", 4000],
+						["Interviewed",  2500],
+						["Hired",        1500]
+					];
+					
+					if (index === "color") {
 						data = [
 							["Teal",      12000, "#008080"],
 							["Byzantium", 4000,  "#702963"],
 							["Persimmon", 2500,  "#ff634d"],
 							["Azure",     1500,  "#007fff"]
 						];
+					}
+
+					if (index === "labelsColor") {
+						data = [
+							["Teal",      12000, "#008080", "#080800"],
+							["Byzantium", 4000,  "#702963"],
+							["Persimmon", 2500,  "#ff634d", "#6f34fd"],
+							["Azure",     1500,  "#007fff", "#07fff0"]
+						];	
 					}
 
 					var options = {
@@ -78,10 +86,12 @@
 						},
 						"label": {
 							label: {
-								fontSize: "16px"
+								fontSize: "16px",
+								fill: "#000"
 							}
 						},
 						"color": {},
+						"labelsColor": {},
 						"works": {
 							isCurved: true,
 							bottomPinch: 2,
