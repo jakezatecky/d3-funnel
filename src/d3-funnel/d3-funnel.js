@@ -167,9 +167,6 @@
 			this.__drawSection(index + 1);
 		}
 
-		console.log(":(");
-
-
 		// Add the hover events
 		if (this.hoverEffects) {
 			path.on("mouseover", this.__onMouseOver)
