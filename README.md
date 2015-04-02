@@ -48,22 +48,23 @@ The following options may also be specified through the second parameter to
 
 ``` javascript
 var options = {
-    width: 350,           // In pixels; defaults to container's width (if non-zero)
-    height: 400,          // In pixels; defaults to container's height (if non-zero)
-    bottomWidth: 1/3,     // The percent of total width the bottom should be
-    bottomPinch: 0,       // How many sections to pinch
-    isCurved: false,      // Whether the funnel is curved
-    curveHeight: 20,      // The curvature amount
-    fillType: "solid",    // Either "solid" or "gradient"
-    isInverted: false,    // Whether the funnel is inverted
-    hoverEffects: false,  // Whether the funnel has effects on hover
-    dynamicArea: false ,  // Whether the funnel should calculate the blocks by
-                          // the count values rather than equal heights
-    animation: false,     // The load animation speed in milliseconds
+    width: 350,                     // In pixels; defaults to container's width (if non-zero)
+    height: 400,                    // In pixels; defaults to container's height (if non-zero)
+    bottomWidth: 1/3,               // The percent of total width the bottom should be
+    bottomPinch: 0,                 // How many sections to pinch
+    isCurved: false,                // Whether the funnel is curved
+    curveHeight: 20,                // The curvature amount
+    fillType: "solid",              // Either "solid" or "gradient"
+    isInverted: false,              // Whether the funnel is inverted
+    hoverEffects: false,            // Whether the funnel has effects on hover
+    dynamicArea: false ,            // Whether the funnel should calculate the blocks by
+                                    // the count values rather than equal heights
+    animation: false,               // The load animation speed in milliseconds
     label: {
-        fontSize: "14px", // Any valid font size
-        fill: "#fff"      // Any valid hex color
+        fontSize: "14px",           // Any valid font size
+        fill: "#fff"                // Any valid hex color
     }
+    onItemClick: function(d, i) {}  // event handler if one of the items is clicked
 };
 chart.draw(data, options);
 ```
@@ -89,6 +90,10 @@ var data = [
     ["Azure",     1500,  "#007fff" "#07fff0"]
 ];
 ```
+
+You can also add your custom event listeners:
+
+
 
 # License
 
