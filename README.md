@@ -64,7 +64,7 @@ var options = {
         fontSize: "14px",           // Any valid font size
         fill: "#fff"                // Any valid hex color
     }
-    onItemClick: function(d, i) {}  // event handler if one of the items is clicked
+    onItemClick: function(d, i) {}  // Event handler if one of the items is clicked
 };
 chart.draw(data, options);
 ```
@@ -90,10 +90,6 @@ var data = [
     ["Azure",     1500,  "#007fff" "#07fff0"]
 ];
 ```
-
-You can also add your custom event listeners:
-
-
 
 # License
 
