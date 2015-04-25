@@ -27,6 +27,7 @@
 			isInverted: false,
 			hoverEffects: false,
 			dynamicArea: false,
+			minHeight: false,
 			animation: false,
 			label: {
 				fontSize: "14px",
@@ -76,30 +77,31 @@
 	 * @param {Object} options An optional configuration object for chart
 	 *                         options.
 	 *
-	 * @param {int}    options.width        Initial width. Specified in pixels.
-	 * @param {int}    options.height       Chart height. Specified in pixels.
-	 * @param {int}    options.bottomWidth  Specifies the width percent the
-	 *                                      bottom should be in relation to the
-	 *                                      chart's overall width.
-	 * @param {int}    options.bottomPinch  How many sections (from the bottom)
-	 *                                      should be "pinched" to have fixed
-	 *                                      width defined by options.bottomWidth.
-	 * @param {bool}   options.isCurved     Whether or not the funnel is curved.
-	 * @param {int}    options.curveHeight  The height of the curves. Only
-	 *                                      functional if isCurve is set.
-	 * @param {string} options.fillType     The section background type. Either
-	 *                                      "solid" or "gradient".
-	 * @param {bool}   options.isInverted   Whether or not the funnel should be
-	 *                                      inverted to a pyramid.
-	 * @param {bool}   options.hoverEffects Whether or not the funnel hover
-	 *                                      effects should be shown.
-	 * @param {bool}   options.dynamicArea  Whether or not the area should be
-	 *                                      dynamically calculated based on
-	 *                                      data counts.
-	 * @param {int}    options.animation    The load animation speed. If empty,
-	 *                                      there will be no load animation.
-	 * @param {Object} options.label
-	 * @param {Object} options.label.fontSize
+	 * @param {int}      options.width        Initial width. Specified in pixels.
+	 * @param {int}      options.height       Chart height. Specified in pixels.
+	 * @param {int}      options.bottomWidth  Specifies the width percent the
+	 *                                        bottom should be in relation to the
+	 *                                        chart's overall width.
+	 * @param {int}      options.bottomPinch  How many sections (from the bottom)
+	 *                                        should be "pinched" to have fixed
+	 *                                        width defined by options.bottomWidth.
+	 * @param {bool}     options.isCurved     Whether or not the funnel is curved.
+	 * @param {int}      options.curveHeight  The height of the curves. Only
+	 *                                        functional if isCurve is set.
+	 * @param {string}   options.fillType     The section background type. Either
+	 *                                        "solid" or "gradient".
+	 * @param {bool}     options.isInverted   Whether or not the funnel should be
+	 *                                        inverted to a pyramid.
+	 * @param {bool}     options.hoverEffects Whether or not the funnel hover
+	 *                                        effects should be shown.
+	 * @param {bool}     options.dynamicArea  Whether or not the area should be
+	 *                                        dynamically calculated based on
+	 *                                        data counts.
+	 * @param {bool|int} options.minHeight    The minimum height of a level.
+	 * @param {int}      options.animation    The load animation speed. If empty,
+	 *                                        there will be no load animation.
+	 * @param {Object}   options.label
+	 * @param {Object}   options.label.fontSize
 	 */
 	D3Funnel.prototype.draw = function(data, options)
 	{
@@ -399,6 +401,7 @@
 		this.isInverted = settings.isInverted;
 		this.hoverEffects = settings.hoverEffects;
 		this.dynamicArea = settings.dynamicArea;
+		this.minHeight = settings.minHeight;
 		this.animation = settings.animation;
 
 		// Calculate the bottom left x position
@@ -463,6 +466,14 @@
 		var totalArea = this.height * (this.width + this.bottomWidth) / 2;
 		var slope = 2 * this.height / (this.width - this.bottomWidth);
 
+		// This is greedy in that the section will have a guranteed height and
+		// the remaining is shared among the ratio, instead of being shared
+		// according to the remaining minus the guranteed
+		if (this.minHeight !== false) {
+			var height = (this.height - this.minHeight * this.data.length);
+			totalArea = height * (this.width + this.bottomWidth) / 2;
+		}
+
 		var totalCount = 0;
 		var count = 0;
 
@@ -480,6 +491,10 @@
 			if (this.dynamicArea) {
 				var ratio = count / totalCount;
 				var area  = ratio * totalArea;
+
+				if (this.minHeight !== false) {
+					area += this.minHeight * (this.width + this.bottomWidth) / 2;
+				}
 
 				bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area)) / slope);
 				dx = (topBase / 2) - (bottomBase / 2);
