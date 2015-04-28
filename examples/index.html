@@ -33,8 +33,7 @@
 
 		<script>
 			$(function() {
-				function drawChart()
-				{
+				function draw() {
 					var index = $("#picker").val();
 
 					var data = {
@@ -142,8 +141,7 @@
 					}
 				}
 
-				drawChart();
-				$("#picker").change(drawChart);
+				$("#picker").change(draw).trigger("change");
 			});
 		</script>
 	</body>
