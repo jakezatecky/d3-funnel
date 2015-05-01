@@ -81,7 +81,7 @@ var data = [
 ];
 ```
 
-Furthermore, you can even set colors for any data point label (hex only):
+You can also set colors for any data point label (hex only):
 
 ``` javascript
 var data = [
@@ -89,6 +89,17 @@ var data = [
     ["Byzantium", 4000,  "#702963"],            // Defaults to options.label.fill
     ["Persimmon", 2500,  "#ff634d" "#6f34fd"],
     ["Azure",     1500,  "#007fff" "#07fff0"]
+];
+```
+
+If you want to pass formatted values to be shown in the funnel, pass in an array containing the value and formatted value:
+
+``` javascript
+var data = [
+    ["Teal",      [12000, 'USD 12,000'], "#008080"],
+    ["Byzantium", [4000, 'USD 4,000'],  "#702963"],
+    ["Persimmon", [2500, 'USD 2,500'],  "#ff634d"],
+    ["Azure",     [1500, 'USD 1,500'],  "#007fff"]
 ];
 ```
 

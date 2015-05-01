@@ -266,7 +266,8 @@
 		return [{
 			index: index,
 			label: this.data[index][0],
-			value: this.data[index][1],
+			value: this.__isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
+			formattedValue: this.__isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
 			baseColor: this.data[index][2],
 			fill: this.__getColor(index)
 		}];
@@ -297,9 +298,11 @@
 	 */
 	D3Funnel.prototype.__addSectionLabel = function(group, index)
 	{
+
 		var i = index;
 		var paths = this.sectionPaths[index];
-		var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
+		var sectionData = this.__getSectionData(index)[0];
+		var textStr = sectionData.label + ": " + sectionData.formattedValue;
 		var textFill = this.data[i][3] || this.label.fill;
 
 		var textX = this.width / 2;   // Center the text
@@ -479,13 +482,13 @@
 
 		// Harvest total count
 		for (var i = 0; i < this.data.length; i++) {
-			totalCount += this.data[i][1];
+			totalCount += this.__isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 		}
 
 		// Create the path definition for each funnel section
 		// Remember to loop back to the beginning point for a closed path
 		for (i = 0; i < this.data.length; i++) {
-			count = this.data[i][1];
+			count = this.__isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
