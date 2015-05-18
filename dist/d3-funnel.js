@@ -35,37 +35,6 @@
 	};
 
 	/**
-	 * Check if the supplied value is an array.
-	 *
-	 * @param {mixed} value
-	 *
-	 * @return {bool}
-	 */
-	D3Funnel.prototype.__isArray = function(value)
-	{
-		return Object.prototype.toString.call(value) === "[object Array]";
-	};
-
-	/**
-	 * Extends an object with the members of another.
-	 *
-	 * @param {Object} a The object to be extended.
-	 * @param {Object} b The object to clone from.
-	 *
-	 * @return {Object}
-	 */
-	D3Funnel.prototype.__extend = function(a, b)
-	{
-		var prop;
-		for (prop in b) {
-			if (b.hasOwnProperty(prop)) {
-				a[prop] = b[prop];
-			}
-		}
-		return a;
-	};
-
-	/**
 	 * Draw the chart inside the container with the data and configuration
 	 * specified. This will remove any previous SVG elements in the container
 	 * and draw a new funnel chart on top of it.
@@ -104,192 +73,6 @@
 
 		// Add each block section
 		this.__drawSection(0);
-	};
-
-	/**
-	 * Draw the next section in the iteration.
-	 *
-	 * @param {int} index
-	 */
-	D3Funnel.prototype.__drawSection = function(index)
-	{
-		if (index === this.data.length) {
-			return;
-		}
-
-		// Create a group just for this block
-		var group = this.svg.append("g");
-
-		// Fetch path element
-		var path = this.__getSectionPath(group, index);
-		path.data(this.__getSectionData(index));
-
-		// Add animation components
-		if (this.animation !== false) {
-			var self = this;
-			path.transition()
-				.duration(this.animation)
-				.ease("linear")
-				.attr("fill", this.__getColor(index))
-				.attr("d", this.__getPathDefinition(index))
-				.each("end", function() {
-					self.__drawSection(index + 1);
-				});
-		} else {
-			path.attr("fill", this.__getColor(index))
-				.attr("d", this.__getPathDefinition(index));
-			this.__drawSection(index + 1);
-		}
-
-		// Add the hover events
-		if (this.hoverEffects) {
-			path.on("mouseover", this.__onMouseOver)
-				.on("mouseout", this.__onMouseOut);
-		}
-
-		// ItemClick event
-		if ( this.onItemClick ) {
-			path.on( "click", this.onItemClick );
-		}
-
-		this.__addSectionLabel(group, index);
-	};
-
-	/**
-	 * Return the color for the given index.
-	 *
-	 * @param {int} index
-	 */
-	D3Funnel.prototype.__getColor = function(index)
-	{
-		if (this.fillType === "solid") {
-			return this.data[index][2];
-		} else {
-			return "url(#gradient-" + index + ")";
-		}
-	};
-
-	/**
-	 * @param {Object} group
-	 * @param {int}    index
-	 *
-	 * @return {Object}
-	 */
-	D3Funnel.prototype.__getSectionPath = function(group, index)
-	{
-		var path = group.append("path");
-
-		if (this.animation !== false) {
-			this.__addBeforeTransition(path, index);
-		}
-
-		return path;
-	};
-
-	/**
-	 * Set the attributes of a path element before its animation.
-	 *
-	 * @param {Object} path
-	 * @param {int}    index
-	 */
-	D3Funnel.prototype.__addBeforeTransition = function(path, index)
-	{
-		var paths = this.sectionPaths[index];
-
-		var beforePath = "";
-		var beforeFill = "";
-
-		// Construct the top of the trapezoid and leave the other elements
-		// hovering around to expand downward on animation
-		if (!this.isCurved) {
-			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
-				" L" + paths[1][0] + "," + paths[1][1] +
-				" L" + paths[1][0] + "," + paths[1][1] +
-				" L" + paths[0][0] + "," + paths[0][1];
-		} else {
-			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
-				" Q" + paths[1][0] + "," + paths[1][1] +
-				" " + paths[2][0] + "," + paths[2][1] +
-				" L" + paths[2][0] + "," + paths[2][1] +
-				" M" + paths[2][0] + "," + paths[2][1] +
-				" Q" + paths[1][0] + "," + paths[1][1] +
-				" " + paths[0][0] + "," + paths[0][1];
-		}
-
-		// Use previous fill color, if available
-		if (this.fillType === "solid") {
-			beforeFill = index > 0 ? this.__getColor(index - 1) : this.__getColor(index);
-		// Use current background if gradient (gradients do not transition)
-		} else {
-			beforeFill = this.__getColor(index);
-		}
-
-		path.attr("d", beforePath)
-			.attr("fill", beforeFill);
-	};
-
-	/**
-	 * @param {int} index
-	 *
-	 * @return {array}
-	 */
-	D3Funnel.prototype.__getSectionData = function(index)
-	{
-		return [{
-			index: index,
-			label: this.data[index][0],
-			value: this.data[index][1],
-			baseColor: this.data[index][2],
-			fill: this.__getColor(index)
-		}];
-	};
-
-	/**
-	 * @param {int} index
-	 *
-	 * @return {string}
-	 */
-	D3Funnel.prototype.__getPathDefinition = function(index)
-	{
-		var pathStr = "";
-		var point = [];
-		var paths = this.sectionPaths[index];
-
-		for (var j = 0; j < paths.length; j++) {
-			point = paths[j];
-			pathStr += point[2] + point[0] + "," + point[1] + " ";
-		}
-
-		return pathStr;
-	};
-
-	/**
-	 * @param {Object} group
-	 * @param {int}    index
-	 */
-	D3Funnel.prototype.__addSectionLabel = function(group, index)
-	{
-		var i = index;
-		var paths = this.sectionPaths[index];
-		var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
-		var textFill = this.data[i][3] || this.label.fill;
-
-		var textX = this.width / 2;   // Center the text
-		var textY = !this.isCurved ?  // Average height of bases
-			(paths[1][1] + paths[2][1]) / 2 :
-			(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
-
-		group.append("text")
-			.text(textStr)
-			.attr({
-				"x": textX,
-				"y": textY,
-				"text-anchor": "middle",
-				"dominant-baseline": "middle",
-				"fill": textFill,
-				"pointer-events": "none"
-			})
-			.style("font-size", this.label.fontSize);
 	};
 
 	/**
@@ -392,7 +175,6 @@
 
 		// Support for events
 		this.onItemClick = settings.onItemClick;
-
 	};
 
 	/**
@@ -628,6 +410,164 @@
 	};
 
 	/**
+	 * Draw the next section in the iteration.
+	 *
+	 * @param {int} index
+	 */
+	D3Funnel.prototype.__drawSection = function(index)
+	{
+		if (index === this.data.length) {
+			return;
+		}
+
+		// Create a group just for this block
+		var group = this.svg.append("g");
+
+		// Fetch path element
+		var path = this.__getSectionPath(group, index);
+		path.data(this.__getSectionData(index));
+
+		// Add animation components
+		if (this.animation !== false) {
+			var self = this;
+			path.transition()
+				.duration(this.animation)
+				.ease("linear")
+				.attr("fill", this.__getColor(index))
+				.attr("d", this.__getPathDefinition(index))
+				.each("end", function() {
+					self.__drawSection(index + 1);
+				});
+		} else {
+			path.attr("fill", this.__getColor(index))
+				.attr("d", this.__getPathDefinition(index));
+			this.__drawSection(index + 1);
+		}
+
+		// Add the hover events
+		if (this.hoverEffects) {
+			path.on("mouseover", this.__onMouseOver)
+				.on("mouseout", this.__onMouseOut);
+		}
+
+		// ItemClick event
+		if ( this.onItemClick ) {
+			path.on( "click", this.onItemClick );
+		}
+
+		this.__addSectionLabel(group, index);
+	};
+
+	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 *
+	 * @return {Object}
+	 */
+	D3Funnel.prototype.__getSectionPath = function(group, index)
+	{
+		var path = group.append("path");
+
+		if (this.animation !== false) {
+			this.__addBeforeTransition(path, index);
+		}
+
+		return path;
+	};
+
+	/**
+	 * Set the attributes of a path element before its animation.
+	 *
+	 * @param {Object} path
+	 * @param {int}    index
+	 */
+	D3Funnel.prototype.__addBeforeTransition = function(path, index)
+	{
+		var paths = this.sectionPaths[index];
+
+		var beforePath = "";
+		var beforeFill = "";
+
+		// Construct the top of the trapezoid and leave the other elements
+		// hovering around to expand downward on animation
+		if (!this.isCurved) {
+			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
+				" L" + paths[1][0] + "," + paths[1][1] +
+				" L" + paths[1][0] + "," + paths[1][1] +
+				" L" + paths[0][0] + "," + paths[0][1];
+		} else {
+			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
+				" Q" + paths[1][0] + "," + paths[1][1] +
+				" " + paths[2][0] + "," + paths[2][1] +
+				" L" + paths[2][0] + "," + paths[2][1] +
+				" M" + paths[2][0] + "," + paths[2][1] +
+				" Q" + paths[1][0] + "," + paths[1][1] +
+				" " + paths[0][0] + "," + paths[0][1];
+		}
+
+		// Use previous fill color, if available
+		if (this.fillType === "solid") {
+			beforeFill = index > 0 ? this.__getColor(index - 1) : this.__getColor(index);
+		// Use current background if gradient (gradients do not transition)
+		} else {
+			beforeFill = this.__getColor(index);
+		}
+
+		path.attr("d", beforePath)
+			.attr("fill", beforeFill);
+	};
+
+	/**
+	 * @param {int} index
+	 *
+	 * @return {array}
+	 */
+	D3Funnel.prototype.__getSectionData = function(index)
+	{
+		return [{
+			index: index,
+			label: this.data[index][0],
+			value: this.data[index][1],
+			baseColor: this.data[index][2],
+			fill: this.__getColor(index)
+		}];
+	};
+
+
+	/**
+	 * Return the color for the given index.
+	 *
+	 * @param {int} index
+	 */
+	D3Funnel.prototype.__getColor = function(index)
+	{
+		if (this.fillType === "solid") {
+			return this.data[index][2];
+		} else {
+			return "url(#gradient-" + index + ")";
+		}
+	};
+
+	/**
+	 * @param {int} index
+	 *
+	 * @return {string}
+	 */
+	D3Funnel.prototype.__getPathDefinition = function(index)
+	{
+		var pathStr = "";
+		var point = [];
+		var paths = this.sectionPaths[index];
+
+		for (var j = 0; j < paths.length; j++) {
+			point = paths[j];
+			pathStr += point[2] + point[0] + "," + point[1] + " ";
+		}
+
+		return pathStr;
+	};
+
+	/**
 	 * @param {Object} data
 	 */
 	D3Funnel.prototype.__onMouseOver = function(data)
@@ -641,6 +581,66 @@
 	D3Funnel.prototype.__onMouseOut = function(data)
 	{
 		d3.select(this).attr("fill", data.fill);
+	};
+
+	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 */
+	D3Funnel.prototype.__addSectionLabel = function(group, index)
+	{
+		var i = index;
+		var paths = this.sectionPaths[index];
+		var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
+		var textFill = this.data[i][3] || this.label.fill;
+
+		var textX = this.width / 2;   // Center the text
+		var textY = !this.isCurved ?  // Average height of bases
+			(paths[1][1] + paths[2][1]) / 2 :
+			(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+
+		group.append("text")
+			.text(textStr)
+			.attr({
+				"x": textX,
+				"y": textY,
+				"text-anchor": "middle",
+				"dominant-baseline": "middle",
+				"fill": textFill,
+				"pointer-events": "none"
+			})
+			.style("font-size", this.label.fontSize);
+	};
+
+	/**
+	 * Check if the supplied value is an array.
+	 *
+	 * @param {mixed} value
+	 *
+	 * @return {bool}
+	 */
+	D3Funnel.prototype.__isArray = function(value)
+	{
+		return Object.prototype.toString.call(value) === "[object Array]";
+	};
+
+	/**
+	 * Extends an object with the members of another.
+	 *
+	 * @param {Object} a The object to be extended.
+	 * @param {Object} b The object to clone from.
+	 *
+	 * @return {Object}
+	 */
+	D3Funnel.prototype.__extend = function(a, b)
+	{
+		var prop;
+		for (prop in b) {
+			if (b.hasOwnProperty(prop)) {
+				a[prop] = b[prop];
+			}
+		}
+		return a;
 	};
 
 	/**
