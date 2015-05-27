@@ -5,31 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="D3Funnel: A JavaScript SVG library for rendering funnel, pipeline, and pyramid charts using the D3.js framework.">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" media="screen" href="stylesheets/d3-funnel.css">
 
     <title>D3Funnel</title>
-
-    <style>
-      .flex {
-        display: flex;
-        padding: 10px 30px;
-        align-items: center;
-        justify-content: center;
-      }
-
-      #funnel {
-        width: 300px;
-        height: 400px;
-      }
-
-      form label {
-        display: block;
-        font-weight: normal;
-      }
-    </style>
   </head>
   <body>
-    <!-- HEADER -->
     <div id="header_wrap" class="outer">
       <header class="inner">
         <a id="forkme_banner" href="https://github.com/jakezatecky/d3-funnel">View on GitHub</a>
@@ -41,7 +22,7 @@
         </section>
       </header>
     </div>
-    <!-- MAIN CONTENT -->
+
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <p><strong>D3Funnel</strong> is an extensible, open-source JavaScript library for rendering
@@ -50,11 +31,11 @@
         <p>D3Funnel is focused on providing practical and visually appealing funnels
           through a variety of customization options. Check out the example below to get a showcasing of the several possible options:
         </p>
-        <div class="flex">
-          <div class="col-left">
+        <div class="demo">
+          <div class="demo-funnel">
             <div id="funnel"></div>
           </div>
-          <div class="col-right">
+          <div class="demo-options">
             <form>
               <label>
                 <input type="checkbox" value="curved" checked>
@@ -97,7 +78,7 @@
         </div>
       </section>
     </div>
-    <!-- FOOTER  -->
+
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">D3Funnel maintained by <a href="https://github.com/jakezatecky">jakezatecky</a></p>
@@ -110,7 +91,7 @@
     <script src="https://rawgit.com/jakezatecky/d3-funnel/master/src/d3-funnel/d3-funnel.js"></script>
     <script>
       $(function() {
-        function draw() {
+        $("input").change(function() {
           var data = [];
           if (!$('[value="color"]').is(":checked")) {
             data = [
@@ -130,7 +111,6 @@
 
           var options = {};
           var settings = {
-            basic: {},
             curved: {
               isCurved: true
             },
@@ -165,16 +145,13 @@
           });
 
           // Inversion with pinch looks bad
-          // Change bottom width to make it look slighty better
+          // Change bottom width to make it look slightly better
           if (options.isInverted && options.bottomPinch) {
             options.bottomWidth = 1 / 2;
           }
 
-          var chart = new D3Funnel("#funnel");
-          chart.draw(data, options);
-        }
-
-        $("input").change(draw).trigger("change");
+          (new D3Funnel("#funnel")).draw(data, options);
+        }).trigger("change");
       });
     </script>
   </body>
