@@ -8,6 +8,8 @@
 	 * D3Funnel
 	 *
 	 * @param {string} selector A selector for the container element.
+	 *
+	 * @return {void}
 	 */
 	var D3Funnel = function(selector)
 	{
@@ -43,6 +45,8 @@
 	 *                         and optionally a color (in hex).
 	 * @param {Object} options An optional configuration object to override
 	 *                         defaults. See the docs.
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.draw = function(data, options)
 	{
@@ -52,12 +56,11 @@
 		// Remove any previous drawings
 		d3.select(this.selector).selectAll("svg").remove();
 
-		// Add the SVG and group element
+		// Add the SVG
 		this.svg = d3.select(this.selector)
 			.append("svg")
 			.attr("width", this.width)
-			.attr("height", this.height)
-			.append("g");
+			.attr("height", this.height);
 
 		this.sectionPaths = this.__makePaths();
 
@@ -80,6 +83,8 @@
 	 *
 	 * @param {array}  data
 	 * @param {Object} options
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__initialize = function(data, options)
 	{
@@ -263,7 +268,6 @@
 
 			// Stop velocity for pinched sections
 			if (this.bottomPinch > 0) {
-
 				// Check if we've reached the bottom of the pinch
 				// If so, stop changing on x
 				if (!this.isInverted) {
@@ -342,6 +346,8 @@
 	 * Define the linear color gradients.
 	 *
 	 * @param {Object} svg
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__defineColorGradients = function(svg)
 	{
@@ -382,6 +388,8 @@
 	 *
 	 * @param {Object} svg
 	 * @param {array}  sectionPaths
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__drawTopOval = function(svg, sectionPaths)
 	{
@@ -413,6 +421,8 @@
 	 * Draw the next section in the iteration.
 	 *
 	 * @param {int} index
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__drawSection = function(index)
 	{
@@ -451,7 +461,7 @@
 		}
 
 		// ItemClick event
-		if ( this.onItemClick ) {
+		if (this.onItemClick) {
 			path.on( "click", this.onItemClick );
 		}
 
@@ -480,6 +490,8 @@
 	 *
 	 * @param {Object} path
 	 * @param {int}    index
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__addBeforeTransition = function(path, index)
 	{
@@ -538,6 +550,8 @@
 	 * Return the color for the given index.
 	 *
 	 * @param {int} index
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__getColor = function(index)
 	{
@@ -569,6 +583,8 @@
 
 	/**
 	 * @param {Object} data
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__onMouseOver = function(data)
 	{
@@ -577,6 +593,8 @@
 
 	/**
 	 * @param {Object} data
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__onMouseOut = function(data)
 	{
@@ -586,6 +604,8 @@
 	/**
 	 * @param {Object} group
 	 * @param {int}    index
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__addSectionLabel = function(group, index)
 	{
@@ -646,8 +666,10 @@
 	/**
 	 * Shade a color to the given percentage.
 	 *
- 	 * @param {string} color A hex color.
- 	 * @param {float}  shade The shade adjustment. Can be positive or negative.
+	 * @param {string} color A hex color.
+	 * @param {float}  shade The shade adjustment. Can be positive or negative.
+	 *
+	 * @return {void}
 	 */
 	function shadeColor(color, shade)
 	{

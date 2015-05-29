@@ -56,12 +56,11 @@
 		// Remove any previous drawings
 		d3.select(this.selector).selectAll("svg").remove();
 
-		// Add the SVG and group element
+		// Add the SVG
 		this.svg = d3.select(this.selector)
 			.append("svg")
 			.attr("width", this.width)
-			.attr("height", this.height)
-			.append("g");
+			.attr("height", this.height);
 
 		this.sectionPaths = this.__makePaths();
 
