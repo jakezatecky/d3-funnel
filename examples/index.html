@@ -4,36 +4,46 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>D3 Funnel</title>
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css">
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
 		<div class="container">
-			<p>Funnel examples</p>
-			<select id="picker">
-				<option value="basic">No options</option>
-				<option value="curved">Curved</option>
-				<option value="pinch">Pinched</option>
-				<option value="gradient">Gradient</option>
-				<option value="inverted">Inverted</option>
-				<option value="hover">Hover effects</option>
-				<option value="dynamic">Dynamic area</option>
-				<option value="minHeight">Minimum height</option>
-				<option value="animation">Animation</option>
-				<option value="label">Styling labels</option>
-				<option value="color">Custom colors</option>
-				<option value="labelsColor">Custom label colors</option>
-				<option value="works">The Works</option>
-			</select>
-			<div id="funnel"></div>
+			<h1>D3 Funnel</h1>
+			<div class="example">
+				<form class="form-inline">
+					<select class="form-control" id="picker">
+						<option value="basic">No options</option>
+						<option value="curved">Curved</option>
+						<option value="pinch">Pinched</option>
+						<option value="gradient">Gradient</option>
+						<option value="inverted">Inverted</option>
+						<option value="hover">Hover effects</option>
+						<option value="dynamic">Dynamic area</option>
+						<option value="minHeight">Minimum height</option>
+						<option value="animation">Animation</option>
+						<option value="label">Styling labels</option>
+						<option value="color">Custom colors</option>
+						<option value="labelsColor">Custom label colors</option>
+						<option value="works">The Works</option>
+					</select>
+				</form>
+				<!-- Funnel container -->
+				<div id="funnel"></div>
+			</div>
 		</div>
 
-		<script src="vendor/d3.min.js"></script>
-		<script src="vendor/jquery-1.11.1.min.js"></script>
-		<script src="../src/d3-funnel/d3-funnel.js?1"></script>
+		<!-- Required D3 library -->
+		<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js"></script>
+		<!-- D3Funnel source file -->
+		<script src="../src/d3-funnel/d3-funnel.js"></script>
+
+		<!-- Just for the example -->
+		<script src="//code.jquery.com/jquery-2.1.4.js"></script>
 
 		<script>
 			$(function() {
-				function draw() {
+				$("#picker").change(function() {
 					var index = $("#picker").val();
 
 					var data = {
@@ -139,9 +149,7 @@
 					} else {
 						chart.draw(options[index][0], options[index][1]);
 					}
-				}
-
-				$("#picker").change(draw).trigger("change");
+				}).trigger("change");
 			});
 		</script>
 	</body>

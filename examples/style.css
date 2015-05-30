@@ -2,15 +2,9 @@ body {
 	text-align: center;
 }
 
-.container {
-	width: 400px;
-	padding: 10px;
-	margin: 0 auto;
-}
-
+h1,
 select {
-	padding: 8px;
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 }
 
 #funnel {
