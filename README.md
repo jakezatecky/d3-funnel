@@ -23,21 +23,20 @@ You must also create a container element and instantiate a new chart:
 <div id="funnel"></div>
 
 <script>
-	var data = [
-	    ["Plants",     5000],
-	    ["Flowers",    2500],
-	    ["Perennials", 200],
-	    ["Roses",      50]
-	];
-	var options = {};
+    var data = [
+        ["Plants",     5000],
+        ["Flowers",    2500],
+        ["Perennials", 200],
+        ["Roses",      50]
+    ];
+    var options = {};
 
-	var chart = new D3Funnel("#funnel");
-	chart.draw(data, options);
+    var chart = new D3Funnel("#funnel");
+    chart.draw(data, options);
 </script>
 ```
 
 ## Options
-
 
 | Option           | Description                                                                 | Type     | Default             |
 | ---------------- | --------------------------------------------------------------------------- | -------- | ------------------- |
@@ -57,10 +56,6 @@ You must also create a container element and instantiate a new chart:
 | `label.fill`     | Any valid hex color for the label color                                     | string   | `"#fff"`            |
 | `onItemClick`    | Event handler if one of the items is clicked.                               | function | `function(d, i) {}` |
 
-<table>
-
-</table>
-
 ## Advanced Data
 
 You can specify overriding colors for any data point (hex only):
@@ -75,14 +70,15 @@ var data = [
 ];
 ```
 
-If you want to pass formatted values to be shown in the funnel, pass in an array containing the value and formatted value:
+If you want to pass formatted values to be shown in the funnel, pass in an array
+containing the value and formatted value:
 
 ``` javascript
 var data = [
-    ["Teal",      [12000, "USD 12,000"], "#008080"],
-    ["Byzantium", [4000,  "USD 4,000"],  "#702963"],
-    ["Persimmon", [2500,  "USD 2,500"],  "#ff634d"],
-    ["Azure",     [1500,  "USD 1,500"],  "#007fff"]
+    ["Teal",      [12000, "USD 12,000"]],
+    ["Byzantium", [4000,  "USD 4,000"]],
+    ["Persimmon", [2500,  "USD 2,500"]],
+    ["Azure",     [1500,  "USD 1,500"]]
 ];
 ```
 
