@@ -1,4 +1,4 @@
-(function(global) {
+(function(global, d3) {
 
 	/* global d3 */
 	/* jshint bitwise: false */
@@ -688,4 +688,4 @@
 
 	global.D3Funnel = D3Funnel;
 
-})(window);
+})(window, d3);
