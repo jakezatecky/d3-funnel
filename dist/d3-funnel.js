@@ -1,4 +1,4 @@
-(function(global) {
+(function(global, d3) {
 
 	/* global d3 */
 	/* jshint bitwise: false */
@@ -51,7 +51,7 @@
 	D3Funnel.prototype.draw = function(data, options)
 	{
 		// Initialize chart options
-		this.__initialize(data, options);
+		this._initialize(data, options);
 
 		// Remove any previous drawings
 		d3.select(this.selector).selectAll("svg").remove();
@@ -62,20 +62,20 @@
 			.attr("width", this.width)
 			.attr("height", this.height);
 
-		this.sectionPaths = this.__makePaths();
+		this.sectionPaths = this._makePaths();
 
 		// Define color gradients
 		if (this.fillType === "gradient") {
-			this.__defineColorGradients(this.svg);
+			this._defineColorGradients(this.svg);
 		}
 
 		// Add top oval if curved
 		if (this.isCurved) {
-			this.__drawTopOval(this.svg, this.sectionPaths);
+			this._drawTopOval(this.svg, this.sectionPaths);
 		}
 
 		// Add each block section
-		this.__drawSection(0);
+		this._drawSection(0);
 	};
 
 	/**
@@ -86,10 +86,10 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__initialize = function(data, options)
+	D3Funnel.prototype._initialize = function(data, options)
 	{
-		if (!this.__isArray(data) || data.length === 0 ||
-			!this.__isArray(data[0]) || data[0].length < 2) {
+		if (!this._isArray(data) || data.length === 0 ||
+			!this._isArray(data[0]) || data[0].length < 2) {
 			throw {
 				name: "D3 Funnel Data Error",
 				message: "Funnel data is not valid."
@@ -106,7 +106,7 @@
 
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
-		var settings = this.__extend({}, this.defaults);
+		var settings = this._extend({}, this.defaults);
 		settings.width  = parseInt(d3.select(this.selector).style("width"), 10);
 		settings.height = parseInt(d3.select(this.selector).style("height"), 10);
 
@@ -188,7 +188,7 @@
 	 *
 	 * @return {array}
 	 */
-	D3Funnel.prototype.__makePaths = function()
+	D3Funnel.prototype._makePaths = function()
 	{
 		var paths = [];
 
@@ -238,13 +238,13 @@
 
 		// Harvest total count
 		for (var i = 0; i < this.data.length; i++) {
-			totalCount += this.__isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			totalCount += this._isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 		}
 
 		// Create the path definition for each funnel section
 		// Remember to loop back to the beginning point for a closed path
 		for (i = 0; i < this.data.length; i++) {
-			count = this.__isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			count = this._isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
@@ -349,7 +349,7 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__defineColorGradients = function(svg)
+	D3Funnel.prototype._defineColorGradients = function(svg)
 	{
 		var defs = svg.append("defs");
 
@@ -391,7 +391,7 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__drawTopOval = function(svg, sectionPaths)
+	D3Funnel.prototype._drawTopOval = function(svg, sectionPaths)
 	{
 		var leftX = 0;
 		var rightX = this.width;
@@ -424,7 +424,7 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__drawSection = function(index)
+	D3Funnel.prototype._drawSection = function(index)
 	{
 		if (index === this.data.length) {
 			return;
@@ -434,8 +434,8 @@
 		var group = this.svg.append("g");
 
 		// Fetch path element
-		var path = this.__getSectionPath(group, index);
-		path.data(this.__getSectionData(index));
+		var path = this._getSectionPath(group, index);
+		path.data(this._getSectionData(index));
 
 		// Add animation components
 		if (this.animation !== false) {
@@ -443,21 +443,21 @@
 			path.transition()
 				.duration(this.animation)
 				.ease("linear")
-				.attr("fill", this.__getColor(index))
-				.attr("d", this.__getPathDefinition(index))
+				.attr("fill", this._getColor(index))
+				.attr("d", this._getPathDefinition(index))
 				.each("end", function() {
-					self.__drawSection(index + 1);
+					self._drawSection(index + 1);
 				});
 		} else {
-			path.attr("fill", this.__getColor(index))
-				.attr("d", this.__getPathDefinition(index));
-			this.__drawSection(index + 1);
+			path.attr("fill", this._getColor(index))
+				.attr("d", this._getPathDefinition(index));
+			this._drawSection(index + 1);
 		}
 
 		// Add the hover events
 		if (this.hoverEffects) {
-			path.on("mouseover", this.__onMouseOver)
-				.on("mouseout", this.__onMouseOut);
+			path.on("mouseover", this._onMouseOver)
+				.on("mouseout", this._onMouseOut);
 		}
 
 		// ItemClick event
@@ -465,7 +465,7 @@
 			path.on( "click", this.onItemClick );
 		}
 
-		this.__addSectionLabel(group, index);
+		this._addSectionLabel(group, index);
 	};
 
 	/**
@@ -474,12 +474,12 @@
 	 *
 	 * @return {Object}
 	 */
-	D3Funnel.prototype.__getSectionPath = function(group, index)
+	D3Funnel.prototype._getSectionPath = function(group, index)
 	{
 		var path = group.append("path");
 
 		if (this.animation !== false) {
-			this.__addBeforeTransition(path, index);
+			this._addBeforeTransition(path, index);
 		}
 
 		return path;
@@ -493,7 +493,7 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__addBeforeTransition = function(path, index)
+	D3Funnel.prototype._addBeforeTransition = function(path, index)
 	{
 		var paths = this.sectionPaths[index];
 
@@ -519,10 +519,10 @@
 
 		// Use previous fill color, if available
 		if (this.fillType === "solid") {
-			beforeFill = index > 0 ? this.__getColor(index - 1) : this.__getColor(index);
+			beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
 		// Use current background if gradient (gradients do not transition)
 		} else {
-			beforeFill = this.__getColor(index);
+			beforeFill = this._getColor(index);
 		}
 
 		path.attr("d", beforePath)
@@ -534,14 +534,14 @@
 	 *
 	 * @return {array}
 	 */
-	D3Funnel.prototype.__getSectionData = function(index)
+	D3Funnel.prototype._getSectionData = function(index)
 	{
 		return [{
 			index: index,
 			label: this.data[index][0],
-			value: this.__isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1], formattedValue: this.__isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
+			value: this._isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1], formattedValue: this._isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
 			baseColor: this.data[index][2],
-			fill: this.__getColor(index)
+			fill: this._getColor(index)
 		}];
 	};
 
@@ -553,7 +553,7 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__getColor = function(index)
+	D3Funnel.prototype._getColor = function(index)
 	{
 		if (this.fillType === "solid") {
 			return this.data[index][2];
@@ -567,7 +567,7 @@
 	 *
 	 * @return {string}
 	 */
-	D3Funnel.prototype.__getPathDefinition = function(index)
+	D3Funnel.prototype._getPathDefinition = function(index)
 	{
 		var pathStr = "";
 		var point = [];
@@ -586,7 +586,7 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__onMouseOver = function(data)
+	D3Funnel.prototype._onMouseOver = function(data)
 	{
 		d3.select(this).attr("fill", shadeColor(data.baseColor, -0.2));
 	};
@@ -596,7 +596,7 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__onMouseOut = function(data)
+	D3Funnel.prototype._onMouseOut = function(data)
 	{
 		d3.select(this).attr("fill", data.fill);
 	};
@@ -607,11 +607,11 @@
 	 *
 	 * @return {void}
 	 */
-	D3Funnel.prototype.__addSectionLabel = function(group, index)
+	D3Funnel.prototype._addSectionLabel = function(group, index)
 	{
 		var i = index;
 		var paths = this.sectionPaths[index];
-		var sectionData = this.__getSectionData(index)[0];
+		var sectionData = this._getSectionData(index)[0];
 		var textStr = sectionData.label + ": " + sectionData.formattedValue;
 		var textFill = this.data[i][3] || this.label.fill;
 
@@ -640,7 +640,7 @@
 	 *
 	 * @return {bool}
 	 */
-	D3Funnel.prototype.__isArray = function(value)
+	D3Funnel.prototype._isArray = function(value)
 	{
 		return Object.prototype.toString.call(value) === "[object Array]";
 	};
@@ -653,7 +653,7 @@
 	 *
 	 * @return {Object}
 	 */
-	D3Funnel.prototype.__extend = function(a, b)
+	D3Funnel.prototype._extend = function(a, b)
 	{
 		var prop;
 		for (prop in b) {
@@ -689,4 +689,4 @@
 
 	global.D3Funnel = D3Funnel;
 
-})(window);
+})(window, d3);
