@@ -14,6 +14,7 @@
 				<form class="form-inline">
 					<select class="form-control" id="picker">
 						<option value="basic">No options</option>
+						<option value="formatted">Formatted values</option>
 						<option value="curved">Curved</option>
 						<option value="pinch">Pinched</option>
 						<option value="gradient">Gradient</option>
@@ -53,6 +54,12 @@
 							["Interviewed",  2500],
 							["Hired",        1500]
 						],
+						formattedValues: [
+							["Applicants", [12000, "$ 12,000"]],
+							["Pre-screened", [4000, "$ 4,000"]],
+							["Interviewed", [2500, "$ 2,500"]],
+							["Hired", [1500, "$ 1,500"]]
+						],
 						minHeight: [
 							["Applicants",   12000],
 							["Pre-screened", 4000],
@@ -75,6 +82,10 @@
 
 					var options = {
 						basic: [data.normal, {}],
+						formatted: [
+							data.formattedValues,
+							{}
+						],
 						curved: [
 							data.normal, {
 								isCurved: true
