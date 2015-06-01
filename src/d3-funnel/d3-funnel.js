@@ -7,9 +7,9 @@
 	/**
 	 * D3Funnel
 	 *
-	 * An object representing a D3-driven funnel chart.
+	 * @param {string} selector A selector for the container element.
 	 *
-	 * @param {string} selector A selector for element to contain the funnel.
+	 * @return {void}
 	 */
 	var D3Funnel = function(selector)
 	{
@@ -37,71 +37,16 @@
 	};
 
 	/**
-	 * Check if the supplied value is an array.
-	 *
-	 * @param {mixed} value
-	 *
-	 * @return {bool}
-	 */
-	D3Funnel.prototype.__isArray = function(value)
-	{
-		return Object.prototype.toString.call(value) === "[object Array]";
-	};
-
-	/**
-	 * Extends an object with the members of another.
-	 *
-	 * @param {Object} a The object to be extended.
-	 * @param {Object} b The object to clone from.
-	 *
-	 * @return {Object}
-	 */
-	D3Funnel.prototype.__extend = function(a, b)
-	{
-		var prop;
-		for (prop in b) {
-			if (b.hasOwnProperty(prop)) {
-				a[prop] = b[prop];
-			}
-		}
-		return a;
-	};
-
-	/**
-	 * Draw onto the container with the data and configuration specified. This
-	 * will clear any previous SVG element in the container and draw a new
-	 * funnel chart on top of it.
+	 * Draw the chart inside the container with the data and configuration
+	 * specified. This will remove any previous SVG elements in the container
+	 * and draw a new funnel chart on top of it.
 	 *
 	 * @param {array}  data    A list of rows containing a category, a count,
 	 *                         and optionally a color (in hex).
-	 * @param {Object} options An optional configuration object for chart
-	 *                         options.
+	 * @param {Object} options An optional configuration object to override
+	 *                         defaults. See the docs.
 	 *
-	 * @param {int}      options.width        Initial width. Specified in pixels.
-	 * @param {int}      options.height       Chart height. Specified in pixels.
-	 * @param {int}      options.bottomWidth  Specifies the width percent the
-	 *                                        bottom should be in relation to the
-	 *                                        chart's overall width.
-	 * @param {int}      options.bottomPinch  How many sections (from the bottom)
-	 *                                        should be "pinched" to have fixed
-	 *                                        width defined by options.bottomWidth.
-	 * @param {bool}     options.isCurved     Whether or not the funnel is curved.
-	 * @param {int}      options.curveHeight  The height of the curves. Only
-	 *                                        functional if isCurve is set.
-	 * @param {string}   options.fillType     The section background type. Either
-	 *                                        "solid" or "gradient".
-	 * @param {bool}     options.isInverted   Whether or not the funnel should be
-	 *                                        inverted to a pyramid.
-	 * @param {bool}     options.hoverEffects Whether or not the funnel hover
-	 *                                        effects should be shown.
-	 * @param {bool}     options.dynamicArea  Whether or not the area should be
-	 *                                        dynamically calculated based on
-	 *                                        data counts.
-	 * @param {bool|int} options.minHeight    The minimum height of a level.
-	 * @param {int}      options.animation    The load animation speed. If empty,
-	 *                                        there will be no load animation.
-	 * @param {Object}   options.label
-	 * @param {Object}   options.label.fontSize
+	 * @return {void}
 	 */
 	D3Funnel.prototype.draw = function(data, options)
 	{
@@ -111,12 +56,11 @@
 		// Remove any previous drawings
 		d3.select(this.selector).selectAll("svg").remove();
 
-		// Add the SVG and group element
+		// Add the SVG
 		this.svg = d3.select(this.selector)
 			.append("svg")
 			.attr("width", this.width)
-			.attr("height", this.height)
-			.append("g");
+			.attr("height", this.height);
 
 		this.sectionPaths = this.__makePaths();
 
@@ -135,6 +79,7 @@
 	};
 
 	/**
+<<<<<<< HEAD
 	 * Draw the next section in the iteration.
 	 *
 	 * @param {int} index
@@ -324,10 +269,14 @@
 	};
 
 	/**
+=======
+>>>>>>> e70e93216d2a21b400d3ed66e4f0ac6bc41b2849
 	 * Initialize and calculate important variables for drawing the chart.
 	 *
 	 * @param {array}  data
 	 * @param {Object} options
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__initialize = function(data, options)
 	{
@@ -423,7 +372,6 @@
 
 		// Support for events
 		this.onItemClick = settings.onItemClick;
-
 	};
 
 	/**
@@ -512,7 +460,6 @@
 
 			// Stop velocity for pinched sections
 			if (this.bottomPinch > 0) {
-
 				// Check if we've reached the bottom of the pinch
 				// If so, stop changing on x
 				if (!this.isInverted) {
@@ -591,6 +538,8 @@
 	 * Define the linear color gradients.
 	 *
 	 * @param {Object} svg
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__defineColorGradients = function(svg)
 	{
@@ -631,6 +580,8 @@
 	 *
 	 * @param {Object} svg
 	 * @param {array}  sectionPaths
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__drawTopOval = function(svg, sectionPaths)
 	{
@@ -659,7 +610,173 @@
 	};
 
 	/**
+	 * Draw the next section in the iteration.
+	 *
+	 * @param {int} index
+	 *
+	 * @return {void}
+	 */
+	D3Funnel.prototype.__drawSection = function(index)
+	{
+		if (index === this.data.length) {
+			return;
+		}
+
+		// Create a group just for this block
+		var group = this.svg.append("g");
+
+		// Fetch path element
+		var path = this.__getSectionPath(group, index);
+		path.data(this.__getSectionData(index));
+
+		// Add animation components
+		if (this.animation !== false) {
+			var self = this;
+			path.transition()
+				.duration(this.animation)
+				.ease("linear")
+				.attr("fill", this.__getColor(index))
+				.attr("d", this.__getPathDefinition(index))
+				.each("end", function() {
+					self.__drawSection(index + 1);
+				});
+		} else {
+			path.attr("fill", this.__getColor(index))
+				.attr("d", this.__getPathDefinition(index));
+			this.__drawSection(index + 1);
+		}
+
+		// Add the hover events
+		if (this.hoverEffects) {
+			path.on("mouseover", this.__onMouseOver)
+				.on("mouseout", this.__onMouseOut);
+		}
+
+		// ItemClick event
+		if (this.onItemClick) {
+			path.on( "click", this.onItemClick );
+		}
+
+		this.__addSectionLabel(group, index);
+	};
+
+	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 *
+	 * @return {Object}
+	 */
+	D3Funnel.prototype.__getSectionPath = function(group, index)
+	{
+		var path = group.append("path");
+
+		if (this.animation !== false) {
+			this.__addBeforeTransition(path, index);
+		}
+
+		return path;
+	};
+
+	/**
+	 * Set the attributes of a path element before its animation.
+	 *
+	 * @param {Object} path
+	 * @param {int}    index
+	 *
+	 * @return {void}
+	 */
+	D3Funnel.prototype.__addBeforeTransition = function(path, index)
+	{
+		var paths = this.sectionPaths[index];
+
+		var beforePath = "";
+		var beforeFill = "";
+
+		// Construct the top of the trapezoid and leave the other elements
+		// hovering around to expand downward on animation
+		if (!this.isCurved) {
+			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
+				" L" + paths[1][0] + "," + paths[1][1] +
+				" L" + paths[1][0] + "," + paths[1][1] +
+				" L" + paths[0][0] + "," + paths[0][1];
+		} else {
+			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
+				" Q" + paths[1][0] + "," + paths[1][1] +
+				" " + paths[2][0] + "," + paths[2][1] +
+				" L" + paths[2][0] + "," + paths[2][1] +
+				" M" + paths[2][0] + "," + paths[2][1] +
+				" Q" + paths[1][0] + "," + paths[1][1] +
+				" " + paths[0][0] + "," + paths[0][1];
+		}
+
+		// Use previous fill color, if available
+		if (this.fillType === "solid") {
+			beforeFill = index > 0 ? this.__getColor(index - 1) : this.__getColor(index);
+		// Use current background if gradient (gradients do not transition)
+		} else {
+			beforeFill = this.__getColor(index);
+		}
+
+		path.attr("d", beforePath)
+			.attr("fill", beforeFill);
+	};
+
+	/**
+	 * @param {int} index
+	 *
+	 * @return {array}
+	 */
+	D3Funnel.prototype.__getSectionData = function(index)
+	{
+		return [{
+			index: index,
+			label: this.data[index][0],
+			value: this.data[index][1],
+			baseColor: this.data[index][2],
+			fill: this.__getColor(index)
+		}];
+	};
+
+
+	/**
+	 * Return the color for the given index.
+	 *
+	 * @param {int} index
+	 *
+	 * @return {void}
+	 */
+	D3Funnel.prototype.__getColor = function(index)
+	{
+		if (this.fillType === "solid") {
+			return this.data[index][2];
+		} else {
+			return "url(#gradient-" + index + ")";
+		}
+	};
+
+	/**
+	 * @param {int} index
+	 *
+	 * @return {string}
+	 */
+	D3Funnel.prototype.__getPathDefinition = function(index)
+	{
+		var pathStr = "";
+		var point = [];
+		var paths = this.sectionPaths[index];
+
+		for (var j = 0; j < paths.length; j++) {
+			point = paths[j];
+			pathStr += point[2] + point[0] + "," + point[1] + " ";
+		}
+
+		return pathStr;
+	};
+
+	/**
 	 * @param {Object} data
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__onMouseOver = function(data)
 	{
@@ -668,6 +785,8 @@
 
 	/**
 	 * @param {Object} data
+	 *
+	 * @return {void}
 	 */
 	D3Funnel.prototype.__onMouseOut = function(data)
 	{
@@ -675,10 +794,74 @@
 	};
 
 	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 *
+	 * @return {void}
+	 */
+	D3Funnel.prototype.__addSectionLabel = function(group, index)
+	{
+		var i = index;
+		var paths = this.sectionPaths[index];
+		var textStr = this.data[i][0] + ": " + this.data[i][1].toLocaleString();
+		var textFill = this.data[i][3] || this.label.fill;
+
+		var textX = this.width / 2;   // Center the text
+		var textY = !this.isCurved ?  // Average height of bases
+			(paths[1][1] + paths[2][1]) / 2 :
+			(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+
+		group.append("text")
+			.text(textStr)
+			.attr({
+				"x": textX,
+				"y": textY,
+				"text-anchor": "middle",
+				"dominant-baseline": "middle",
+				"fill": textFill,
+				"pointer-events": "none"
+			})
+			.style("font-size", this.label.fontSize);
+	};
+
+	/**
+	 * Check if the supplied value is an array.
+	 *
+	 * @param {mixed} value
+	 *
+	 * @return {bool}
+	 */
+	D3Funnel.prototype.__isArray = function(value)
+	{
+		return Object.prototype.toString.call(value) === "[object Array]";
+	};
+
+	/**
+	 * Extends an object with the members of another.
+	 *
+	 * @param {Object} a The object to be extended.
+	 * @param {Object} b The object to clone from.
+	 *
+	 * @return {Object}
+	 */
+	D3Funnel.prototype.__extend = function(a, b)
+	{
+		var prop;
+		for (prop in b) {
+			if (b.hasOwnProperty(prop)) {
+				a[prop] = b[prop];
+			}
+		}
+		return a;
+	};
+
+	/**
 	 * Shade a color to the given percentage.
 	 *
- 	 * @param {string} color A hex color.
- 	 * @param {float}  shade The shade adjustment. Can be positive or negative.
+	 * @param {string} color A hex color.
+	 * @param {float}  shade The shade adjustment. Can be positive or negative.
+	 *
+	 * @return {void}
 	 */
 	function shadeColor(color, shade)
 	{
