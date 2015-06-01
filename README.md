@@ -75,6 +75,17 @@ var data = [
 ];
 ```
 
+If you want to pass formatted values to be shown in the funnel, pass in an array containing the value and formatted value:
+
+``` javascript
+var data = [
+    ["Teal",      [12000, "USD 12,000'], "#008080"],
+    ["Byzantium", [4000,  "USD 4,000'],  "#702963"],
+    ["Persimmon", [2500,  "USD 2,500'],  "#ff634d"],
+    ["Azure",     [1500,  'USD 1,500'],  "#007fff"]
+];
+```
+
 # License
 
 MIT license.
