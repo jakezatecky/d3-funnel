@@ -19,7 +19,7 @@
 		this.defaults = {
 			width: 350,
 			height: 400,
-			bottomWidth: 1/3,
+			bottomWidth: 1 / 3,
 			bottomPinch: 0,
 			isCurved: false,
 			curveHeight: 20,
@@ -260,7 +260,7 @@
 				dy = (area * 2) / (topBase + bottomBase);
 
 				if (this.isCurved) {
-					dy = dy - (this.curveHeight/this.data.length);
+					dy = dy - (this.curveHeight / this.data.length);
 				}
 
 				topBase = bottomBase;
@@ -274,10 +274,9 @@
 					if (i >= this.data.length - this.bottomPinch) {
 						dx = 0;
 					}
-				}
 				// Pinch at the first sections relating to the bottom pinch
 				// Revert back to normal velocity after pinch
-				else {
+				} else {
 					// Revert velocity back to the intial if we are using
 					// static area's (prevents zero velocity if isInverted
 					// and bottomPinch are non trivial and dynamicArea is false)
@@ -316,9 +315,8 @@
 					// Left line
 					[prevLeftX, prevHeight, "L"]
 				]);
-			}
 			// Plot straight lines
-			else {
+			} else {
 				paths.push([
 					// Start position
 					[prevLeftX, prevHeight, "M"],
@@ -329,7 +327,7 @@
 					// Move to left
 					[nextLeftX, nextHeight, "L"],
 					// Wrap back to top
-					[prevLeftX, prevHeight, "L"],
+					[prevLeftX, prevHeight, "L"]
 				]);
 			}
 
@@ -462,7 +460,7 @@
 
 		// ItemClick event
 		if (this.onItemClick) {
-			path.on( "click", this.onItemClick );
+			path.on("click", this.onItemClick);
 		}
 
 		this._addSectionLabel(group, index);

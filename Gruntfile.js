@@ -6,10 +6,13 @@ module.exports = function(grunt) {
 			options: {
 				jshintrc: true
 			},
-			main: {
-				files: {
-					src: ["src/d3-funnel/d3-funnel.js"]
-				}
+			main: ["src/d3-funnel/**/*.js"]
+		},
+		jscs: {
+			src: "src/d3-funnel/**/*.js",
+			options: {
+				config: ".jscsrc",
+				verbose: true
 			}
 		},
 		concat: {
@@ -31,8 +34,9 @@ module.exports = function(grunt) {
 	});
 
 	grunt.loadNpmTasks("grunt-contrib-jshint");
+	grunt.loadNpmTasks("grunt-jscs");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 
-	grunt.registerTask("default", ["jshint", "concat", "uglify"]);
+	grunt.registerTask("default", ["jshint", "jscs", "concat", "uglify"]);
 };
