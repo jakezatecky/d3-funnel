@@ -24,14 +24,14 @@ You must also create a container element and instantiate a new chart:
 
 <script>
     var data = [
-        ["Plants",     5000],
-        ["Flowers",    2500],
-        ["Perennials", 200],
-        ["Roses",      50]
+        ['Plants',     5000],
+        ['Flowers',    2500],
+        ['Perennials', 200],
+        ['Roses',      50]
     ];
     var options = {};
 
-    var chart = new D3Funnel("#funnel");
+    var chart = new D3Funnel('#funnel');
     chart.draw(data, options);
 </script>
 ```
@@ -46,14 +46,14 @@ You must also create a container element and instantiate a new chart:
 | `bottomPinch`    | How many sections to pinch on the bottom to create a "neck".                | int      | `0`                 |
 | `isCurved`       | Whether the funnel is curved.                                               | bool     | `false`             |
 | `curveHeight`    | The curvature amount (if `isCurved` is `true`).                             | int      | `20`                |
-| `fillType`       | Either `"solid"` or `"gradient"`.                                           | string   | `"solid"`           |
+| `fillType`       | Either `"solid"` or `"gradient"`.                                           | string   | `'solid'`           |
 | `isInverted`     | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`             |
 | `hoverEffects`   | Whether the funnel has effects on hover.                                    | bool     | `false`             |
 | `dynamicArea`    | Whether block areas are calculated by counts (as opposed to static height). | bool     | `false`             |
 | `minHeight`      | The minimum pixel height of a block.                                        | int/bool | `false`             |
 | `animation`      | The load animation speed in milliseconds.                                   | int/bool | `false`             |
-| `label.fontSize` | Any valid font size for the labels.                                         | string   | `"14px"`            |
-| `label.fill`     | Any valid hex color for the label color                                     | string   | `"#fff"`            |
+| `label.fontSize` | Any valid font size for the labels.                                         | string   | `'14px'`            |
+| `label.fill`     | Any valid hex color for the label color                                     | string   | `'#fff'`            |
 | `onItemClick`    | Event handler if one of the items is clicked.                               | function | `function(d, i) {}` |
 
 ## Advanced Data
@@ -62,10 +62,10 @@ You can specify overriding colors for any data point (hex only):
 
 ``` javascript
 var data = [
-    ["Teal",      12000, "#008080" "#080800"],
-    ["Byzantium", 4000,  "#702963"],
-    ["Persimmon", 2500,  "#ff634d" "#6f34fd"],
-    ["Azure",     1500,  "#007fff" "#07fff0"]
+    ['Teal',      12000, '#008080' '#080800'],
+    ['Byzantium', 4000,  '#702963'],
+    ['Persimmon', 2500,  '#ff634d' '#6f34fd'],
+    ['Azure',     1500,  '#007fff' '#07fff0']
     //         Background ---^         ^--- Label
 ];
 ```
@@ -75,10 +75,10 @@ containing the value and formatted value:
 
 ``` javascript
 var data = [
-    ["Teal",      [12000, "USD 12,000"]],
-    ["Byzantium", [4000,  "USD 4,000"]],
-    ["Persimmon", [2500,  "USD 2,500"]],
-    ["Azure",     [1500,  "USD 1,500"]]
+    ['Teal',      [12000, 'USD 12,000']],
+    ['Byzantium', [4000,  'USD 4,000']],
+    ['Persimmon', [2500,  'USD 2,500']],
+    ['Azure',     [1500,  'USD 1,500']]
 ];
 ```
 

@@ -2,7 +2,7 @@
 
 	/* global d3 */
 	/* jshint bitwise: false */
-	"use strict";
+	'use strict';
 
 	/**
 	 * D3Funnel
@@ -23,15 +23,15 @@
 			bottomPinch: 0,
 			isCurved: false,
 			curveHeight: 20,
-			fillType: "solid",
+			fillType: 'solid',
 			isInverted: false,
 			hoverEffects: false,
 			dynamicArea: false,
 			minHeight: false,
 			animation: false,
 			label: {
-				fontSize: "14px",
-				fill: "#fff"
+				fontSize: '14px',
+				fill: '#fff'
 			}
 		};
 	};
@@ -54,18 +54,18 @@
 		this._initialize(data, options);
 
 		// Remove any previous drawings
-		d3.select(this.selector).selectAll("svg").remove();
+		d3.select(this.selector).selectAll('svg').remove();
 
 		// Add the SVG
 		this.svg = d3.select(this.selector)
-			.append("svg")
-			.attr("width", this.width)
-			.attr("height", this.height);
+			.append('svg')
+			.attr('width', this.width)
+			.attr('height', this.height);
 
 		this.sectionPaths = this._makePaths();
 
 		// Define color gradients
-		if (this.fillType === "gradient") {
+		if (this.fillType === 'gradient') {
 			this._defineColorGradients(this.svg);
 		}
 
@@ -91,13 +91,13 @@
 		if (!this._isArray(data) || data.length === 0 ||
 			!this._isArray(data[0]) || data[0].length < 2) {
 			throw {
-				name: "D3 Funnel Data Error",
-				message: "Funnel data is not valid."
+				name: 'D3 Funnel Data Error',
+				message: 'Funnel data is not valid.'
 			};
 		}
 
 		// Initialize options if not set
-		options = typeof options !== "undefined" ? options : {};
+		options = typeof options !== 'undefined' ? options : {};
 
 		this.data = data;
 
@@ -107,19 +107,19 @@
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
 		var settings = this._extend({}, this.defaults);
-		settings.width  = parseInt(d3.select(this.selector).style("width"), 10);
-		settings.height = parseInt(d3.select(this.selector).style("height"), 10);
+		settings.width  = parseInt(d3.select(this.selector).style('width'), 10);
+		settings.height = parseInt(d3.select(this.selector).style('height'), 10);
 
 		// Overwrite default settings with user options
 		var keys = Object.keys(options);
 		for (i = 0; i < keys.length; i++) {
-			if (keys[i] !== "label") {
+			if (keys[i] !== 'label') {
 				settings[keys[i]] = options[keys[i]];
 			}
 		}
 
 		// Label settings
-		if ("label" in options) {
+		if ('label' in options) {
 			var validLabelOptions = /fontSize|fill/;
 			var labelOption;
 			for (labelOption in options.label) {
@@ -145,7 +145,7 @@
 			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 			// If a color is not set for the record, add one
-			if (!("2" in this.data[i]) || !hexExpression.test(this.data[i][2])) {
+			if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
 				this.data[i][2] = colorScale(i);
 			}
 		}
@@ -303,31 +303,31 @@
 			if (this.isCurved) {
 				paths.push([
 					// Top Bezier curve
-					[prevLeftX, prevHeight, "M"],
-					[middle, prevHeight + (this.curveHeight - 10), "Q"],
-					[prevRightX, prevHeight, ""],
+					[prevLeftX, prevHeight, 'M'],
+					[middle, prevHeight + (this.curveHeight - 10), 'Q'],
+					[prevRightX, prevHeight, ''],
 					// Right line
-					[nextRightX, nextHeight, "L"],
+					[nextRightX, nextHeight, 'L'],
 					// Bottom Bezier curve
-					[nextRightX, nextHeight, "M"],
-					[middle, nextHeight + this.curveHeight, "Q"],
-					[nextLeftX, nextHeight, ""],
+					[nextRightX, nextHeight, 'M'],
+					[middle, nextHeight + this.curveHeight, 'Q'],
+					[nextLeftX, nextHeight, ''],
 					// Left line
-					[prevLeftX, prevHeight, "L"]
+					[prevLeftX, prevHeight, 'L']
 				]);
 			// Plot straight lines
 			} else {
 				paths.push([
 					// Start position
-					[prevLeftX, prevHeight, "M"],
+					[prevLeftX, prevHeight, 'M'],
 					// Move to right
-					[prevRightX, prevHeight, "L"],
+					[prevRightX, prevHeight, 'L'],
 					// Move down
-					[nextRightX, nextHeight, "L"],
+					[nextRightX, nextHeight, 'L'],
 					// Move to left
-					[nextLeftX, nextHeight, "L"],
+					[nextLeftX, nextHeight, 'L'],
 					// Wrap back to top
-					[prevLeftX, prevHeight, "L"]
+					[prevLeftX, prevHeight, 'L']
 				]);
 			}
 
@@ -349,7 +349,7 @@
 	 */
 	D3Funnel.prototype._defineColorGradients = function(svg)
 	{
-		var defs = svg.append("defs");
+		var defs = svg.append('defs');
 
 		// Create a gradient for each section
 		for (var i = 0; i < this.data.length; i++) {
@@ -357,9 +357,9 @@
 			var shade = shadeColor(color, -0.25);
 
 			// Create linear gradient
-			var gradient = defs.append("linearGradient")
+			var gradient = defs.append('linearGradient')
 				.attr({
-					id: "gradient-" + i
+					id: 'gradient-' + i
 				});
 
 			// Define the gradient stops
@@ -373,9 +373,9 @@
 			// Add the gradient stops
 			for (var j = 0; j < stops.length; j++) {
 				var stop = stops[j];
-				gradient.append("stop").attr({
-					offset: stop[0] + "%",
-					style:  "stop-color:" + stop[1]
+				gradient.append('stop').attr({
+					offset: stop[0] + '%',
+					style:  'stop-color:' + stop[1]
 				});
 			}
 		}
@@ -402,17 +402,17 @@
 
 		// Create path form top-most section
 		var paths = sectionPaths[0];
-		var path = "M" + leftX + "," + paths[0][1] +
-			" Q" + centerX + "," + (paths[1][1] + this.curveHeight - 10) +
-			" " + rightX + "," + paths[2][1] +
-			" M" + rightX + ",10" +
-			" Q" + centerX + ",0" +
-			" " + leftX + ",10";
+		var path = 'M' + leftX + ',' + paths[0][1] +
+			' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) +
+			' ' + rightX + ',' + paths[2][1] +
+			' M' + rightX + ',10' +
+			' Q' + centerX + ',0' +
+			' ' + leftX + ',10';
 
 		// Draw top oval
-		svg.append("path")
-			.attr("fill", shadeColor(this.data[0][2], -0.4))
-			.attr("d", path);
+		svg.append('path')
+			.attr('fill', shadeColor(this.data[0][2], -0.4))
+			.attr('d', path);
 	};
 
 	/**
@@ -429,7 +429,7 @@
 		}
 
 		// Create a group just for this block
-		var group = this.svg.append("g");
+		var group = this.svg.append('g');
 
 		// Fetch path element
 		var path = this._getSectionPath(group, index);
@@ -440,27 +440,27 @@
 			var self = this;
 			path.transition()
 				.duration(this.animation)
-				.ease("linear")
-				.attr("fill", this._getColor(index))
-				.attr("d", this._getPathDefinition(index))
-				.each("end", function() {
+				.ease('linear')
+				.attr('fill', this._getColor(index))
+				.attr('d', this._getPathDefinition(index))
+				.each('end', function() {
 					self._drawSection(index + 1);
 				});
 		} else {
-			path.attr("fill", this._getColor(index))
-				.attr("d", this._getPathDefinition(index));
+			path.attr('fill', this._getColor(index))
+				.attr('d', this._getPathDefinition(index));
 			this._drawSection(index + 1);
 		}
 
 		// Add the hover events
 		if (this.hoverEffects) {
-			path.on("mouseover", this._onMouseOver)
-				.on("mouseout", this._onMouseOut);
+			path.on('mouseover', this._onMouseOver)
+				.on('mouseout', this._onMouseOut);
 		}
 
 		// ItemClick event
 		if (this.onItemClick) {
-			path.on("click", this.onItemClick);
+			path.on('click', this.onItemClick);
 		}
 
 		this._addSectionLabel(group, index);
@@ -474,7 +474,7 @@
 	 */
 	D3Funnel.prototype._getSectionPath = function(group, index)
 	{
-		var path = group.append("path");
+		var path = group.append('path');
 
 		if (this.animation !== false) {
 			this._addBeforeTransition(path, index);
@@ -495,36 +495,36 @@
 	{
 		var paths = this.sectionPaths[index];
 
-		var beforePath = "";
-		var beforeFill = "";
+		var beforePath = '';
+		var beforeFill = '';
 
 		// Construct the top of the trapezoid and leave the other elements
 		// hovering around to expand downward on animation
 		if (!this.isCurved) {
-			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
-				" L" + paths[1][0] + "," + paths[1][1] +
-				" L" + paths[1][0] + "," + paths[1][1] +
-				" L" + paths[0][0] + "," + paths[0][1];
+			beforePath = 'M' + paths[0][0] + ',' + paths[0][1] +
+				' L' + paths[1][0] + ',' + paths[1][1] +
+				' L' + paths[1][0] + ',' + paths[1][1] +
+				' L' + paths[0][0] + ',' + paths[0][1];
 		} else {
-			beforePath = "M" + paths[0][0] + "," + paths[0][1] +
-				" Q" + paths[1][0] + "," + paths[1][1] +
-				" " + paths[2][0] + "," + paths[2][1] +
-				" L" + paths[2][0] + "," + paths[2][1] +
-				" M" + paths[2][0] + "," + paths[2][1] +
-				" Q" + paths[1][0] + "," + paths[1][1] +
-				" " + paths[0][0] + "," + paths[0][1];
+			beforePath = 'M' + paths[0][0] + ',' + paths[0][1] +
+				' Q' + paths[1][0] + ',' + paths[1][1] +
+				' ' + paths[2][0] + ',' + paths[2][1] +
+				' L' + paths[2][0] + ',' + paths[2][1] +
+				' M' + paths[2][0] + ',' + paths[2][1] +
+				' Q' + paths[1][0] + ',' + paths[1][1] +
+				' ' + paths[0][0] + ',' + paths[0][1];
 		}
 
 		// Use previous fill color, if available
-		if (this.fillType === "solid") {
+		if (this.fillType === 'solid') {
 			beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
 		// Use current background if gradient (gradients do not transition)
 		} else {
 			beforeFill = this._getColor(index);
 		}
 
-		path.attr("d", beforePath)
-			.attr("fill", beforeFill);
+		path.attr('d', beforePath)
+			.attr('fill', beforeFill);
 	};
 
 	/**
@@ -553,10 +553,10 @@
 	 */
 	D3Funnel.prototype._getColor = function(index)
 	{
-		if (this.fillType === "solid") {
+		if (this.fillType === 'solid') {
 			return this.data[index][2];
 		} else {
-			return "url(#gradient-" + index + ")";
+			return 'url(#gradient-' + index + ')';
 		}
 	};
 
@@ -567,13 +567,13 @@
 	 */
 	D3Funnel.prototype._getPathDefinition = function(index)
 	{
-		var pathStr = "";
+		var pathStr = '';
 		var point = [];
 		var paths = this.sectionPaths[index];
 
 		for (var j = 0; j < paths.length; j++) {
 			point = paths[j];
-			pathStr += point[2] + point[0] + "," + point[1] + " ";
+			pathStr += point[2] + point[0] + ',' + point[1] + ' ';
 		}
 
 		return pathStr;
@@ -586,7 +586,7 @@
 	 */
 	D3Funnel.prototype._onMouseOver = function(data)
 	{
-		d3.select(this).attr("fill", shadeColor(data.baseColor, -0.2));
+		d3.select(this).attr('fill', shadeColor(data.baseColor, -0.2));
 	};
 
 	/**
@@ -596,7 +596,7 @@
 	 */
 	D3Funnel.prototype._onMouseOut = function(data)
 	{
-		d3.select(this).attr("fill", data.fill);
+		d3.select(this).attr('fill', data.fill);
 	};
 
 	/**
@@ -610,7 +610,7 @@
 		var i = index;
 		var paths = this.sectionPaths[index];
 		var sectionData = this._getSectionData(index)[0];
-		var textStr = sectionData.label + ": " + sectionData.formattedValue;
+		var textStr = sectionData.label + ': ' + sectionData.formattedValue;
 		var textFill = this.data[i][3] || this.label.fill;
 
 		var textX = this.width / 2;   // Center the text
@@ -618,17 +618,17 @@
 			(paths[1][1] + paths[2][1]) / 2 :
 			(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
 
-		group.append("text")
+		group.append('text')
 			.text(textStr)
 			.attr({
-				"x": textX,
-				"y": textY,
-				"text-anchor": "middle",
-				"dominant-baseline": "middle",
-				"fill": textFill,
-				"pointer-events": "none"
+				'x': textX,
+				'y': textY,
+				'text-anchor': 'middle',
+				'dominant-baseline': 'middle',
+				'fill': textFill,
+				'pointer-events': 'none'
 			})
-			.style("font-size", this.label.fontSize);
+			.style('font-size', this.label.fontSize);
 	};
 
 	/**
@@ -640,7 +640,7 @@
 	 */
 	D3Funnel.prototype._isArray = function(value)
 	{
-		return Object.prototype.toString.call(value) === "[object Array]";
+		return Object.prototype.toString.call(value) === '[object Array]';
 	};
 
 	/**
@@ -682,7 +682,7 @@
 			0x10000 + (Math.round((t - G) * p) + G) *
 			0x100 + (Math.round((t - B) * p) + B));
 
-		return "#" + converted.toString(16).slice(1);
+		return '#' + converted.toString(16).slice(1);
 	}
 
 	global.D3Funnel = D3Funnel;

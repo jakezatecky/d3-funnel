@@ -20,5 +20,9 @@
 		"catch",
 		"typeof"
 	],
-	"validateIndentation": "\t"
+	"validateIndentation": "\t",
+	"validateQuoteMarks": {
+		"escape": true,
+		"mark": "'"
+	}
 }
