@@ -91,21 +91,21 @@
     <script src="https://rawgit.com/jakezatecky/d3-funnel/master/src/d3-funnel/d3-funnel.js"></script>
     <script>
       $(function() {
-        $("input").change(function() {
+        $('input').change(function() {
           var data = [];
-          if (!$('[value="color"]').is(":checked")) {
+          if (!$('[value="color"]').is(':checked')) {
             data = [
-              ["Applicants",   12000],
-              ["Pre-screened", 4000],
-              ["Interviewed",  2500],
-              ["Hired",        1500]
+              ['Applicants',   12000],
+              ['Pre-screened', 4000],
+              ['Interviewed',  2500],
+              ['Hired',        1500]
             ];
           } else {
             data = [
-              ["Teal",      12000, "#008080"],
-              ["Byzantium", 4000,  "#702963"],
-              ["Persimmon", 2500,  "#ff634d"],
-              ["Azure",     1500,  "#007fff"]
+              ['Teal',      12000, '#008080'],
+              ['Byzantium', 4000,  '#702963'],
+              ['Persimmon', 2500,  '#ff634d'],
+              ['Azure',     1500,  '#007fff']
             ];
           }
 
@@ -118,7 +118,7 @@
               bottomPinch: 1
             },
             gradient: {
-              fillType: "gradient"
+              fillType: 'gradient'
             },
             inverted: {
               isInverted: true
@@ -134,8 +134,8 @@
             },
             label: {
               label: {
-                fontSize: "15px",
-                fill: "#ffeb81"
+                fontSize: '15px',
+                fill: '#ffeb81'
               }
             }
           };
@@ -150,8 +150,8 @@
             options.bottomWidth = 1 / 2;
           }
 
-          (new D3Funnel("#funnel")).draw(data, options);
-        }).trigger("change");
+          (new D3Funnel('#funnel')).draw(data, options);
+        }).trigger('change');
       });
     </script>
   </body>
