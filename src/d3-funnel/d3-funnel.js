@@ -680,8 +680,8 @@
 		var B = f & 0x0000FF;
 
 		var converted = (0x1000000 + (Math.round((t - R) * p) + R) *
-		0x10000 + (Math.round((t - G) * p) + G) *
-		0x100 + (Math.round((t - B) * p) + B));
+			0x10000 + (Math.round((t - G) * p) + G) *
+			0x100 + (Math.round((t - B) * p) + B));
 
 		return '#' + converted.toString(16).slice(1);
 	}
