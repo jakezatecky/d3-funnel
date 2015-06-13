@@ -42,7 +42,7 @@
 		 * specified. This will remove any previous SVG elements in the container
 		 * and draw a new funnel chart on top of it.
 		 *
-		 * @param {array}  data    A list of rows containing a category, a count,
+		 * @param {Array}  data    A list of rows containing a category, a count,
 		 *                         and optionally a color (in hex).
 		 * @param {Object} options An optional configuration object to override
 		 *                         defaults. See the docs.
@@ -82,7 +82,7 @@
 		/**
 		 * Initialize and calculate important variables for drawing the chart.
 		 *
-		 * @param {array}  data
+		 * @param {Array}  data
 		 * @param {Object} options
 		 *
 		 * @return {void}
@@ -186,7 +186,7 @@
 		 * Create the paths to be used to define the discrete funnel sections and
 		 * returns the results in an array.
 		 *
-		 * @return {array}
+		 * @return {Array}
 		 */
 		_makePaths()
 		{
@@ -385,7 +385,7 @@
 		 * Draw the top oval of a curved funnel.
 		 *
 		 * @param {Object} svg
-		 * @param {array}  sectionPaths
+		 * @param {Array}  sectionPaths
 		 *
 		 * @return {void}
 		 */
@@ -530,7 +530,7 @@
 		/**
 		 * @param {int} index
 		 *
-		 * @return {array}
+		 * @return {Array}
 		 */
 		_getSectionData(index)
 		{
@@ -548,7 +548,7 @@
 		 *
 		 * @param {int} index
 		 *
-		 * @return {void}
+		 * @return {string}
 		 */
 		_getColor(index)
 		{
@@ -635,7 +635,7 @@
 	/**
 	 * Check if the supplied value is an array.
 	 *
-	 * @param {mixed} value
+	 * @param {*} value
 	 *
 	 * @return {bool}
 	 */
@@ -667,9 +667,9 @@
 	 * Shade a color to the given percentage.
 	 *
 	 * @param {string} color A hex color.
-	 * @param {float}  shade The shade adjustment. Can be positive or negative.
+	 * @param {number} shade The shade adjustment. Can be positive or negative.
 	 *
-	 * @return {void}
+	 * @return {string}
 	 */
 	function shadeColor(color, shade)
 	{
