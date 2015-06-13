@@ -4,9 +4,6 @@
 	/* jshint bitwise: false */
 	'use strict';
 
-	/**
-	 * D3Funnel
-	 */
 	class D3Funnel
 	{
 
