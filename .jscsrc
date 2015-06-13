@@ -1,6 +1,7 @@
 {
 	"preset": "crockford",
 
+    "esnext": true,
 	"disallowDanglingUnderscores": null,
 	"disallowNewlineBeforeBlockStatements": null,
 	"requireSpacesInAnonymousFunctionExpression": {

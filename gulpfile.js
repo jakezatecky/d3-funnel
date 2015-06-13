@@ -1,6 +1,7 @@
 var gulp   = require('gulp');
 var jshint = require('gulp-jshint');
 var jscs   = require('gulp-jscs');
+var babel  = require('gulp-babel');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 var header = require('gulp-header');
@@ -14,8 +15,10 @@ gulp.task('build', function() {
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'))
         .pipe(jscs({
+            esnext: true,
             verbose: true
         }))
+        .pipe(babel())
         .pipe(gulp.dest('./dist/'))
         .pipe(rename({
             extname: '.min.js'}

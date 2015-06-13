@@ -12,6 +12,7 @@
   "main": "src/d3-funnel/d3-funnel.js",
   "devDependencies": {
     "gulp": "^3.9.0",
+    "gulp-babel": "^5.1.0",
     "gulp-header": "^1.2.2",
     "gulp-jscs": "^1.6.0",
     "gulp-jshint": "^1.11.0",
