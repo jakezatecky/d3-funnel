@@ -102,7 +102,7 @@
 			this.data = data;
 
 			// Counter
-			var i = 0;
+			var i;
 
 			// Prepare the configuration settings based on the defaults
 			// Set the default width and height based on the container
