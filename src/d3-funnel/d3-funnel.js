@@ -119,7 +119,7 @@
 			}
 
 			// Label settings
-			if ('label' in options) {
+			if (options.hasOwnProperty('label')) {
 				var validLabelOptions = /fontSize|fill/;
 				var labelOption;
 				for (labelOption in options.label) {
