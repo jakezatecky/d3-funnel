@@ -614,8 +614,8 @@
 
 			var textX = this.width / 2;   // Center the text
 			var textY = !this.isCurved ?  // Average height of bases
-			(paths[1][1] + paths[2][1]) / 2 :
-			(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+				(paths[1][1] + paths[2][1]) / 2 :
+				(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
 
 			group.append('text')
 				.text(textStr)
