@@ -58,6 +58,10 @@
                 Hover Effects
               </label>
               <label>
+                <input type="checkbox" value="click">
+                Click Event
+              </label>
+              <label>
                 <input type="checkbox" value="dynamic" checked>
                 Dynamic Area
               </label>
@@ -125,6 +129,11 @@
             },
             hover: {
               hoverEffects: true
+            },
+            click: {
+              onItemClick: function(d, i) {
+                alert(d.label + ' selected.');
+              }
             },
             dynamic: {
               dynamicArea: true
