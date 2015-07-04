@@ -38,6 +38,17 @@
 		}
 
 		/**
+		 * Remove the funnel and its events from the DOM.
+		 *
+		 * @return {void}
+		 */
+		destroy()
+		{
+			// D3's remove method appears to be sufficient for removing the events
+			d3.select(this.selector).selectAll('svg').remove();
+		}
+
+		/**
 		 * Draw the chart inside the container with the data and configuration
 		 * specified. This will remove any previous SVG elements in the container
 		 * and draw a new funnel chart on top of it.
@@ -51,11 +62,11 @@
 		 */
 		draw(data, options)
 		{
+			// Remove any previous drawings
+			this.destroy();
+
 			// Initialize chart options
 			this._initialize(data, options);
-
-			// Remove any previous drawings
-			d3.select(this.selector).selectAll('svg').remove();
 
 			// Add the SVG
 			this.svg = d3.select(this.selector)

@@ -56,6 +56,14 @@ You must also create a container element and instantiate a new chart:
 | `label.fill`     | Any valid hex color for the label color                                     | string   | `'#fff'`            |
 | `onItemClick`    | Event handler if one of the items is clicked.                               | function | `function(d, i) {}` |
 
+## API
+
+Additional methods beyond `draw()` are accessible after instantiating the chart:
+
+| Method           | Description                                                                 |
+| ---------------- | --------------------------------------------------------------------------- |
+| `destroy()`      | Removes the funnel and its events from the DOM.                             |
+
 ## Advanced Data
 
 You can specify overriding colors for any data point (hex only):

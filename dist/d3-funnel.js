@@ -45,6 +45,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}
 
 		_createClass(D3Funnel, [{
+			key: 'destroy',
+
+			/**
+    * Remove the funnel and its events from the DOM.
+    *
+    * @return {void}
+    */
+			value: function destroy() {
+				// D3's remove method appears to be sufficient for removing the events
+				d3.select(this.selector).selectAll('svg').remove();
+			}
+		}, {
 			key: 'draw',
 
 			/**
@@ -60,11 +72,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     * @return {void}
     */
 			value: function draw(data, options) {
+				// Remove any previous drawings
+				this.destroy();
+
 				// Initialize chart options
 				this._initialize(data, options);
-
-				// Remove any previous drawings
-				d3.select(this.selector).selectAll('svg').remove();
 
 				// Add the SVG
 				this.svg = d3.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
