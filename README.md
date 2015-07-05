@@ -1,5 +1,8 @@
 # D3 Funnel
 
+[![npm](https://img.shields.io/npm/v/d3-funnel.svg)](https://www.npmjs.com/package/d3-funnel)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/jakezatecky/d3-funnel/master/LICENSE.txt)
+
 **D3Funnel** is an extensible, open-source JavaScript library for rendering
 funnel charts using the [D3.js][d3] library.
 
