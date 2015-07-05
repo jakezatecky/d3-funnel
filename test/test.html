@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Mocha</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="../node_modules/mocha/mocha.css"/>
+	</head>
+	<body>
+		<script src="../node_modules/mocha/mocha.js"></script>
+		<script src="../node_modules/chai/chai.js"></script>
+		<script src="../node_modules/d3/d3.js"></script>
+		<script>
+			mocha.ui('bdd');
+			mocha.reporter('html');
+			assert = chai.assert;
+		</script>
+		<script src="../compiled/d3-funnel.js"></script>
+		<script src="d3-funnel/d3-funnel.js"></script>
+		<script>
+			if (window.mochaPhantomJS) {
+				mochaPhantomJS.run();
+			} else {
+				mocha.run();
+			}
+		</script>
+
+		<div id="funnel"></div>
+	</body>
+</html>
