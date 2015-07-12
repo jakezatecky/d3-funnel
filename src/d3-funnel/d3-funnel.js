@@ -1,4 +1,4 @@
-(function(global, d3) {
+((global, d3) => {
 
 	/* global d3 */
 	/* jshint bitwise: false */
