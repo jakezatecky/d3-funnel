@@ -107,7 +107,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
-			value: function _initialize(data, options) {
+			value: function _initialize(data) {
+				var options = arguments[1] === undefined ? {} : arguments[1];
+
 				if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
 					throw {
 						name: 'D3 Funnel Data Error',

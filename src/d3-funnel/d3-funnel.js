@@ -98,7 +98,7 @@
 		 *
 		 * @return {void}
 		 */
-		_initialize(data, options)
+		_initialize(data, options = {})
 		{
 			if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
 				throw {
