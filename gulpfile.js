@@ -12,7 +12,7 @@ var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFull
 
 var src = ['./src/d3-funnel/d3-funnel.js'];
 
-gulp.task('test-format', function() {
+gulp.task('test-format', function () {
 	return gulp.src(src)
 		.pipe(jshint())
 		.pipe(jshint.reporter('default'))
@@ -22,7 +22,7 @@ gulp.task('test-format', function() {
 		}));
 });
 
-gulp.task('compile', function() {
+gulp.task('compile', function () {
 	return gulp.src(src)
 		.pipe(babel())
 		.pipe(gulp.dest('./compiled/'));
@@ -33,7 +33,7 @@ gulp.task('test-mocha', ['compile'], function () {
 		.pipe(mocha({reporter: 'spec'}));
 });
 
-gulp.task('build', ['test-format', 'test-mocha'], function() {
+gulp.task('build', ['test-format', 'test-mocha'], function () {
 	return gulp.src(['./compiled/d3-funnel.js'])
 		.pipe(gulp.dest('./dist/'))
 		.pipe(rename({
