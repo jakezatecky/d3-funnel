@@ -1,4 +1,23 @@
 describe('D3Funnel', function () {
+	var getFunnel, getSvg, getLength, getBasicData;
+
+	beforeEach(function (done) {
+		getFunnel = function () {
+			return new D3Funnel('#funnel');
+		};
+		getSvg = function () {
+			return d3.select('#funnel').selectAll('svg');
+		};
+		getLength = function (selection) {
+			return selection[0].length;
+		};
+		getBasicData = function() {
+			return [['Node', 100]];
+		};
+
+		done();
+	});
+
 	describe('constructor', function () {
 		it('should instantiate without error', function () {
 			new D3Funnel('#funnel');
@@ -6,61 +25,44 @@ describe('D3Funnel', function () {
 	});
 
 	describe('methods', function () {
-		var funnel, getLength;
-
-		beforeEach(function (done) {
-			funnel = new D3Funnel('#funnel');
-			getLength = function () {
-				return d3.select('#funnel').selectAll('svg')[0].length;
-			};
-
-			done();
-		});
-
 		describe('draw', function () {
 			it('should draw simple chart', function () {
-				funnel.draw([['Node', 100]], {});
+				getFunnel().draw(getBasicData(), {});
 
-				assert.equal(1, getLength());
+				assert.equal(1, getLength(getSvg()));
 			});
 		});
 
 		describe('destroy', function () {
 			it('should remove a drawn SVG element', function () {
-				funnel.draw([['Node', 100]], {});
+				var funnel = getFunnel();
+
+				funnel.draw(getBasicData(), {});
 				funnel.destroy();
 
-				assert.equal(0, getLength());
+				assert.equal(0, getLength(getSvg()));
 			});
 		});
 	});
 
 	describe('options', function () {
-		var funnel;
-
-		beforeEach(function (done) {
-			funnel = new D3Funnel('#funnel');
-
-			done();
-		});
-
 		describe('width', function () {
 			it('should set the funnel\'s width to the specified amount', function () {
-				funnel.draw([['Node', 100]], {
+				getFunnel().draw(getBasicData(), {
 					width: 200
 				});
 
-				assert.equal(200, d3.select('#funnel').selectAll('svg').node().getBBox().width);
+				assert.equal(200, getSvg().node().getBBox().width);
 			});
 		});
 
 		describe('height', function () {
 			it('should set the funnel\'s height to the specified amount', function () {
-				funnel.draw([['Node', 100]], {
+				getFunnel().draw(getBasicData(), {
 					height: 200
 				});
 
-				assert.equal(200, d3.select('#funnel').selectAll('svg').node().getBBox().height);
+				assert.equal(200, getSvg().node().getBBox().height);
 			});
 		});
 	});
