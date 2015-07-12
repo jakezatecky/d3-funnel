@@ -34,4 +34,34 @@ describe('D3Funnel', function() {
 			});
 		});
 	});
+
+	describe('options', function() {
+		var funnel;
+
+		beforeEach(function(done) {
+			funnel = new D3Funnel('#funnel');
+
+			done();
+		});
+
+		describe('width', function() {
+			it('should set the funnel\'s width to the specified amount', function() {
+				funnel.draw([['Node', 100]], {
+					width: 200
+				});
+
+				assert.equal(200, d3.select('#funnel').selectAll('svg').node().getBBox().width);
+			});
+		});
+
+		describe('height', function() {
+			it('should set the funnel\'s height to the specified amount', function() {
+				funnel.draw([['Node', 100]], {
+					height: 200
+				});
+
+				assert.equal(200, d3.select('#funnel').selectAll('svg').node().getBBox().height);
+			});
+		});
+	});
 });
