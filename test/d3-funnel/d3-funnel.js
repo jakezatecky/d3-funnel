@@ -31,6 +31,14 @@ describe('D3Funnel', function () {
 
 				assert.equal(1, getLength(getSvg()));
 			});
+
+			it('should throw an exception on invalid data', function () {
+				var funnel = getFunnel();
+
+				assert.throws(function () {
+					funnel.draw(['One dimensional', 2], {});
+				}, Error, 'Funnel data is not valid.');
+			});
 		});
 
 		describe('destroy', function () {

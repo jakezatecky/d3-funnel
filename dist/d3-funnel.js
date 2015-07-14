@@ -111,10 +111,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				var options = arguments[1] === undefined ? {} : arguments[1];
 
 				if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
-					throw {
-						name: 'D3 Funnel Data Error',
-						message: 'Funnel data is not valid.'
-					};
+					throw new Error('Funnel data is not valid.');
 				}
 
 				// Initialize options if not set
