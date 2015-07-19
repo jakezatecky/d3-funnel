@@ -110,16 +110,16 @@
 			this.data = data;
 
 			// Counter
-			var i;
+			let i;
 
 			// Prepare the configuration settings based on the defaults
 			// Set the default width and height based on the container
-			var settings = extend({}, this.defaults);
+			let settings = extend({}, this.defaults);
 			settings.width = parseInt(d3.select(this.selector).style('width'), 10);
 			settings.height = parseInt(d3.select(this.selector).style('height'), 10);
 
 			// Overwrite default settings with user options
-			var keys = Object.keys(options);
+			let keys = Object.keys(options);
 			for (i = 0; i < keys.length; i++) {
 				if (keys[i] !== 'label') {
 					settings[keys[i]] = options[keys[i]];
@@ -128,8 +128,8 @@
 
 			// Label settings
 			if (options.hasOwnProperty('label')) {
-				var validLabelOptions = /fontSize|fill/;
-				var labelOption;
+				let validLabelOptions = /fontSize|fill/;
+				let labelOption;
 				for (labelOption in options.label) {
 					if (labelOption.match(validLabelOptions)) {
 						settings.label[labelOption] = options.label[labelOption];
@@ -148,9 +148,9 @@
 			}
 
 			// Initialize the colors for each block section
-			var colorScale = d3.scale.category10();
+			let colorScale = d3.scale.category10();
 			for (i = 0; i < this.data.length; i++) {
-				var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+				let hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 				// If a color is not set for the record, add one
 				if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
@@ -198,16 +198,16 @@
 		 */
 		_makePaths()
 		{
-			var paths = [];
+			let paths = [];
 
 			// Initialize velocity
-			var dx = this.dx;
-			var dy = this.dy;
+			let dx = this.dx;
+			let dy = this.dy;
 
 			// Initialize starting positions
-			var prevLeftX = 0;
-			var prevRightX = this.width;
-			var prevHeight = 0;
+			let prevLeftX = 0;
+			let prevRightX = this.width;
+			let prevHeight = 0;
 
 			// Start from the bottom for inverted
 			if (this.isInverted) {
@@ -216,48 +216,48 @@
 			}
 
 			// Initialize next positions
-			var nextLeftX = 0;
-			var nextRightX = 0;
-			var nextHeight = 0;
+			let nextLeftX = 0;
+			let nextRightX = 0;
+			let nextHeight = 0;
 
-			var middle = this.width / 2;
+			let middle = this.width / 2;
 
 			// Move down if there is an initial curve
 			if (this.isCurved) {
 				prevHeight = 10;
 			}
 
-			var topBase = this.width;
-			var bottomBase = 0;
+			let topBase = this.width;
+			let bottomBase = 0;
 
-			var totalArea = this.height * (this.width + this.bottomWidth) / 2;
-			var slope = 2 * this.height / (this.width - this.bottomWidth);
+			let totalArea = this.height * (this.width + this.bottomWidth) / 2;
+			let slope = 2 * this.height / (this.width - this.bottomWidth);
 
 			// This is greedy in that the section will have a guranteed height and
 			// the remaining is shared among the ratio, instead of being shared
 			// according to the remaining minus the guranteed
 			if (this.minHeight !== false) {
-				var height = (this.height - this.minHeight * this.data.length);
+				let height = (this.height - this.minHeight * this.data.length);
 				totalArea = height * (this.width + this.bottomWidth) / 2;
 			}
 
-			var totalCount = 0;
-			var count = 0;
+			let totalCount = 0;
+			let count = 0;
 
 			// Harvest total count
-			for (var i = 0; i < this.data.length; i++) {
+			for (let i = 0; i < this.data.length; i++) {
 				totalCount += isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 			}
 
 			// Create the path definition for each funnel section
 			// Remember to loop back to the beginning point for a closed path
-			for (i = 0; i < this.data.length; i++) {
+			for (let i = 0; i < this.data.length; i++) {
 				count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 				// Calculate dynamic shapes based on area
 				if (this.dynamicArea) {
-					var ratio = count / totalCount;
-					var area = ratio * totalArea;
+					let ratio = count / totalCount;
+					let area = ratio * totalArea;
 
 					if (this.minHeight !== false) {
 						area += this.minHeight * (this.width + this.bottomWidth) / 2;
@@ -357,21 +357,21 @@
 		 */
 		_defineColorGradients(svg)
 		{
-			var defs = svg.append('defs');
+			let defs = svg.append('defs');
 
 			// Create a gradient for each section
-			for (var i = 0; i < this.data.length; i++) {
-				var color = this.data[i][2];
-				var shade = shadeColor(color, -0.25);
+			for (let i = 0; i < this.data.length; i++) {
+				let color = this.data[i][2];
+				let shade = shadeColor(color, -0.25);
 
 				// Create linear gradient
-				var gradient = defs.append('linearGradient')
+				let gradient = defs.append('linearGradient')
 					.attr({
 						id: 'gradient-' + i
 					});
 
 				// Define the gradient stops
-				var stops = [
+				let stops = [
 					[0, shade],
 					[40, color],
 					[60, color],
@@ -379,8 +379,8 @@
 				];
 
 				// Add the gradient stops
-				for (var j = 0; j < stops.length; j++) {
-					var stop = stops[j];
+				for (let j = 0; j < stops.length; j++) {
+					let stop = stops[j];
 					gradient.append('stop').attr({
 						offset: stop[0] + '%',
 						style: 'stop-color:' + stop[1]
@@ -399,9 +399,9 @@
 		 */
 		_drawTopOval(svg, sectionPaths)
 		{
-			var leftX = 0;
-			var rightX = this.width;
-			var centerX = this.width / 2;
+			let leftX = 0;
+			let rightX = this.width;
+			let centerX = this.width / 2;
 
 			if (this.isInverted) {
 				leftX = this.bottomLeftX;
@@ -409,8 +409,8 @@
 			}
 
 			// Create path form top-most section
-			var paths = sectionPaths[0];
-			var path = 'M' + leftX + ',' + paths[0][1] +
+			let paths = sectionPaths[0];
+			let path = 'M' + leftX + ',' + paths[0][1] +
 				' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) +
 				' ' + rightX + ',' + paths[2][1] +
 				' M' + rightX + ',10' +
@@ -437,15 +437,15 @@
 			}
 
 			// Create a group just for this block
-			var group = this.svg.append('g');
+			let group = this.svg.append('g');
 
 			// Fetch path element
-			var path = this._getSectionPath(group, index);
+			let path = this._getSectionPath(group, index);
 			path.data(this._getSectionData(index));
 
 			// Add animation components
 			if (this.animation !== false) {
-				var self = this;
+				let self = this;
 				path.transition()
 					.duration(this.animation)
 					.ease('linear')
@@ -482,7 +482,7 @@
 		 */
 		_getSectionPath(group, index)
 		{
-			var path = group.append('path');
+			let path = group.append('path');
 
 			if (this.animation !== false) {
 				this._addBeforeTransition(path, index);
@@ -501,10 +501,10 @@
 		 */
 		_addBeforeTransition(path, index)
 		{
-			var paths = this.sectionPaths[index];
+			let paths = this.sectionPaths[index];
 
-			var beforePath = '';
-			var beforeFill = '';
+			let beforePath = '';
+			let beforeFill = '';
 
 			// Construct the top of the trapezoid and leave the other elements
 			// hovering around to expand downward on animation
@@ -574,11 +574,11 @@
 		 */
 		_getPathDefinition(index)
 		{
-			var pathStr = '';
-			var point = [];
-			var paths = this.sectionPaths[index];
+			let pathStr = '';
+			let point = [];
+			let paths = this.sectionPaths[index];
 
-			for (var j = 0; j < paths.length; j++) {
+			for (let j = 0; j < paths.length; j++) {
 				point = paths[j];
 				pathStr += point[2] + point[0] + ',' + point[1] + ' ';
 			}
@@ -614,14 +614,14 @@
 		 */
 		_addSectionLabel(group, index)
 		{
-			var i = index;
-			var paths = this.sectionPaths[index];
-			var sectionData = this._getSectionData(index)[0];
-			var textStr = sectionData.label + ': ' + sectionData.formattedValue;
-			var textFill = this.data[i][3] || this.label.fill;
+			let i = index;
+			let paths = this.sectionPaths[index];
+			let sectionData = this._getSectionData(index)[0];
+			let textStr = sectionData.label + ': ' + sectionData.formattedValue;
+			let textFill = this.data[i][3] || this.label.fill;
 
-			var textX = this.width / 2;   // Center the text
-			var textY = !this.isCurved ?  // Average height of bases
+			let textX = this.width / 2;   // Center the text
+			let textY = !this.isCurved ?  // Average height of bases
 				(paths[1][1] + paths[2][1]) / 2 :
 				(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
 
@@ -662,7 +662,7 @@
 	 */
 	function extend(a, b)
 	{
-		var prop;
+		let prop;
 		for (prop in b) {
 			if (b.hasOwnProperty(prop)) {
 				a[prop] = b[prop];
@@ -681,13 +681,13 @@
 	 */
 	function shadeColor(color, shade)
 	{
-		var f = parseInt(color.slice(1), 16);
-		var t = shade < 0 ? 0 : 255;
-		var p = shade < 0 ? shade * -1 : shade;
-		var R = f >> 16, G = f >> 8 & 0x00FF;
-		var B = f & 0x0000FF;
+		let f = parseInt(color.slice(1), 16);
+		let t = shade < 0 ? 0 : 255;
+		let p = shade < 0 ? shade * -1 : shade;
+		let R = f >> 16, G = f >> 8 & 0x00FF;
+		let B = f & 0x0000FF;
 
-		var converted = (0x1000000 + (Math.round((t - R) * p) + R) *
+		let converted = (0x1000000 + (Math.round((t - R) * p) + R) *
 			0x10000 + (Math.round((t - G) * p) + G) *
 			0x100 + (Math.round((t - B) * p) + B));
 
