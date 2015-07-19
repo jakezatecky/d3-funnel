@@ -73,5 +73,29 @@ describe('D3Funnel', function () {
 				assert.equal(200, getSvg().node().getBBox().height);
 			});
 		});
+
+		describe('isCurved', function() {
+			it('should create an additional path on top of the trapezoids', function () {
+				getFunnel().draw(getBasicData(), {
+					isCurved: true
+				});
+
+				assert.equal(2, d3.selectAll('#funnel path')[0].length);
+			});
+
+			it('should create a quadratic Bezier curve on each path', function () {
+				getFunnel().draw(getBasicData(), {
+					isCurved: true
+				});
+
+				var paths = d3.selectAll('#funnel path');
+
+				var quadraticPaths = paths.filter(function () {
+					return d3.select(this).attr('d').indexOf('Q') > -1;
+				});
+
+				assert.equal(paths[0].length, quadraticPaths[0].length);
+			});
+		});
 	});
 });
