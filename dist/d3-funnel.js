@@ -120,7 +120,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				this.data = data;
 
 				// Counter
-				var i;
+				var i = undefined;
 
 				// Prepare the configuration settings based on the defaults
 				// Set the default width and height based on the container
@@ -139,7 +139,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				// Label settings
 				if (options.hasOwnProperty('label')) {
 					var validLabelOptions = /fontSize|fill/;
-					var labelOption;
+					var labelOption = undefined;
 					for (labelOption in options.label) {
 						if (labelOption.match(validLabelOptions)) {
 							settings.label[labelOption] = options.label[labelOption];
@@ -258,7 +258,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				// Create the path definition for each funnel section
 				// Remember to loop back to the beginning point for a closed path
-				for (i = 0; i < this.data.length; i++) {
+				for (var i = 0; i < this.data.length; i++) {
 					count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 					// Calculate dynamic shapes based on area
@@ -376,10 +376,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 					// Add the gradient stops
 					for (var j = 0; j < stops.length; j++) {
-						var stop = stops[j];
+						var _stop = stops[j];
 						gradient.append('stop').attr({
-							offset: stop[0] + '%',
-							style: 'stop-color:' + stop[1]
+							offset: _stop[0] + '%',
+							style: 'stop-color:' + _stop[1]
 						});
 					}
 				}
@@ -423,6 +423,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     * @return {void}
     */
 			value: function _drawSection(index) {
+				var _this = this;
+
 				if (index === this.data.length) {
 					return;
 				}
@@ -436,10 +438,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				// Add animation components
 				if (this.animation !== false) {
-					var self = this;
-					path.transition().duration(this.animation).ease('linear').attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
-						self._drawSection(index + 1);
-					});
+					(function () {
+						var self = _this;
+						path.transition().duration(_this.animation).ease('linear').attr('fill', _this._getColor(index)).attr('d', _this._getPathDefinition(index)).each('end', function () {
+							self._drawSection(index + 1);
+						});
+					})();
 				} else {
 					path.attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index));
 					this._drawSection(index + 1);
@@ -640,7 +644,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   * @return {Object}
   */
 	function extend(a, b) {
-		var prop;
+		var prop = undefined;
 		for (prop in b) {
 			if (b.hasOwnProperty(prop)) {
 				a[prop] = b[prop];
