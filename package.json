@@ -11,18 +11,18 @@
   "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
   "main": "src/d3-funnel/d3-funnel.js",
   "devDependencies": {
-    "chai": "^3.0.0",
+    "chai": "^3.2.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.1.0",
     "gulp-header": "^1.2.2",
     "gulp-jscs": "^1.6.0",
-    "gulp-jshint": "^1.11.0",
-    "gulp-mocha-phantomjs": "^0.6.1",
+    "gulp-jshint": "^1.11.2",
+    "gulp-mocha-phantomjs": "^0.7.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.2.0",
     "mocha": "^2.2.5"
   },
   "dependencies": {
-    "d3": "~3.5.5"
+    "d3": "~3.5.6"
   }
 }
