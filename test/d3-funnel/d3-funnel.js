@@ -74,7 +74,7 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('isCurved', function() {
+		describe('isCurved', function () {
 			it('should create an additional path on top of the trapezoids', function () {
 				getFunnel().draw(getBasicData(), {
 					isCurved: true
@@ -95,6 +95,20 @@ describe('D3Funnel', function () {
 				});
 
 				assert.equal(paths[0].length, quadraticPaths[0].length);
+			});
+		});
+
+		describe('fillType', function () {
+			it('should create gradients when set to \'gradient\'', function () {
+				getFunnel().draw(getBasicData(), {
+					fillType: 'gradient'
+				});
+
+				// Cannot try to re-select the camelCased linearGradient element due to a Webkit bug in the current
+				// PhantomJS; workaround is to select the known ID of the linearGradient element
+				// https://bugs.webkit.org/show_bug.cgi?id=83438
+
+				assert.equal(1, d3.selectAll('#funnel defs #gradient-0')[0].length);
 			});
 		});
 	});
