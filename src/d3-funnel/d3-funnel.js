@@ -74,7 +74,7 @@
 				.attr('width', this.width)
 				.attr('height', this.height);
 
-			this.sectionPaths = this._makePaths();
+			this.blockPaths = this._makePaths();
 
 			// Define color gradients
 			if (this.fillType === 'gradient') {
@@ -83,11 +83,11 @@
 
 			// Add top oval if curved
 			if (this.isCurved) {
-				this._drawTopOval(this.svg, this.sectionPaths);
+				this._drawTopOval(this.svg, this.blockPaths);
 			}
 
-			// Add each block section
-			this._drawSection(0);
+			// Add each block
+			this._drawBlock(0);
 		}
 
 		/**
@@ -147,7 +147,7 @@
 				settings.height = this.defaults.height;
 			}
 
-			// Initialize the colors for each block section
+			// Initialize the colors for each block
 			let colorScale = d3.scale.category10();
 			for (i = 0; i < this.data.length; i++) {
 				let hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -191,7 +191,7 @@
 		}
 
 		/**
-		 * Create the paths to be used to define the discrete funnel sections and
+		 * Create the paths to be used to define the discrete funnel blocks and
 		 * returns the results in an array.
 		 *
 		 * @return {Array}
@@ -233,7 +233,7 @@
 			let totalArea = this.height * (this.width + this.bottomWidth) / 2;
 			let slope = 2 * this.height / (this.width - this.bottomWidth);
 
-			// This is greedy in that the section will have a guaranteed height
+			// This is greedy in that the block will have a guaranteed height
 			// and the remaining is shared among the ratio, instead of being
 			// shared according to the remaining minus the guaranteed
 			if (this.minHeight !== false) {
@@ -249,7 +249,7 @@
 				totalCount += isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 			}
 
-			// Create the path definition for each funnel section
+			// Create the path definition for each funnel block
 			// Remember to loop back to the beginning point for a closed path
 			for (let i = 0; i < this.data.length; i++) {
 				count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
@@ -274,7 +274,7 @@
 					topBase = bottomBase;
 				}
 
-				// Stop velocity for pinched sections
+				// Stop velocity for pinched blocks
 				if (this.bottomPinch > 0) {
 					// Check if we've reached the bottom of the pinch
 					// If so, stop changing on x
@@ -282,8 +282,8 @@
 						if (i >= this.data.length - this.bottomPinch) {
 							dx = 0;
 						}
-						// Pinch at the first sections relating to the bottom pinch
-						// Revert back to normal velocity after pinch
+					// Pinch at the first blocks relating to the bottom pinch
+					// Revert back to normal velocity after pinch
 					} else {
 						// Revert velocity back to the intial if we are using
 						// static area's (prevents zero velocity if isInverted
@@ -296,7 +296,7 @@
 					}
 				}
 
-				// Calculate the position of next section
+				// Calculate the position of next block
 				nextLeftX = prevLeftX + dx;
 				nextRightX = prevRightX - dx;
 				nextHeight = prevHeight + dy;
@@ -339,7 +339,7 @@
 					]);
 				}
 
-				// Set the next section's previous position
+				// Set the next block's previous position
 				prevLeftX = nextLeftX;
 				prevRightX = nextRightX;
 				prevHeight = nextHeight;
@@ -359,7 +359,7 @@
 		{
 			let defs = svg.append('defs');
 
-			// Create a gradient for each section
+			// Create a gradient for each block
 			for (let i = 0; i < this.data.length; i++) {
 				let color = this.data[i][2];
 				let shade = shadeColor(color, -0.25);
@@ -393,11 +393,11 @@
 		 * Draw the top oval of a curved funnel.
 		 *
 		 * @param {Object} svg
-		 * @param {Array}  sectionPaths
+		 * @param {Array}  blockPaths
 		 *
 		 * @return {void}
 		 */
-		_drawTopOval(svg, sectionPaths)
+		_drawTopOval(svg, blockPaths)
 		{
 			let leftX = 0;
 			let rightX = this.width;
@@ -408,8 +408,8 @@
 				rightX = this.width - this.bottomLeftX;
 			}
 
-			// Create path form top-most section
-			let paths = sectionPaths[0];
+			// Create path from top-most block
+			let paths = blockPaths[0];
 			let path = 'M' + leftX + ',' + paths[0][1] +
 				' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) +
 				' ' + rightX + ',' + paths[2][1] +
@@ -424,13 +424,13 @@
 		}
 
 		/**
-		 * Draw the next section in the iteration.
+		 * Draw the next block in the iteration.
 		 *
 		 * @param {int} index
 		 *
 		 * @return {void}
 		 */
-		_drawSection(index)
+		_drawBlock(index)
 		{
 			if (index === this.data.length) {
 				return;
@@ -440,8 +440,8 @@
 			let group = this.svg.append('g');
 
 			// Fetch path element
-			let path = this._getSectionPath(group, index);
-			path.data(this._getSectionData(index));
+			let path = this._getBlockPath(group, index);
+			path.data(this._getBlockData(index));
 
 			// Add animation components
 			if (this.animation !== false) {
@@ -452,12 +452,12 @@
 					.attr('fill', this._getColor(index))
 					.attr('d', this._getPathDefinition(index))
 					.each('end', function () {
-						self._drawSection(index + 1);
+						self._drawBlock(index + 1);
 					});
 			} else {
 				path.attr('fill', this._getColor(index))
 					.attr('d', this._getPathDefinition(index));
-				this._drawSection(index + 1);
+				this._drawBlock(index + 1);
 			}
 
 			// Add the hover events
@@ -471,7 +471,7 @@
 				path.on('click', this.onItemClick);
 			}
 
-			this._addSectionLabel(group, index);
+			this._addBlockLabel(group, index);
 		}
 
 		/**
@@ -480,7 +480,7 @@
 		 *
 		 * @return {Object}
 		 */
-		_getSectionPath(group, index)
+		_getBlockPath(group, index)
 		{
 			let path = group.append('path');
 
@@ -501,7 +501,7 @@
 		 */
 		_addBeforeTransition(path, index)
 		{
-			let paths = this.sectionPaths[index];
+			let paths = this.blockPaths[index];
 
 			let beforePath = '';
 			let beforeFill = '';
@@ -540,7 +540,7 @@
 		 *
 		 * @return {Array}
 		 */
-		_getSectionData(index)
+		_getBlockData(index)
 		{
 			return [{
 				index: index,
@@ -576,7 +576,7 @@
 		{
 			let pathStr = '';
 			let point = [];
-			let paths = this.sectionPaths[index];
+			let paths = this.blockPaths[index];
 
 			for (let j = 0; j < paths.length; j++) {
 				point = paths[j];
@@ -612,12 +612,12 @@
 		 *
 		 * @return {void}
 		 */
-		_addSectionLabel(group, index)
+		_addBlockLabel(group, index)
 		{
 			let i = index;
-			let paths = this.sectionPaths[index];
-			let sectionData = this._getSectionData(index)[0];
-			let textStr = sectionData.label + ': ' + sectionData.formattedValue;
+			let paths = this.blockPaths[index];
+			let blockData = this._getBlockData(index)[0];
+			let textStr = blockData.label + ': ' + blockData.formattedValue;
 			let textFill = this.data[i][3] || this.label.fill;
 
 			let textX = this.width / 2;   // Center the text

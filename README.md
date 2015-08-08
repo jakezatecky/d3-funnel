@@ -47,7 +47,7 @@ You must also create a container element and instantiate a new chart:
 | `width`          | The pixel width of the chart.                                               | int      | Container's width   |
 | `height`         | The pixel height of the chart.                                              | int      | Container's height  |
 | `bottomWidth`    | The percent of total width the bottom should be.                            | float    | `1 / 3`             |
-| `bottomPinch`    | How many sections to pinch on the bottom to create a "neck".                | int      | `0`                 |
+| `bottomPinch`    | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                 |
 | `isCurved`       | Whether the funnel is curved.                                               | bool     | `false`             |
 | `curveHeight`    | The curvature amount (if `isCurved` is `true`).                             | int      | `20`                |
 | `fillType`       | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`           |

@@ -81,7 +81,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				// Add the SVG
 				this.svg = d3.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
 
-				this.sectionPaths = this._makePaths();
+				this.blockPaths = this._makePaths();
 
 				// Define color gradients
 				if (this.fillType === 'gradient') {
@@ -90,11 +90,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				// Add top oval if curved
 				if (this.isCurved) {
-					this._drawTopOval(this.svg, this.sectionPaths);
+					this._drawTopOval(this.svg, this.blockPaths);
 				}
 
-				// Add each block section
-				this._drawSection(0);
+				// Add each block
+				this._drawBlock(0);
 			}
 		}, {
 			key: '_initialize',
@@ -157,7 +157,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					settings.height = this.defaults.height;
 				}
 
-				// Initialize the colors for each block section
+				// Initialize the colors for each block
 				var colorScale = d3.scale.category10();
 				for (i = 0; i < this.data.length; i++) {
 					var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -199,7 +199,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			key: '_makePaths',
 
 			/**
-    * Create the paths to be used to define the discrete funnel sections and
+    * Create the paths to be used to define the discrete funnel blocks and
     * returns the results in an array.
     *
     * @return {Array}
@@ -240,7 +240,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				var totalArea = this.height * (this.width + this.bottomWidth) / 2;
 				var slope = 2 * this.height / (this.width - this.bottomWidth);
 
-				// This is greedy in that the section will have a guaranteed height
+				// This is greedy in that the block will have a guaranteed height
 				// and the remaining is shared among the ratio, instead of being
 				// shared according to the remaining minus the guaranteed
 				if (this.minHeight !== false) {
@@ -256,7 +256,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					totalCount += isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 				}
 
-				// Create the path definition for each funnel section
+				// Create the path definition for each funnel block
 				// Remember to loop back to the beginning point for a closed path
 				for (var i = 0; i < this.data.length; i++) {
 					count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
@@ -281,7 +281,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						topBase = bottomBase;
 					}
 
-					// Stop velocity for pinched sections
+					// Stop velocity for pinched blocks
 					if (this.bottomPinch > 0) {
 						// Check if we've reached the bottom of the pinch
 						// If so, stop changing on x
@@ -289,7 +289,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							if (i >= this.data.length - this.bottomPinch) {
 								dx = 0;
 							}
-							// Pinch at the first sections relating to the bottom pinch
+							// Pinch at the first blocks relating to the bottom pinch
 							// Revert back to normal velocity after pinch
 						} else {
 							// Revert velocity back to the intial if we are using
@@ -303,7 +303,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						}
 					}
 
-					// Calculate the position of next section
+					// Calculate the position of next block
 					nextLeftX = prevLeftX + dx;
 					nextRightX = prevRightX - dx;
 					nextHeight = prevHeight + dy;
@@ -340,7 +340,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						[prevLeftX, prevHeight, 'L']]);
 					}
 
-					// Set the next section's previous position
+					// Set the next block's previous position
 					prevLeftX = nextLeftX;
 					prevRightX = nextRightX;
 					prevHeight = nextHeight;
@@ -361,7 +361,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			value: function _defineColorGradients(svg) {
 				var defs = svg.append('defs');
 
-				// Create a gradient for each section
+				// Create a gradient for each block
 				for (var i = 0; i < this.data.length; i++) {
 					var color = this.data[i][2];
 					var shade = shadeColor(color, -0.25);
@@ -391,11 +391,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     * Draw the top oval of a curved funnel.
     *
     * @param {Object} svg
-    * @param {Array}  sectionPaths
+    * @param {Array}  blockPaths
     *
     * @return {void}
     */
-			value: function _drawTopOval(svg, sectionPaths) {
+			value: function _drawTopOval(svg, blockPaths) {
 				var leftX = 0;
 				var rightX = this.width;
 				var centerX = this.width / 2;
@@ -405,24 +405,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					rightX = this.width - this.bottomLeftX;
 				}
 
-				// Create path form top-most section
-				var paths = sectionPaths[0];
+				// Create path from top-most block
+				var paths = blockPaths[0];
 				var path = 'M' + leftX + ',' + paths[0][1] + ' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) + ' ' + rightX + ',' + paths[2][1] + ' M' + rightX + ',10' + ' Q' + centerX + ',0' + ' ' + leftX + ',10';
 
 				// Draw top oval
 				svg.append('path').attr('fill', shadeColor(this.data[0][2], -0.4)).attr('d', path);
 			}
 		}, {
-			key: '_drawSection',
+			key: '_drawBlock',
 
 			/**
-    * Draw the next section in the iteration.
+    * Draw the next block in the iteration.
     *
     * @param {int} index
     *
     * @return {void}
     */
-			value: function _drawSection(index) {
+			value: function _drawBlock(index) {
 				var _this = this;
 
 				if (index === this.data.length) {
@@ -433,20 +433,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				var group = this.svg.append('g');
 
 				// Fetch path element
-				var path = this._getSectionPath(group, index);
-				path.data(this._getSectionData(index));
+				var path = this._getBlockPath(group, index);
+				path.data(this._getBlockData(index));
 
 				// Add animation components
 				if (this.animation !== false) {
 					(function () {
 						var self = _this;
 						path.transition().duration(_this.animation).ease('linear').attr('fill', _this._getColor(index)).attr('d', _this._getPathDefinition(index)).each('end', function () {
-							self._drawSection(index + 1);
+							self._drawBlock(index + 1);
 						});
 					})();
 				} else {
 					path.attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index));
-					this._drawSection(index + 1);
+					this._drawBlock(index + 1);
 				}
 
 				// Add the hover events
@@ -459,10 +459,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					path.on('click', this.onItemClick);
 				}
 
-				this._addSectionLabel(group, index);
+				this._addBlockLabel(group, index);
 			}
 		}, {
-			key: '_getSectionPath',
+			key: '_getBlockPath',
 
 			/**
     * @param {Object} group
@@ -470,7 +470,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {Object}
     */
-			value: function _getSectionPath(group, index) {
+			value: function _getBlockPath(group, index) {
 				var path = group.append('path');
 
 				if (this.animation !== false) {
@@ -491,7 +491,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     * @return {void}
     */
 			value: function _addBeforeTransition(path, index) {
-				var paths = this.sectionPaths[index];
+				var paths = this.blockPaths[index];
 
 				var beforePath = '';
 				var beforeFill = '';
@@ -515,14 +515,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				path.attr('d', beforePath).attr('fill', beforeFill);
 			}
 		}, {
-			key: '_getSectionData',
+			key: '_getBlockData',
 
 			/**
     * @param {int} index
     *
     * @return {Array}
     */
-			value: function _getSectionData(index) {
+			value: function _getBlockData(index) {
 				return [{
 					index: index,
 					label: this.data[index][0],
@@ -559,7 +559,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			value: function _getPathDefinition(index) {
 				var pathStr = '';
 				var point = [];
-				var paths = this.sectionPaths[index];
+				var paths = this.blockPaths[index];
 
 				for (var j = 0; j < paths.length; j++) {
 					point = paths[j];
@@ -591,7 +591,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				d3.select(this).attr('fill', data.fill);
 			}
 		}, {
-			key: '_addSectionLabel',
+			key: '_addBlockLabel',
 
 			/**
     * @param {Object} group
@@ -599,11 +599,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
-			value: function _addSectionLabel(group, index) {
+			value: function _addBlockLabel(group, index) {
 				var i = index;
-				var paths = this.sectionPaths[index];
-				var sectionData = this._getSectionData(index)[0];
-				var textStr = sectionData.label + ': ' + sectionData.formattedValue;
+				var paths = this.blockPaths[index];
+				var blockData = this._getBlockData(index)[0];
+				var textStr = blockData.label + ': ' + blockData.formattedValue;
 				var textFill = this.data[i][3] || this.label.fill;
 
 				var textX = this.width / 2; // Center the text
