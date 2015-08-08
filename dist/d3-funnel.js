@@ -240,9 +240,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				var totalArea = this.height * (this.width + this.bottomWidth) / 2;
 				var slope = 2 * this.height / (this.width - this.bottomWidth);
 
-				// This is greedy in that the section will have a guranteed height and
-				// the remaining is shared among the ratio, instead of being shared
-				// according to the remaining minus the guranteed
+				// This is greedy in that the section will have a guaranteed height
+				// and the remaining is shared among the ratio, instead of being
+				// shared according to the remaining minus the guaranteed
 				if (this.minHeight !== false) {
 					var height = this.height - this.minHeight * this.data.length;
 					totalArea = height * (this.width + this.bottomWidth) / 2;
