@@ -111,6 +111,15 @@ describe('D3Funnel', function () {
 
 				assert.equal('url(#gradient-0)', d3.select('#funnel path').attr('fill'));
 			});
+
+			it('should use solid fill when not set to \'gradient\'', function () {
+				getFunnel().draw(getBasicData(), {});
+
+				// Check for valid hex string
+				assert.equal(true, /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
+					d3.select('#funnel path').attr('fill')
+				));
+			});
 		});
 	});
 });
