@@ -116,7 +116,7 @@ describe('D3Funnel', function () {
 				getFunnel().draw(getBasicData(), {});
 
 				// Check for valid hex string
-				assert.equal(true, /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
+				assert.isTrue(/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
 					d3.select('#funnel path').attr('fill')
 				));
 			});
