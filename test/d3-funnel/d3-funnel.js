@@ -121,5 +121,17 @@ describe('D3Funnel', function () {
 				));
 			});
 		});
+
+		describe('label.fontSize', function () {
+			it('should set the label\'s font size to the specified amount', function () {
+				getFunnel().draw(getBasicData(), {
+					label: {
+						fontSize: '16px'
+					}
+				});
+
+				assert.isTrue(d3.select('#funnel text').attr('style').indexOf('font-size: 16px') > -1);
+			});
+		});
 	});
 });
