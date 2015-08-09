@@ -133,5 +133,17 @@ describe('D3Funnel', function () {
 				assert.isTrue(d3.select('#funnel text').attr('style').indexOf('font-size: 16px') > -1);
 			});
 		});
+
+		describe('label.fill', function () {
+			it('should set the label\'s fill color to the specified color', function () {
+				getFunnel().draw(getBasicData(), {
+					label: {
+						fill: '#777'
+					}
+				});
+
+				assert.isTrue(d3.select('#funnel text').attr('fill').indexOf('#777') > -1);
+			});
+		});
 	});
 });
