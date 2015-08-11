@@ -5,6 +5,7 @@
 	"disallowDanglingUnderscores": null,
 	"disallowNewlineBeforeBlockStatements": null,
 	"disallowTrailingComma": null,
+	"requireArrowFunctions": true,
 	"requireTrailingComma": {
 		"ignoreSingleValue": true,
 		"ignoreSingleLine": true

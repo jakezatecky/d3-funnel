@@ -443,14 +443,13 @@
 
 			// Add animation components
 			if (this.animation !== false) {
-				let self = this;
 				path.transition()
 					.duration(this.animation)
 					.ease('linear')
 					.attr('fill', this._getColor(index))
 					.attr('d', this._getPathDefinition(index))
-					.each('end', function () {
-						self._drawBlock(index + 1);
+					.each('end', () => {
+						this._drawBlock(index + 1);
 					});
 			} else {
 				path.attr('fill', this._getColor(index))
