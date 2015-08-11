@@ -526,7 +526,7 @@
 			// Use previous fill color, if available
 			if (this.fillType === 'solid') {
 				beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
-				// Use current background if gradient (gradients do not transition)
+			// Use current background if gradient (gradients do not transition)
 			} else {
 				beforeFill = this._getColor(index);
 			}

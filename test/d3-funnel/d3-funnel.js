@@ -104,8 +104,9 @@ describe('D3Funnel', function () {
 					fillType: 'gradient'
 				});
 
-				// Cannot try to re-select the camelCased linearGradient element due to a Webkit bug in the current
-				// PhantomJS; workaround is to select the known ID of the linearGradient element
+				// Cannot try to re-select the camelCased linearGradient element
+				// due to a Webkit bug in the current PhantomJS; workaround is
+				// to select the known ID of the linearGradient element
 				// https://bugs.webkit.org/show_bug.cgi?id=83438
 				assert.equal(1, d3.selectAll('#funnel defs #gradient-0')[0].length);
 
