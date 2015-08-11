@@ -44,20 +44,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			};
 		}
 
+		/**
+   * Check if the supplied value is an array.
+   *
+   * @param {*} value
+   *
+   * @return {bool}
+   */
+
+		/**
+   * Remove the funnel and its events from the DOM.
+   *
+   * @return {void}
+   */
+
 		_createClass(D3Funnel, [{
 			key: 'destroy',
-
-			/**
-    * Remove the funnel and its events from the DOM.
-    *
-    * @return {void}
-    */
 			value: function destroy() {
 				// D3's remove method appears to be sufficient for removing the events
 				d3.select(this.selector).selectAll('svg').remove();
 			}
-		}, {
-			key: 'draw',
 
 			/**
     * Draw the chart inside the container with the data and configuration
@@ -71,8 +77,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
+		}, {
+			key: 'draw',
 			value: function draw(data) {
-				var options = arguments[1] === undefined ? {} : arguments[1];
+				var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 				// Remove any previous drawings
 				this.destroy();
@@ -98,8 +106,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				// Add each block
 				this._drawBlock(0);
 			}
-		}, {
-			key: '_initialize',
 
 			/**
     * Initialize and calculate important variables for drawing the chart.
@@ -109,6 +115,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
+		}, {
+			key: '_initialize',
 			value: function _initialize(data, options) {
 				if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
 					throw new Error('Funnel data is not valid.');
@@ -194,8 +202,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				// Support for events
 				this.onItemClick = settings.onItemClick;
 			}
-		}, {
-			key: '_makePaths',
 
 			/**
     * Create the paths to be used to define the discrete funnel blocks and
@@ -203,6 +209,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {Array}
     */
+		}, {
+			key: '_makePaths',
 			value: function _makePaths() {
 				var paths = [];
 
@@ -291,15 +299,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							// Pinch at the first blocks relating to the bottom pinch
 							// Revert back to normal velocity after pinch
 						} else {
-							// Revert velocity back to the intial if we are using
-							// static area's (prevents zero velocity if isInverted
-							// and bottomPinch are non trivial and dynamicArea is false)
-							if (!this.dynamicArea) {
-								dx = this.dx;
-							}
+								// Revert velocity back to the initial if we are using
+								// static area's (prevents zero velocity if isInverted
+								// and bottomPinch are non trivial and dynamicArea is
+								// false)
+								if (!this.dynamicArea) {
+									dx = this.dx;
+								}
 
-							dx = i < this.bottomPinch ? 0 : dx;
-						}
+								dx = i < this.bottomPinch ? 0 : dx;
+							}
 					}
 
 					// Calculate the position of next block
@@ -326,18 +335,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						[prevLeftX, prevHeight, 'L']]);
 						// Plot straight lines
 					} else {
-						paths.push([
-						// Start position
-						[prevLeftX, prevHeight, 'M'],
-						// Move to right
-						[prevRightX, prevHeight, 'L'],
-						// Move down
-						[nextRightX, nextHeight, 'L'],
-						// Move to left
-						[nextLeftX, nextHeight, 'L'],
-						// Wrap back to top
-						[prevLeftX, prevHeight, 'L']]);
-					}
+							paths.push([
+							// Start position
+							[prevLeftX, prevHeight, 'M'],
+							// Move to right
+							[prevRightX, prevHeight, 'L'],
+							// Move down
+							[nextRightX, nextHeight, 'L'],
+							// Move to left
+							[nextLeftX, nextHeight, 'L'],
+							// Wrap back to top
+							[prevLeftX, prevHeight, 'L']]);
+						}
 
 					// Set the next block's previous position
 					prevLeftX = nextLeftX;
@@ -347,8 +356,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				return paths;
 			}
-		}, {
-			key: '_defineColorGradients',
 
 			/**
     * Define the linear color gradients.
@@ -357,6 +364,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
+		}, {
+			key: '_defineColorGradients',
 			value: function _defineColorGradients(svg) {
 				var defs = svg.append('defs');
 
@@ -383,8 +392,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					}
 				}
 			}
-		}, {
-			key: '_drawTopOval',
 
 			/**
     * Draw the top oval of a curved funnel.
@@ -394,6 +401,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
+		}, {
+			key: '_drawTopOval',
 			value: function _drawTopOval(svg, blockPaths) {
 				var leftX = 0;
 				var rightX = this.width;
@@ -411,8 +420,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				// Draw top oval
 				svg.append('path').attr('fill', shadeColor(this.data[0][2], -0.4)).attr('d', path);
 			}
-		}, {
-			key: '_drawBlock',
 
 			/**
     * Draw the next block in the iteration.
@@ -421,6 +428,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
+		}, {
+			key: '_drawBlock',
 			value: function _drawBlock(index) {
 				var _this = this;
 
@@ -437,12 +446,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				// Add animation components
 				if (this.animation !== false) {
-					(function () {
-						var self = _this;
-						path.transition().duration(_this.animation).ease('linear').attr('fill', _this._getColor(index)).attr('d', _this._getPathDefinition(index)).each('end', function () {
-							self._drawBlock(index + 1);
-						});
-					})();
+					path.transition().duration(this.animation).ease('linear').attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
+						_this._drawBlock(index + 1);
+					});
 				} else {
 					path.attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index));
 					this._drawBlock(index + 1);
@@ -460,8 +466,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				this._addBlockLabel(group, index);
 			}
-		}, {
-			key: '_getBlockPath',
 
 			/**
     * @param {Object} group
@@ -469,6 +473,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {Object}
     */
+		}, {
+			key: '_getBlockPath',
 			value: function _getBlockPath(group, index) {
 				var path = group.append('path');
 
@@ -478,8 +484,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				return path;
 			}
-		}, {
-			key: '_addBeforeTransition',
 
 			/**
     * Set the attributes of a path element before its animation.
@@ -489,6 +493,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
+		}, {
+			key: '_addBeforeTransition',
 			value: function _addBeforeTransition(path, index) {
 				var paths = this.blockPaths[index];
 
@@ -508,19 +514,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
 					// Use current background if gradient (gradients do not transition)
 				} else {
-					beforeFill = this._getColor(index);
-				}
+						beforeFill = this._getColor(index);
+					}
 
 				path.attr('d', beforePath).attr('fill', beforeFill);
 			}
-		}, {
-			key: '_getBlockData',
 
 			/**
     * @param {int} index
     *
     * @return {Array}
     */
+		}, {
+			key: '_getBlockData',
 			value: function _getBlockData(index) {
 				return [{
 					index: index,
@@ -531,8 +537,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					fill: this._getColor(index)
 				}];
 			}
-		}, {
-			key: '_getColor',
 
 			/**
     * Return the color for the given index.
@@ -541,6 +545,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {string}
     */
+		}, {
+			key: '_getColor',
 			value: function _getColor(index) {
 				if (this.fillType === 'solid') {
 					return this.data[index][2];
@@ -548,14 +554,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					return 'url(#gradient-' + index + ')';
 				}
 			}
-		}, {
-			key: '_getPathDefinition',
 
 			/**
     * @param {int} index
     *
     * @return {string}
     */
+		}, {
+			key: '_getPathDefinition',
 			value: function _getPathDefinition(index) {
 				var pathStr = '';
 				var point = [];
@@ -568,30 +574,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				return pathStr;
 			}
-		}, {
-			key: '_onMouseOver',
 
 			/**
     * @param {Object} data
     *
     * @return {void}
     */
+		}, {
+			key: '_onMouseOver',
 			value: function _onMouseOver(data) {
 				d3.select(this).attr('fill', shadeColor(data.baseColor, -0.2));
 			}
-		}, {
-			key: '_onMouseOut',
 
 			/**
     * @param {Object} data
     *
     * @return {void}
     */
+		}, {
+			key: '_onMouseOut',
 			value: function _onMouseOut(data) {
 				d3.select(this).attr('fill', data.fill);
 			}
-		}, {
-			key: '_addBlockLabel',
 
 			/**
     * @param {Object} group
@@ -599,6 +603,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
+		}, {
+			key: '_addBlockLabel',
 			value: function _addBlockLabel(group, index) {
 				var i = index;
 				var paths = this.blockPaths[index];
@@ -624,13 +630,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		return D3Funnel;
 	})();
 
-	/**
-  * Check if the supplied value is an array.
-  *
-  * @param {*} value
-  *
-  * @return {bool}
-  */
 	function isArray(value) {
 		return Object.prototype.toString.call(value) === '[object Array]';
 	}
@@ -666,10 +665,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		var t = shade < 0 ? 0 : 255;
 		var p = shade < 0 ? shade * -1 : shade;
 		var R = f >> 16,
-		    G = f >> 8 & 255;
-		var B = f & 255;
+		    G = f >> 8 & 0x00FF;
+		var B = f & 0x0000FF;
 
-		var converted = 16777216 + (Math.round((t - R) * p) + R) * 65536 + (Math.round((t - G) * p) + G) * 256 + (Math.round((t - B) * p) + B);
+		var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
 
 		return '#' + converted.toString(16).slice(1);
 	}
