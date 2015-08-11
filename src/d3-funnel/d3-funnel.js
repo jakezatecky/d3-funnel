@@ -550,7 +550,7 @@
 					this.data[index][1][1] :
 					this.data[index][1].toLocaleString(),
 				baseColor: this.data[index][2],
-				fill: this._getColor(index)
+				fill: this._getColor(index),
 			}];
 		}
 

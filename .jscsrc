@@ -5,6 +5,10 @@
 	"disallowDanglingUnderscores": null,
 	"disallowNewlineBeforeBlockStatements": null,
 	"disallowTrailingComma": null,
+	"requireTrailingComma": {
+		"ignoreSingleValue": true,
+		"ignoreSingleLine": true
+	},
 	"requireSpacesInAnonymousFunctionExpression": {
 		"beforeOpeningCurlyBrace": true
 	},
