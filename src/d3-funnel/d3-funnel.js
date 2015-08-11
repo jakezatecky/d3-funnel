@@ -175,13 +175,13 @@
 			// Change in x direction
 			// Will be sharper if there is a pinch
 			this.dx = this.bottomPinch > 0 ?
-			this.bottomLeftX / (data.length - this.bottomPinch) :
-			this.bottomLeftX / data.length;
+				this.bottomLeftX / (data.length - this.bottomPinch) :
+				this.bottomLeftX / data.length;
 			// Change in y direction
 			// Curved chart needs reserved pixels to account for curvature
 			this.dy = this.isCurved ?
-			(this.height - this.curveHeight) / data.length :
-			this.height / data.length;
+				(this.height - this.curveHeight) / data.length :
+				this.height / data.length;
 
 			// Support for events
 			this.onItemClick = settings.onItemClick;
