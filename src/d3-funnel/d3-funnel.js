@@ -32,8 +32,8 @@
 				animation: false,
 				label: {
 					fontSize: '14px',
-					fill: '#fff'
-				}
+					fill: '#fff',
+				},
 			};
 		}
 
@@ -321,7 +321,7 @@
 						[middle, nextHeight + this.curveHeight, 'Q'],
 						[nextLeftX, nextHeight, ''],
 						// Left line
-						[prevLeftX, prevHeight, 'L']
+						[prevLeftX, prevHeight, 'L'],
 					]);
 					// Plot straight lines
 				} else {
@@ -335,7 +335,7 @@
 						// Move to left
 						[nextLeftX, nextHeight, 'L'],
 						// Wrap back to top
-						[prevLeftX, prevHeight, 'L']
+						[prevLeftX, prevHeight, 'L'],
 					]);
 				}
 
@@ -375,7 +375,7 @@
 					[0, shade],
 					[40, color],
 					[60, color],
-					[100, shade]
+					[100, shade],
 				];
 
 				// Add the gradient stops
@@ -383,7 +383,7 @@
 					let stop = stops[j];
 					gradient.append('stop').attr({
 						offset: stop[0] + '%',
-						style: 'stop-color:' + stop[1]
+						style: 'stop-color:' + stop[1],
 					});
 				}
 			}
@@ -638,7 +638,7 @@
 					'text-anchor': 'middle',
 					'dominant-baseline': 'middle',
 					'fill': textFill,
-					'pointer-events': 'none'
+					'pointer-events': 'none',
 				})
 				.style('font-size', this.label.fontSize);
 		}

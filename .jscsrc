@@ -1,9 +1,10 @@
 {
 	"preset": "crockford",
 
-    "esnext": true,
+	"esnext": true,
 	"disallowDanglingUnderscores": null,
 	"disallowNewlineBeforeBlockStatements": null,
+	"disallowTrailingComma": null,
 	"requireSpacesInAnonymousFunctionExpression": {
 		"beforeOpeningCurlyBrace": true
 	},
