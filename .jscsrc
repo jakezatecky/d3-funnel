@@ -22,6 +22,7 @@
 		"catch",
 		"typeof"
 	],
+	"requireVarDeclFirst": null,
 	"validateIndentation": "\t",
 	"validateQuoteMarks": {
 		"escape": true,
