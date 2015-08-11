@@ -71,7 +71,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
-			value: function draw(data, options) {
+			value: function draw(data) {
+				var options = arguments[1] === undefined ? {} : arguments[1];
+
 				// Remove any previous drawings
 				this.destroy();
 
@@ -107,15 +109,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     *
     * @return {void}
     */
-			value: function _initialize(data) {
-				var options = arguments[1] === undefined ? {} : arguments[1];
-
+			value: function _initialize(data, options) {
 				if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
 					throw new Error('Funnel data is not valid.');
 				}
-
-				// Initialize options if not set
-				options = typeof options !== 'undefined' ? options : {};
 
 				this.data = data;
 

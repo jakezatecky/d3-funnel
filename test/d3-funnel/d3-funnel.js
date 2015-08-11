@@ -32,6 +32,12 @@ describe('D3Funnel', function () {
 				assert.equal(1, getLength(getSvg()));
 			});
 
+			it('should draw when second argument is missing', function () {
+				getFunnel().draw(getBasicData());
+
+				assert.equal(1, getLength(getSvg()));
+			});
+
 			it('should throw an exception on invalid data', function () {
 				var funnel = getFunnel();
 

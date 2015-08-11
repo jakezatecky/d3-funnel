@@ -60,7 +60,7 @@
 		 *
 		 * @return {void}
 		 */
-		draw(data, options)
+		draw(data, options  = {})
 		{
 			// Remove any previous drawings
 			this.destroy();
@@ -98,14 +98,11 @@
 		 *
 		 * @return {void}
 		 */
-		_initialize(data, options = {})
+		_initialize(data, options)
 		{
 			if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
 				throw new Error('Funnel data is not valid.');
 			}
-
-			// Initialize options if not set
-			options = typeof options !== 'undefined' ? options : {};
 
 			this.data = data;
 
