@@ -129,12 +129,12 @@
 			// Label settings
 			if (options.hasOwnProperty('label')) {
 				let validLabelOptions = /fontSize|fill/;
-				let labelOption;
-				for (labelOption in options.label) {
+
+				Object.keys(options.label).forEach((labelOption) => {
 					if (labelOption.match(validLabelOptions)) {
 						settings.label[labelOption] = options.label[labelOption];
 					}
-				}
+				});
 			}
 			this.label = settings.label;
 

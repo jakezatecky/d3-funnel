@@ -138,13 +138,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				// Label settings
 				if (options.hasOwnProperty('label')) {
-					var validLabelOptions = /fontSize|fill/;
-					var labelOption = undefined;
-					for (labelOption in options.label) {
-						if (labelOption.match(validLabelOptions)) {
-							settings.label[labelOption] = options.label[labelOption];
-						}
-					}
+					(function () {
+						var validLabelOptions = /fontSize|fill/;
+
+						Object.keys(options.label).forEach(function (labelOption) {
+							if (labelOption.match(validLabelOptions)) {
+								settings.label[labelOption] = options.label[labelOption];
+							}
+						});
+					})();
 				}
 				this.label = settings.label;
 
