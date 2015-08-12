@@ -1,6 +1,5 @@
-/* global d3 */
-/* exported D3Funnel, isArray, extend, shadeColor */
-/* jshint bitwise: false */
+/* global d3, isArray, extend, shadeColor */
+/* exported D3Funnel */
 
 class D3Funnel
 {
@@ -173,13 +172,13 @@ class D3Funnel
 		// Change in x direction
 		// Will be sharper if there is a pinch
 		this.dx = this.bottomPinch > 0 ?
-			this.bottomLeftX / (data.length - this.bottomPinch) :
-			this.bottomLeftX / data.length;
+		this.bottomLeftX / (data.length - this.bottomPinch) :
+		this.bottomLeftX / data.length;
 		// Change in y direction
 		// Curved chart needs reserved pixels to account for curvature
 		this.dy = this.isCurved ?
-			(this.height - this.curveHeight) / data.length :
-			this.height / data.length;
+		(this.height - this.curveHeight) / data.length :
+		this.height / data.length;
 
 		// Support for events
 		this.onItemClick = settings.onItemClick;
@@ -277,8 +276,8 @@ class D3Funnel
 					if (i >= this.data.length - this.bottomPinch) {
 						dx = 0;
 					}
-				// Pinch at the first blocks relating to the bottom pinch
-				// Revert back to normal velocity after pinch
+					// Pinch at the first blocks relating to the bottom pinch
+					// Revert back to normal velocity after pinch
 				} else {
 					// Revert velocity back to the initial if we are using
 					// static area's (prevents zero velocity if isInverted
@@ -505,23 +504,23 @@ class D3Funnel
 		// hovering around to expand downward on animation
 		if (!this.isCurved) {
 			beforePath = 'M' + paths[0][0] + ',' + paths[0][1] +
-			' L' + paths[1][0] + ',' + paths[1][1] +
-			' L' + paths[1][0] + ',' + paths[1][1] +
-			' L' + paths[0][0] + ',' + paths[0][1];
+				' L' + paths[1][0] + ',' + paths[1][1] +
+				' L' + paths[1][0] + ',' + paths[1][1] +
+				' L' + paths[0][0] + ',' + paths[0][1];
 		} else {
 			beforePath = 'M' + paths[0][0] + ',' + paths[0][1] +
-			' Q' + paths[1][0] + ',' + paths[1][1] +
-			' ' + paths[2][0] + ',' + paths[2][1] +
-			' L' + paths[2][0] + ',' + paths[2][1] +
-			' M' + paths[2][0] + ',' + paths[2][1] +
-			' Q' + paths[1][0] + ',' + paths[1][1] +
-			' ' + paths[0][0] + ',' + paths[0][1];
+				' Q' + paths[1][0] + ',' + paths[1][1] +
+				' ' + paths[2][0] + ',' + paths[2][1] +
+				' L' + paths[2][0] + ',' + paths[2][1] +
+				' M' + paths[2][0] + ',' + paths[2][1] +
+				' Q' + paths[1][0] + ',' + paths[1][1] +
+				' ' + paths[0][0] + ',' + paths[0][1];
 		}
 
 		// Use previous fill color, if available
 		if (this.fillType === 'solid') {
 			beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
-		// Use current background if gradient (gradients do not transition)
+			// Use current background if gradient (gradients do not transition)
 		} else {
 			beforeFill = this._getColor(index);
 		}
@@ -622,8 +621,8 @@ class D3Funnel
 
 		let textX = this.width / 2;   // Center the text
 		let textY = !this.isCurved ?  // Average height of bases
-			(paths[1][1] + paths[2][1]) / 2 :
-			(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+		(paths[1][1] + paths[2][1]) / 2 :
+		(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
 
 		group.append('text')
 			.text(textStr)
@@ -638,58 +637,4 @@ class D3Funnel
 			.style('font-size', this.label.fontSize);
 	}
 
-}
-
-/**
- * Check if the supplied value is an array.
- *
- * @param {*} value
- *
- * @return {bool}
- */
-function isArray(value)
-{
-	return Object.prototype.toString.call(value) === '[object Array]';
-}
-
-/**
- * Extends an object with the members of another.
- *
- * @param {Object} a The object to be extended.
- * @param {Object} b The object to clone from.
- *
- * @return {Object}
- */
-function extend(a, b)
-{
-	let prop;
-	for (prop in b) {
-		if (b.hasOwnProperty(prop)) {
-			a[prop] = b[prop];
-		}
-	}
-	return a;
-}
-
-/**
- * Shade a color to the given percentage.
- *
- * @param {string} color A hex color.
- * @param {number} shade The shade adjustment. Can be positive or negative.
- *
- * @return {string}
- */
-function shadeColor(color, shade)
-{
-	let f = parseInt(color.slice(1), 16);
-	let t = shade < 0 ? 0 : 255;
-	let p = shade < 0 ? shade * -1 : shade;
-	let R = f >> 16, G = f >> 8 & 0x00FF;
-	let B = f & 0x0000FF;
-
-	let converted = (0x1000000 + (Math.round((t - R) * p) + R) *
-	0x10000 + (Math.round((t - G) * p) + G) *
-	0x100 + (Math.round((t - B) * p) + B));
-
-	return '#' + converted.toString(16).slice(1);
 }

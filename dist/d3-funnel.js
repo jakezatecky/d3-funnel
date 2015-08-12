@@ -4,11 +4,9 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-(function (global, d3) {
-
-	/* global d3 */
-	/* jshint bitwise: false */
-	'use strict';
+(function (root, d3) {
+	/* global d3, isArray, extend, shadeColor */
+	/* exported D3Funnel */
 
 	var D3Funnel = (function () {
 
@@ -43,6 +41,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}
 			};
 		}
+
+		/* exported isArray, extend, shadeColor */
+		/* jshint bitwise: false */
 
 		/**
    * Check if the supplied value is an array.
@@ -673,5 +674,5 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		return '#' + converted.toString(16).slice(1);
 	}
 
-	global.D3Funnel = D3Funnel;
+	root.D3Funnel = D3Funnel;
 })(window, d3);

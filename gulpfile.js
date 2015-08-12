@@ -13,7 +13,8 @@ var pkg    = require('./package.json');
 var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFullYear() %> */\n';
 
 var src = [
-	'./src/d3-funnel/d3-funnel.js'
+	'./src/d3-funnel/d3-funnel.js',
+	'./src/d3-funnel/utils.js'
 ];
 var wrapper = './src/d3-funnel/.wrapper.js';
 
