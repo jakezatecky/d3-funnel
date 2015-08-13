@@ -1,678 +1,688 @@
+
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(["d3"], factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require('d3'));
+  } else {
+    root.D3Funnel = factory(root.d3);
+  }
+}(this, function(d3) {
+
+/* global d3, isArray, extend, shadeColor */
+/* exported D3Funnel */
+
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-(function (root, d3) {
-	/* global d3, isArray, extend, shadeColor */
-	/* exported D3Funnel */
+var D3Funnel = (function () {
 
-	var D3Funnel = (function () {
+	/**
+  * @param {string} selector A selector for the container element.
+  *
+  * @return {void}
+  */
 
-		/**
-   * @param {string} selector A selector for the container element.
-   *
-   * @return {void}
-   */
+	function D3Funnel(selector) {
+		_classCallCheck(this, D3Funnel);
 
-		function D3Funnel(selector) {
-			_classCallCheck(this, D3Funnel);
+		this.selector = selector;
 
-			this.selector = selector;
+		// Default configuration values
+		this.defaults = {
+			width: 350,
+			height: 400,
+			bottomWidth: 1 / 3,
+			bottomPinch: 0,
+			isCurved: false,
+			curveHeight: 20,
+			fillType: 'solid',
+			isInverted: false,
+			hoverEffects: false,
+			dynamicArea: false,
+			minHeight: false,
+			animation: false,
+			label: {
+				fontSize: '14px',
+				fill: '#fff'
+			}
+		};
+	}
 
-			// Default configuration values
-			this.defaults = {
-				width: 350,
-				height: 400,
-				bottomWidth: 1 / 3,
-				bottomPinch: 0,
-				isCurved: false,
-				curveHeight: 20,
-				fillType: 'solid',
-				isInverted: false,
-				hoverEffects: false,
-				dynamicArea: false,
-				minHeight: false,
-				animation: false,
-				label: {
-					fontSize: '14px',
-					fill: '#fff'
-				}
-			};
+	/* exported isArray, extend, shadeColor */
+	/* jshint bitwise: false */
+
+	/**
+  * Check if the supplied value is an array.
+  *
+  * @param {*} value
+  *
+  * @return {bool}
+  */
+
+	/**
+  * Remove the funnel and its events from the DOM.
+  *
+  * @return {void}
+  */
+
+	_createClass(D3Funnel, [{
+		key: 'destroy',
+		value: function destroy() {
+			// D3's remove method appears to be sufficient for removing the events
+			d3.select(this.selector).selectAll('svg').remove();
 		}
 
-		/* exported isArray, extend, shadeColor */
-		/* jshint bitwise: false */
-
 		/**
-   * Check if the supplied value is an array.
+   * Draw the chart inside the container with the data and configuration
+   * specified. This will remove any previous SVG elements in the container
+   * and draw a new funnel chart on top of it.
    *
-   * @param {*} value
-   *
-   * @return {bool}
-   */
-
-		/**
-   * Remove the funnel and its events from the DOM.
+   * @param {Array}  data    A list of rows containing a category, a count,
+   *                         and optionally a color (in hex).
+   * @param {Object} options An optional configuration object to override
+   *                         defaults. See the docs.
    *
    * @return {void}
    */
+	}, {
+		key: 'draw',
+		value: function draw(data) {
+			var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-		_createClass(D3Funnel, [{
-			key: 'destroy',
-			value: function destroy() {
-				// D3's remove method appears to be sufficient for removing the events
-				d3.select(this.selector).selectAll('svg').remove();
+			// Remove any previous drawings
+			this.destroy();
+
+			// Initialize chart options
+			this._initialize(data, options);
+
+			// Add the SVG
+			this.svg = d3.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
+
+			this.blockPaths = this._makePaths();
+
+			// Define color gradients
+			if (this.fillType === 'gradient') {
+				this._defineColorGradients(this.svg);
 			}
 
-			/**
-    * Draw the chart inside the container with the data and configuration
-    * specified. This will remove any previous SVG elements in the container
-    * and draw a new funnel chart on top of it.
-    *
-    * @param {Array}  data    A list of rows containing a category, a count,
-    *                         and optionally a color (in hex).
-    * @param {Object} options An optional configuration object to override
-    *                         defaults. See the docs.
-    *
-    * @return {void}
-    */
-		}, {
-			key: 'draw',
-			value: function draw(data) {
-				var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-				// Remove any previous drawings
-				this.destroy();
-
-				// Initialize chart options
-				this._initialize(data, options);
-
-				// Add the SVG
-				this.svg = d3.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
-
-				this.blockPaths = this._makePaths();
-
-				// Define color gradients
-				if (this.fillType === 'gradient') {
-					this._defineColorGradients(this.svg);
-				}
-
-				// Add top oval if curved
-				if (this.isCurved) {
-					this._drawTopOval(this.svg, this.blockPaths);
-				}
-
-				// Add each block
-				this._drawBlock(0);
+			// Add top oval if curved
+			if (this.isCurved) {
+				this._drawTopOval(this.svg, this.blockPaths);
 			}
 
-			/**
-    * Initialize and calculate important variables for drawing the chart.
-    *
-    * @param {Array}  data
-    * @param {Object} options
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_initialize',
-			value: function _initialize(data, options) {
-				if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
-					throw new Error('Funnel data is not valid.');
-				}
+			// Add each block
+			this._drawBlock(0);
+		}
 
-				this.data = data;
-
-				// Counter
-				var i = undefined;
-
-				// Prepare the configuration settings based on the defaults
-				// Set the default width and height based on the container
-				var settings = extend({}, this.defaults);
-				settings.width = parseInt(d3.select(this.selector).style('width'), 10);
-				settings.height = parseInt(d3.select(this.selector).style('height'), 10);
-
-				// Overwrite default settings with user options
-				var keys = Object.keys(options);
-				for (i = 0; i < keys.length; i++) {
-					if (keys[i] !== 'label') {
-						settings[keys[i]] = options[keys[i]];
-					}
-				}
-
-				// Label settings
-				if (options.hasOwnProperty('label')) {
-					(function () {
-						var validLabelOptions = /fontSize|fill/;
-
-						Object.keys(options.label).forEach(function (labelOption) {
-							if (labelOption.match(validLabelOptions)) {
-								settings.label[labelOption] = options.label[labelOption];
-							}
-						});
-					})();
-				}
-				this.label = settings.label;
-
-				// In the case that the width or height is not valid, set
-				// the width/height as its default hard-coded value
-				if (settings.width <= 0) {
-					settings.width = this.defaults.width;
-				}
-				if (settings.height <= 0) {
-					settings.height = this.defaults.height;
-				}
-
-				// Initialize the colors for each block
-				var colorScale = d3.scale.category10();
-				for (i = 0; i < this.data.length; i++) {
-					var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-
-					// If a color is not set for the record, add one
-					if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
-						this.data[i][2] = colorScale(i);
-					}
-				}
-
-				// Initialize funnel chart settings
-				this.width = settings.width;
-				this.height = settings.height;
-				this.bottomWidth = settings.width * settings.bottomWidth;
-				this.bottomPinch = settings.bottomPinch;
-				this.isCurved = settings.isCurved;
-				this.curveHeight = settings.curveHeight;
-				this.fillType = settings.fillType;
-				this.isInverted = settings.isInverted;
-				this.hoverEffects = settings.hoverEffects;
-				this.dynamicArea = settings.dynamicArea;
-				this.minHeight = settings.minHeight;
-				this.animation = settings.animation;
-
-				// Calculate the bottom left x position
-				this.bottomLeftX = (this.width - this.bottomWidth) / 2;
-
-				// Change in x direction
-				// Will be sharper if there is a pinch
-				this.dx = this.bottomPinch > 0 ? this.bottomLeftX / (data.length - this.bottomPinch) : this.bottomLeftX / data.length;
-				// Change in y direction
-				// Curved chart needs reserved pixels to account for curvature
-				this.dy = this.isCurved ? (this.height - this.curveHeight) / data.length : this.height / data.length;
-
-				// Support for events
-				this.onItemClick = settings.onItemClick;
+		/**
+   * Initialize and calculate important variables for drawing the chart.
+   *
+   * @param {Array}  data
+   * @param {Object} options
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_initialize',
+		value: function _initialize(data, options) {
+			if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
+				throw new Error('Funnel data is not valid.');
 			}
 
-			/**
-    * Create the paths to be used to define the discrete funnel blocks and
-    * returns the results in an array.
-    *
-    * @return {Array}
-    */
-		}, {
-			key: '_makePaths',
-			value: function _makePaths() {
-				var paths = [];
+			this.data = data;
 
-				// Initialize velocity
-				var dx = this.dx;
-				var dy = this.dy;
+			// Counter
+			var i = undefined;
 
-				// Initialize starting positions
-				var prevLeftX = 0;
-				var prevRightX = this.width;
-				var prevHeight = 0;
+			// Prepare the configuration settings based on the defaults
+			// Set the default width and height based on the container
+			var settings = extend({}, this.defaults);
+			settings.width = parseInt(d3.select(this.selector).style('width'), 10);
+			settings.height = parseInt(d3.select(this.selector).style('height'), 10);
 
-				// Start from the bottom for inverted
-				if (this.isInverted) {
-					prevLeftX = this.bottomLeftX;
-					prevRightX = this.width - this.bottomLeftX;
+			// Overwrite default settings with user options
+			var keys = Object.keys(options);
+			for (i = 0; i < keys.length; i++) {
+				if (keys[i] !== 'label') {
+					settings[keys[i]] = options[keys[i]];
 				}
+			}
 
-				// Initialize next positions
-				var nextLeftX = 0;
-				var nextRightX = 0;
-				var nextHeight = 0;
+			// Label settings
+			if (options.hasOwnProperty('label')) {
+				(function () {
+					var validLabelOptions = /fontSize|fill/;
 
-				var middle = this.width / 2;
-
-				// Move down if there is an initial curve
-				if (this.isCurved) {
-					prevHeight = 10;
-				}
-
-				var topBase = this.width;
-				var bottomBase = 0;
-
-				var totalArea = this.height * (this.width + this.bottomWidth) / 2;
-				var slope = 2 * this.height / (this.width - this.bottomWidth);
-
-				// This is greedy in that the block will have a guaranteed height
-				// and the remaining is shared among the ratio, instead of being
-				// shared according to the remaining minus the guaranteed
-				if (this.minHeight !== false) {
-					var height = this.height - this.minHeight * this.data.length;
-					totalArea = height * (this.width + this.bottomWidth) / 2;
-				}
-
-				var totalCount = 0;
-				var count = 0;
-
-				// Harvest total count
-				for (var i = 0; i < this.data.length; i++) {
-					totalCount += isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
-				}
-
-				// Create the path definition for each funnel block
-				// Remember to loop back to the beginning point for a closed path
-				for (var i = 0; i < this.data.length; i++) {
-					count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
-
-					// Calculate dynamic shapes based on area
-					if (this.dynamicArea) {
-						var ratio = count / totalCount;
-						var area = ratio * totalArea;
-
-						if (this.minHeight !== false) {
-							area += this.minHeight * (this.width + this.bottomWidth) / 2;
+					Object.keys(options.label).forEach(function (labelOption) {
+						if (labelOption.match(validLabelOptions)) {
+							settings.label[labelOption] = options.label[labelOption];
 						}
+					});
+				})();
+			}
+			this.label = settings.label;
 
-						bottomBase = Math.sqrt((slope * topBase * topBase - 4 * area) / slope);
-						dx = topBase / 2 - bottomBase / 2;
-						dy = area * 2 / (topBase + bottomBase);
+			// In the case that the width or height is not valid, set
+			// the width/height as its default hard-coded value
+			if (settings.width <= 0) {
+				settings.width = this.defaults.width;
+			}
+			if (settings.height <= 0) {
+				settings.height = this.defaults.height;
+			}
 
-						if (this.isCurved) {
-							dy = dy - this.curveHeight / this.data.length;
-						}
+			// Initialize the colors for each block
+			var colorScale = d3.scale.category10();
+			for (i = 0; i < this.data.length; i++) {
+				var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
-						topBase = bottomBase;
+				// If a color is not set for the record, add one
+				if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
+					this.data[i][2] = colorScale(i);
+				}
+			}
+
+			// Initialize funnel chart settings
+			this.width = settings.width;
+			this.height = settings.height;
+			this.bottomWidth = settings.width * settings.bottomWidth;
+			this.bottomPinch = settings.bottomPinch;
+			this.isCurved = settings.isCurved;
+			this.curveHeight = settings.curveHeight;
+			this.fillType = settings.fillType;
+			this.isInverted = settings.isInverted;
+			this.hoverEffects = settings.hoverEffects;
+			this.dynamicArea = settings.dynamicArea;
+			this.minHeight = settings.minHeight;
+			this.animation = settings.animation;
+
+			// Calculate the bottom left x position
+			this.bottomLeftX = (this.width - this.bottomWidth) / 2;
+
+			// Change in x direction
+			// Will be sharper if there is a pinch
+			this.dx = this.bottomPinch > 0 ? this.bottomLeftX / (data.length - this.bottomPinch) : this.bottomLeftX / data.length;
+			// Change in y direction
+			// Curved chart needs reserved pixels to account for curvature
+			this.dy = this.isCurved ? (this.height - this.curveHeight) / data.length : this.height / data.length;
+
+			// Support for events
+			this.onItemClick = settings.onItemClick;
+		}
+
+		/**
+   * Create the paths to be used to define the discrete funnel blocks and
+   * returns the results in an array.
+   *
+   * @return {Array}
+   */
+	}, {
+		key: '_makePaths',
+		value: function _makePaths() {
+			var paths = [];
+
+			// Initialize velocity
+			var dx = this.dx;
+			var dy = this.dy;
+
+			// Initialize starting positions
+			var prevLeftX = 0;
+			var prevRightX = this.width;
+			var prevHeight = 0;
+
+			// Start from the bottom for inverted
+			if (this.isInverted) {
+				prevLeftX = this.bottomLeftX;
+				prevRightX = this.width - this.bottomLeftX;
+			}
+
+			// Initialize next positions
+			var nextLeftX = 0;
+			var nextRightX = 0;
+			var nextHeight = 0;
+
+			var middle = this.width / 2;
+
+			// Move down if there is an initial curve
+			if (this.isCurved) {
+				prevHeight = 10;
+			}
+
+			var topBase = this.width;
+			var bottomBase = 0;
+
+			var totalArea = this.height * (this.width + this.bottomWidth) / 2;
+			var slope = 2 * this.height / (this.width - this.bottomWidth);
+
+			// This is greedy in that the block will have a guaranteed height
+			// and the remaining is shared among the ratio, instead of being
+			// shared according to the remaining minus the guaranteed
+			if (this.minHeight !== false) {
+				var height = this.height - this.minHeight * this.data.length;
+				totalArea = height * (this.width + this.bottomWidth) / 2;
+			}
+
+			var totalCount = 0;
+			var count = 0;
+
+			// Harvest total count
+			for (var i = 0; i < this.data.length; i++) {
+				totalCount += isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			}
+
+			// Create the path definition for each funnel block
+			// Remember to loop back to the beginning point for a closed path
+			for (var i = 0; i < this.data.length; i++) {
+				count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+
+				// Calculate dynamic shapes based on area
+				if (this.dynamicArea) {
+					var ratio = count / totalCount;
+					var area = ratio * totalArea;
+
+					if (this.minHeight !== false) {
+						area += this.minHeight * (this.width + this.bottomWidth) / 2;
 					}
 
-					// Stop velocity for pinched blocks
-					if (this.bottomPinch > 0) {
-						// Check if we've reached the bottom of the pinch
-						// If so, stop changing on x
-						if (!this.isInverted) {
-							if (i >= this.data.length - this.bottomPinch) {
-								dx = 0;
-							}
-							// Pinch at the first blocks relating to the bottom pinch
-							// Revert back to normal velocity after pinch
-						} else {
-								// Revert velocity back to the initial if we are using
-								// static area's (prevents zero velocity if isInverted
-								// and bottomPinch are non trivial and dynamicArea is
-								// false)
-								if (!this.dynamicArea) {
-									dx = this.dx;
-								}
+					bottomBase = Math.sqrt((slope * topBase * topBase - 4 * area) / slope);
+					dx = topBase / 2 - bottomBase / 2;
+					dy = area * 2 / (topBase + bottomBase);
 
-								dx = i < this.bottomPinch ? 0 : dx;
-							}
-					}
-
-					// Calculate the position of next block
-					nextLeftX = prevLeftX + dx;
-					nextRightX = prevRightX - dx;
-					nextHeight = prevHeight + dy;
-
-					// Expand outward if inverted
-					if (this.isInverted) {
-						nextLeftX = prevLeftX - dx;
-						nextRightX = prevRightX + dx;
-					}
-
-					// Plot curved lines
 					if (this.isCurved) {
-						paths.push([
-						// Top Bezier curve
-						[prevLeftX, prevHeight, 'M'], [middle, prevHeight + (this.curveHeight - 10), 'Q'], [prevRightX, prevHeight, ''],
-						// Right line
-						[nextRightX, nextHeight, 'L'],
-						// Bottom Bezier curve
-						[nextRightX, nextHeight, 'M'], [middle, nextHeight + this.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
-						// Left line
-						[prevLeftX, prevHeight, 'L']]);
-						// Plot straight lines
-					} else {
-							paths.push([
-							// Start position
-							[prevLeftX, prevHeight, 'M'],
-							// Move to right
-							[prevRightX, prevHeight, 'L'],
-							// Move down
-							[nextRightX, nextHeight, 'L'],
-							// Move to left
-							[nextLeftX, nextHeight, 'L'],
-							// Wrap back to top
-							[prevLeftX, prevHeight, 'L']]);
+						dy = dy - this.curveHeight / this.data.length;
+					}
+
+					topBase = bottomBase;
+				}
+
+				// Stop velocity for pinched blocks
+				if (this.bottomPinch > 0) {
+					// Check if we've reached the bottom of the pinch
+					// If so, stop changing on x
+					if (!this.isInverted) {
+						if (i >= this.data.length - this.bottomPinch) {
+							dx = 0;
 						}
+						// Pinch at the first blocks relating to the bottom pinch
+						// Revert back to normal velocity after pinch
+					} else {
+							// Revert velocity back to the initial if we are using
+							// static area's (prevents zero velocity if isInverted
+							// and bottomPinch are non trivial and dynamicArea is
+							// false)
+							if (!this.dynamicArea) {
+								dx = this.dx;
+							}
 
-					// Set the next block's previous position
-					prevLeftX = nextLeftX;
-					prevRightX = nextRightX;
-					prevHeight = nextHeight;
+							dx = i < this.bottomPinch ? 0 : dx;
+						}
 				}
 
-				return paths;
-			}
+				// Calculate the position of next block
+				nextLeftX = prevLeftX + dx;
+				nextRightX = prevRightX - dx;
+				nextHeight = prevHeight + dy;
 
-			/**
-    * Define the linear color gradients.
-    *
-    * @param {Object} svg
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_defineColorGradients',
-			value: function _defineColorGradients(svg) {
-				var defs = svg.append('defs');
-
-				// Create a gradient for each block
-				for (var i = 0; i < this.data.length; i++) {
-					var color = this.data[i][2];
-					var shade = shadeColor(color, -0.25);
-
-					// Create linear gradient
-					var gradient = defs.append('linearGradient').attr({
-						id: 'gradient-' + i
-					});
-
-					// Define the gradient stops
-					var stops = [[0, shade], [40, color], [60, color], [100, shade]];
-
-					// Add the gradient stops
-					for (var j = 0; j < stops.length; j++) {
-						var _stop = stops[j];
-						gradient.append('stop').attr({
-							offset: _stop[0] + '%',
-							style: 'stop-color:' + _stop[1]
-						});
-					}
-				}
-			}
-
-			/**
-    * Draw the top oval of a curved funnel.
-    *
-    * @param {Object} svg
-    * @param {Array}  blockPaths
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_drawTopOval',
-			value: function _drawTopOval(svg, blockPaths) {
-				var leftX = 0;
-				var rightX = this.width;
-				var centerX = this.width / 2;
-
+				// Expand outward if inverted
 				if (this.isInverted) {
-					leftX = this.bottomLeftX;
-					rightX = this.width - this.bottomLeftX;
+					nextLeftX = prevLeftX - dx;
+					nextRightX = prevRightX + dx;
 				}
 
-				// Create path from top-most block
-				var paths = blockPaths[0];
-				var path = 'M' + leftX + ',' + paths[0][1] + ' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) + ' ' + rightX + ',' + paths[2][1] + ' M' + rightX + ',10' + ' Q' + centerX + ',0' + ' ' + leftX + ',10';
-
-				// Draw top oval
-				svg.append('path').attr('fill', shadeColor(this.data[0][2], -0.4)).attr('d', path);
-			}
-
-			/**
-    * Draw the next block in the iteration.
-    *
-    * @param {int} index
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_drawBlock',
-			value: function _drawBlock(index) {
-				var _this = this;
-
-				if (index === this.data.length) {
-					return;
-				}
-
-				// Create a group just for this block
-				var group = this.svg.append('g');
-
-				// Fetch path element
-				var path = this._getBlockPath(group, index);
-				path.data(this._getBlockData(index));
-
-				// Add animation components
-				if (this.animation !== false) {
-					path.transition().duration(this.animation).ease('linear').attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
-						_this._drawBlock(index + 1);
-					});
+				// Plot curved lines
+				if (this.isCurved) {
+					paths.push([
+					// Top Bezier curve
+					[prevLeftX, prevHeight, 'M'], [middle, prevHeight + (this.curveHeight - 10), 'Q'], [prevRightX, prevHeight, ''],
+					// Right line
+					[nextRightX, nextHeight, 'L'],
+					// Bottom Bezier curve
+					[nextRightX, nextHeight, 'M'], [middle, nextHeight + this.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
+					// Left line
+					[prevLeftX, prevHeight, 'L']]);
+					// Plot straight lines
 				} else {
-					path.attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index));
-					this._drawBlock(index + 1);
-				}
-
-				// Add the hover events
-				if (this.hoverEffects) {
-					path.on('mouseover', this._onMouseOver).on('mouseout', this._onMouseOut);
-				}
-
-				// ItemClick event
-				if (this.onItemClick) {
-					path.on('click', this.onItemClick);
-				}
-
-				this._addBlockLabel(group, index);
-			}
-
-			/**
-    * @param {Object} group
-    * @param {int}	index
-    *
-    * @return {Object}
-    */
-		}, {
-			key: '_getBlockPath',
-			value: function _getBlockPath(group, index) {
-				var path = group.append('path');
-
-				if (this.animation !== false) {
-					this._addBeforeTransition(path, index);
-				}
-
-				return path;
-			}
-
-			/**
-    * Set the attributes of a path element before its animation.
-    *
-    * @param {Object} path
-    * @param {int}	index
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_addBeforeTransition',
-			value: function _addBeforeTransition(path, index) {
-				var paths = this.blockPaths[index];
-
-				var beforePath = '';
-				var beforeFill = '';
-
-				// Construct the top of the trapezoid and leave the other elements
-				// hovering around to expand downward on animation
-				if (!this.isCurved) {
-					beforePath = 'M' + paths[0][0] + ',' + paths[0][1] + ' L' + paths[1][0] + ',' + paths[1][1] + ' L' + paths[1][0] + ',' + paths[1][1] + ' L' + paths[0][0] + ',' + paths[0][1];
-				} else {
-					beforePath = 'M' + paths[0][0] + ',' + paths[0][1] + ' Q' + paths[1][0] + ',' + paths[1][1] + ' ' + paths[2][0] + ',' + paths[2][1] + ' L' + paths[2][0] + ',' + paths[2][1] + ' M' + paths[2][0] + ',' + paths[2][1] + ' Q' + paths[1][0] + ',' + paths[1][1] + ' ' + paths[0][0] + ',' + paths[0][1];
-				}
-
-				// Use previous fill color, if available
-				if (this.fillType === 'solid') {
-					beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
-					// Use current background if gradient (gradients do not transition)
-				} else {
-						beforeFill = this._getColor(index);
+						paths.push([
+						// Start position
+						[prevLeftX, prevHeight, 'M'],
+						// Move to right
+						[prevRightX, prevHeight, 'L'],
+						// Move down
+						[nextRightX, nextHeight, 'L'],
+						// Move to left
+						[nextLeftX, nextHeight, 'L'],
+						// Wrap back to top
+						[prevLeftX, prevHeight, 'L']]);
 					}
 
-				path.attr('d', beforePath).attr('fill', beforeFill);
+				// Set the next block's previous position
+				prevLeftX = nextLeftX;
+				prevRightX = nextRightX;
+				prevHeight = nextHeight;
 			}
 
-			/**
-    * @param {int} index
-    *
-    * @return {Array}
-    */
-		}, {
-			key: '_getBlockData',
-			value: function _getBlockData(index) {
-				return [{
-					index: index,
-					label: this.data[index][0],
-					value: isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
-					formattedValue: isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
-					baseColor: this.data[index][2],
-					fill: this._getColor(index)
-				}];
-			}
+			return paths;
+		}
 
-			/**
-    * Return the color for the given index.
-    *
-    * @param {int} index
-    *
-    * @return {string}
-    */
-		}, {
-			key: '_getColor',
-			value: function _getColor(index) {
-				if (this.fillType === 'solid') {
-					return this.data[index][2];
-				} else {
-					return 'url(#gradient-' + index + ')';
+		/**
+   * Define the linear color gradients.
+   *
+   * @param {Object} svg
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_defineColorGradients',
+		value: function _defineColorGradients(svg) {
+			var defs = svg.append('defs');
+
+			// Create a gradient for each block
+			for (var i = 0; i < this.data.length; i++) {
+				var color = this.data[i][2];
+				var shade = shadeColor(color, -0.25);
+
+				// Create linear gradient
+				var gradient = defs.append('linearGradient').attr({
+					id: 'gradient-' + i
+				});
+
+				// Define the gradient stops
+				var stops = [[0, shade], [40, color], [60, color], [100, shade]];
+
+				// Add the gradient stops
+				for (var j = 0; j < stops.length; j++) {
+					var _stop = stops[j];
+					gradient.append('stop').attr({
+						offset: _stop[0] + '%',
+						style: 'stop-color:' + _stop[1]
+					});
 				}
-			}
-
-			/**
-    * @param {int} index
-    *
-    * @return {string}
-    */
-		}, {
-			key: '_getPathDefinition',
-			value: function _getPathDefinition(index) {
-				var pathStr = '';
-				var point = [];
-				var paths = this.blockPaths[index];
-
-				for (var j = 0; j < paths.length; j++) {
-					point = paths[j];
-					pathStr += point[2] + point[0] + ',' + point[1] + ' ';
-				}
-
-				return pathStr;
-			}
-
-			/**
-    * @param {Object} data
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_onMouseOver',
-			value: function _onMouseOver(data) {
-				d3.select(this).attr('fill', shadeColor(data.baseColor, -0.2));
-			}
-
-			/**
-    * @param {Object} data
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_onMouseOut',
-			value: function _onMouseOut(data) {
-				d3.select(this).attr('fill', data.fill);
-			}
-
-			/**
-    * @param {Object} group
-    * @param {int}	index
-    *
-    * @return {void}
-    */
-		}, {
-			key: '_addBlockLabel',
-			value: function _addBlockLabel(group, index) {
-				var i = index;
-				var paths = this.blockPaths[index];
-				var blockData = this._getBlockData(index)[0];
-				var textStr = blockData.label + ': ' + blockData.formattedValue;
-				var textFill = this.data[i][3] || this.label.fill;
-
-				var textX = this.width / 2; // Center the text
-				var textY = !this.isCurved ? // Average height of bases
-				(paths[1][1] + paths[2][1]) / 2 : (paths[2][1] + paths[3][1]) / 2 + this.curveHeight / this.data.length;
-
-				group.append('text').text(textStr).attr({
-					'x': textX,
-					'y': textY,
-					'text-anchor': 'middle',
-					'dominant-baseline': 'middle',
-					'fill': textFill,
-					'pointer-events': 'none'
-				}).style('font-size', this.label.fontSize);
-			}
-		}]);
-
-		return D3Funnel;
-	})();
-
-	function isArray(value) {
-		return Object.prototype.toString.call(value) === '[object Array]';
-	}
-
-	/**
-  * Extends an object with the members of another.
-  *
-  * @param {Object} a The object to be extended.
-  * @param {Object} b The object to clone from.
-  *
-  * @return {Object}
-  */
-	function extend(a, b) {
-		var prop = undefined;
-		for (prop in b) {
-			if (b.hasOwnProperty(prop)) {
-				a[prop] = b[prop];
 			}
 		}
-		return a;
+
+		/**
+   * Draw the top oval of a curved funnel.
+   *
+   * @param {Object} svg
+   * @param {Array}  blockPaths
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_drawTopOval',
+		value: function _drawTopOval(svg, blockPaths) {
+			var leftX = 0;
+			var rightX = this.width;
+			var centerX = this.width / 2;
+
+			if (this.isInverted) {
+				leftX = this.bottomLeftX;
+				rightX = this.width - this.bottomLeftX;
+			}
+
+			// Create path from top-most block
+			var paths = blockPaths[0];
+			var path = 'M' + leftX + ',' + paths[0][1] + ' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) + ' ' + rightX + ',' + paths[2][1] + ' M' + rightX + ',10' + ' Q' + centerX + ',0' + ' ' + leftX + ',10';
+
+			// Draw top oval
+			svg.append('path').attr('fill', shadeColor(this.data[0][2], -0.4)).attr('d', path);
+		}
+
+		/**
+   * Draw the next block in the iteration.
+   *
+   * @param {int} index
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_drawBlock',
+		value: function _drawBlock(index) {
+			var _this = this;
+
+			if (index === this.data.length) {
+				return;
+			}
+
+			// Create a group just for this block
+			var group = this.svg.append('g');
+
+			// Fetch path element
+			var path = this._getBlockPath(group, index);
+			path.data(this._getBlockData(index));
+
+			// Add animation components
+			if (this.animation !== false) {
+				path.transition().duration(this.animation).ease('linear').attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
+					_this._drawBlock(index + 1);
+				});
+			} else {
+				path.attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index));
+				this._drawBlock(index + 1);
+			}
+
+			// Add the hover events
+			if (this.hoverEffects) {
+				path.on('mouseover', this._onMouseOver).on('mouseout', this._onMouseOut);
+			}
+
+			// ItemClick event
+			if (this.onItemClick) {
+				path.on('click', this.onItemClick);
+			}
+
+			this._addBlockLabel(group, index);
+		}
+
+		/**
+   * @param {Object} group
+   * @param {int}	index
+   *
+   * @return {Object}
+   */
+	}, {
+		key: '_getBlockPath',
+		value: function _getBlockPath(group, index) {
+			var path = group.append('path');
+
+			if (this.animation !== false) {
+				this._addBeforeTransition(path, index);
+			}
+
+			return path;
+		}
+
+		/**
+   * Set the attributes of a path element before its animation.
+   *
+   * @param {Object} path
+   * @param {int}	index
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_addBeforeTransition',
+		value: function _addBeforeTransition(path, index) {
+			var paths = this.blockPaths[index];
+
+			var beforePath = '';
+			var beforeFill = '';
+
+			// Construct the top of the trapezoid and leave the other elements
+			// hovering around to expand downward on animation
+			if (!this.isCurved) {
+				beforePath = 'M' + paths[0][0] + ',' + paths[0][1] + ' L' + paths[1][0] + ',' + paths[1][1] + ' L' + paths[1][0] + ',' + paths[1][1] + ' L' + paths[0][0] + ',' + paths[0][1];
+			} else {
+				beforePath = 'M' + paths[0][0] + ',' + paths[0][1] + ' Q' + paths[1][0] + ',' + paths[1][1] + ' ' + paths[2][0] + ',' + paths[2][1] + ' L' + paths[2][0] + ',' + paths[2][1] + ' M' + paths[2][0] + ',' + paths[2][1] + ' Q' + paths[1][0] + ',' + paths[1][1] + ' ' + paths[0][0] + ',' + paths[0][1];
+			}
+
+			// Use previous fill color, if available
+			if (this.fillType === 'solid') {
+				beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
+				// Use current background if gradient (gradients do not transition)
+			} else {
+					beforeFill = this._getColor(index);
+				}
+
+			path.attr('d', beforePath).attr('fill', beforeFill);
+		}
+
+		/**
+   * @param {int} index
+   *
+   * @return {Array}
+   */
+	}, {
+		key: '_getBlockData',
+		value: function _getBlockData(index) {
+			return [{
+				index: index,
+				label: this.data[index][0],
+				value: isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
+				formattedValue: isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
+				baseColor: this.data[index][2],
+				fill: this._getColor(index)
+			}];
+		}
+
+		/**
+   * Return the color for the given index.
+   *
+   * @param {int} index
+   *
+   * @return {string}
+   */
+	}, {
+		key: '_getColor',
+		value: function _getColor(index) {
+			if (this.fillType === 'solid') {
+				return this.data[index][2];
+			} else {
+				return 'url(#gradient-' + index + ')';
+			}
+		}
+
+		/**
+   * @param {int} index
+   *
+   * @return {string}
+   */
+	}, {
+		key: '_getPathDefinition',
+		value: function _getPathDefinition(index) {
+			var pathStr = '';
+			var point = [];
+			var paths = this.blockPaths[index];
+
+			for (var j = 0; j < paths.length; j++) {
+				point = paths[j];
+				pathStr += point[2] + point[0] + ',' + point[1] + ' ';
+			}
+
+			return pathStr;
+		}
+
+		/**
+   * @param {Object} data
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_onMouseOver',
+		value: function _onMouseOver(data) {
+			d3.select(this).attr('fill', shadeColor(data.baseColor, -0.2));
+		}
+
+		/**
+   * @param {Object} data
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_onMouseOut',
+		value: function _onMouseOut(data) {
+			d3.select(this).attr('fill', data.fill);
+		}
+
+		/**
+   * @param {Object} group
+   * @param {int}	index
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_addBlockLabel',
+		value: function _addBlockLabel(group, index) {
+			var i = index;
+			var paths = this.blockPaths[index];
+			var blockData = this._getBlockData(index)[0];
+			var textStr = blockData.label + ': ' + blockData.formattedValue;
+			var textFill = this.data[i][3] || this.label.fill;
+
+			var textX = this.width / 2; // Center the text
+			var textY = !this.isCurved ? // Average height of bases
+			(paths[1][1] + paths[2][1]) / 2 : (paths[2][1] + paths[3][1]) / 2 + this.curveHeight / this.data.length;
+
+			group.append('text').text(textStr).attr({
+				'x': textX,
+				'y': textY,
+				'text-anchor': 'middle',
+				'dominant-baseline': 'middle',
+				'fill': textFill,
+				'pointer-events': 'none'
+			}).style('font-size', this.label.fontSize);
+		}
+	}]);
+
+	return D3Funnel;
+})();
+
+function isArray(value) {
+	return Object.prototype.toString.call(value) === '[object Array]';
+}
+
+/**
+ * Extends an object with the members of another.
+ *
+ * @param {Object} a The object to be extended.
+ * @param {Object} b The object to clone from.
+ *
+ * @return {Object}
+ */
+function extend(a, b) {
+	var prop = undefined;
+	for (prop in b) {
+		if (b.hasOwnProperty(prop)) {
+			a[prop] = b[prop];
+		}
 	}
+	return a;
+}
 
-	/**
-  * Shade a color to the given percentage.
-  *
-  * @param {string} color A hex color.
-  * @param {number} shade The shade adjustment. Can be positive or negative.
-  *
-  * @return {string}
-  */
-	function shadeColor(color, shade) {
-		var f = parseInt(color.slice(1), 16);
-		var t = shade < 0 ? 0 : 255;
-		var p = shade < 0 ? shade * -1 : shade;
-		var R = f >> 16,
-		    G = f >> 8 & 0x00FF;
-		var B = f & 0x0000FF;
+/**
+ * Shade a color to the given percentage.
+ *
+ * @param {string} color A hex color.
+ * @param {number} shade The shade adjustment. Can be positive or negative.
+ *
+ * @return {string}
+ */
+function shadeColor(color, shade) {
+	var f = parseInt(color.slice(1), 16);
+	var t = shade < 0 ? 0 : 255;
+	var p = shade < 0 ? shade * -1 : shade;
+	var R = f >> 16,
+	    G = f >> 8 & 0x00FF;
+	var B = f & 0x0000FF;
 
-		var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
+	var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
 
-		return '#' + converted.toString(16).slice(1);
-	}
+	return '#' + converted.toString(16).slice(1);
+}
+return D3Funnel;
 
-	root.D3Funnel = D3Funnel;
-})(window, d3);
+}));

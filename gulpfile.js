@@ -1,5 +1,5 @@
 var gulp   = require('gulp');
-var wrap   = require('gulp-wrap');
+var umd    = require('gulp-wrap-umd');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var jscs   = require('gulp-jscs');
@@ -16,7 +16,15 @@ var src = [
 	'./src/d3-funnel/d3-funnel.js',
 	'./src/d3-funnel/utils.js'
 ];
-var wrapper = './src/d3-funnel/.wrapper.js';
+var umdOptions = {
+	exports: 'D3Funnel',
+	namespace: 'D3Funnel',
+	deps: [{
+		name: 'd3',
+		globalName: 'd3',
+		paramName: 'd3'
+	}]
+};
 
 gulp.task('test-format', function () {
 	return gulp.src(src)
@@ -31,10 +39,8 @@ gulp.task('test-format', function () {
 gulp.task('compile', function () {
 	return gulp.src(src)
 		.pipe(concat('d3-funnel.js'))
-		.pipe(wrap({
-			src: wrapper
-		}))
 		.pipe(babel())
+		.pipe(umd(umdOptions))
 		.pipe(gulp.dest('./compiled/'));
 });
 
