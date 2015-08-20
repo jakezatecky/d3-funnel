@@ -62,4 +62,8 @@ gulp.task('build', ['test-format', 'test-mocha'], function () {
 		.pipe(gulp.dest('./dist/'));
 });
 
+gulp.task('watch', function () {
+	gulp.watch(src, ['build']);
+});
+
 gulp.task('default', ['build']);
