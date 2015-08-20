@@ -58,7 +58,19 @@ You must also create a container element and instantiate a new chart:
 | `animation`      | The load animation speed in milliseconds.                                   | int/bool | `false`             |
 | `label.fontSize` | Any valid font size for the labels.                                         | string   | `'14px'`            |
 | `label.fill`     | Any valid hex color for the label color                                     | string   | `'#fff'`            |
+| `label.format`   | Either `function(label, value)` or a format string. See below.              | mixed    | `'{l}: {f}'`        |
 | `onItemClick`    | Event handler if one of the items is clicked.                               | function | `function(d, i) {}` |
+
+### Label Format
+
+The option `label.format` can either by a function, or a string. The following
+keys will be substituted by the string formatter:
+
+| Key   | Description                  |
+| ----- | ---------------------------- |
+| '{l}' | The block's supplied label.  |
+| '{v}' | The block's raw value.       |
+| '{f}' | The block's formatted value. |
 
 ## API
 

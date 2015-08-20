@@ -12,7 +12,7 @@ describe('D3Funnel', function () {
 			return selection[0].length;
 		};
 		getBasicData = function() {
-			return [['Node', 100]];
+			return [['Node', 1000]];
 		};
 
 		done();
@@ -150,6 +150,33 @@ describe('D3Funnel', function () {
 				});
 
 				assert.isTrue(d3.select('#funnel text').attr('fill').indexOf('#777') > -1);
+			});
+		});
+
+		describe('label.format', function () {
+			it('should parse a string template', function () {
+				getFunnel().draw(getBasicData(), {
+					label: {
+						format: '{l} {v} {f}'
+					}
+				});
+
+				// Node.js does not have localization, so toLocaleString() will
+				// leave the value untouched
+				// https://github.com/joyent/node/issues/4689
+				assert.equal('Node 1000 1000', d3.select('#funnel text').text());
+			});
+
+			it('should pass values to a supplied function', function () {
+				getFunnel().draw(getBasicData(), {
+					label: {
+						format: function (label, value, fValue) {
+							return label + '/' + value + '/' + fValue;
+						}
+					}
+				});
+
+				assert.equal('Node/1000/null', d3.select('#funnel text').text());
 			});
 		});
 	});
