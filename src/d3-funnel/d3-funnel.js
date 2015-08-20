@@ -1,4 +1,4 @@
-/* global d3, isArray, extend, shadeColor */
+/* global d3, Utils */
 /* exported D3Funnel */
 
 class D3Funnel
@@ -97,7 +97,10 @@ class D3Funnel
 	 */
 	_initialize(data, options)
 	{
-		if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
+		if (Utils.isArray(data) === false ||
+			data.length === 0 ||
+			Utils.isArray(data[0]) === false ||
+			data[0].length < 2) {
 			throw new Error('Funnel data is not valid.');
 		}
 
@@ -108,7 +111,7 @@ class D3Funnel
 
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
-		let settings = extend({}, this.defaults);
+		let settings = Utils.extend({}, this.defaults);
 		settings.width = parseInt(d3.select(this.selector).style('width'), 10);
 		settings.height = parseInt(d3.select(this.selector).style('height'), 10);
 
@@ -240,13 +243,13 @@ class D3Funnel
 
 		// Harvest total count
 		for (let i = 0; i < this.data.length; i++) {
-			totalCount += isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			totalCount += Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 		}
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
 		for (let i = 0; i < this.data.length; i++) {
-			count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			count = Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
@@ -357,7 +360,7 @@ class D3Funnel
 		// Create a gradient for each block
 		for (let i = 0; i < this.data.length; i++) {
 			let color = this.data[i][2];
-			let shade = shadeColor(color, -0.25);
+			let shade = Utils.shadeColor(color, -0.25);
 
 			// Create linear gradient
 			let gradient = defs.append('linearGradient')
@@ -414,7 +417,7 @@ class D3Funnel
 
 		// Draw top oval
 		svg.append('path')
-			.attr('fill', shadeColor(this.data[0][2], -0.4))
+			.attr('fill', Utils.shadeColor(this.data[0][2], -0.4))
 			.attr('d', path);
 	}
 
@@ -539,10 +542,10 @@ class D3Funnel
 		return [{
 			index: index,
 			label: this.data[index][0],
-			value: isArray(this.data[index][1]) ?
+			value: Utils.isArray(this.data[index][1]) ?
 				this.data[index][1][0] :
 				this.data[index][1],
-			formattedValue: isArray(this.data[index][1]) ?
+			formattedValue: Utils.isArray(this.data[index][1]) ?
 				this.data[index][1][1] :
 				this.data[index][1].toLocaleString(),
 			baseColor: this.data[index][2],
@@ -592,7 +595,7 @@ class D3Funnel
 	 */
 	_onMouseOver(data)
 	{
-		d3.select(this).attr('fill', shadeColor(data.baseColor, -0.2));
+		d3.select(this).attr('fill', Utils.shadeColor(data.baseColor, -0.2));
 	}
 
 	/**

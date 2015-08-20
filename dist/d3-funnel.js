@@ -9,7 +9,7 @@
   }
 }(this, function(d3) {
 
-/* global d3, isArray, extend, shadeColor */
+/* global d3, Utils */
 /* exported D3Funnel */
 
 'use strict';
@@ -52,15 +52,11 @@ var D3Funnel = (function () {
 		};
 	}
 
-	/* exported isArray, extend, shadeColor */
+	/* exported Utils */
 	/* jshint bitwise: false */
 
 	/**
-  * Check if the supplied value is an array.
-  *
-  * @param {*} value
-  *
-  * @return {bool}
+  * Simple utility class.
   */
 
 	/**
@@ -129,7 +125,7 @@ var D3Funnel = (function () {
 	}, {
 		key: '_initialize',
 		value: function _initialize(data, options) {
-			if (!isArray(data) || data.length === 0 || !isArray(data[0]) || data[0].length < 2) {
+			if (Utils.isArray(data) === false || data.length === 0 || Utils.isArray(data[0]) === false || data[0].length < 2) {
 				throw new Error('Funnel data is not valid.');
 			}
 
@@ -140,7 +136,7 @@ var D3Funnel = (function () {
 
 			// Prepare the configuration settings based on the defaults
 			// Set the default width and height based on the container
-			var settings = extend({}, this.defaults);
+			var settings = Utils.extend({}, this.defaults);
 			settings.width = parseInt(d3.select(this.selector).style('width'), 10);
 			settings.height = parseInt(d3.select(this.selector).style('height'), 10);
 
@@ -271,13 +267,13 @@ var D3Funnel = (function () {
 
 			// Harvest total count
 			for (var i = 0; i < this.data.length; i++) {
-				totalCount += isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+				totalCount += Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 			}
 
 			// Create the path definition for each funnel block
 			// Remember to loop back to the beginning point for a closed path
 			for (var i = 0; i < this.data.length; i++) {
-				count = isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+				count = Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 				// Calculate dynamic shapes based on area
 				if (this.dynamicArea) {
@@ -383,7 +379,7 @@ var D3Funnel = (function () {
 			// Create a gradient for each block
 			for (var i = 0; i < this.data.length; i++) {
 				var color = this.data[i][2];
-				var shade = shadeColor(color, -0.25);
+				var shade = Utils.shadeColor(color, -0.25);
 
 				// Create linear gradient
 				var gradient = defs.append('linearGradient').attr({
@@ -429,7 +425,7 @@ var D3Funnel = (function () {
 			var path = 'M' + leftX + ',' + paths[0][1] + ' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) + ' ' + rightX + ',' + paths[2][1] + ' M' + rightX + ',10' + ' Q' + centerX + ',0' + ' ' + leftX + ',10';
 
 			// Draw top oval
-			svg.append('path').attr('fill', shadeColor(this.data[0][2], -0.4)).attr('d', path);
+			svg.append('path').attr('fill', Utils.shadeColor(this.data[0][2], -0.4)).attr('d', path);
 		}
 
 		/**
@@ -542,8 +538,8 @@ var D3Funnel = (function () {
 			return [{
 				index: index,
 				label: this.data[index][0],
-				value: isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
-				formattedValue: isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
+				value: Utils.isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
+				formattedValue: Utils.isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
 				baseColor: this.data[index][2],
 				fill: this._getColor(index)
 			}];
@@ -594,7 +590,7 @@ var D3Funnel = (function () {
 	}, {
 		key: '_onMouseOver',
 		value: function _onMouseOver(data) {
-			d3.select(this).attr('fill', shadeColor(data.baseColor, -0.2));
+			d3.select(this).attr('fill', Utils.shadeColor(data.baseColor, -0.2));
 		}
 
 		/**
@@ -641,48 +637,73 @@ var D3Funnel = (function () {
 	return D3Funnel;
 })();
 
-function isArray(value) {
-	return Object.prototype.toString.call(value) === '[object Array]';
-}
-
-/**
- * Extends an object with the members of another.
- *
- * @param {Object} a The object to be extended.
- * @param {Object} b The object to clone from.
- *
- * @return {Object}
- */
-function extend(a, b) {
-	var prop = undefined;
-	for (prop in b) {
-		if (b.hasOwnProperty(prop)) {
-			a[prop] = b[prop];
-		}
+var Utils = (function () {
+	function Utils() {
+		_classCallCheck(this, Utils);
 	}
-	return a;
-}
 
-/**
- * Shade a color to the given percentage.
- *
- * @param {string} color A hex color.
- * @param {number} shade The shade adjustment. Can be positive or negative.
- *
- * @return {string}
- */
-function shadeColor(color, shade) {
-	var f = parseInt(color.slice(1), 16);
-	var t = shade < 0 ? 0 : 255;
-	var p = shade < 0 ? shade * -1 : shade;
-	var R = f >> 16,
-	    G = f >> 8 & 0x00FF;
-	var B = f & 0x0000FF;
+	_createClass(Utils, null, [{
+		key: 'isArray',
 
-	var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
+		/**
+   * Check if the supplied value is an array.
+   *
+   * @param {*} value
+   *
+   * @return {bool}
+   */
+		value: function isArray(value) {
+			return Object.prototype.toString.call(value) === '[object Array]';
+		}
 
-	return '#' + converted.toString(16).slice(1);
-}
+		/**
+   * Extends an object with the members of another.
+   *
+   * @param {Object} a The object to be extended.
+   * @param {Object} b The object to clone from.
+   *
+   * @return {Object}
+   */
+	}, {
+		key: 'extend',
+		value: function extend(a, b) {
+			var prop = undefined;
+
+			for (prop in b) {
+				if (b.hasOwnProperty(prop)) {
+					a[prop] = b[prop];
+				}
+			}
+
+			return a;
+		}
+
+		/**
+   * Shade a color to the given percentage.
+   *
+   * @param {string} color A hex color.
+   * @param {number} shade The shade adjustment. Can be positive or negative.
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'shadeColor',
+		value: function shadeColor(color, shade) {
+			var f = parseInt(color.slice(1), 16);
+			var t = shade < 0 ? 0 : 255;
+			var p = shade < 0 ? shade * -1 : shade;
+			var R = f >> 16,
+			    G = f >> 8 & 0x00FF;
+			var B = f & 0x0000FF;
+
+			var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
+
+			return '#' + converted.toString(16).slice(1);
+		}
+	}]);
+
+	return Utils;
+})();
 return D3Funnel;
 
 }));
