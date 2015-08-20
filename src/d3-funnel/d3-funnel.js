@@ -32,6 +32,7 @@ class D3Funnel
 				fill: '#fff',
 				format: '{l}: {f}',
 			},
+			onItemClick: null,
 		};
 
 		this.labelFormatter = new LabelFormatter();
@@ -466,7 +467,7 @@ class D3Funnel
 		}
 
 		// ItemClick event
-		if (this.onItemClick) {
+		if (this.onItemClick !== null) {
 			path.on('click', this.onItemClick);
 		}
 

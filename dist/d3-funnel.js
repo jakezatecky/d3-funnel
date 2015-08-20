@@ -49,7 +49,8 @@ var D3Funnel = (function () {
 				fontSize: '14px',
 				fill: '#fff',
 				format: '{l}: {f}'
-			}
+			},
+			onItemClick: null
 		};
 
 		this.labelFormatter = new LabelFormatter();
@@ -468,7 +469,7 @@ var D3Funnel = (function () {
 			}
 
 			// ItemClick event
-			if (this.onItemClick) {
+			if (this.onItemClick !== null) {
 				path.on('click', this.onItemClick);
 			}
 
