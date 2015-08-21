@@ -125,7 +125,7 @@ var D3Funnel = (function () {
 	}, {
 		key: '_initialize',
 		value: function _initialize(data, options) {
-			if (Utils.isArray(data) === false || data.length === 0 || Utils.isArray(data[0]) === false || data[0].length < 2) {
+			if (Array.isArray(data) === false || data.length === 0 || Array.isArray(data[0]) === false || data[0].length < 2) {
 				throw new Error('Funnel data is not valid.');
 			}
 
@@ -267,13 +267,13 @@ var D3Funnel = (function () {
 
 			// Harvest total count
 			for (var i = 0; i < this.data.length; i++) {
-				totalCount += Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+				totalCount += Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 			}
 
 			// Create the path definition for each funnel block
 			// Remember to loop back to the beginning point for a closed path
 			for (var i = 0; i < this.data.length; i++) {
-				count = Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+				count = Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 				// Calculate dynamic shapes based on area
 				if (this.dynamicArea) {
@@ -538,8 +538,8 @@ var D3Funnel = (function () {
 			return [{
 				index: index,
 				label: this.data[index][0],
-				value: Utils.isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
-				formattedValue: Utils.isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
+				value: Array.isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
+				formattedValue: Array.isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
 				baseColor: this.data[index][2],
 				fill: this._getColor(index)
 			}];
@@ -643,18 +643,7 @@ var Utils = (function () {
 	}
 
 	_createClass(Utils, null, [{
-		key: 'isArray',
-
-		/**
-   * Check if the supplied value is an array.
-   *
-   * @param {*} value
-   *
-   * @return {bool}
-   */
-		value: function isArray(value) {
-			return Object.prototype.toString.call(value) === '[object Array]';
-		}
+		key: 'extend',
 
 		/**
    * Extends an object with the members of another.
@@ -664,8 +653,6 @@ var Utils = (function () {
    *
    * @return {Object}
    */
-	}, {
-		key: 'extend',
 		value: function extend(a, b) {
 			var prop = undefined;
 

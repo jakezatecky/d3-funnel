@@ -8,18 +8,6 @@ class Utils
 {
 
 	/**
-	 * Check if the supplied value is an array.
-	 *
-	 * @param {*} value
-	 *
-	 * @return {bool}
-	 */
-	static isArray(value)
-	{
-		return Object.prototype.toString.call(value) === '[object Array]';
-	}
-
-	/**
 	 * Extends an object with the members of another.
 	 *
 	 * @param {Object} a The object to be extended.

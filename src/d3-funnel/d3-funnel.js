@@ -97,9 +97,9 @@ class D3Funnel
 	 */
 	_initialize(data, options)
 	{
-		if (Utils.isArray(data) === false ||
+		if (Array.isArray(data) === false ||
 			data.length === 0 ||
-			Utils.isArray(data[0]) === false ||
+			Array.isArray(data[0]) === false ||
 			data[0].length < 2) {
 			throw new Error('Funnel data is not valid.');
 		}
@@ -243,13 +243,13 @@ class D3Funnel
 
 		// Harvest total count
 		for (let i = 0; i < this.data.length; i++) {
-			totalCount += Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			totalCount += Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 		}
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
 		for (let i = 0; i < this.data.length; i++) {
-			count = Utils.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			count = Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
@@ -542,10 +542,10 @@ class D3Funnel
 		return [{
 			index: index,
 			label: this.data[index][0],
-			value: Utils.isArray(this.data[index][1]) ?
+			value: Array.isArray(this.data[index][1]) ?
 				this.data[index][1][0] :
 				this.data[index][1],
-			formattedValue: Utils.isArray(this.data[index][1]) ?
+			formattedValue: Array.isArray(this.data[index][1]) ?
 				this.data[index][1][1] :
 				this.data[index][1].toLocaleString(),
 			baseColor: this.data[index][2],
