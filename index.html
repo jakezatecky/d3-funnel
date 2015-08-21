@@ -102,33 +102,33 @@
               ['Applicants',   12000],
               ['Pre-screened', 4000],
               ['Interviewed',  2500],
-              ['Hired',        1500]
+              ['Hired',        1500],
             ];
           } else {
             data = [
               ['Teal',      12000, '#008080'],
               ['Byzantium', 4000,  '#702963'],
               ['Persimmon', 2500,  '#ff634d'],
-              ['Azure',     1500,  '#007fff']
+              ['Azure',     1500,  '#007fff'],
             ];
           }
 
           var options = {};
           var settings = {
             curved: {
-              isCurved: true
+              isCurved: true,
             },
             pinched: {
-              bottomPinch: 1
+              bottomPinch: 1,
             },
             gradient: {
-              fillType: 'gradient'
+              fillType: 'gradient',
             },
             inverted: {
-              isInverted: true
+              isInverted: true,
             },
             hover: {
-              hoverEffects: true
+              hoverEffects: true,
             },
             click: {
               onItemClick: function(d, i) {
@@ -136,17 +136,17 @@
               }
             },
             dynamic: {
-              dynamicArea: true
+              dynamicArea: true,
             },
             animation: {
-              animation: 200
+              animation: 200,
             },
             label: {
               label: {
                 fontSize: '15px',
-                fill: '#ffeb81'
-              }
-            }
+                fill: '#ffeb81',
+              },
+            },
           };
 
           $('input[type="checkbox"]:checked').each(function() {
