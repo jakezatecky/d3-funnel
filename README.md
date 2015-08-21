@@ -31,7 +31,7 @@ You must also create a container element and instantiate a new chart:
         ['Plants',     5000],
         ['Flowers',    2500],
         ['Perennials', 200],
-        ['Roses',      50]
+        ['Roses',      50],
     ];
     var options = {};
 
@@ -77,7 +77,7 @@ var data = [
     ['Teal',      12000, '#008080' '#080800'],
     ['Byzantium', 4000,  '#702963'],
     ['Persimmon', 2500,  '#ff634d' '#6f34fd'],
-    ['Azure',     1500,  '#007fff' '#07fff0']
+    ['Azure',     1500,  '#007fff' '#07fff0'],
     //         Background ---^         ^--- Label
 ];
 ```
@@ -90,7 +90,7 @@ var data = [
     ['Teal',      [12000, 'USD 12,000']],
     ['Byzantium', [4000,  'USD 4,000']],
     ['Persimmon', [2500,  'USD 2,500']],
-    ['Azure',     [1500,  'USD 1,500']]
+    ['Azure',     [1500,  'USD 1,500']],
 ];
 ```
 

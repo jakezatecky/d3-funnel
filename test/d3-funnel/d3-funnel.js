@@ -63,7 +63,7 @@ describe('D3Funnel', function () {
 		describe('width', function () {
 			it('should set the funnel\'s width to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
-					width: 200
+					width: 200,
 				});
 
 				assert.equal(200, getSvg().node().getBBox().width);
@@ -73,7 +73,7 @@ describe('D3Funnel', function () {
 		describe('height', function () {
 			it('should set the funnel\'s height to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
-					height: 200
+					height: 200,
 				});
 
 				assert.equal(200, getSvg().node().getBBox().height);
@@ -83,7 +83,7 @@ describe('D3Funnel', function () {
 		describe('isCurved', function () {
 			it('should create an additional path on top of the trapezoids', function () {
 				getFunnel().draw(getBasicData(), {
-					isCurved: true
+					isCurved: true,
 				});
 
 				assert.equal(2, d3.selectAll('#funnel path')[0].length);
@@ -91,7 +91,7 @@ describe('D3Funnel', function () {
 
 			it('should create a quadratic Bezier curve on each path', function () {
 				getFunnel().draw(getBasicData(), {
-					isCurved: true
+					isCurved: true,
 				});
 
 				var paths = d3.selectAll('#funnel path');
@@ -107,7 +107,7 @@ describe('D3Funnel', function () {
 		describe('fillType', function () {
 			it('should create gradients when set to \'gradient\'', function () {
 				getFunnel().draw(getBasicData(), {
-					fillType: 'gradient'
+					fillType: 'gradient',
 				});
 
 				// Cannot try to re-select the camelCased linearGradient element
@@ -133,8 +133,8 @@ describe('D3Funnel', function () {
 			it('should set the label\'s font size to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
 					label: {
-						fontSize: '16px'
-					}
+						fontSize: '16px',
+					},
 				});
 
 				assert.isTrue(d3.select('#funnel text').attr('style').indexOf('font-size: 16px') > -1);
@@ -145,8 +145,8 @@ describe('D3Funnel', function () {
 			it('should set the label\'s fill color to the specified color', function () {
 				getFunnel().draw(getBasicData(), {
 					label: {
-						fill: '#777'
-					}
+						fill: '#777',
+					},
 				});
 
 				assert.isTrue(d3.select('#funnel text').attr('fill').indexOf('#777') > -1);

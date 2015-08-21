@@ -14,7 +14,7 @@ var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFull
 
 var src = [
 	'./src/d3-funnel/d3-funnel.js',
-	'./src/d3-funnel/utils.js'
+	'./src/d3-funnel/utils.js',
 ];
 var umdOptions = {
 	exports: 'D3Funnel',
@@ -22,8 +22,8 @@ var umdOptions = {
 	deps: [{
 		name: 'd3',
 		globalName: 'd3',
-		paramName: 'd3'
-	}]
+		paramName: 'd3',
+	}],
 };
 
 gulp.task('test-format', function () {
@@ -32,7 +32,7 @@ gulp.task('test-format', function () {
 		.pipe(jshint.reporter('default'))
 		.pipe(jshint.reporter('fail'))
 		.pipe(jscs({
-			configPath: './.jscsrc'
+			configPath: './.jscsrc',
 		}));
 });
 
@@ -53,11 +53,11 @@ gulp.task('build', ['test-format', 'test-mocha'], function () {
 	return gulp.src(['./compiled/d3-funnel.js'])
 		.pipe(gulp.dest('./dist/'))
 		.pipe(rename({
-			extname: '.min.js'
+			extname: '.min.js',
 		}))
 		.pipe(uglify())
 		.pipe(header(banner, {
-			pkg: pkg
+			pkg: pkg,
 		}))
 		.pipe(gulp.dest('./dist/'));
 });

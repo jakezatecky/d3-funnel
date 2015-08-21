@@ -53,95 +53,95 @@
 							['Applicants',   12000],
 							['Pre-screened', 4000],
 							['Interviewed',  2500],
-							['Hired',        1500]
+							['Hired',        1500],
 						],
 						formattedValues: [
 							['Applicants',   [12000, '$12,000']],
 							['Pre-screened', [4000,  '$4,000']],
 							['Interviewed',  [2500,  '$2,500']],
-							['Hired',        [1500,  '$1,500']]
+							['Hired',        [1500,  '$1,500']],
 						],
 						minHeight: [
 							['Applicants',   12000],
 							['Pre-screened', 4000],
 							['Interviewed',  2500],
-							['Hired',        100]
+							['Hired',        100],
 						],
 						color:  [
 							['Teal',      12000, '#008080'],
 							['Byzantium', 4000,  '#702963'],
 							['Persimmon', 2500,  '#ff634d'],
-							['Azure',     1500,  '#007fff']
+							['Azure',     1500,  '#007fff'],
 						],
 						labelsColor: [
 							['Teal',      12000, '#008080', '#080800'],
 							['Byzantium', 4000,  '#702963'],
 							['Persimmon', 2500,  '#ff634d', '#6f34fd'],
-							['Azure',     1500,  '#007fff', '#07fff0']
-						]
+							['Azure',     1500,  '#007fff', '#07fff0'],
+						],
 					};
 
 					var options = {
 						basic: [data.normal, {}],
 						formatted: [
 							data.formattedValues,
-							{}
+							{},
 						],
 						curved: [
 							data.normal, {
-								isCurved: true
-							}
+								isCurved: true,
+							},
 						],
 						pinch: [
 							data.normal, {
-								bottomPinch: 1
-							}
+								bottomPinch: 1,
+							},
 						],
 						gradient: [
 							data.normal, {
-								fillType: 'gradient'
-							}
+								fillType: 'gradient',
+							},
 						],
 						inverted: [
 							data.normal, {
-								isInverted: true
-							}
+								isInverted: true,
+							},
 						],
 						hover: [
 							data.normal, {
-								hoverEffects: true
-							}
+								hoverEffects: true,
+							},
 						],
 						dynamic: [
 							data.normal, {
-								dynamicArea: true
-							}
+								dynamicArea: true,
+							},
 						],
 						minHeight: [
 							data.minHeight, {
 								dynamicArea: true,
-								minHeight: 10
-							}
+								minHeight: 10,
+							},
 						],
 						animation: [
 							data.normal, {
-								animation: 200
-							}
+								animation: 200,
+							},
 						],
 						clickEvent: [
 							data.normal, {
 								onItemClick: function(d) {
 									alert('<' + d.label + '> selected.');
-								}
-							}
+								},
+							},
 						],
 						label: [
 							data.normal, {
 								label: {
 									fontSize: '16px',
-									fill: '#000'
-								}
-							}
+									fill: '#000',
+								},
+							},
 						],
 						color: [data.color, {}],
 						labelsColor: [data.labelsColor, {}],
@@ -155,9 +155,9 @@
 								animation: 200,
 								onItemClick: function(d) {
 									alert('<' + d.label + '> selected.');
-								}
-							}
-						]
+								},
+							},
+						],
 					};
 
 					var chart = new D3Funnel('#funnel');
