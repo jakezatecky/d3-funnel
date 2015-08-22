@@ -45,6 +45,17 @@ describe('D3Funnel', function () {
 					funnel.draw(['One dimensional', 2], {});
 				}, Error, 'Funnel data is not valid.');
 			});
+
+			it('should draw as many blocks as there are elements', function () {
+				getFunnel().draw([
+					['Node A', 1],
+					['Node B', 2],
+					['Node C', 3],
+					['Node D', 4],
+				]);
+
+				assert.equal(4, getLength(getSvg().selectAll('path')));
+			});
 		});
 
 		describe('destroy', function () {
