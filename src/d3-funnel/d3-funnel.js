@@ -103,26 +103,13 @@ class D3Funnel
 	{
 		this._validateData(data);
 
-		this.data = data;
-
-		// Counter
-		let i;
+		this._setData(data);
 
 		let settings = this._getSettings(options);
 
+		// Set labels
 		this.label = settings.label;
 		this.labelFormatter.setFormat(this.label.format);
-
-		// Initialize the colors for each block
-		let colorScale = d3.scale.category10();
-		for (i = 0; i < this.data.length; i++) {
-			let hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-
-			// If a color is not set for the record, add one
-			if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
-				this.data[i][2] = colorScale(i);
-			}
-		}
 
 		// Initialize funnel chart settings
 		this.width = settings.width;
@@ -168,6 +155,37 @@ class D3Funnel
 			Array.isArray(data[0]) === false ||
 			data[0].length < 2) {
 			throw new Error('Funnel data is not valid.');
+		}
+	}
+
+	/**
+	 * @param {Array} data
+	 *
+	 * @return void
+	 */
+	_setData(data)
+	{
+		this.data = data;
+
+		this._setColors();
+	}
+
+	/**
+	 * Set the colors for each block.
+	 *
+	 * @return {void}
+	 */
+	_setColors()
+	{
+		let colorScale = d3.scale.category10();
+		let hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+		let i;
+
+		for (i = 0; i < this.data.length; i++) {
+			// If a color is not set for the record, add one
+			if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
+				this.data[i][2] = colorScale(i);
+			}
 		}
 	}
 
