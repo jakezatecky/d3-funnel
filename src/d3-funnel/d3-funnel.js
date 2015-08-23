@@ -97,12 +97,7 @@ class D3Funnel
 	 */
 	_initialize(data, options)
 	{
-		if (Array.isArray(data) === false ||
-			data.length === 0 ||
-			Array.isArray(data[0]) === false ||
-			data[0].length < 2) {
-			throw new Error('Funnel data is not valid.');
-		}
+		this._validateData(data);
 
 		this.data = data;
 
@@ -180,11 +175,26 @@ class D3Funnel
 		// Change in y direction
 		// Curved chart needs reserved pixels to account for curvature
 		this.dy = this.isCurved ?
-		(this.height - this.curveHeight) / data.length :
-		this.height / data.length;
+			(this.height - this.curveHeight) / data.length :
+			this.height / data.length;
 
 		// Support for events
 		this.onItemClick = settings.onItemClick;
+	}
+
+	/**
+	 * @param {Array} data
+	 *
+	 * @return void
+	 */
+	_validateData(data)
+	{
+		if (Array.isArray(data) === false ||
+			data.length === 0 ||
+			Array.isArray(data[0]) === false ||
+			data[0].length < 2) {
+			throw new Error('Funnel data is not valid.');
+		}
 	}
 
 	/**
