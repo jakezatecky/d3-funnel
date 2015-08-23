@@ -131,44 +131,10 @@ var D3Funnel = (function () {
 			// Counter
 			var i = undefined;
 
-			// Prepare the configuration settings based on the defaults
-			// Set the default width and height based on the container
-			var settings = Utils.extend({}, this.defaults);
-			settings.width = parseInt(d3.select(this.selector).style('width'), 10);
-			settings.height = parseInt(d3.select(this.selector).style('height'), 10);
-
-			// Overwrite default settings with user options
-			var keys = Object.keys(options);
-			for (i = 0; i < keys.length; i++) {
-				if (keys[i] !== 'label') {
-					settings[keys[i]] = options[keys[i]];
-				}
-			}
-
-			// Label settings
-			if (options.hasOwnProperty('label')) {
-				(function () {
-					var validLabelOptions = /fontSize|fill|format/;
-
-					Object.keys(options.label).forEach(function (labelOption) {
-						if (labelOption.match(validLabelOptions)) {
-							settings.label[labelOption] = options.label[labelOption];
-						}
-					});
-				})();
-			}
+			var settings = this._getSettings(options);
 
 			this.label = settings.label;
 			this.labelFormatter.setFormat(this.label.format);
-
-			// In the case that the width or height is not valid, set
-			// the width/height as its default hard-coded value
-			if (settings.width <= 0) {
-				settings.width = this.defaults.width;
-			}
-			if (settings.height <= 0) {
-				settings.height = this.defaults.height;
-			}
 
 			// Initialize the colors for each block
 			var colorScale = d3.scale.category10();
@@ -220,6 +186,35 @@ var D3Funnel = (function () {
 			if (Array.isArray(data) === false || data.length === 0 || Array.isArray(data[0]) === false || data[0].length < 2) {
 				throw new Error('Funnel data is not valid.');
 			}
+		}
+
+		/**
+   * @param {Object} options
+   *
+   * @returns {Object}
+   */
+	}, {
+		key: '_getSettings',
+		value: function _getSettings(options) {
+			// Prepare the configuration settings based on the defaults
+			// Set the default width and height based on the container
+			var settings = Utils.extend({}, this.defaults);
+			settings.width = parseInt(d3.select(this.selector).style('width'), 10);
+			settings.height = parseInt(d3.select(this.selector).style('height'), 10);
+
+			// Overwrite default settings with user options
+			settings = Utils.extend(settings, options);
+
+			// In the case that the width or height is not valid, set
+			// the width/height as its default hard-coded value
+			if (settings.width <= 0) {
+				settings.width = this.defaults.width;
+			}
+			if (settings.height <= 0) {
+				settings.height = this.defaults.height;
+			}
+
+			return settings;
 		}
 
 		/**
@@ -779,7 +774,11 @@ var Utils = (function () {
 
 			for (prop in b) {
 				if (b.hasOwnProperty(prop)) {
-					a[prop] = b[prop];
+					if (typeof a[prop] === 'object' && typeof b[prop] === 'object') {
+						a[prop] = Utils.extend(a[prop], b[prop]);
+					} else {
+						a[prop] = b[prop];
+					}
 				}
 			}
 

@@ -21,7 +21,11 @@ class Utils
 
 		for (prop in b) {
 			if (b.hasOwnProperty(prop)) {
-				a[prop] = b[prop];
+				if (typeof a[prop] === 'object' && typeof b[prop] === 'object') {
+					a[prop] = Utils.extend(a[prop], b[prop]);
+				} else {
+					a[prop] = b[prop];
+				}
 			}
 		}
 

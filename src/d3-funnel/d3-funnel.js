@@ -108,42 +108,10 @@ class D3Funnel
 		// Counter
 		let i;
 
-		// Prepare the configuration settings based on the defaults
-		// Set the default width and height based on the container
-		let settings = Utils.extend({}, this.defaults);
-		settings.width = parseInt(d3.select(this.selector).style('width'), 10);
-		settings.height = parseInt(d3.select(this.selector).style('height'), 10);
-
-		// Overwrite default settings with user options
-		let keys = Object.keys(options);
-		for (i = 0; i < keys.length; i++) {
-			if (keys[i] !== 'label') {
-				settings[keys[i]] = options[keys[i]];
-			}
-		}
-
-		// Label settings
-		if (options.hasOwnProperty('label')) {
-			let validLabelOptions = /fontSize|fill|format/;
-
-			Object.keys(options.label).forEach((labelOption) => {
-				if (labelOption.match(validLabelOptions)) {
-					settings.label[labelOption] = options.label[labelOption];
-				}
-			});
-		}
+		let settings = this._getSettings(options);
 
 		this.label = settings.label;
 		this.labelFormatter.setFormat(this.label.format);
-
-		// In the case that the width or height is not valid, set
-		// the width/height as its default hard-coded value
-		if (settings.width <= 0) {
-			settings.width = this.defaults.width;
-		}
-		if (settings.height <= 0) {
-			settings.height = this.defaults.height;
-		}
 
 		// Initialize the colors for each block
 		let colorScale = d3.scale.category10();
@@ -176,8 +144,8 @@ class D3Funnel
 		// Change in x direction
 		// Will be sharper if there is a pinch
 		this.dx = this.bottomPinch > 0 ?
-		this.bottomLeftX / (data.length - this.bottomPinch) :
-		this.bottomLeftX / data.length;
+			this.bottomLeftX / (data.length - this.bottomPinch) :
+			this.bottomLeftX / data.length;
 		// Change in y direction
 		// Curved chart needs reserved pixels to account for curvature
 		this.dy = this.isCurved ?
@@ -201,6 +169,34 @@ class D3Funnel
 			data[0].length < 2) {
 			throw new Error('Funnel data is not valid.');
 		}
+	}
+
+	/**
+	 * @param {Object} options
+	 *
+	 * @returns {Object}
+	 */
+	_getSettings(options)
+	{
+		// Prepare the configuration settings based on the defaults
+		// Set the default width and height based on the container
+		let settings = Utils.extend({}, this.defaults);
+		settings.width = parseInt(d3.select(this.selector).style('width'), 10);
+		settings.height = parseInt(d3.select(this.selector).style('height'), 10);
+
+		// Overwrite default settings with user options
+		settings = Utils.extend(settings, options);
+
+		// In the case that the width or height is not valid, set
+		// the width/height as its default hard-coded value
+		if (settings.width <= 0) {
+			settings.width = this.defaults.width;
+		}
+		if (settings.height <= 0) {
+			settings.height = this.defaults.height;
+		}
+
+		return settings;
 	}
 
 	/**
