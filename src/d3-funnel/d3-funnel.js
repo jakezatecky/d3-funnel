@@ -124,15 +124,10 @@ class D3Funnel {
 		this.bottomLeftX = (this.width - this.bottomWidth) / 2;
 
 		// Change in x direction
-		// Will be sharper if there is a pinch
-		this.dx = this.bottomPinch > 0 ?
-			this.bottomLeftX / (data.length - this.bottomPinch) :
-			this.bottomLeftX / data.length;
+		this.dx = this._getDx();
+
 		// Change in y direction
-		// Curved chart needs reserved pixels to account for curvature
-		this.dy = this.isCurved ?
-			(this.height - this.curveHeight) / data.length :
-			this.height / data.length;
+		this.dy = this._getDy();
 
 		// Support for events
 		this.onItemClick = settings.onItemClick;
@@ -206,6 +201,30 @@ class D3Funnel {
 		}
 
 		return settings;
+	}
+
+	/**
+	 * @return {Number}
+	 */
+	_getDx() {
+		// Will be sharper if there is a pinch
+		if (this.bottomPinch > 0) {
+			return this.bottomLeftX / (this.data.length - this.bottomPinch);
+		}
+
+		return this.bottomLeftX / this.data.length;
+	}
+
+	/**
+	 * @return {Number}
+	 */
+	_getDy() {
+		// Curved chart needs reserved pixels to account for curvature
+		if (this.isCurved) {
+			return (this.height - this.curveHeight) / this.data.length;
+		}
+
+		return this.height / this.data.length;
 	}
 
 	/**
