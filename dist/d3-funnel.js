@@ -855,8 +855,9 @@ var Utils = (function () {
 			var f = parseInt(color.slice(1), 16);
 			var t = shade < 0 ? 0 : 255;
 			var p = shade < 0 ? shade * -1 : shade;
-			var R = f >> 16,
-			    G = f >> 8 & 0x00FF;
+
+			var R = f >> 16;
+			var G = f >> 8 & 0x00FF;
 			var B = f & 0x0000FF;
 
 			var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
