@@ -66,11 +66,11 @@ You must also create a container element and instantiate a new chart:
 The option `label.format` can either by a function, or a string. The following
 keys will be substituted by the string formatter:
 
-| Key   | Description                  |
-| ----- | ---------------------------- |
-| '{l}' | The block's supplied label.  |
-| '{v}' | The block's raw value.       |
-| '{f}' | The block's formatted value. |
+| Key    | Description                  |
+| ------ | ---------------------------- |
+| `'{l}'` | The block's supplied label.  |
+| `'{v}'` | The block's raw value.       |
+| `'{f}'` | The block's formatted value. |
 
 ## API
 
