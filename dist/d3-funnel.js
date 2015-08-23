@@ -9,7 +9,7 @@
   }
 }(this, function(d3) {
 
-/* global d3, Utils */
+/* global d3, Utils, LabelFormatter */
 /* exported D3Funnel */
 
 'use strict';
@@ -47,17 +47,16 @@ var D3Funnel = (function () {
 			animation: false,
 			label: {
 				fontSize: '14px',
-				fill: '#fff'
-			}
+				fill: '#fff',
+				format: '{l}: {f}'
+			},
+			onItemClick: null
 		};
+
+		this.labelFormatter = new LabelFormatter();
 	}
 
-	/* exported Utils */
-	/* jshint bitwise: false */
-
-	/**
-  * Simple utility class.
-  */
+	/* exported LabelFormatter */
 
 	/**
   * Remove the funnel and its events from the DOM.
@@ -125,9 +124,7 @@ var D3Funnel = (function () {
 	}, {
 		key: '_initialize',
 		value: function _initialize(data, options) {
-			if (Array.isArray(data) === false || data.length === 0 || Array.isArray(data[0]) === false || data[0].length < 2) {
-				throw new Error('Funnel data is not valid.');
-			}
+			this._validateData(data);
 
 			this.data = data;
 
@@ -151,7 +148,7 @@ var D3Funnel = (function () {
 			// Label settings
 			if (options.hasOwnProperty('label')) {
 				(function () {
-					var validLabelOptions = /fontSize|fill/;
+					var validLabelOptions = /fontSize|fill|format/;
 
 					Object.keys(options.label).forEach(function (labelOption) {
 						if (labelOption.match(validLabelOptions)) {
@@ -160,7 +157,9 @@ var D3Funnel = (function () {
 					});
 				})();
 			}
+
 			this.label = settings.label;
+			this.labelFormatter.setFormat(this.label.format);
 
 			// In the case that the width or height is not valid, set
 			// the width/height as its default hard-coded value
@@ -208,6 +207,19 @@ var D3Funnel = (function () {
 
 			// Support for events
 			this.onItemClick = settings.onItemClick;
+		}
+
+		/**
+   * @param {Array} data
+   *
+   * @return void
+   */
+	}, {
+		key: '_validateData',
+		value: function _validateData(data) {
+			if (Array.isArray(data) === false || data.length === 0 || Array.isArray(data[0]) === false || data[0].length < 2) {
+				throw new Error('Funnel data is not valid.');
+			}
 		}
 
 		/**
@@ -467,7 +479,7 @@ var D3Funnel = (function () {
 			}
 
 			// ItemClick event
-			if (this.onItemClick) {
+			if (this.onItemClick !== null) {
 				path.on('click', this.onItemClick);
 			}
 
@@ -535,11 +547,14 @@ var D3Funnel = (function () {
 	}, {
 		key: '_getBlockData',
 		value: function _getBlockData(index) {
+			var label = this.data[index][0];
+			var value = this.data[index][1];
+
 			return [{
 				index: index,
-				label: this.data[index][0],
-				value: Array.isArray(this.data[index][1]) ? this.data[index][1][0] : this.data[index][1],
-				formattedValue: Array.isArray(this.data[index][1]) ? this.data[index][1][1] : this.data[index][1].toLocaleString(),
+				label: label,
+				value: value,
+				formatted: this.labelFormatter.format(label, value),
 				baseColor: this.data[index][2],
 				fill: this._getColor(index)
 			}];
@@ -616,12 +631,16 @@ var D3Funnel = (function () {
 			var i = index;
 			var paths = this.blockPaths[index];
 			var blockData = this._getBlockData(index)[0];
-			var textStr = blockData.label + ': ' + blockData.formattedValue;
+			var textStr = blockData.formatted;
 			var textFill = this.data[i][3] || this.label.fill;
 
 			var textX = this.width / 2; // Center the text
-			var textY = !this.isCurved ? // Average height of bases
-			(paths[1][1] + paths[2][1]) / 2 : (paths[2][1] + paths[3][1]) / 2 + this.curveHeight / this.data.length;
+
+			// Average height of bases
+			var textY = (paths[1][1] + paths[2][1]) / 2;
+			if (this.isCurved) {
+				textY = (paths[2][1] + paths[3][1]) / 2 + this.curveHeight / this.data.length;
+			}
 
 			group.append('text').text(textStr).attr({
 				'x': textX,
@@ -635,6 +654,108 @@ var D3Funnel = (function () {
 	}]);
 
 	return D3Funnel;
+})();
+
+var LabelFormatter = (function () {
+
+	/**
+  * Initial the formatter.
+  *
+  * @return {void}
+  */
+
+	function LabelFormatter() {
+		_classCallCheck(this, LabelFormatter);
+
+		this.expression = null;
+	}
+
+	/* exported Utils */
+	/* jshint bitwise: false */
+
+	/**
+  * Simple utility class.
+  */
+
+	/**
+  * Register the format function.
+  *
+  * @param {string|function} format
+  *
+  * @return {void}
+  */
+
+	_createClass(LabelFormatter, [{
+		key: 'setFormat',
+		value: function setFormat(format) {
+			if (typeof format === 'function') {
+				this.formatter = format;
+			} else {
+				this.expression = format;
+				this.formatter = this.stringFormatter;
+			}
+		}
+
+		/**
+   * Format the given value according to the data point or the format.
+   *
+   * @param {string} label
+   * @param {number} value
+   *
+   * @return string
+   */
+	}, {
+		key: 'format',
+		value: function format(label, value) {
+			// Try to use any formatted value specified through the data
+			// Otherwise, attempt to use the format function
+			if (Array.isArray(value)) {
+				return this.formatter(label, value[0], value[1]);
+			} else {
+				return this.formatter(label, value, null);
+			}
+		}
+
+		/**
+   * Format the string according to a simple expression.
+   *
+   * {l}: label
+   * {v}: raw value
+   * {f}: formatted value
+   *
+   * @param {string} label
+   * @param {number} value
+   * @param {*}      fValue
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'stringFormatter',
+		value: function stringFormatter(label, value) {
+			var fValue = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+			// Attempt to use supplied formatted value
+			// Otherwise, use the default
+			if (fValue === null) {
+				fValue = this.getDefaultFormattedValue(value);
+			}
+
+			return this.expression.split('{l}').join(label).split('{v}').join(value).split('{f}').join(fValue);
+		}
+
+		/**
+   * @param {number} value
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'getDefaultFormattedValue',
+		value: function getDefaultFormattedValue(value) {
+			return value.toLocaleString();
+		}
+	}]);
+
+	return LabelFormatter;
 })();
 
 var Utils = (function () {

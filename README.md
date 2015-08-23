@@ -42,23 +42,35 @@ You must also create a container element and instantiate a new chart:
 
 ## Options
 
-| Option           | Description                                                                 | Type     | Default             |
-| ---------------- | --------------------------------------------------------------------------- | -------- | ------------------- |
-| `width`          | The pixel width of the chart.                                               | int      | Container's width   |
-| `height`         | The pixel height of the chart.                                              | int      | Container's height  |
-| `bottomWidth`    | The percent of total width the bottom should be.                            | float    | `1 / 3`             |
-| `bottomPinch`    | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                 |
-| `isCurved`       | Whether the funnel is curved.                                               | bool     | `false`             |
-| `curveHeight`    | The curvature amount (if `isCurved` is `true`).                             | int      | `20`                |
-| `fillType`       | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`           |
-| `isInverted`     | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`             |
-| `hoverEffects`   | Whether the funnel has effects on hover.                                    | bool     | `false`             |
-| `dynamicArea`    | Whether block areas are calculated by counts (as opposed to static height). | bool     | `false`             |
-| `minHeight`      | The minimum pixel height of a block.                                        | int/bool | `false`             |
-| `animation`      | The load animation speed in milliseconds.                                   | int/bool | `false`             |
-| `label.fontSize` | Any valid font size for the labels.                                         | string   | `'14px'`            |
-| `label.fill`     | Any valid hex color for the label color                                     | string   | `'#fff'`            |
-| `onItemClick`    | Event handler if one of the items is clicked.                               | function | `function(d, i) {}` |
+| Option           | Description                                                                 | Type     | Default            |
+| ---------------- | --------------------------------------------------------------------------- | -------- | ------------------ |
+| `width`          | The pixel width of the chart.                                               | int      | Container's width  |
+| `height`         | The pixel height of the chart.                                              | int      | Container's height |
+| `bottomWidth`    | The percent of total width the bottom should be.                            | float    | `1 / 3`            |
+| `bottomPinch`    | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                |
+| `isCurved`       | Whether the funnel is curved.                                               | bool     | `false`            |
+| `curveHeight`    | The curvature amount (if `isCurved` is `true`).                             | int      | `20`               |
+| `fillType`       | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
+| `isInverted`     | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`            |
+| `hoverEffects`   | Whether the funnel has effects on hover.                                    | bool     | `false`            |
+| `dynamicArea`    | Whether block areas are calculated by counts (as opposed to static height). | bool     | `false`            |
+| `minHeight`      | The minimum pixel height of a block.                                        | int/bool | `false`            |
+| `animation`      | The load animation speed in milliseconds.                                   | int/bool | `false`            |
+| `label.fontSize` | Any valid font size for the labels.                                         | string   | `'14px'`           |
+| `label.fill`     | Any valid hex color for the label color                                     | string   | `'#fff'`           |
+| `label.format`   | Either `function(label, value)` or a format string. See below.              | mixed    | `'{l}: {f}'`       |
+| `onItemClick`    | Event handler if one of the items is clicked.                               | function | `null`             |
+
+### Label Format
+
+The option `label.format` can either by a function, or a string. The following
+keys will be substituted by the string formatter:
+
+| Key   | Description                  |
+| ----- | ---------------------------- |
+| '{l}' | The block's supplied label.  |
+| '{v}' | The block's raw value.       |
+| '{f}' | The block's formatted value. |
 
 ## API
 

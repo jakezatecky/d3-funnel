@@ -1,4 +1,4 @@
-/* global d3, Utils */
+/* global d3, Utils, LabelFormatter */
 /* exported D3Funnel */
 
 class D3Funnel
@@ -30,8 +30,12 @@ class D3Funnel
 			label: {
 				fontSize: '14px',
 				fill: '#fff',
+				format: '{l}: {f}',
 			},
+			onItemClick: null,
 		};
+
+		this.labelFormatter = new LabelFormatter();
 	}
 
 	/**
@@ -120,7 +124,7 @@ class D3Funnel
 
 		// Label settings
 		if (options.hasOwnProperty('label')) {
-			let validLabelOptions = /fontSize|fill/;
+			let validLabelOptions = /fontSize|fill|format/;
 
 			Object.keys(options.label).forEach((labelOption) => {
 				if (labelOption.match(validLabelOptions)) {
@@ -128,7 +132,9 @@ class D3Funnel
 				}
 			});
 		}
+
 		this.label = settings.label;
+		this.labelFormatter.setFormat(this.label.format);
 
 		// In the case that the width or height is not valid, set
 		// the width/height as its default hard-coded value
@@ -474,7 +480,7 @@ class D3Funnel
 		}
 
 		// ItemClick event
-		if (this.onItemClick) {
+		if (this.onItemClick !== null) {
 			path.on('click', this.onItemClick);
 		}
 
@@ -549,15 +555,14 @@ class D3Funnel
 	 */
 	_getBlockData(index)
 	{
+		let label = this.data[index][0];
+		let value = this.data[index][1];
+
 		return [{
 			index: index,
-			label: this.data[index][0],
-			value: Array.isArray(this.data[index][1]) ?
-				this.data[index][1][0] :
-				this.data[index][1],
-			formattedValue: Array.isArray(this.data[index][1]) ?
-				this.data[index][1][1] :
-				this.data[index][1].toLocaleString(),
+			label: label,
+			value: value,
+			formatted: this.labelFormatter.format(label, value),
 			baseColor: this.data[index][2],
 			fill: this._getColor(index),
 		}];
@@ -629,13 +634,16 @@ class D3Funnel
 		let i = index;
 		let paths = this.blockPaths[index];
 		let blockData = this._getBlockData(index)[0];
-		let textStr = blockData.label + ': ' + blockData.formattedValue;
+		let textStr = blockData.formatted;
 		let textFill = this.data[i][3] || this.label.fill;
 
 		let textX = this.width / 2;   // Center the text
-		let textY = !this.isCurved ?  // Average height of bases
-		(paths[1][1] + paths[2][1]) / 2 :
-		(paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+
+		// Average height of bases
+		let textY = (paths[1][1] + paths[2][1]) / 2;
+		if (this.isCurved) {
+			textY = (paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+		}
 
 		group.append('text')
 			.text(textStr)
