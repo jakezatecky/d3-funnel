@@ -88,29 +88,11 @@ var D3Funnel = (function () {
 		value: function draw(data) {
 			var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-			// Remove any previous drawings
 			this.destroy();
 
-			// Initialize chart options
 			this._initialize(data, options);
 
-			// Add the SVG
-			this.svg = d3.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
-
-			this.blockPaths = this._makePaths();
-
-			// Define color gradients
-			if (this.fillType === 'gradient') {
-				this._defineColorGradients(this.svg);
-			}
-
-			// Add top oval if curved
-			if (this.isCurved) {
-				this._drawTopOval(this.svg, this.blockPaths);
-			}
-
-			// Add each block
-			this._drawBlock(0);
+			this._draw();
 		}
 
 		/**
@@ -262,6 +244,33 @@ var D3Funnel = (function () {
 			}
 
 			return this.height / this.data.length;
+		}
+
+		/**
+   * Draw the chart onto the DOM.
+   *
+   * @return {void}
+   */
+	}, {
+		key: '_draw',
+		value: function _draw() {
+			// Add the SVG
+			this.svg = d3.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
+
+			this.blockPaths = this._makePaths();
+
+			// Define color gradients
+			if (this.fillType === 'gradient') {
+				this._defineColorGradients(this.svg);
+			}
+
+			// Add top oval if curved
+			if (this.isCurved) {
+				this._drawTopOval(this.svg, this.blockPaths);
+			}
+
+			// Add each block
+			this._drawBlock(0);
 		}
 
 		/**
