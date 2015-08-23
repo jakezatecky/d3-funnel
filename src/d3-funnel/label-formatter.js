@@ -1,15 +1,13 @@
 /* exported LabelFormatter */
 
-class LabelFormatter
-{
+class LabelFormatter {
 
 	/**
 	 * Initial the formatter.
 	 *
 	 * @return {void}
 	 */
-	constructor()
-	{
+	constructor() {
 		this.expression = null;
 	}
 
@@ -20,8 +18,7 @@ class LabelFormatter
 	 *
 	 * @return {void}
 	 */
-	setFormat(format)
-	{
+	setFormat(format) {
 		if (typeof format === 'function') {
 			this.formatter = format;
 		} else {
@@ -38,8 +35,7 @@ class LabelFormatter
 	 *
 	 * @return string
 	 */
-	format(label, value)
-	{
+	format(label, value) {
 		// Try to use any formatted value specified through the data
 		// Otherwise, attempt to use the format function
 		if (Array.isArray(value)) {
@@ -62,8 +58,7 @@ class LabelFormatter
 	 *
 	 * @return {string}
 	 */
-	stringFormatter(label, value, fValue = null)
-	{
+	stringFormatter(label, value, fValue = null) {
 		// Attempt to use supplied formatted value
 		// Otherwise, use the default
 		if (fValue === null) {
@@ -81,8 +76,7 @@ class LabelFormatter
 	 *
 	 * @return {string}
 	 */
-	getDefaultFormattedValue(value)
-	{
+	getDefaultFormattedValue(value) {
 		return value.toLocaleString();
 	}
 

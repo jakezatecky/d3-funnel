@@ -3,7 +3,6 @@
 
 	"esnext": true,
 	"disallowDanglingUnderscores": null,
-	"disallowNewlineBeforeBlockStatements": null,
 	"disallowTrailingComma": null,
 	"requireArrowFunctions": true,
 	"requireTrailingComma": {
@@ -14,19 +13,6 @@
 		"beforeOpeningCurlyBrace": true
 	},
 	"requireMultipleVarDecl": null,
-	"requireSpaceAfterKeywords": [
-		"if",
-		"else",
-		"for",
-		"while",
-		"do",
-		"switch",
-		"case",
-		"return",
-		"try",
-		"catch",
-		"typeof"
-	],
 	"requireVarDeclFirst": null,
 	"validateIndentation": "\t",
 	"validateQuoteMarks": {

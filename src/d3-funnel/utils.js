@@ -4,8 +4,7 @@
 /**
  * Simple utility class.
  */
-class Utils
-{
+class Utils {
 
 	/**
 	 * Extends an object with the members of another.
@@ -15,8 +14,7 @@ class Utils
 	 *
 	 * @return {Object}
 	 */
-	static extend(a, b)
-	{
+	static extend(a, b) {
 		let prop;
 
 		for (prop in b) {
@@ -40,8 +38,7 @@ class Utils
 	 *
 	 * @return {string}
 	 */
-	static shadeColor(color, shade)
-	{
+	static shadeColor(color, shade) {
 		let f = parseInt(color.slice(1), 16);
 		let t = shade < 0 ? 0 : 255;
 		let p = shade < 0 ? shade * -1 : shade;
@@ -49,8 +46,8 @@ class Utils
 		let B = f & 0x0000FF;
 
 		let converted = (0x1000000 + (Math.round((t - R) * p) + R) *
-			0x10000 + (Math.round((t - G) * p) + G) *
-			0x100 + (Math.round((t - B) * p) + B));
+		0x10000 + (Math.round((t - G) * p) + G) *
+		0x100 + (Math.round((t - B) * p) + B));
 
 		return '#' + converted.toString(16).slice(1);
 	}

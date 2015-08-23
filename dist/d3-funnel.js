@@ -503,7 +503,7 @@ var D3Funnel = (function () {
 
 		/**
    * @param {Object} group
-   * @param {int}	index
+   * @param {int}    index
    *
    * @return {Object}
    */
@@ -523,7 +523,7 @@ var D3Funnel = (function () {
    * Set the attributes of a path element before its animation.
    *
    * @param {Object} path
-   * @param {int}	index
+   * @param {int}    index
    *
    * @return {void}
    */
@@ -636,7 +636,7 @@ var D3Funnel = (function () {
 
 		/**
    * @param {Object} group
-   * @param {int}	index
+   * @param {int}    index
    *
    * @return {void}
    */

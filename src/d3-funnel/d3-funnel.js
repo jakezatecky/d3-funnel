@@ -1,16 +1,14 @@
 /* global d3, Utils, LabelFormatter */
 /* exported D3Funnel */
 
-class D3Funnel
-{
+class D3Funnel {
 
 	/**
 	 * @param {string} selector A selector for the container element.
 	 *
 	 * @return {void}
 	 */
-	constructor(selector)
-	{
+	constructor(selector) {
 		this.selector = selector;
 
 		// Default configuration values
@@ -43,8 +41,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	destroy()
-	{
+	destroy() {
 		// D3's remove method appears to be sufficient for removing the events
 		d3.select(this.selector).selectAll('svg').remove();
 	}
@@ -61,8 +58,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	draw(data, options  = {})
-	{
+	draw(data, options = {}) {
 		// Remove any previous drawings
 		this.destroy();
 
@@ -99,8 +95,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	_initialize(data, options)
-	{
+	_initialize(data, options) {
 		this._validateData(data);
 
 		this._setData(data);
@@ -148,8 +143,7 @@ class D3Funnel
 	 *
 	 * @return void
 	 */
-	_validateData(data)
-	{
+	_validateData(data) {
 		if (Array.isArray(data) === false ||
 			data.length === 0 ||
 			Array.isArray(data[0]) === false ||
@@ -163,8 +157,7 @@ class D3Funnel
 	 *
 	 * @return void
 	 */
-	_setData(data)
-	{
+	_setData(data) {
 		this.data = data;
 
 		this._setColors();
@@ -175,8 +168,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	_setColors()
-	{
+	_setColors() {
 		let colorScale = d3.scale.category10();
 		let hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 		let i;
@@ -194,8 +186,7 @@ class D3Funnel
 	 *
 	 * @returns {Object}
 	 */
-	_getSettings(options)
-	{
+	_getSettings(options) {
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
 		let settings = Utils.extend({}, this.defaults);
@@ -223,8 +214,7 @@ class D3Funnel
 	 *
 	 * @return {Array}
 	 */
-	_makePaths()
-	{
+	_makePaths() {
 		let paths = [];
 
 		// Initialize velocity
@@ -383,8 +373,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	_defineColorGradients(svg)
-	{
+	_defineColorGradients(svg) {
 		let defs = svg.append('defs');
 
 		// Create a gradient for each block
@@ -425,8 +414,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	_drawTopOval(svg, blockPaths)
-	{
+	_drawTopOval(svg, blockPaths) {
 		let leftX = 0;
 		let rightX = this.width;
 		let centerX = this.width / 2;
@@ -458,8 +446,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	_drawBlock(index)
-	{
+	_drawBlock(index) {
 		if (index === this.data.length) {
 			return;
 		}
@@ -503,12 +490,11 @@ class D3Funnel
 
 	/**
 	 * @param {Object} group
-	 * @param {int}	index
+	 * @param {int}    index
 	 *
 	 * @return {Object}
 	 */
-	_getBlockPath(group, index)
-	{
+	_getBlockPath(group, index) {
 		let path = group.append('path');
 
 		if (this.animation !== false) {
@@ -522,12 +508,11 @@ class D3Funnel
 	 * Set the attributes of a path element before its animation.
 	 *
 	 * @param {Object} path
-	 * @param {int}	index
+	 * @param {int}    index
 	 *
 	 * @return {void}
 	 */
-	_addBeforeTransition(path, index)
-	{
+	_addBeforeTransition(path, index) {
 		let paths = this.blockPaths[index];
 
 		let beforePath = '';
@@ -567,8 +552,7 @@ class D3Funnel
 	 *
 	 * @return {Array}
 	 */
-	_getBlockData(index)
-	{
+	_getBlockData(index) {
 		let label = this.data[index][0];
 		let value = this.data[index][1];
 
@@ -589,8 +573,7 @@ class D3Funnel
 	 *
 	 * @return {string}
 	 */
-	_getColor(index)
-	{
+	_getColor(index) {
 		if (this.fillType === 'solid') {
 			return this.data[index][2];
 		} else {
@@ -603,8 +586,7 @@ class D3Funnel
 	 *
 	 * @return {string}
 	 */
-	_getPathDefinition(index)
-	{
+	_getPathDefinition(index) {
 		let pathStr = '';
 		let point = [];
 		let paths = this.blockPaths[index];
@@ -622,8 +604,7 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	_onMouseOver(data)
-	{
+	_onMouseOver(data) {
 		d3.select(this).attr('fill', Utils.shadeColor(data.baseColor, -0.2));
 	}
 
@@ -632,19 +613,17 @@ class D3Funnel
 	 *
 	 * @return {void}
 	 */
-	_onMouseOut(data)
-	{
+	_onMouseOut(data) {
 		d3.select(this).attr('fill', data.fill);
 	}
 
 	/**
 	 * @param {Object} group
-	 * @param {int}	index
+	 * @param {int}    index
 	 *
 	 * @return {void}
 	 */
-	_addBlockLabel(group, index)
-	{
+	_addBlockLabel(group, index) {
 		let i = index;
 		let paths = this.blockPaths[index];
 		let blockData = this._getBlockData(index)[0];
