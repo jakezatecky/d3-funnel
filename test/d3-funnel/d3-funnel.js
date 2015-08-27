@@ -11,7 +11,7 @@ describe('D3Funnel', function () {
 		getLength = function (selection) {
 			return selection[0].length;
 		};
-		getBasicData = function() {
+		getBasicData = function () {
 			return [['Node', 1000]];
 		};
 
@@ -168,7 +168,7 @@ describe('D3Funnel', function () {
 			it('should parse a string template', function () {
 				getFunnel().draw(getBasicData(), {
 					label: {
-						format: '{l} {v} {f}'
+						format: '{l} {v} {f}',
 					}
 				});
 
@@ -188,6 +188,33 @@ describe('D3Funnel', function () {
 				});
 
 				assert.equal('Node/1000/null', d3.select('#funnel text').text());
+			});
+		});
+
+		describe('onItemClick', function () {
+			it('should invoke the callback function with the correct data', function () {
+				var event = document.createEvent('CustomEvent');
+				event.initCustomEvent('click', false, false, null);
+
+				var spy = chai.spy();
+
+				getFunnel().draw(getBasicData(), {
+					onItemClick: function (d, i) {
+						spy({
+							index: d.index,
+							label: d.label,
+							value: d.value,
+						}, 0);
+					},
+				});
+
+				d3.select('#funnel path').node().dispatchEvent(event);
+
+				chai.expect(spy).to.have.been.called.once.with({
+					index: 0,
+					label: 'Node',
+					value: 1000,
+				}, 0);
 			});
 		});
 	});

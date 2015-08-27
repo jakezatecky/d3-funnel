@@ -12,6 +12,7 @@
   "main": "src/d3-funnel/d3-funnel.js",
   "devDependencies": {
     "chai": "^3.2.0",
+    "chai-spies": "^0.7.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.2.1",
     "gulp-concat": "^2.6.0",
