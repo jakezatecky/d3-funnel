@@ -204,7 +204,7 @@ describe('D3Funnel', function () {
 							index: d.index,
 							label: d.label,
 							value: d.value,
-						}, 0);
+						}, i);
 					},
 				});
 
