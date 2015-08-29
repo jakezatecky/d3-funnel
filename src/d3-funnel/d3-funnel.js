@@ -282,8 +282,7 @@ class D3Funnel {
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
 		if (this.minHeight !== false) {
-			let height = (this.height - this.minHeight * this.data.length);
-			totalArea = height * (this.width + this.bottomWidth) / 2;
+			totalArea = (this.height - this.minHeight * this.data.length) * (this.width + this.bottomWidth) / 2;
 		}
 
 		let totalCount = 0;
@@ -660,7 +659,7 @@ class D3Funnel {
 		let paths = this.blockPaths[index];
 
 		let label = this._getBlockData(index)[0].formatted;
-		let fill  = this.data[index][3] || this.label.fill;
+		let fill = this.data[index][3] || this.label.fill;
 
 		let x = this.width / 2;  // Center the text
 		let y = this._getTextY(paths);
