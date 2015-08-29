@@ -9,7 +9,7 @@
   }
 }(this, function(d3) {
 
-/* global d3, Utils, LabelFormatter */
+/* global d3, LabelFormatter, Navigator, Utils */
 /* exported D3Funnel */
 
 'use strict';
@@ -54,6 +54,8 @@ var D3Funnel = (function () {
 		};
 
 		this.labelFormatter = new LabelFormatter();
+
+		this.navigator = new Navigator();
 	}
 
 	/* exported LabelFormatter */
@@ -485,7 +487,9 @@ var D3Funnel = (function () {
 
 			// Create path from top-most block
 			var paths = blockPaths[0];
-			var path = 'M' + leftX + ',' + paths[0][1] + ' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) + ' ' + rightX + ',' + paths[2][1] + ' M' + rightX + ',10' + ' Q' + centerX + ',0' + ' ' + leftX + ',10';
+			var topCurve = paths[1][1] + this.curveHeight - 10;
+
+			var path = this.navigator.plot([['M', leftX, paths[0][1]], ['Q', centerX, topCurve], [' ', rightX, paths[2][1]], ['M', rightX, 10], ['Q', centerX, 0], [' ', leftX, 10]]);
 
 			// Draw top oval
 			svg.append('path').attr('fill', Utils.shadeColor(this.data[0][2], -0.4)).attr('d', path);
@@ -574,9 +578,9 @@ var D3Funnel = (function () {
 			// Construct the top of the trapezoid and leave the other elements
 			// hovering around to expand downward on animation
 			if (!this.isCurved) {
-				beforePath = 'M' + paths[0][0] + ',' + paths[0][1] + ' L' + paths[1][0] + ',' + paths[1][1] + ' L' + paths[1][0] + ',' + paths[1][1] + ' L' + paths[0][0] + ',' + paths[0][1];
+				beforePath = this.navigator.plot([['M', paths[0][0], paths[0][1]], ['L', paths[1][0], paths[1][1]], ['L', paths[1][0], paths[1][1]], ['L', paths[0][0], paths[0][1]]]);
 			} else {
-				beforePath = 'M' + paths[0][0] + ',' + paths[0][1] + ' Q' + paths[1][0] + ',' + paths[1][1] + ' ' + paths[2][0] + ',' + paths[2][1] + ' L' + paths[2][0] + ',' + paths[2][1] + ' M' + paths[2][0] + ',' + paths[2][1] + ' Q' + paths[1][0] + ',' + paths[1][1] + ' ' + paths[0][0] + ',' + paths[0][1];
+				beforePath = this.navigator.plot([['M', paths[0][0], paths[0][1]], ['Q', paths[1][0], paths[1][1]], [' ', paths[2][0], paths[2][1]], ['L', paths[2][0], paths[2][1]], ['M', paths[2][0], paths[2][1]], ['Q', paths[1][0], paths[1][1]], [' ', paths[0][0], paths[0][1]]]);
 			}
 
 			// Use previous fill color, if available
@@ -636,16 +640,13 @@ var D3Funnel = (function () {
 	}, {
 		key: '_getPathDefinition',
 		value: function _getPathDefinition(index) {
-			var pathStr = '';
-			var point = [];
-			var paths = this.blockPaths[index];
+			var commands = [];
 
-			for (var j = 0; j < paths.length; j++) {
-				point = paths[j];
-				pathStr += point[2] + point[0] + ',' + point[1] + ' ';
-			}
+			this.blockPaths[index].forEach(function (command) {
+				commands.push([command[2], command[0], command[1]]);
+			});
 
-			return pathStr;
+			return this.navigator.plot(commands);
 		}
 
 		/**
@@ -721,12 +722,7 @@ var LabelFormatter = (function () {
 		this.expression = null;
 	}
 
-	/* exported Utils */
-	/* jshint bitwise: false */
-
-	/**
-  * Simple utility class.
-  */
+	/* exported Navigator */
 
 	/**
   * Register the format function.
@@ -807,6 +803,42 @@ var LabelFormatter = (function () {
 	}]);
 
 	return LabelFormatter;
+})();
+
+var Navigator = (function () {
+	function Navigator() {
+		_classCallCheck(this, Navigator);
+	}
+
+	/* exported Utils */
+	/* jshint bitwise: false */
+
+	/**
+  * Simple utility class.
+  */
+
+	_createClass(Navigator, [{
+		key: 'plot',
+
+		/**
+   * Given a list of path commands, returns the compiled description.
+   *
+   * @param {Array} commands
+   *
+   * @returns {string}
+   */
+		value: function plot(commands) {
+			var path = '';
+
+			commands.forEach(function (command) {
+				path += command[0] + command[1] + ',' + command[2] + ' ';
+			});
+
+			return path.replace(/ +/g, ' ').trim();
+		}
+	}]);
+
+	return Navigator;
 })();
 
 var Utils = (function () {

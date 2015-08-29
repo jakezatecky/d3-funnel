@@ -15,6 +15,7 @@ var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFull
 var src = [
 	'./src/d3-funnel/d3-funnel.js',
 	'./src/d3-funnel/label-formatter.js',
+	'./src/d3-funnel/navigator.js',
 	'./src/d3-funnel/utils.js',
 ];
 var umdOptions = {

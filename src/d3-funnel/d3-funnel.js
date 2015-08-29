@@ -1,4 +1,4 @@
-/* global d3, Utils, LabelFormatter */
+/* global d3, LabelFormatter, Navigator, Utils */
 /* exported D3Funnel */
 
 class D3Funnel {
@@ -34,6 +34,8 @@ class D3Funnel {
 		};
 
 		this.labelFormatter = new LabelFormatter();
+
+		this.navigator = new Navigator();
 	}
 
 	/**
@@ -452,12 +454,16 @@ class D3Funnel {
 
 		// Create path from top-most block
 		let paths = blockPaths[0];
-		let path = 'M' + leftX + ',' + paths[0][1] +
-			' Q' + centerX + ',' + (paths[1][1] + this.curveHeight - 10) +
-			' ' + rightX + ',' + paths[2][1] +
-			' M' + rightX + ',10' +
-			' Q' + centerX + ',0' +
-			' ' + leftX + ',10';
+		let topCurve = paths[1][1] + this.curveHeight - 10;
+
+		let path = this.navigator.plot([
+			['M', leftX, paths[0][1]],
+			['Q', centerX, topCurve],
+			[' ', rightX, paths[2][1]],
+			['M', rightX, 10],
+			['Q', centerX, 0],
+			[' ', leftX, 10],
+		]);
 
 		// Draw top oval
 		svg.append('path')
@@ -547,18 +553,22 @@ class D3Funnel {
 		// Construct the top of the trapezoid and leave the other elements
 		// hovering around to expand downward on animation
 		if (!this.isCurved) {
-			beforePath = 'M' + paths[0][0] + ',' + paths[0][1] +
-				' L' + paths[1][0] + ',' + paths[1][1] +
-				' L' + paths[1][0] + ',' + paths[1][1] +
-				' L' + paths[0][0] + ',' + paths[0][1];
+			beforePath = this.navigator.plot([
+				['M', paths[0][0], paths[0][1]],
+				['L', paths[1][0], paths[1][1]],
+				['L', paths[1][0], paths[1][1]],
+				['L', paths[0][0], paths[0][1]],
+			]);
 		} else {
-			beforePath = 'M' + paths[0][0] + ',' + paths[0][1] +
-				' Q' + paths[1][0] + ',' + paths[1][1] +
-				' ' + paths[2][0] + ',' + paths[2][1] +
-				' L' + paths[2][0] + ',' + paths[2][1] +
-				' M' + paths[2][0] + ',' + paths[2][1] +
-				' Q' + paths[1][0] + ',' + paths[1][1] +
-				' ' + paths[0][0] + ',' + paths[0][1];
+			beforePath = this.navigator.plot([
+				['M', paths[0][0], paths[0][1]],
+				['Q', paths[1][0], paths[1][1]],
+				[' ', paths[2][0], paths[2][1]],
+				['L', paths[2][0], paths[2][1]],
+				['M', paths[2][0], paths[2][1]],
+				['Q', paths[1][0], paths[1][1]],
+				[' ', paths[0][0], paths[0][1]],
+			]);
 		}
 
 		// Use previous fill color, if available
@@ -613,16 +623,13 @@ class D3Funnel {
 	 * @return {string}
 	 */
 	_getPathDefinition(index) {
-		let pathStr = '';
-		let point = [];
-		let paths = this.blockPaths[index];
+		let commands = [];
 
-		for (let j = 0; j < paths.length; j++) {
-			point = paths[j];
-			pathStr += point[2] + point[0] + ',' + point[1] + ' ';
-		}
+		this.blockPaths[index].forEach((command) => {
+			commands.push([command[2], command[0], command[1]]);
+		});
 
-		return pathStr;
+		return this.navigator.plot(commands);
 	}
 
 	/**
