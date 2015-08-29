@@ -412,7 +412,7 @@ class D3Funnel {
 			// Create linear gradient
 			let gradient = defs.append('linearGradient')
 				.attr({
-					id: 'gradient-' + i
+					id: 'gradient-' + i,
 				});
 
 			// Define the gradient stops
