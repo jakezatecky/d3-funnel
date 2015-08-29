@@ -657,31 +657,41 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_addBlockLabel(group, index) {
-		let i = index;
 		let paths = this.blockPaths[index];
-		let blockData = this._getBlockData(index)[0];
-		let textStr = blockData.formatted;
-		let textFill = this.data[i][3] || this.label.fill;
 
-		let textX = this.width / 2;   // Center the text
+		let label = this._getBlockData(index)[0].formatted;
+		let fill  = this.data[index][3] || this.label.fill;
 
-		// Average height of bases
-		let textY = (paths[1][1] + paths[2][1]) / 2;
-		if (this.isCurved) {
-			textY = (paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
-		}
+		let x = this.width / 2;  // Center the text
+		let y = this._getTextY(paths);
 
 		group.append('text')
-			.text(textStr)
+			.text(label)
 			.attr({
-				'x': textX,
-				'y': textY,
+				'x': x,
+				'y': y,
 				'text-anchor': 'middle',
 				'dominant-baseline': 'middle',
-				'fill': textFill,
+				'fill': fill,
 				'pointer-events': 'none',
 			})
 			.style('font-size', this.label.fontSize);
+	}
+
+	/**
+	 * Returns the y position of the given label's text. This is determined by
+	 * taking the mean of the bases.
+	 *
+	 * @param {Array} paths
+	 *
+	 * @return {Number}
+	 */
+	_getTextY(paths) {
+		if (this.isCurved) {
+			return (paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+		}
+
+		return (paths[1][1] + paths[2][1]) / 2;
 	}
 
 }
