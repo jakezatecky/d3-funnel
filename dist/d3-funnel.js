@@ -179,16 +179,17 @@ var D3Funnel = (function () {
 	}, {
 		key: '_setColors',
 		value: function _setColors() {
+			var _this = this;
+
 			var colorScale = d3.scale.category10();
 			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-			var i = undefined;
 
-			for (i = 0; i < this.data.length; i++) {
-				// If a color is not set for the record, add one
-				if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
-					this.data[i][2] = colorScale(i);
+			// Add a color for for each block without one
+			this.data.forEach(function (block, index) {
+				if (block.length < 3 || !hexExpression.test(block[2])) {
+					_this.data[index][2] = colorScale(index);
 				}
-			}
+			});
 		}
 
 		/**
@@ -284,6 +285,8 @@ var D3Funnel = (function () {
 	}, {
 		key: '_makePaths',
 		value: function _makePaths() {
+			var _this2 = this;
+
 			var paths = [];
 
 			// Initialize velocity
@@ -323,49 +326,48 @@ var D3Funnel = (function () {
 			// and the remaining is shared among the ratio, instead of being
 			// shared according to the remaining minus the guaranteed
 			if (this.minHeight !== false) {
-				var height = this.height - this.minHeight * this.data.length;
-				totalArea = height * (this.width + this.bottomWidth) / 2;
+				totalArea = (this.height - this.minHeight * this.data.length) * (this.width + this.bottomWidth) / 2;
 			}
 
 			var totalCount = 0;
 			var count = 0;
 
 			// Harvest total count
-			for (var i = 0; i < this.data.length; i++) {
-				totalCount += Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
-			}
+			this.data.forEach(function (block) {
+				totalCount += Array.isArray(block[1]) ? block[1][0] : block[1];
+			});
 
 			// Create the path definition for each funnel block
 			// Remember to loop back to the beginning point for a closed path
-			for (var i = 0; i < this.data.length; i++) {
-				count = Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+			this.data.forEach(function (block, i) {
+				count = Array.isArray(block[1]) ? block[0] : block[1];
 
 				// Calculate dynamic shapes based on area
-				if (this.dynamicArea) {
+				if (_this2.dynamicArea) {
 					var ratio = count / totalCount;
 					var area = ratio * totalArea;
 
-					if (this.minHeight !== false) {
-						area += this.minHeight * (this.width + this.bottomWidth) / 2;
+					if (_this2.minHeight !== false) {
+						area += _this2.minHeight * (_this2.width + _this2.bottomWidth) / 2;
 					}
 
 					bottomBase = Math.sqrt((slope * topBase * topBase - 4 * area) / slope);
 					dx = topBase / 2 - bottomBase / 2;
 					dy = area * 2 / (topBase + bottomBase);
 
-					if (this.isCurved) {
-						dy = dy - this.curveHeight / this.data.length;
+					if (_this2.isCurved) {
+						dy = dy - _this2.curveHeight / _this2.data.length;
 					}
 
 					topBase = bottomBase;
 				}
 
 				// Stop velocity for pinched blocks
-				if (this.bottomPinch > 0) {
+				if (_this2.bottomPinch > 0) {
 					// Check if we've reached the bottom of the pinch
 					// If so, stop changing on x
-					if (!this.isInverted) {
-						if (i >= this.data.length - this.bottomPinch) {
+					if (!_this2.isInverted) {
+						if (i >= _this2.data.length - _this2.bottomPinch) {
 							dx = 0;
 						}
 						// Pinch at the first blocks relating to the bottom pinch
@@ -375,11 +377,11 @@ var D3Funnel = (function () {
 							// static area's (prevents zero velocity if isInverted
 							// and bottomPinch are non trivial and dynamicArea is
 							// false)
-							if (!this.dynamicArea) {
-								dx = this.dx;
+							if (!_this2.dynamicArea) {
+								dx = _this2.dx;
 							}
 
-							dx = i < this.bottomPinch ? 0 : dx;
+							dx = i < _this2.bottomPinch ? 0 : dx;
 						}
 				}
 
@@ -389,20 +391,20 @@ var D3Funnel = (function () {
 				nextHeight = prevHeight + dy;
 
 				// Expand outward if inverted
-				if (this.isInverted) {
+				if (_this2.isInverted) {
 					nextLeftX = prevLeftX - dx;
 					nextRightX = prevRightX + dx;
 				}
 
 				// Plot curved lines
-				if (this.isCurved) {
+				if (_this2.isCurved) {
 					paths.push([
 					// Top Bezier curve
-					[prevLeftX, prevHeight, 'M'], [middle, prevHeight + (this.curveHeight - 10), 'Q'], [prevRightX, prevHeight, ''],
+					[prevLeftX, prevHeight, 'M'], [middle, prevHeight + (_this2.curveHeight - 10), 'Q'], [prevRightX, prevHeight, ''],
 					// Right line
 					[nextRightX, nextHeight, 'L'],
 					// Bottom Bezier curve
-					[nextRightX, nextHeight, 'M'], [middle, nextHeight + this.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
+					[nextRightX, nextHeight, 'M'], [middle, nextHeight + _this2.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
 					// Left line
 					[prevLeftX, prevHeight, 'L']]);
 					// Plot straight lines
@@ -424,7 +426,7 @@ var D3Funnel = (function () {
 				prevLeftX = nextLeftX;
 				prevRightX = nextRightX;
 				prevHeight = nextHeight;
-			}
+			});
 
 			return paths;
 		}
@@ -442,27 +444,26 @@ var D3Funnel = (function () {
 			var defs = svg.append('defs');
 
 			// Create a gradient for each block
-			for (var i = 0; i < this.data.length; i++) {
-				var color = this.data[i][2];
+			this.data.forEach(function (block, index) {
+				var color = block[2];
 				var shade = Utils.shadeColor(color, -0.25);
 
 				// Create linear gradient
 				var gradient = defs.append('linearGradient').attr({
-					id: 'gradient-' + i
+					id: 'gradient-' + index
 				});
 
 				// Define the gradient stops
 				var stops = [[0, shade], [40, color], [60, color], [100, shade]];
 
 				// Add the gradient stops
-				for (var j = 0; j < stops.length; j++) {
-					var _stop = stops[j];
+				stops.forEach(function (stop) {
 					gradient.append('stop').attr({
-						offset: _stop[0] + '%',
-						style: 'stop-color:' + _stop[1]
+						offset: stop[0] + '%',
+						style: 'stop-color:' + stop[1]
 					});
-				}
-			}
+				});
+			});
 		}
 
 		/**
@@ -505,7 +506,7 @@ var D3Funnel = (function () {
 	}, {
 		key: '_drawBlock',
 		value: function _drawBlock(index) {
-			var _this = this;
+			var _this3 = this;
 
 			if (index === this.data.length) {
 				return;
@@ -521,7 +522,7 @@ var D3Funnel = (function () {
 			// Add animation components
 			if (this.animation !== false) {
 				path.transition().duration(this.animation).ease('linear').attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
-					_this._drawBlock(index + 1);
+					_this3._drawBlock(index + 1);
 				});
 			} else {
 				path.attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index));

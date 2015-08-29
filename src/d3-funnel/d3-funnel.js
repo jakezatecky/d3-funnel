@@ -147,14 +147,13 @@ class D3Funnel {
 	_setColors() {
 		let colorScale = d3.scale.category10();
 		let hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-		let i;
 
-		for (i = 0; i < this.data.length; i++) {
-			// If a color is not set for the record, add one
-			if (!('2' in this.data[i]) || !hexExpression.test(this.data[i][2])) {
-				this.data[i][2] = colorScale(i);
+		// Add a color for for each block without one
+		this.data.forEach((block, index) => {
+			if (block.length < 3 || !hexExpression.test(block[2])) {
+				this.data[index][2] = colorScale(index);
 			}
-		}
+		});
 	}
 
 	/**
@@ -289,14 +288,14 @@ class D3Funnel {
 		let count = 0;
 
 		// Harvest total count
-		for (let i = 0; i < this.data.length; i++) {
-			totalCount += Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
-		}
+		this.data.forEach((block) => {
+			totalCount += Array.isArray(block[1]) ? block[1][0] : block[1];
+		});
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
-		for (let i = 0; i < this.data.length; i++) {
-			count = Array.isArray(this.data[i][1]) ? this.data[i][1][0] : this.data[i][1];
+		this.data.forEach((block, i) => {
+			count = Array.isArray(block[1]) ? block[0] : block[1];
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
@@ -388,7 +387,7 @@ class D3Funnel {
 			prevLeftX = nextLeftX;
 			prevRightX = nextRightX;
 			prevHeight = nextHeight;
-		}
+		});
 
 		return paths;
 	}
@@ -404,14 +403,14 @@ class D3Funnel {
 		let defs = svg.append('defs');
 
 		// Create a gradient for each block
-		for (let i = 0; i < this.data.length; i++) {
-			let color = this.data[i][2];
+		this.data.forEach((block, index) => {
+			let color = block[2];
 			let shade = Utils.shadeColor(color, -0.25);
 
 			// Create linear gradient
 			let gradient = defs.append('linearGradient')
 				.attr({
-					id: 'gradient-' + i,
+					id: 'gradient-' + index,
 				});
 
 			// Define the gradient stops
@@ -423,14 +422,13 @@ class D3Funnel {
 			];
 
 			// Add the gradient stops
-			for (let j = 0; j < stops.length; j++) {
-				let stop = stops[j];
+			stops.forEach((stop) => {
 				gradient.append('stop').attr({
 					offset: stop[0] + '%',
 					style: 'stop-color:' + stop[1],
 				});
-			}
-		}
+			});
+		});
 	}
 
 	/**
