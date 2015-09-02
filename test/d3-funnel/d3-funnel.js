@@ -1,5 +1,5 @@
 describe('D3Funnel', function () {
-	var getFunnel, getSvg, getLength, getBasicData;
+	var getFunnel, getSvg, getBasicData;
 
 	beforeEach(function (done) {
 		getFunnel = function () {
@@ -7,9 +7,6 @@ describe('D3Funnel', function () {
 		};
 		getSvg = function () {
 			return d3.select('#funnel').selectAll('svg');
-		};
-		getLength = function (selection) {
-			return selection[0].length;
 		};
 		getBasicData = function () {
 			return [['Node', 1000]];
@@ -29,13 +26,13 @@ describe('D3Funnel', function () {
 			it('should draw simple chart', function () {
 				getFunnel().draw(getBasicData(), {});
 
-				assert.equal(1, getLength(getSvg()));
+				assert.equal(1, getSvg()[0].length);
 			});
 
 			it('should draw when second argument is missing', function () {
 				getFunnel().draw(getBasicData());
 
-				assert.equal(1, getLength(getSvg()));
+				assert.equal(1, getSvg()[0].length);
 			});
 
 			it('should throw an exception on invalid data', function () {
@@ -54,7 +51,7 @@ describe('D3Funnel', function () {
 					['Node D', 4],
 				]);
 
-				assert.equal(4, getLength(getSvg().selectAll('path')));
+				assert.equal(4, getSvg().selectAll('path')[0].length);
 			});
 		});
 
@@ -65,7 +62,7 @@ describe('D3Funnel', function () {
 				funnel.draw(getBasicData(), {});
 				funnel.destroy();
 
-				assert.equal(0, getLength(getSvg()));
+				assert.equal(0, getSvg()[0].length);
 			});
 		});
 	});
