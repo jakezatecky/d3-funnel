@@ -23,7 +23,7 @@ describe('D3Funnel', function () {
 
 	describe('methods', function () {
 		describe('draw', function () {
-			it('should draw simple chart', function () {
+			it('should draw a chart on the identified target', function () {
 				getFunnel().draw(getBasicData(), {});
 
 				assert.equal(1, getSvg()[0].length);
