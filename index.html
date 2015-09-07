@@ -25,10 +25,12 @@
 
     <div id="main-content-wrap" class="outer">
       <section id="main-content" class="inner">
-        <p><strong>D3Funnel</strong> is an extensible, open-source JavaScript library for rendering
+        <p>
+          <strong>D3Funnel</strong> is an extensible, open-source JavaScript library for rendering
           funnel charts using the <a href="http://d3js.org/">D3.js</a> library.
         </p>
-        <p>D3Funnel is focused on providing practical and visually appealing funnels
+        <p>
+          D3Funnel is focused on providing practical and visually appealing funnels
           through a variety of customization options. Check out the example below to get a showcasing of the several possible options.
         </p>
         <div class="demo">
@@ -97,7 +99,7 @@
       $(function() {
         $('input').change(function() {
           var data = [];
-          if (!$('[value="color"]').is(':checked')) {
+          if ($('[value="color"]').is(':not(:checked)')) {
             data = [
               ['Applicants',   12000],
               ['Pre-screened', 4000],
