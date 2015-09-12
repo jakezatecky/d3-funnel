@@ -1,7 +1,13 @@
 .demo {
+	display: -webkit-flex;
+	display: -ms-flexbox;
 	display: flex;
 	padding: 10px 30px;
+	-webkit-align-items: center;
+	-ms-flex-align: center;
 	align-items: center;
+	-webkit-justify-content: center;
+	-ms-flex-pack: center;
 	justify-content: center;
 }
 
