@@ -1,6 +1,7 @@
 $(function() {
 	$('input').change(function() {
 		var data = [];
+
 		if ($('[value="color"]').is(':not(:checked)')) {
 			data = [
 				['Applicants',   12000],

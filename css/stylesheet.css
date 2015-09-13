@@ -105,7 +105,9 @@ a {
   text-shadow: none;
 }
 
-a:hover, a:focus {text-decoration: underline;}
+a:hover, a:focus {
+  text-decoration: underline;
+}
 
 footer a {
   color: #F2F2F2;
@@ -286,7 +288,7 @@ Full-Width Styles
   color: #fff;
   font-size: 42px;
   font-weight: 700;
-  text-shadow: #111 0px 0px 10px;
+  text-shadow: #111 0 0 10px;
 }
 
 #project-tagline {
@@ -294,7 +296,7 @@ Full-Width Styles
   font-size: 24px;
   font-weight: 300;
   background: none;
-  text-shadow: #111 0px 0px 10px;
+  text-shadow: #111 0 0 10px;
 }
 
 #downloads {
@@ -351,7 +353,6 @@ Full-Width Styles
 }
 
 
-
 /*******************************************************************************
 Small Device Styles
 *******************************************************************************/
@@ -403,5 +404,4 @@ Small Device Styles
     max-width: 480px;
     font-size: 11px;
   }
-
 }
