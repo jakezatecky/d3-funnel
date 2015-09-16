@@ -53,6 +53,27 @@ describe('D3Funnel', function () {
 
 				assert.equal(4, getSvg().selectAll('path')[0].length);
 			});
+
+			it('should use colors assigned to a data element', function () {
+				var paths;
+				var colorScale;
+
+				getFunnel().draw([
+					['A', 1, '#111'],
+					['B', 2, '#222'],
+					['C', 3],
+					['D', 4, '#444'],
+				]);
+
+				paths = getSvg().selectAll('path')[0];
+
+				colorScale = d3.scale.category10();
+
+				assert.equal('#111', d3.select(paths[0]).attr('fill'));
+				assert.equal('#222', d3.select(paths[1]).attr('fill'));
+				assert.equal(colorScale(2), d3.select(paths[2]).attr('fill'));
+				assert.equal('#444', d3.select(paths[3]).attr('fill'));
+			});
 		});
 
 		describe('destroy', function () {
