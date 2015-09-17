@@ -74,6 +74,24 @@ describe('D3Funnel', function () {
 				assert.equal(colorScale(2), d3.select(paths[2]).attr('fill'));
 				assert.equal('#444', d3.select(paths[3]).attr('fill'));
 			});
+
+			it('should use label colors assigned to a data element', function () {
+				var texts;
+
+				getFunnel().draw([
+					['A', 1, null, '#111'],
+					['B', 2, null, '#222'],
+					['C', 3],
+					['D', 4, null, '#444'],
+				]);
+
+				texts = getSvg().selectAll('text')[0];
+
+				assert.equal('#111', d3.select(texts[0]).attr('fill'));
+				assert.equal('#222', d3.select(texts[1]).attr('fill'));
+				assert.equal('#fff', d3.select(texts[2]).attr('fill'));
+				assert.equal('#444', d3.select(texts[3]).attr('fill'));
+			});
 		});
 
 		describe('destroy', function () {
