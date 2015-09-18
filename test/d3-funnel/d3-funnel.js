@@ -200,6 +200,23 @@ describe('D3Funnel', function () {
 				assert.equal(150, getPathHeight(d3.select(paths[0])));
 				assert.equal(150, getPathHeight(d3.select(paths[1])));
 			});
+
+			it('should use proportional heights when true', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					height: 300,
+					dynamicArea: true,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(72, parseInt(getPathHeight(d3.select(paths[0])), 10));
+				assert.equal(227, parseInt(getPathHeight(d3.select(paths[1])), 10));
+			});
 		});
 
 		describe('label.fontSize', function () {
