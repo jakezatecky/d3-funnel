@@ -184,6 +184,24 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('hoverEffects', function () {
+			it('should change block color on hover', function () {
+				var event = document.createEvent('CustomEvent');
+				event.initCustomEvent('mouseover', false, false, null);
+
+				getFunnel().draw([
+					['A', 1, '#ffffff'],
+				], {
+					hoverEffects: true,
+				});
+
+				d3.select('#funnel path').node().dispatchEvent(event);
+
+				// #ffffff * -1/5 => #cccccc
+				assert.equal('#cccccc', d3.select('#funnel path').attr('fill'));
+			});
+		});
+
 		describe('dynamicArea', function () {
 			it('should use equal heights when false', function () {
 				var paths;
