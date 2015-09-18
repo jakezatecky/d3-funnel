@@ -39,7 +39,13 @@ class Utils {
 	 * @return {string}
 	 */
 	static shadeColor(color, shade) {
-		let f = parseInt(color.slice(1), 16);
+		let hex = color.slice(1);
+
+		if (hex.length === 3) {
+			hex = Utils.expandHex(hex);
+		}
+
+		let f = parseInt(hex, 16);
 		let t = shade < 0 ? 0 : 255;
 		let p = shade < 0 ? shade * -1 : shade;
 
@@ -53,6 +59,17 @@ class Utils {
 			(Math.round((t - B) * p) + B);
 
 		return '#' + converted.toString(16).slice(1);
+	}
+
+	/**
+	 * Expands a three character hex code to six characters.
+	 *
+	 * @param {string} hex
+	 *
+	 * @return {string}
+	 */
+	static expandHex(hex) {
+		return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 	}
 
 }

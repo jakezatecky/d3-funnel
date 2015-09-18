@@ -190,14 +190,14 @@ describe('D3Funnel', function () {
 				event.initCustomEvent('mouseover', false, false, null);
 
 				getFunnel().draw([
-					['A', 1, '#ffffff'],
+					['A', 1, '#fff'],
 				], {
 					hoverEffects: true,
 				});
 
 				d3.select('#funnel path').node().dispatchEvent(event);
 
-				// #ffffff * -1/5 => #cccccc
+				// #fff * -1/5 => #cccccc
 				assert.equal('#cccccc', d3.select('#funnel path').attr('fill'));
 			});
 		});
