@@ -1,5 +1,5 @@
 describe('D3Funnel', function () {
-	var getFunnel, getSvg, getBasicData;
+	var getFunnel, getSvg, getBasicData, getPathHeight, getCommandHeight;
 
 	beforeEach(function (done) {
 		getFunnel = function () {
@@ -10,6 +10,14 @@ describe('D3Funnel', function () {
 		};
 		getBasicData = function () {
 			return [['Node', 1000]];
+		};
+		getPathHeight = function (path) {
+			var commands = path.attr('d').split(' ');
+
+			return getCommandHeight(commands[2]) - getCommandHeight(commands[0]);
+		};
+		getCommandHeight = function (command) {
+			return parseFloat(command.split(',')[1]);
 		};
 
 		done();
@@ -173,6 +181,24 @@ describe('D3Funnel', function () {
 				assert.isTrue(/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
 					d3.select('#funnel path').attr('fill')
 				));
+			});
+		});
+
+		describe('dynamicArea', function () {
+			it('should use equal heights when false', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					height: 300,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(150, getPathHeight(d3.select(paths[0])));
+				assert.equal(150, getPathHeight(d3.select(paths[1])));
 			});
 		});
 
