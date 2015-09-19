@@ -51,7 +51,9 @@ gulp.task('test-mocha', ['compile'], function () {
 		.pipe(mocha({reporter: 'spec'}));
 });
 
-gulp.task('build', ['test-format', 'test-mocha'], function () {
+gulp.task('test', ['test-format', 'test-mocha']);
+
+gulp.task('build', ['test'], function () {
 	return gulp.src(['./compiled/d3-funnel.js'])
 		.pipe(gulp.dest('./dist/'))
 		.pipe(rename({
