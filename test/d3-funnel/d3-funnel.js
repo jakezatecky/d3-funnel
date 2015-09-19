@@ -1,3 +1,5 @@
+/* global d3, assert, chai, D3Funnel */
+
 describe('D3Funnel', function () {
 	var getFunnel, getSvg, getBasicData, getPathHeight, getCommandHeight;
 
