@@ -237,6 +237,42 @@ describe('D3Funnel', function () {
 				assert.equal(72, parseInt(getPathHeight(d3.select(paths[0])), 10));
 				assert.equal(227, parseInt(getPathHeight(d3.select(paths[1])), 10));
 			});
+
+			it('should not have NaN in the last path when bottomWidth is equal to 0%', function () {
+				var paths;
+
+				// A very specific cooked-up example that could trigger NaN
+				getFunnel().draw([
+					['A', 120],
+					['B', 40],
+					['C', 20],
+					['D', 15],
+				], {
+					height: 300,
+					dynamicArea: true,
+					bottomWidth: 0,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'))
+			});
+
+			it('should not error when bottomWidth is equal to 100%', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					height: 300,
+					dynamicArea: true,
+					bottomWidth: 1,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+			});
 		});
 
 		describe('label.fontSize', function () {
