@@ -237,6 +237,19 @@ describe('D3Funnel', function () {
 				assert.equal(72, parseInt(getPathHeight(d3.select(paths[0])), 10));
 				assert.equal(227, parseInt(getPathHeight(d3.select(paths[1])), 10));
 			});
+
+			it('should not error on bottomWidth equal to 100%', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					height: 300,
+					dynamicArea: true,
+					bottomWidth: 1,
+				});
+			});
 		});
 
 		describe('label.fontSize', function () {

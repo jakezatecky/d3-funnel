@@ -307,6 +307,12 @@ class D3Funnel {
 				}
 
 				bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area)) / slope);
+
+				// Prevent NaN slope
+				if (this.bottomWidth === this.width) {
+					bottomBase = topBase;
+				}
+
 				dx = (topBase / 2) - (bottomBase / 2);
 				dy = (area * 2) / (topBase + bottomBase);
 
