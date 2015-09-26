@@ -258,7 +258,7 @@ describe('D3Funnel', function () {
 				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'))
 			});
 
-			it('should not error on bottomWidth equal to 100%', function () {
+			it('should not error when bottomWidth is equal to 100%', function () {
 				var paths;
 
 				getFunnel().draw([
