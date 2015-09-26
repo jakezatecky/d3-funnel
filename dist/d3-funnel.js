@@ -352,6 +352,17 @@ var D3Funnel = (function () {
 					}
 
 					bottomBase = Math.sqrt((slope * topBase * topBase - 4 * area) / slope);
+
+					// Prevent bottm points from becomming NaN
+					if (_this2.bottomWidth === 0 && i === _this2.data.length - 1) {
+						bottomBase = 0;
+					}
+
+					// Prevent NaN slope
+					if (_this2.bottomWidth === _this2.width) {
+						bottomBase = topBase;
+					}
+
 					dx = topBase / 2 - bottomBase / 2;
 					dy = area * 2 / (topBase + bottomBase);
 
@@ -897,7 +908,13 @@ var Utils = (function () {
 	}, {
 		key: 'shadeColor',
 		value: function shadeColor(color, shade) {
-			var f = parseInt(color.slice(1), 16);
+			var hex = color.slice(1);
+
+			if (hex.length === 3) {
+				hex = Utils.expandHex(hex);
+			}
+
+			var f = parseInt(hex, 16);
 			var t = shade < 0 ? 0 : 255;
 			var p = shade < 0 ? shade * -1 : shade;
 
@@ -908,6 +925,19 @@ var Utils = (function () {
 			var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
 
 			return '#' + converted.toString(16).slice(1);
+		}
+
+		/**
+   * Expands a three character hex code to six characters.
+   *
+   * @param {string} hex
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'expandHex',
+		value: function expandHex(hex) {
+			return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 		}
 	}]);
 
