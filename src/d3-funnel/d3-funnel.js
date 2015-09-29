@@ -275,6 +275,9 @@ class D3Funnel {
 		let bottomBase = 0;
 
 		let totalArea = this.height * (this.width + this.bottomWidth) / 2;
+
+		// The slope will determine the where the x points on each block
+		// iteration
 		let slope = 2 * this.height / (this.width - this.bottomWidth);
 
 		// This is greedy in that the block will have a guaranteed height
@@ -306,7 +309,15 @@ class D3Funnel {
 					area += this.minHeight * (this.width + this.bottomWidth) / 2;
 				}
 
-				bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area)) / slope);
+				// Slice off the height proportional to this block
+				dy = this.height * ratio;
+
+				// Given our new y coordinate, calculate the next x
+				// position
+				nextLeftX = (prevHeight + dy) / slope;
+
+				// Calculate the shift necessary for both x points
+				dx = nextLeftX - prevLeftX;
 
 				// Prevent bottm points from becomming NaN
 				if (this.bottomWidth === 0 && i === this.data.length - 1) {
@@ -317,9 +328,6 @@ class D3Funnel {
 				if (this.bottomWidth === this.width) {
 					bottomBase = topBase;
 				}
-
-				dx = (topBase / 2) - (bottomBase / 2);
-				dy = (area * 2) / (topBase + bottomBase);
 
 				if (this.isCurved) {
 					dy = dy - (this.curveHeight / this.data.length);

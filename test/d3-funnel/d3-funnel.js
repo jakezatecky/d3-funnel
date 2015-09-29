@@ -234,8 +234,8 @@ describe('D3Funnel', function () {
 
 				paths = d3.selectAll('#funnel path')[0];
 
-				assert.equal(72, parseInt(getPathHeight(d3.select(paths[0])), 10));
-				assert.equal(227, parseInt(getPathHeight(d3.select(paths[1])), 10));
+				assert.equal(100, parseInt(getPathHeight(d3.select(paths[0])), 10));
+				assert.equal(200, parseInt(getPathHeight(d3.select(paths[1])), 10));
 			});
 
 			it('should not have NaN in the last path when bottomWidth is equal to 0%', function () {
