@@ -274,7 +274,7 @@ class D3Funnel {
 		let topBase = this.width;
 		let bottomBase = 0;
 
-		let totalArea = this.height * (this.width + this.bottomWidth) / 2;
+		let totalHeight = this.height;
 
 		// The slope will determine the where the x points on each block
 		// iteration
@@ -284,7 +284,7 @@ class D3Funnel {
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
 		if (this.minHeight !== false) {
-			totalArea = (this.height - this.minHeight * this.data.length) * (this.width + this.bottomWidth) / 2;
+			totalHeight = this.height - this.minHeight * this.data.length;
 		}
 
 		let totalCount = 0;
@@ -303,14 +303,13 @@ class D3Funnel {
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
 				let ratio = count / totalCount;
-				let area = ratio * totalArea;
-
-				if (this.minHeight !== false) {
-					area += this.minHeight * (this.width + this.bottomWidth) / 2;
-				}
 
 				// Slice off the height proportional to this block
-				dy = this.height * ratio;
+				dy = totalHeight * ratio;
+
+				if (this.minHeight !== false) {
+					dy += this.minHeight;
+				}
 
 				// Given our new y coordinate, calculate the next x
 				// position
