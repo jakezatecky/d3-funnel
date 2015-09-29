@@ -315,13 +315,13 @@ class D3Funnel {
 				// position
 				nextLeftX = (prevHeight + dy) / slope;
 
+				// If bottomWidth is 0, then make last x position in the center
+				if (this.bottomWidth === 0 && i === this.data.length - 1) {
+					nextLeftX = this.height / 2;
+				}
+
 				// Calculate the shift necessary for both x points
 				dx = nextLeftX - prevLeftX;
-
-				// Prevent bottm points from becomming NaN
-				if (this.bottomWidth === 0 && i === this.data.length - 1) {
-					bottomBase = 0;
-				}
 
 				// Prevent NaN slope
 				if (this.bottomWidth === this.width) {
