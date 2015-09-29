@@ -290,6 +290,8 @@ class D3Funnel {
 		let totalCount = 0;
 		let count = 0;
 
+		let ratio = 0;
+
 		// Harvest total count
 		this.data.forEach((block) => {
 			totalCount += Array.isArray(block[1]) ? block[1][0] : block[1];
@@ -302,7 +304,7 @@ class D3Funnel {
 
 			// Calculate dynamic shapes based on area
 			if (this.dynamicArea) {
-				let ratio = count / totalCount;
+				ratio = count / totalCount;
 
 				// Slice off the height proportional to this block
 				dy = totalHeight * ratio;
