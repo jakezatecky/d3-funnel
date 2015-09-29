@@ -320,13 +320,13 @@ class D3Funnel {
 					nextLeftX = this.height / 2;
 				}
 
+				// If bottomWidth is same as width, stop x velocity
+				if (this.bottomWidth === this.width) {
+					nextLeftX = prevLeftX;
+				}
+
 				// Calculate the shift necessary for both x points
 				dx = nextLeftX - prevLeftX;
-
-				// Prevent NaN slope
-				if (this.bottomWidth === this.width) {
-					bottomBase = topBase;
-				}
 
 				if (this.isCurved) {
 					dy = dy - (this.curveHeight / this.data.length);
