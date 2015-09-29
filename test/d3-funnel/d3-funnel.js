@@ -275,6 +275,43 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('minHeight', function () {
+			it('should give each block the minimum height specified', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 299],
+					['B', 1],
+				], {
+					height: 300,
+					dynamicArea: true,
+					minHeight: 10,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[0]))), 10);
+				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[1]))), 10);
+			});
+
+			it('should decrease the height of blocks above the minimum', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 299],
+					['B', 1],
+				], {
+					height: 300,
+					dynamicArea: true,
+					minHeight: 10,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.isBelow(parseFloat(getPathHeight(d3.select(paths[0]))), 290);
+			});
+		});
+
 		describe('label.fontSize', function () {
 			it('should set the label\'s font size to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
