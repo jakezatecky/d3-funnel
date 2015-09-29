@@ -307,8 +307,14 @@ class D3Funnel {
 				// Slice off the height proportional to this block
 				dy = totalHeight * ratio;
 
+				// Add greedy minimum height
 				if (this.minHeight !== false) {
 					dy += this.minHeight;
+				}
+
+				// Account for any curvature
+				if (this.isCurved) {
+					dy = dy - (this.curveHeight / this.data.length);
 				}
 
 				// Given our new y coordinate, calculate the next x
@@ -327,10 +333,6 @@ class D3Funnel {
 
 				// Calculate the shift necessary for both x points
 				dx = nextLeftX - prevLeftX;
-
-				if (this.isCurved) {
-					dy = dy - (this.curveHeight / this.data.length);
-				}
 
 				topBase = bottomBase;
 			}
