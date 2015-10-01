@@ -15,6 +15,7 @@ a few new features.
 ### Bug Fixes
 
 * [#25]: Fix issues with `isInverted` and `dynamicArea` producing odd pyramids
+* [#32]: Fix issue where pinched blocks were not having the same width as `bottomWidth`
 
 ### Upgrading from v0.6.12
 
