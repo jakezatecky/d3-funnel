@@ -50,10 +50,10 @@ You must also create a container element and instantiate a new chart:
 | `bottomPinch`         | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                |
 | `isCurved`            | Whether the funnel is curved.                                               | bool     | `false`            |
 | `curveHeight`         | The curvature amount (if `isCurved` is `true`).                             | int      | `20`               |
-| `fillType`            | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
 | `isInverted`          | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`            |
 | `hoverEffects`        | Whether the funnel has effects on hover.                                    | bool     | `false`            |
 | `block.dynamicHeight` | Whether the block heights are proportional to its weight.                   | bool     | `false`            |
+| `block.fill.type`     | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
 | `minHeight`           | The minimum pixel height of a block.                                        | int/bool | `false`            |
 | `animation`           | The load animation speed in milliseconds.                                   | int/bool | `false`            |
 | `label.fontSize`      | Any valid font size for the labels.                                         | string   | `'14px'`           |

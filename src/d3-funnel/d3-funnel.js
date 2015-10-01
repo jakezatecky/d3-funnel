@@ -19,7 +19,6 @@ class D3Funnel {
 			bottomPinch: 0,
 			isCurved: false,
 			curveHeight: 20,
-			fillType: 'solid',
 			isInverted: false,
 			hoverEffects: false,
 			minHeight: false,
@@ -28,6 +27,7 @@ class D3Funnel {
 				dynamicHeight: false,
 				fill: {
 					scale: d3.scale.category10(),
+					type: 'solid',
 				},
 			},
 			label: {
@@ -103,7 +103,7 @@ class D3Funnel {
 		this.bottomPinch = settings.bottomPinch;
 		this.isCurved = settings.isCurved;
 		this.curveHeight = settings.curveHeight;
-		this.fillType = settings.fillType;
+		this.fillType = settings.block.fill.type;
 		this.isInverted = settings.isInverted;
 		this.hoverEffects = settings.hoverEffects;
 		this.dynamicHeight = settings.block.dynamicHeight;

@@ -161,10 +161,14 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('fillType', function () {
+		describe('block.fill.type', function () {
 			it('should create gradients when set to \'gradient\'', function () {
 				getFunnel().draw(getBasicData(), {
-					fillType: 'gradient',
+					block: {
+						fill: {
+							type: 'gradient',
+						},
+					},
 				});
 
 				// Cannot try to re-select the camelCased linearGradient element
