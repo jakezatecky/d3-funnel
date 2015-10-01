@@ -59,7 +59,7 @@ You must also create a container element and instantiate a new chart:
 | `label.fontSize`      | Any valid font size for the labels.                                         | string   | `'14px'`           |
 | `label.fill`          | Any valid hex color for the label color                                     | string   | `'#fff'`           |
 | `label.format`        | Either `function(label, value)` or a format string. See below.              | mixed    | `'{l}: {f}'`       |
-| `onItemClick`         | Event handler if one of the items is clicked.                               | function | `null`             |
+| `events.click.block`  | Callback for when a block is clicked.                                       | function | `null`             |
 
 ### Label Format
 

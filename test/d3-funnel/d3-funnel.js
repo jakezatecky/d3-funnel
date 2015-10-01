@@ -377,7 +377,7 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('onItemClick', function () {
+		describe('events.click.block', function () {
 			it('should invoke the callback function with the correct data', function () {
 				var event = document.createEvent('CustomEvent');
 				event.initCustomEvent('click', false, false, null);
@@ -385,12 +385,16 @@ describe('D3Funnel', function () {
 				var spy = chai.spy();
 
 				getFunnel().draw(getBasicData(), {
-					onItemClick: function (d, i) {
-						spy({
-							index: d.index,
-							label: d.label.raw,
-							value: d.value,
-						}, i);
+					events: {
+						click: {
+							block: function (d, i) {
+								spy({
+									index: d.index,
+									label: d.label.raw,
+									value: d.value,
+								}, i);
+							},
+						},
 					},
 				});
 

@@ -136,8 +136,12 @@
 						],
 						clickEvent: [
 							data.normal, {
-								onItemClick: function(d) {
-									alert('<' + d.label.raw + '> selected.');
+								events: {
+									click: {
+										block: function(d) {
+											alert('<' + d.label.raw + '> selected.');
+										},
+									},
 								},
 							},
 						],
@@ -164,8 +168,12 @@
 									},
 								},
 								animation: 200,
-								onItemClick: function(d) {
-									alert('<' + d.label.raw + '> selected.');
+								events: {
+									click: {
+										block: function(d) {
+											alert('<' + d.label.raw + '> selected.');
+										},
+									},
 								},
 							},
 						],

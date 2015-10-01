@@ -35,7 +35,11 @@ class D3Funnel {
 				fill: '#fff',
 				format: '{l}: {f}',
 			},
-			onItemClick: null,
+			events: {
+				click: {
+					block: null,
+				},
+			},
 		};
 
 		this.colorizer = new Colorizer();
@@ -111,7 +115,7 @@ class D3Funnel {
 		this.animation = settings.animation;
 
 		// Support for events
-		this.onItemClick = settings.onItemClick;
+		this.onBlockClick = settings.events.click.block;
 
 		this._setBlocks(data);
 
@@ -612,8 +616,8 @@ class D3Funnel {
 		}
 
 		// ItemClick event
-		if (this.onItemClick !== null) {
-			path.on('click', this.onItemClick);
+		if (this.onBlockClick !== null) {
+			path.on('click', this.onBlockClick);
 		}
 
 		this._addBlockLabel(group, index);

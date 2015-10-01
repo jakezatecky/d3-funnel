@@ -30,6 +30,7 @@ below for the new equivalent option:
 | `dynamicArea` | `block.dynamicHeight` | See change #29. |
 | `fillType`    | `block.fill.type`     |                 |
 | `minHeight`   | `block.minHeight`     |                 |
+| `onItemClick` | `events.click.block`  |                 |
 
 ## v0.6.12 (September 25, 2015)
 
