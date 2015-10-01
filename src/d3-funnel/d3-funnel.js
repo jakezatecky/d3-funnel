@@ -321,9 +321,15 @@ class D3Funnel {
 					dy = dy - (this.curveHeight / this.data.length);
 				}
 
-				// Given our new y coordinate, calculate the next x
-				// position
+				// Given: y = mx + b
+				// Given: b = 0 (when funnel), b = this.height (when pyramid)
+				// For funnel, x_i = y_i / slope
 				nextLeftX = (prevHeight + dy) / slope;
+
+				// For pyramid, x_i = y_i - this.height / -slope
+				if (this.isInverted) {
+					nextLeftX = (prevHeight + dy - this.height) / (-1 * slope);
+				}
 
 				// If bottomWidth is 0, then make last x position in the center
 				if (this.bottomWidth === 0 && i === this.data.length - 1) {
@@ -337,6 +343,10 @@ class D3Funnel {
 
 				// Calculate the shift necessary for both x points
 				dx = nextLeftX - prevLeftX;
+
+				if (this.isInverted) {
+					dx = prevLeftX - nextLeftX;
+				}
 
 				topBase = bottomBase;
 			}
