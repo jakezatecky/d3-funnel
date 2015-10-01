@@ -331,9 +331,16 @@ class D3Funnel {
 					nextLeftX = (prevHeight + dy - this.height) / (-1 * slope);
 				}
 
-				// If bottomWidth is 0, then make last x position in the center
+				// If bottomWidth is 0, adjust last x position (to circumvent
+				// errors associated with rounding)
 				if (this.bottomWidth === 0 && i === this.data.length - 1) {
-					nextLeftX = this.height / 2;
+					// For funnel, last position is the center
+					nextLeftX = this.width / 2;
+
+					// For pyramid, last position is the origin
+					if (this.isInverted) {
+						nextLeftX = 0;
+					}
 				}
 
 				// If bottomWidth is same as width, stop x velocity
