@@ -1,4 +1,4 @@
-/* global d3, LabelFormatter, Navigator, Utils */
+/* global d3, Colorizer, LabelFormatter, Navigator, Utils */
 /* exported D3Funnel */
 
 class D3Funnel {
@@ -26,6 +26,9 @@ class D3Funnel {
 			animation: false,
 			block: {
 				dynamicHeight: false,
+				fill: {
+					scale: d3.scale.category10(),
+				},
 			},
 			label: {
 				fontSize: '14px',
@@ -34,6 +37,8 @@ class D3Funnel {
 			},
 			onItemClick: null,
 		};
+
+		this.colorizer = new Colorizer();
 
 		this.labelFormatter = new LabelFormatter();
 
@@ -81,13 +86,15 @@ class D3Funnel {
 	_initialize(data, options) {
 		this._validateData(data);
 
-		this._setData(data);
-
 		let settings = this._getSettings(options);
 
 		// Set labels
 		this.label = settings.label;
 		this.labelFormatter.setFormat(this.label.format);
+
+		// Set color scales
+		this.colorizer.setLabelFill(settings.label.fill);
+		this.colorizer.setScale(settings.block.fill.scale);
 
 		// Initialize funnel chart settings
 		this.width = settings.width;
@@ -103,6 +110,11 @@ class D3Funnel {
 		this.minHeight = settings.minHeight;
 		this.animation = settings.animation;
 
+		// Support for events
+		this.onItemClick = settings.onItemClick;
+
+		this._setBlocks(data);
+
 		// Calculate the bottom left x position
 		this.bottomLeftX = (this.width - this.bottomWidth) / 2;
 
@@ -111,9 +123,6 @@ class D3Funnel {
 
 		// Change in y direction
 		this.dy = this._getDy();
-
-		// Support for events
-		this.onItemClick = settings.onItemClick;
 	}
 
 	/**
@@ -131,31 +140,81 @@ class D3Funnel {
 	}
 
 	/**
+	 * Register the raw data into a standard block format and pre-calculate
+	 * some values.
+	 *
 	 * @param {Array} data
 	 *
 	 * @return void
 	 */
-	_setData(data) {
-		this.data = data;
+	_setBlocks(data) {
+		let totalCount = this._getTotalCount(data);
 
-		this._setColors();
+		this.blocks = this._standardizeData(data, totalCount);
 	}
 
 	/**
-	 * Set the colors for each block.
+	 * Return the total count of all blocks.
 	 *
-	 * @return {void}
+	 * @return {Number}
 	 */
-	_setColors() {
-		let colorScale = d3.scale.category10();
-		let hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+	_getTotalCount(data) {
+		let total = 0;
 
-		// Add a color for for each block without one
-		this.data.forEach((block, index) => {
-			if (block.length < 3 || !hexExpression.test(block[2])) {
-				this.data[index][2] = colorScale(index);
-			}
+		data.forEach((block) => {
+			total += this._getRawBlockCount(block);
 		});
+
+		return total;
+	}
+
+	/**
+	 * Convert the raw data into a standardized format.
+	 *
+	 * @param {Array}  data
+	 * @param {Number} totalCount
+	 *
+	 * @return {Array}
+	 */
+	_standardizeData(data, totalCount) {
+		let standardized = [];
+
+		let count;
+		let ratio;
+		let label;
+
+		data.forEach((block, index) => {
+			count = this._getRawBlockCount(block);
+			ratio = count / totalCount;
+			label = block[0];
+
+			standardized.push({
+				index: index,
+				value: count,
+				ratio: ratio,
+				height: this.height * ratio,
+				formatted: this.labelFormatter.format(label, count),
+				fill: this.colorizer.getBlockFill(block, index),
+				label: {
+					raw: label,
+					formatted: this.labelFormatter.format(label, count),
+					color: this.colorizer.getLabelFill(block, index),
+				},
+			});
+		});
+
+		return standardized;
+	}
+
+	/**
+	 * Given a raw data block, return its count.
+	 *
+	 * @param {Array} block
+	 *
+	 * @return {Number}
+	 */
+	_getRawBlockCount(block) {
+		return Array.isArray(block[1]) ? block[1][0] : block[1];
 	}
 
 	/**
@@ -191,10 +250,10 @@ class D3Funnel {
 	_getDx() {
 		// Will be sharper if there is a pinch
 		if (this.bottomPinch > 0) {
-			return this.bottomLeftX / (this.data.length - this.bottomPinch);
+			return this.bottomLeftX / (this.blocks.length - this.bottomPinch);
 		}
 
-		return this.bottomLeftX / this.data.length;
+		return this.bottomLeftX / this.blocks.length;
 	}
 
 	/**
@@ -203,10 +262,10 @@ class D3Funnel {
 	_getDy() {
 		// Curved chart needs reserved pixels to account for curvature
 		if (this.isCurved) {
-			return (this.height - this.curveHeight) / this.data.length;
+			return (this.height - this.curveHeight) / this.blocks.length;
 		}
 
-		return this.height / this.data.length;
+		return this.height / this.blocks.length;
 	}
 
 	/**
@@ -282,33 +341,21 @@ class D3Funnel {
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
 		if (this.minHeight !== false) {
-			totalHeight = this.height - this.minHeight * this.data.length;
+			totalHeight = this.height - this.minHeight * this.blocks.length;
 		}
-
-		let totalCount = 0;
-		let count = 0;
-
-		let ratio = 0;
-
-		// Harvest total count
-		this.data.forEach((block) => {
-			totalCount += Array.isArray(block[1]) ? block[1][0] : block[1];
-		});
 
 		let slopeHeight = this.height;
 
 		// Correct slope height if there are blocks being pinched (and thus
 		// requiring a sharper curve)
-		this.data.forEach((block, i) => {
-			count = Array.isArray(block[1]) ? block[0] : block[1];
-
+		this.blocks.forEach((block, i) => {
 			if (this.bottomPinch > 0) {
 				if (this.isInverted) {
 					if (i < this.bottomPinch) {
-						slopeHeight -= (count / totalCount) * totalHeight;
+						slopeHeight -= block.height;
 					}
-				} else if (i >= this.data.length - this.bottomPinch) {
-					slopeHeight -= (count / totalCount) * totalHeight;
+				} else if (i >= this.blocks.length - this.bottomPinch) {
+					slopeHeight -= block.height;
 				}
 			}
 		});
@@ -319,15 +366,11 @@ class D3Funnel {
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
-		this.data.forEach((block, i) => {
-			count = Array.isArray(block[1]) ? block[0] : block[1];
-
+		this.blocks.forEach((block, i) => {
 			// Make heights proportional to block weight
 			if (this.dynamicHeight) {
-				ratio = count / totalCount;
-
 				// Slice off the height proportional to this block
-				dy = totalHeight * ratio;
+				dy = totalHeight * block.ratio;
 
 				// Add greedy minimum height
 				if (this.minHeight !== false) {
@@ -336,7 +379,7 @@ class D3Funnel {
 
 				// Account for any curvature
 				if (this.isCurved) {
-					dy = dy - (this.curveHeight / this.data.length);
+					dy = dy - (this.curveHeight / this.blocks.length);
 				}
 
 				// Given: y = mx + b
@@ -351,7 +394,7 @@ class D3Funnel {
 
 				// If bottomWidth is 0, adjust last x position (to circumvent
 				// errors associated with rounding)
-				if (this.bottomWidth === 0 && i === this.data.length - 1) {
+				if (this.bottomWidth === 0 && i === this.blocks.length - 1) {
 					// For funnel, last position is the center
 					nextLeftX = this.width / 2;
 
@@ -381,7 +424,7 @@ class D3Funnel {
 				// Check if we've reached the bottom of the pinch
 				// If so, stop changing on x
 				if (!this.isInverted) {
-					if (i >= this.data.length - this.bottomPinch) {
+					if (i >= this.blocks.length - this.bottomPinch) {
 						dx = 0;
 					}
 					// Pinch at the first blocks relating to the bottom pinch
@@ -462,9 +505,9 @@ class D3Funnel {
 		let defs = svg.append('defs');
 
 		// Create a gradient for each block
-		this.data.forEach((block, index) => {
-			let color = block[2];
-			let shade = Utils.shadeColor(color, -0.25);
+		this.blocks.forEach((block, index) => {
+			let color = block.fill;
+			let shade = Colorizer.shade(color, -0.25);
 
 			// Create linear gradient
 			let gradient = defs.append('linearGradient')
@@ -523,7 +566,7 @@ class D3Funnel {
 
 		// Draw top oval
 		svg.append('path')
-			.attr('fill', Utils.shadeColor(this.data[0][2], -0.4))
+			.attr('fill', Colorizer.shade(this.blocks[0].fill, -0.4))
 			.attr('d', path);
 	}
 
@@ -535,7 +578,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_drawBlock(index) {
-		if (index === this.data.length) {
+		if (index === this.blocks.length) {
 			return;
 		}
 
@@ -544,20 +587,20 @@ class D3Funnel {
 
 		// Fetch path element
 		let path = this._getBlockPath(group, index);
-		path.data(this._getBlockData(index));
+		path.data(this._getD3Data(index));
 
 		// Add animation components
 		if (this.animation !== false) {
 			path.transition()
 				.duration(this.animation)
 				.ease('linear')
-				.attr('fill', this._getColor(index))
+				.attr('fill', this._getFillColor(index))
 				.attr('d', this._getPathDefinition(index))
 				.each('end', () => {
 					this._drawBlock(index + 1);
 				});
 		} else {
-			path.attr('fill', this._getColor(index))
+			path.attr('fill', this._getFillColor(index))
 				.attr('d', this._getPathDefinition(index));
 			this._drawBlock(index + 1);
 		}
@@ -628,11 +671,11 @@ class D3Funnel {
 		}
 
 		// Use previous fill color, if available
-		if (this.fillType === 'solid') {
-			beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
-			// Use current background if gradient (gradients do not transition)
+		if (this.fillType === 'solid' && index > 0) {
+			beforeFill = this._getFillColor(index - 1);
+		// Otherwise use current background
 		} else {
-			beforeFill = this._getColor(index);
+			beforeFill = this._getFillColor(index);
 		}
 
 		path.attr('d', beforePath)
@@ -640,34 +683,26 @@ class D3Funnel {
 	}
 
 	/**
+	 * Return d3 formatted data for the given block.
+	 *
 	 * @param {int} index
 	 *
 	 * @return {Array}
 	 */
-	_getBlockData(index) {
-		let label = this.data[index][0];
-		let value = this.data[index][1];
-
-		return [{
-			index: index,
-			label: label,
-			value: value,
-			formatted: this.labelFormatter.format(label, value),
-			baseColor: this.data[index][2],
-			fill: this._getColor(index),
-		}];
+	_getD3Data(index) {
+		return [this.blocks[index]];
 	}
 
 	/**
-	 * Return the color for the given index.
+	 * Return the block fill color for the given index.
 	 *
 	 * @param {int} index
 	 *
 	 * @return {string}
 	 */
-	_getColor(index) {
+	_getFillColor(index) {
 		if (this.fillType === 'solid') {
-			return this.data[index][2];
+			return this.blocks[index].fill;
 		} else {
 			return 'url(#gradient-' + index + ')';
 		}
@@ -694,7 +729,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOver(data) {
-		d3.select(this).attr('fill', Utils.shadeColor(data.baseColor, -0.2));
+		d3.select(this).attr('fill', Colorizer.shade(data.fill, -0.2));
 	}
 
 	/**
@@ -715,14 +750,14 @@ class D3Funnel {
 	_addBlockLabel(group, index) {
 		let paths = this.blockPaths[index];
 
-		let label = this._getBlockData(index)[0].formatted;
-		let fill = this.data[index][3] || this.label.fill;
+		let text = this.blocks[index].label.formatted;
+		let fill = this.blocks[index].label.color;
 
 		let x = this.width / 2;  // Center the text
 		let y = this._getTextY(paths);
 
 		group.append('text')
-			.text(label)
+			.text(text)
 			.attr({
 				'x': x,
 				'y': y,
@@ -744,7 +779,7 @@ class D3Funnel {
 	 */
 	_getTextY(paths) {
 		if (this.isCurved) {
-			return (paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.data.length);
+			return (paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.blocks.length);
 		}
 
 		return (paths[1][1] + paths[2][1]) / 2;

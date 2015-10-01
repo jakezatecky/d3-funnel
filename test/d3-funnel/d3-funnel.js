@@ -380,7 +380,7 @@ describe('D3Funnel', function () {
 					onItemClick: function (d, i) {
 						spy({
 							index: d.index,
-							label: d.label,
+							label: d.label.raw,
 							value: d.value,
 						}, i);
 					},
