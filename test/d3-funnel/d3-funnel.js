@@ -204,7 +204,7 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('dynamicArea', function () {
+		describe('block.dynamicHeight', function () {
 			it('should use equal heights when false', function () {
 				var paths;
 
@@ -229,13 +229,15 @@ describe('D3Funnel', function () {
 					['B', 2],
 				], {
 					height: 300,
-					dynamicArea: true,
+					block: {
+						dynamicHeight: true,
+					},
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
 
-				assert.equal(72, parseInt(getPathHeight(d3.select(paths[0])), 10));
-				assert.equal(227, parseInt(getPathHeight(d3.select(paths[1])), 10));
+				assert.equal(100, parseInt(getPathHeight(d3.select(paths[0])), 10));
+				assert.equal(200, parseInt(getPathHeight(d3.select(paths[1])), 10));
 			});
 
 			it('should not have NaN in the last path when bottomWidth is equal to 0%', function () {
@@ -249,7 +251,9 @@ describe('D3Funnel', function () {
 					['D', 15],
 				], {
 					height: 300,
-					dynamicArea: true,
+					block: {
+						dynamicHeight: true,
+					},
 					bottomWidth: 0,
 				});
 
@@ -266,12 +270,51 @@ describe('D3Funnel', function () {
 					['B', 2],
 				], {
 					height: 300,
-					dynamicArea: true,
+					block: {
+						dynamicHeight: true,
+					},
 					bottomWidth: 1,
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
 
+			});
+		});
+
+		describe('minHeight', function () {
+			it('should give each block the minimum height specified', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 299],
+					['B', 1],
+				], {
+					height: 300,
+					dynamicArea: true,
+					minHeight: 10,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[0]))), 10);
+				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[1]))), 10);
+			});
+
+			it('should decrease the height of blocks above the minimum', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 299],
+					['B', 1],
+				], {
+					height: 300,
+					dynamicArea: true,
+					minHeight: 10,
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.isBelow(parseFloat(getPathHeight(d3.select(paths[0]))), 290);
 			});
 		});
 

@@ -22,9 +22,11 @@ class D3Funnel {
 			fillType: 'solid',
 			isInverted: false,
 			hoverEffects: false,
-			dynamicArea: false,
 			minHeight: false,
 			animation: false,
+			block: {
+				dynamicHeight: false,
+			},
 			label: {
 				fontSize: '14px',
 				fill: '#fff',
@@ -97,7 +99,7 @@ class D3Funnel {
 		this.fillType = settings.fillType;
 		this.isInverted = settings.isInverted;
 		this.hoverEffects = settings.hoverEffects;
-		this.dynamicArea = settings.dynamicArea;
+		this.dynamicHeight = settings.block.dynamicHeight;
 		this.minHeight = settings.minHeight;
 		this.animation = settings.animation;
 
@@ -274,18 +276,23 @@ class D3Funnel {
 		let topBase = this.width;
 		let bottomBase = 0;
 
-		let totalArea = this.height * (this.width + this.bottomWidth) / 2;
+		let totalHeight = this.height;
+
+		// The slope will determine the where the x points on each block
+		// iteration
 		let slope = 2 * this.height / (this.width - this.bottomWidth);
 
 		// This is greedy in that the block will have a guaranteed height
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
 		if (this.minHeight !== false) {
-			totalArea = (this.height - this.minHeight * this.data.length) * (this.width + this.bottomWidth) / 2;
+			totalHeight = this.height - this.minHeight * this.data.length;
 		}
 
 		let totalCount = 0;
 		let count = 0;
+
+		let ratio = 0;
 
 		// Harvest total count
 		this.data.forEach((block) => {
@@ -297,32 +304,55 @@ class D3Funnel {
 		this.data.forEach((block, i) => {
 			count = Array.isArray(block[1]) ? block[0] : block[1];
 
-			// Calculate dynamic shapes based on area
-			if (this.dynamicArea) {
-				let ratio = count / totalCount;
-				let area = ratio * totalArea;
+			// Make heights proportional to block weight
+			if (this.dynamicHeight) {
+				ratio = count / totalCount;
 
+				// Slice off the height proportional to this block
+				dy = totalHeight * ratio;
+
+				// Add greedy minimum height
 				if (this.minHeight !== false) {
-					area += this.minHeight * (this.width + this.bottomWidth) / 2;
+					dy += this.minHeight;
 				}
 
-				bottomBase = Math.sqrt((slope * topBase * topBase - (4 * area)) / slope);
-
-				// Prevent bottm points from becomming NaN
-				if (this.bottomWidth === 0 && i === this.data.length - 1) {
-					bottomBase = 0;
-				}
-
-				// Prevent NaN slope
-				if (this.bottomWidth === this.width) {
-					bottomBase = topBase;
-				}
-
-				dx = (topBase / 2) - (bottomBase / 2);
-				dy = (area * 2) / (topBase + bottomBase);
-
+				// Account for any curvature
 				if (this.isCurved) {
 					dy = dy - (this.curveHeight / this.data.length);
+				}
+
+				// Given: y = mx + b
+				// Given: b = 0 (when funnel), b = this.height (when pyramid)
+				// For funnel, x_i = y_i / slope
+				nextLeftX = (prevHeight + dy) / slope;
+
+				// For pyramid, x_i = y_i - this.height / -slope
+				if (this.isInverted) {
+					nextLeftX = (prevHeight + dy - this.height) / (-1 * slope);
+				}
+
+				// If bottomWidth is 0, adjust last x position (to circumvent
+				// errors associated with rounding)
+				if (this.bottomWidth === 0 && i === this.data.length - 1) {
+					// For funnel, last position is the center
+					nextLeftX = this.width / 2;
+
+					// For pyramid, last position is the origin
+					if (this.isInverted) {
+						nextLeftX = 0;
+					}
+				}
+
+				// If bottomWidth is same as width, stop x velocity
+				if (this.bottomWidth === this.width) {
+					nextLeftX = prevLeftX;
+				}
+
+				// Calculate the shift necessary for both x points
+				dx = nextLeftX - prevLeftX;
+
+				if (this.isInverted) {
+					dx = prevLeftX - nextLeftX;
 				}
 
 				topBase = bottomBase;
@@ -341,9 +371,9 @@ class D3Funnel {
 				} else {
 					// Revert velocity back to the initial if we are using
 					// static area's (prevents zero velocity if isInverted
-					// and bottomPinch are non trivial and dynamicArea is
+					// and bottomPinch are non trivial and dynamicHeight is
 					// false)
-					if (!this.dynamicArea) {
+					if (!this.dynamicHeight) {
 						dx = this.dx;
 					}
 

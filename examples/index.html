@@ -20,7 +20,7 @@
 						<option value="gradient">Gradient</option>
 						<option value="inverted">Inverted</option>
 						<option value="hover">Hover effects</option>
-						<option value="dynamic">Dynamic area</option>
+						<option value="dynamic">Dynamic height</option>
 						<option value="minHeight">Minimum height</option>
 						<option value="animation">Animation</option>
 						<option value="clickEvent">Click Event</option>
@@ -111,12 +111,16 @@
 						],
 						dynamic: [
 							data.normal, {
-								dynamicArea: true,
+								block: {
+									dynamicHeight: true,
+								},
 							},
 						],
 						minHeight: [
 							data.minHeight, {
-								dynamicArea: true,
+								block: {
+									dynamicHeight: true,
+								},
 								minHeight: 10,
 							},
 						],
@@ -148,7 +152,9 @@
 								bottomPinch: 2,
 								fillType: 'gradient',
 								hoverEffects: true,
-								dynamicArea: true,
+								block : {
+									dynamicHeight: true,
+								},
 								animation: 200,
 								onItemClick: function(d) {
 									alert('<' + d.label + '> selected.');
@@ -160,10 +166,8 @@
 					var chart = new D3Funnel('#funnel');
 
 					// Reverse the dataset if the isInverted option is present
-					// Keep in mind that because the larger component has shorter
-					// width, it must compensate with a much larger height!
-					if (options[index].hasOwnProperty('isInverted')) {
-						chart.draw(data.reverse(options[index][0]), options[index][1]);
+					if (options[index][1].hasOwnProperty('isInverted')) {
+						chart.draw(options[index][0].reverse(), options[index][1]);
 					// Otherwise, just use the regular data
 					} else {
 						chart.draw(options[index][0], options[index][1]);
