@@ -278,10 +278,6 @@ class D3Funnel {
 
 		let totalHeight = this.height;
 
-		// The slope will determine the where the x points on each block
-		// iteration
-		let slope = 2 * this.height / (this.width - this.bottomWidth);
-
 		// This is greedy in that the block will have a guaranteed height
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
@@ -298,6 +294,28 @@ class D3Funnel {
 		this.data.forEach((block) => {
 			totalCount += Array.isArray(block[1]) ? block[1][0] : block[1];
 		});
+
+		let slopeHeight = this.height;
+
+		// Correct slope height if there are blocks being pinched (and thus
+		// requiring a sharper curve)
+		this.data.forEach((block, i) => {
+			count = Array.isArray(block[1]) ? block[0] : block[1];
+
+			if (this.bottomPinch > 0) {
+				if (this.isInverted) {
+					if (i < this.bottomPinch) {
+						slopeHeight -= (count / totalCount) * totalHeight;
+					}
+				} else if (i >= this.data.length - this.bottomPinch) {
+					slopeHeight -= (count / totalCount) * totalHeight;
+				}
+			}
+		});
+
+		// The slope will determine the where the x points on each block
+		// iteration
+		let slope = 2 * slopeHeight / (this.width - this.bottomWidth);
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
