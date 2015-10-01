@@ -14,6 +14,8 @@ a few new features.
 
 ### Bug Fixes
 
+* [#25]: Fix issues with `isInverted` and `dynamicArea` producing odd pyramids
+
 ### Upgrading from v0.6.12
 
 Several options have been renamed for standardization. Please refer to the table
