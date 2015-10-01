@@ -20,7 +20,7 @@
 						<option value="gradient">Gradient</option>
 						<option value="inverted">Inverted</option>
 						<option value="hover">Hover effects</option>
-						<option value="dynamic">Dynamic area</option>
+						<option value="dynamic">Dynamic height</option>
 						<option value="minHeight">Minimum height</option>
 						<option value="animation">Animation</option>
 						<option value="clickEvent">Click Event</option>
@@ -111,12 +111,16 @@
 						],
 						dynamic: [
 							data.normal, {
-								dynamicArea: true,
+								block: {
+									dynamicHeight: true,
+								},
 							},
 						],
 						minHeight: [
 							data.minHeight, {
-								dynamicArea: true,
+								block: {
+									dynamicHeight: true,
+								},
 								minHeight: 10,
 							},
 						],

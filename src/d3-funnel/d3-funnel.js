@@ -22,9 +22,11 @@ class D3Funnel {
 			fillType: 'solid',
 			isInverted: false,
 			hoverEffects: false,
-			dynamicArea: false,
 			minHeight: false,
 			animation: false,
+			block: {
+				dynamicHeight: false,
+			},
 			label: {
 				fontSize: '14px',
 				fill: '#fff',
@@ -97,7 +99,7 @@ class D3Funnel {
 		this.fillType = settings.fillType;
 		this.isInverted = settings.isInverted;
 		this.hoverEffects = settings.hoverEffects;
-		this.dynamicArea = settings.dynamicArea;
+		this.dynamicHeight = settings.block.dynamicHeight;
 		this.minHeight = settings.minHeight;
 		this.animation = settings.animation;
 
@@ -302,8 +304,8 @@ class D3Funnel {
 		this.data.forEach((block, i) => {
 			count = Array.isArray(block[1]) ? block[0] : block[1];
 
-			// Calculate dynamic shapes based on area
-			if (this.dynamicArea) {
+			// Make heights proportional to block weight
+			if (this.dynamicHeight) {
 				ratio = count / totalCount;
 
 				// Slice off the height proportional to this block
@@ -352,9 +354,9 @@ class D3Funnel {
 				} else {
 					// Revert velocity back to the initial if we are using
 					// static area's (prevents zero velocity if isInverted
-					// and bottomPinch are non trivial and dynamicArea is
+					// and bottomPinch are non trivial and dynamicHeight is
 					// false)
-					if (!this.dynamicArea) {
+					if (!this.dynamicHeight) {
 						dx = this.dx;
 					}
 

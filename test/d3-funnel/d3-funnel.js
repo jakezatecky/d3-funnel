@@ -204,7 +204,7 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('dynamicArea', function () {
+		describe('block.dynamicHeight', function () {
 			it('should use equal heights when false', function () {
 				var paths;
 
@@ -229,7 +229,9 @@ describe('D3Funnel', function () {
 					['B', 2],
 				], {
 					height: 300,
-					dynamicArea: true,
+					block: {
+						dynamicHeight: true,
+					},
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
@@ -249,7 +251,9 @@ describe('D3Funnel', function () {
 					['D', 15],
 				], {
 					height: 300,
-					dynamicArea: true,
+					block: {
+						dynamicHeight: true,
+					},
 					bottomWidth: 0,
 				});
 
@@ -266,7 +270,9 @@ describe('D3Funnel', function () {
 					['B', 2],
 				], {
 					height: 300,
-					dynamicArea: true,
+					block: {
+						dynamicHeight: true,
+					},
 					bottomWidth: 1,
 				});
 
