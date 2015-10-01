@@ -96,7 +96,11 @@
 						],
 						gradient: [
 							data.normal, {
-								fillType: 'gradient',
+								block: {
+									fill: {
+										type: 'gradient',
+									},
+								},
 							},
 						],
 						inverted: [
@@ -121,8 +125,8 @@
 							data.minHeight, {
 								block: {
 									dynamicHeight: true,
+									minHeight: 20,
 								},
-								minHeight: 10,
 							},
 						],
 						animation: [
@@ -152,10 +156,12 @@
 								isCurved: true,
 								bottomPinch: 2,
 								bottomWidth: 1 / 2,
-								fillType: 'gradient',
 								hoverEffects: true,
 								block : {
 									dynamicHeight: true,
+									fill: {
+										type: 'gradient',
+									},
 								},
 								animation: 200,
 								onItemClick: function(d) {

@@ -161,35 +161,6 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('block.fill.type', function () {
-			it('should create gradients when set to \'gradient\'', function () {
-				getFunnel().draw(getBasicData(), {
-					block: {
-						fill: {
-							type: 'gradient',
-						},
-					},
-				});
-
-				// Cannot try to re-select the camelCased linearGradient element
-				// due to a Webkit bug in the current PhantomJS; workaround is
-				// to select the known ID of the linearGradient element
-				// https://bugs.webkit.org/show_bug.cgi?id=83438
-				assert.equal(1, d3.selectAll('#funnel defs #gradient-0')[0].length);
-
-				assert.equal('url(#gradient-0)', d3.select('#funnel path').attr('fill'));
-			});
-
-			it('should use solid fill when not set to \'gradient\'', function () {
-				getFunnel().draw(getBasicData(), {});
-
-				// Check for valid hex string
-				assert.isTrue(/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
-					d3.select('#funnel path').attr('fill')
-				));
-			});
-		});
-
 		describe('hoverEffects', function () {
 			it('should change block color on hover', function () {
 				var event = document.createEvent('CustomEvent');
@@ -285,7 +256,36 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('minHeight', function () {
+		describe('block.fill.type', function () {
+			it('should create gradients when set to \'gradient\'', function () {
+				getFunnel().draw(getBasicData(), {
+					block: {
+						fill: {
+							type: 'gradient',
+						},
+					},
+				});
+
+				// Cannot try to re-select the camelCased linearGradient element
+				// due to a Webkit bug in the current PhantomJS; workaround is
+				// to select the known ID of the linearGradient element
+				// https://bugs.webkit.org/show_bug.cgi?id=83438
+				assert.equal(1, d3.selectAll('#funnel defs #gradient-0')[0].length);
+
+				assert.equal('url(#gradient-0)', d3.select('#funnel path').attr('fill'));
+			});
+
+			it('should use solid fill when not set to \'gradient\'', function () {
+				getFunnel().draw(getBasicData(), {});
+
+				// Check for valid hex string
+				assert.isTrue(/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
+					d3.select('#funnel path').attr('fill')
+				));
+			});
+		});
+
+		describe('block.minHeight', function () {
 			it('should give each block the minimum height specified', function () {
 				var paths;
 
@@ -294,8 +294,10 @@ describe('D3Funnel', function () {
 					['B', 1],
 				], {
 					height: 300,
-					dynamicArea: true,
-					minHeight: 10,
+					block: {
+						dynamicHeight: true,
+						minHeight: 10,
+					},
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
@@ -312,8 +314,10 @@ describe('D3Funnel', function () {
 					['B', 1],
 				], {
 					height: 300,
-					dynamicArea: true,
-					minHeight: 10,
+					block: {
+						dynamicHeight: true,
+						minHeight: 10,
+					},
 				});
 
 				paths = d3.selectAll('#funnel path')[0];

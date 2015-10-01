@@ -54,7 +54,7 @@ You must also create a container element and instantiate a new chart:
 | `hoverEffects`        | Whether the funnel has effects on hover.                                    | bool     | `false`            |
 | `block.dynamicHeight` | Whether the block heights are proportional to its weight.                   | bool     | `false`            |
 | `block.fill.type`     | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
-| `minHeight`           | The minimum pixel height of a block.                                        | int/bool | `false`            |
+| `block.minHeight`     | The minimum pixel height of a block.                                        | int/bool | `false`            |
 | `animation`           | The load animation speed in milliseconds.                                   | int/bool | `false`            |
 | `label.fontSize`      | Any valid font size for the labels.                                         | string   | `'14px'`           |
 | `label.fill`          | Any valid hex color for the label color                                     | string   | `'#fff'`           |

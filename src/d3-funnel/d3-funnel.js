@@ -21,7 +21,6 @@ class D3Funnel {
 			curveHeight: 20,
 			isInverted: false,
 			hoverEffects: false,
-			minHeight: false,
 			animation: false,
 			block: {
 				dynamicHeight: false,
@@ -29,6 +28,7 @@ class D3Funnel {
 					scale: d3.scale.category10(),
 					type: 'solid',
 				},
+				minHeight: false,
 			},
 			label: {
 				fontSize: '14px',
@@ -107,7 +107,7 @@ class D3Funnel {
 		this.isInverted = settings.isInverted;
 		this.hoverEffects = settings.hoverEffects;
 		this.dynamicHeight = settings.block.dynamicHeight;
-		this.minHeight = settings.minHeight;
+		this.minHeight = settings.block.minHeight;
 		this.animation = settings.animation;
 
 		// Support for events
