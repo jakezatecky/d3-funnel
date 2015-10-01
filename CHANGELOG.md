@@ -4,6 +4,9 @@ D3Funnel v0.7 is a **backwards-incompatible** release that resolves several
 outstanding bugs, standardizing several option names and formats, and introduces
 a few new features.
 
+No new features will be added to the v0.6 series, but minor patches will be
+available for a few months.
+
 ### Major Changes
 
 * [#29]: Dynamic block heights are no longer determined by their weighted area, but by their weighted height
