@@ -11,17 +11,30 @@ D3Funnel is focused on providing practical and visually appealing funnels
 through a variety of customization options. Check out the [examples page][examples]
 to get a showcasing of the several possible options.
 
-# Usage
+# Installation
 
-To use this library, you must include the source files for [D3.js][d3] and
-D3Funnel.
+To install this library, simply include both [D3.js][d3] and D3Funnel:
 
 ``` html
 <script src="/path/to/d3.min.js"></script>
-<script src="/path/to/d3-funnel.js"></script>
+<script src="/path/to/dist/d3-funnel.js"></script>
 ```
 
-You must also create a container element and instantiate a new chart:
+Alternatively, if you are using Webpack or Browserify, you can install the npm
+package and `require` the module:
+
+```
+npm install d3-funnel --save
+```
+
+``` javascript
+var D3Funnel = require('d3-funnel')
+```
+
+# Usage
+
+To use this library, you must create a container element and instantiate a new
+funnel chart:
 
 ``` html
 <div id="funnel"></div>
