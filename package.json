@@ -9,7 +9,7 @@
     "url": "https://github.com/jakezatecky/d3-funnel"
   },
   "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
-  "main": "src/d3-funnel/d3-funnel.js",
+  "main": "dist/d3-funnel.js",
   "devDependencies": {
     "chai": "^3.2.0",
     "chai-spies": "^0.7.0",
