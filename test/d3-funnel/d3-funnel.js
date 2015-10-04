@@ -173,26 +173,6 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('block.highlight', function () {
-			it('should change block color on hover', function () {
-				var event = document.createEvent('CustomEvent');
-				event.initCustomEvent('mouseover', false, false, null);
-
-				getFunnel().draw([
-					['A', 1, '#fff'],
-				], {
-					block: {
-						highlight: true,
-					},
-				});
-
-				d3.select('#funnel path').node().dispatchEvent(event);
-
-				// #fff * -1/5 => #cccccc
-				assert.equal('#cccccc', d3.select('#funnel path').attr('fill'));
-			});
-		});
-
 		describe('block.dynamicHeight', function () {
 			it('should use equal heights when false', function () {
 				var paths;
@@ -351,6 +331,27 @@ describe('D3Funnel', function () {
 				assert.isBelow(parseFloat(getPathHeight(d3.select(paths[0]))), 290);
 			});
 		});
+
+		describe('block.highlight', function () {
+			it('should change block color on hover', function () {
+				var event = document.createEvent('CustomEvent');
+				event.initCustomEvent('mouseover', false, false, null);
+
+				getFunnel().draw([
+					['A', 1, '#fff'],
+				], {
+					block: {
+						highlight: true,
+					},
+				});
+
+				d3.select('#funnel path').node().dispatchEvent(event);
+
+				// #fff * -1/5 => #cccccc
+				assert.equal('#cccccc', d3.select('#funnel path').attr('fill'));
+			});
+		});
+
 
 		describe('label.fontSize', function () {
 			it('should set the label\'s font size to the specified amount', function () {
