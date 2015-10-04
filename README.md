@@ -50,8 +50,8 @@ You must also create a container element and instantiate a new chart:
 | `chart.bottomPinch`   | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                |
 | `chart.inverted`      | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`            |
 | `chart.animate`       | The load animation speed in milliseconds.                                   | int/bool | `false`            |
-| `isCurved`            | Whether the funnel is curved.                                               | bool     | `false`            |
-| `curveHeight`         | The curvature amount (if `isCurved` is `true`).                             | int      | `20`               |
+| `chart.curve.enabled` | Whether the funnel is curved.                                               | bool     | `false`            |
+| `chart.curve.height`  | The curvature amount.                                                       | int      | `20`               |
 | `hoverEffects`        | Whether the funnel has effects on hover.                                    | bool     | `false`            |
 | `block.dynamicHeight` | Whether the block heights are proportional to its weight.                   | bool     | `false`            |
 | `block.fill.type`     | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |

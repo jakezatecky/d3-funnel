@@ -141,10 +141,14 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('isCurved', function () {
+		describe('chart.curve.enabled', function () {
 			it('should create an additional path on top of the trapezoids', function () {
 				getFunnel().draw(getBasicData(), {
-					isCurved: true,
+					chart: {
+						curve: {
+							enabled: true,
+						},
+					},
 				});
 
 				assert.equal(2, d3.selectAll('#funnel path')[0].length);
@@ -152,7 +156,11 @@ describe('D3Funnel', function () {
 
 			it('should create a quadratic Bezier curve on each path', function () {
 				getFunnel().draw(getBasicData(), {
-					isCurved: true,
+					chart: {
+						curve: {
+							enabled: true,
+						},
+					},
 				});
 
 				var paths = d3.selectAll('#funnel path');

@@ -10,7 +10,7 @@ available for a few months.
 ### Major Changes
 
 * [#29]: Dynamic block heights are no longer determined by their weighted area, but by their weighted height
-	* Heights determined by weighted area: http://jsfiddle.net/zq4L82kv/2/ (legacy v0.6.12)
+	* Heights determined by weighted area: http://jsfiddle.net/zq4L82kv/2/ (legacy v0.6.x)
 	* Heights determined by weighted height: (v0.7+)
 
 ### New Features
@@ -20,7 +20,7 @@ available for a few months.
 * [#25]: Fix issues with `isInverted` and `dynamicArea` producing odd pyramids
 * [#32]: Fix issue where pinched blocks were not having the same width as `bottomWidth`
 
-### Upgrading from v0.6.12
+### Upgrading from v0.6.x
 
 Several options have been renamed for standardization. Please refer to the table
 below for the new equivalent option:
@@ -33,6 +33,8 @@ below for the new equivalent option:
 | `bottomPinch` | `chart.bottomPinch`   |                 |
 | `isInverted`  | `chart.inverted`      |                 |
 | `animation`   | `chart.animate`       |                 |
+| `isCurved`    | `chart.curve.enabled` |                 |
+| `curveHeight  | `chart.curve.height`  |                 |
 | `dynamicArea` | `block.dynamicHeight` | See change #29. |
 | `fillType`    | `block.fill.type`     |                 |
 | `minHeight`   | `block.minHeight`     |                 |

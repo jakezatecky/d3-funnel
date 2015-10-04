@@ -86,7 +86,11 @@
 						],
 						curved: [
 							data.normal, {
-								isCurved: true,
+								chart: {
+									curve: {
+										enabled: true,
+									},
+								},
 							},
 						],
 						pinch: [
@@ -169,8 +173,10 @@
 									bottomPinch: 2,
 									bottomWidth: 1 / 2,
 									animate: 200,
+									curve: {
+										enabled: true,
+									},
 								},
-								isCurved: true,
 								hoverEffects: true,
 								block : {
 									dynamicHeight: true,

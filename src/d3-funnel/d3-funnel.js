@@ -20,9 +20,11 @@ class D3Funnel {
 				bottomPinch: 0,
 				inverted: false,
 				animate: false,
+				curve: {
+					enabled: false,
+					height: 20,
+				},
 			},
-			isCurved: false,
-			curveHeight: 20,
 			hoverEffects: false,
 			block: {
 				dynamicHeight: false,
@@ -108,8 +110,8 @@ class D3Funnel {
 		this.bottomWidth = settings.chart.width * settings.chart.bottomWidth;
 		this.bottomPinch = settings.chart.bottomPinch;
 		this.isInverted = settings.chart.inverted;
-		this.isCurved = settings.isCurved;
-		this.curveHeight = settings.curveHeight;
+		this.isCurved = settings.chart.curve.enabled;
+		this.curveHeight = settings.chart.curve.height;
 		this.fillType = settings.block.fill.type;
 		this.hoverEffects = settings.hoverEffects;
 		this.dynamicHeight = settings.block.dynamicHeight;
