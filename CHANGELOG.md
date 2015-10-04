@@ -31,6 +31,7 @@ below for the new equivalent option:
 | `height`      | `chart.height`        |                 |
 | `bottomWidth` | `chart.bottomWidth`   |                 |
 | `bottomPinch` | `chart.bottomPinch`   |                 |
+| `isInverted`  | `chart.inverted`      |                 |
 | `dynamicArea` | `block.dynamicHeight` | See change #29. |
 | `fillType`    | `block.fill.type`     |                 |
 | `minHeight`   | `block.minHeight`     |                 |

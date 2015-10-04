@@ -48,9 +48,9 @@ You must also create a container element and instantiate a new chart:
 | `chart.height`        | The pixel height of the chart.                                              | int      | Container's height |
 | `chart.bottomWidth`   | The percent of total width the bottom should be.                            | float    | `1 / 3`            |
 | `chart.bottomPinch`   | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                |
+| `chart.inverted`      | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`            |
 | `isCurved`            | Whether the funnel is curved.                                               | bool     | `false`            |
 | `curveHeight`         | The curvature amount (if `isCurved` is `true`).                             | int      | `20`               |
-| `isInverted`          | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`            |
 | `hoverEffects`        | Whether the funnel has effects on hover.                                    | bool     | `false`            |
 | `block.dynamicHeight` | Whether the block heights are proportional to its weight.                   | bool     | `false`            |
 | `block.fill.type`     | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
