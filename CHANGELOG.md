@@ -7,11 +7,11 @@ a few new features.
 No new features will be added to the v0.6 series, but minor patches will be
 available for a few months.
 
-### Major Changes
+### Behavior Changes
 
 * [#29]: Dynamic block heights are no longer determined by their weighted area, but by their weighted height
 	* Heights determined by weighted area: http://jsfiddle.net/zq4L82kv/2/ (legacy v0.6.x)
-	* Heights determined by weighted height: (v0.7+)
+	* Heights determined by weighted height: http://jsfiddle.net/bawv6m0j/1/ (v0.7+)
 
 ### New Features
 
