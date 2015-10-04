@@ -28,7 +28,7 @@ npm install d3-funnel --save
 ```
 
 ``` javascript
-var D3Funnel = require('d3-funnel')
+var D3Funnel = require('d3-funnel');
 ```
 
 # Usage
