@@ -24,6 +24,8 @@ function getCommandHeight(command) {
 
 describe('D3Funnel', function () {
 	beforeEach(function (done) {
+		d3.select('#funnel').attr('style', null);
+
 		done();
 	});
 
@@ -120,6 +122,14 @@ describe('D3Funnel', function () {
 
 	describe('options', function () {
 		describe('chart.width', function () {
+			it ('should default to the container\'s width', function () {
+				d3.select('#funnel').style('width', '250px');
+
+				getFunnel().draw(getBasicData(), {});
+
+				assert.equal(250, getSvg().node().getBBox().width);
+			});
+
 			it('should set the funnel\'s width to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
 					chart: {
@@ -132,6 +142,14 @@ describe('D3Funnel', function () {
 		});
 
 		describe('chart.height', function () {
+			it ('should default to the container\'s height', function () {
+				d3.select('#funnel').style('height', '250px');
+
+				getFunnel().draw(getBasicData(), {});
+
+				assert.equal(250, getSvg().node().getBBox().height);
+			});
+
 			it('should set the funnel\'s height to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
 					chart: {
