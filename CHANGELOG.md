@@ -27,19 +27,19 @@ below for the new equivalent option:
 
 | Old option     | New option            | Notes           |
 | -------------- | --------------------- | --------------- |
-| `width`        | `chart.width`         |                 |
-| `height`       | `chart.height`        |                 |
-| `bottomWidth`  | `chart.bottomWidth`   |                 |
-| `bottomPinch`  | `chart.bottomPinch`   |                 |
-| `isInverted`   | `chart.inverted`      |                 |
 | `animation`    | `chart.animate`       |                 |
-| `isCurved`     | `chart.curve.enabled` |                 |
+| `bottomPinch`  | `chart.bottomPinch`   |                 |
+| `bottomWidth`  | `chart.bottomWidth`   |                 |
 | `curveHeight   | `chart.curve.height`  |                 |
 | `dynamicArea`  | `block.dynamicHeight` | See change #29. |
 | `fillType`     | `block.fill.type`     |                 |
-| `minHeight`    | `block.minHeight`     |                 |
+| `height`       | `chart.height`        |                 |
 | `hoverEffects` | `block.hightlight`    |                 |
+| `isCurved`     | `chart.curve.enabled` |                 |
+| `isInverted`   | `chart.inverted`      |                 |
 | `onItemClick`  | `events.click.block`  |                 |
+| `minHeight`    | `block.minHeight`     |                 |
+| `width`        | `chart.width`         |                 |
 
 ## v0.6.12 (September 25, 2015)
 
