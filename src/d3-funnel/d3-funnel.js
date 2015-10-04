@@ -148,6 +148,33 @@ class D3Funnel {
 	}
 
 	/**
+	 * @param {Object} options
+	 *
+	 * @returns {Object}
+	 */
+	_getSettings(options) {
+		// Prepare the configuration settings based on the defaults
+		// Set the default width and height based on the container
+		let settings = Utils.extend({}, this.defaults);
+		settings.chart.width  = parseInt(d3.select(this.selector).style('width'), 10);
+		settings.chart.height = parseInt(d3.select(this.selector).style('height'), 10);
+
+		// Overwrite default settings with user options
+		settings = Utils.extend(settings, options);
+
+		// In the case that the width or height is not valid, set
+		// the width/height as its default hard-coded value
+		if (settings.chart.width <= 0) {
+			settings.chart.width = this.defaults.chart.width;
+		}
+		if (settings.chart.height <= 0) {
+			settings.chart.height = this.defaults.chart.height;
+		}
+
+		return settings;
+	}
+
+	/**
 	 * Register the raw data into a standard block format and pre-calculate
 	 * some values.
 	 *
@@ -223,33 +250,6 @@ class D3Funnel {
 	 */
 	_getRawBlockCount(block) {
 		return Array.isArray(block[1]) ? block[1][0] : block[1];
-	}
-
-	/**
-	 * @param {Object} options
-	 *
-	 * @returns {Object}
-	 */
-	_getSettings(options) {
-		// Prepare the configuration settings based on the defaults
-		// Set the default width and height based on the container
-		let settings = Utils.extend({}, this.defaults);
-		settings.width = parseInt(d3.select(this.selector).style('width'), 10);
-		settings.height = parseInt(d3.select(this.selector).style('height'), 10);
-
-		// Overwrite default settings with user options
-		settings = Utils.extend(settings, options);
-
-		// In the case that the width or height is not valid, set
-		// the width/height as its default hard-coded value
-		if (settings.width <= 0) {
-			settings.width = this.defaults.width;
-		}
-		if (settings.height <= 0) {
-			settings.height = this.defaults.height;
-		}
-
-		return settings;
 	}
 
 	/**
