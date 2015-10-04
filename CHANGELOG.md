@@ -33,7 +33,7 @@ below for the new equivalent option:
 | `animation`    | `chart.animate`       |                 |
 | `bottomPinch`  | `chart.bottomPinch`   |                 |
 | `bottomWidth`  | `chart.bottomWidth`   |                 |
-| `curveHeight   | `chart.curve.height`  |                 |
+| `curveHeight`  | `chart.curve.height`  |                 |
 | `dynamicArea`  | `block.dynamicHeight` | See change #29. |
 | `fillType`     | `block.fill.type`     |                 |
 | `height`       | `chart.height`        |                 |
