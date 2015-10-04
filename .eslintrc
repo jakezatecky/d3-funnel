@@ -1,0 +1,16 @@
+// Use this file as a starting point for your project's .eslintrc.
+// Copy this file, and add rule overrides as needed.
+{
+	"extends": "airbnb/base",
+	"rules": {
+		"indent": [1, "tab"],
+		"no-multiple-empty-lines": [2, {
+			"max": 1
+		}],
+		"no-undef": 2,
+		"prefer-const": 0,
+		"id-length": 0,
+		// Until exported behavior is fixed: https://github.com/eslint/eslint/issues/3916
+		"no-unused-vars": [1, {"vars": "local", "args": "after-used"}]
+	}
+}
