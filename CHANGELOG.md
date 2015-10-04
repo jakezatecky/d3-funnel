@@ -11,7 +11,7 @@ available for a few months.
 
 * [#29]: Dynamic block heights are no longer determined by their weighted area, but by their weighted height
 	* Heights determined by weighted area: http://jsfiddle.net/zq4L82kv/2/ (legacy v0.6.x)
-	* Heights determined by weighted height: http://jsfiddle.net/bawv6m0j/1/ (v0.7+)
+	* Heights determined by weighted height: http://jsfiddle.net/bawv6m0j/3/ (v0.7+)
 
 ### New Features
 
