@@ -81,7 +81,7 @@ describe('D3Funnel', function () {
 
 				paths = getSvg().selectAll('path')[0];
 
-				colorScale = d3.scale.category10();
+				colorScale = d3.scale.category10().domain(d3.range(0, 10));
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));

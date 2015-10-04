@@ -19,7 +19,7 @@ class D3Funnel {
 		block: {
 			dynamicHeight: false,
 			fill: {
-				scale: d3.scale.category10(),
+				scale: d3.scale.category10().domain(d3.range(0, 10)),
 				type: 'solid',
 			},
 			minHeight: false,
