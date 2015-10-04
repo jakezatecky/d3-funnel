@@ -137,7 +137,9 @@
 						],
 						animation: [
 							data.normal, {
-								animation: 200,
+								chart: {
+									animate: 200,
+								},
 							},
 						],
 						clickEvent: [
@@ -166,6 +168,7 @@
 								chart: {
 									bottomPinch: 2,
 									bottomWidth: 1 / 2,
+									animate: 200,
 								},
 								isCurved: true,
 								hoverEffects: true,
@@ -175,7 +178,6 @@
 										type: 'gradient',
 									},
 								},
-								animation: 200,
 								events: {
 									click: {
 										block: function(d) {

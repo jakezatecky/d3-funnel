@@ -49,13 +49,13 @@ You must also create a container element and instantiate a new chart:
 | `chart.bottomWidth`   | The percent of total width the bottom should be.                            | float    | `1 / 3`            |
 | `chart.bottomPinch`   | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                |
 | `chart.inverted`      | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`            |
+| `chart.animate`       | The load animation speed in milliseconds.                                   | int/bool | `false`            |
 | `isCurved`            | Whether the funnel is curved.                                               | bool     | `false`            |
 | `curveHeight`         | The curvature amount (if `isCurved` is `true`).                             | int      | `20`               |
 | `hoverEffects`        | Whether the funnel has effects on hover.                                    | bool     | `false`            |
 | `block.dynamicHeight` | Whether the block heights are proportional to its weight.                   | bool     | `false`            |
 | `block.fill.type`     | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
 | `block.minHeight`     | The minimum pixel height of a block.                                        | int/bool | `false`            |
-| `animation`           | The load animation speed in milliseconds.                                   | int/bool | `false`            |
 | `label.fontSize`      | Any valid font size for the labels.                                         | string   | `'14px'`           |
 | `label.fill`          | Any valid hex color for the label color                                     | string   | `'#fff'`           |
 | `label.format`        | Either `function(label, value)` or a format string. See below.              | mixed    | `'{l}: {f}'`       |

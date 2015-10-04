@@ -19,12 +19,11 @@ class D3Funnel {
 				bottomWidth: 1 / 3,
 				bottomPinch: 0,
 				inverted: false,
+				animate: false,
 			},
 			isCurved: false,
 			curveHeight: 20,
-			isInverted: false,
 			hoverEffects: false,
-			animation: false,
 			block: {
 				dynamicHeight: false,
 				fill: {
@@ -115,7 +114,7 @@ class D3Funnel {
 		this.hoverEffects = settings.hoverEffects;
 		this.dynamicHeight = settings.block.dynamicHeight;
 		this.minHeight = settings.block.minHeight;
-		this.animation = settings.animation;
+		this.animation = settings.chart.animate;
 
 		// Support for events
 		this.onBlockClick = settings.events.click.block;
