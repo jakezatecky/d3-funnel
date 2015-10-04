@@ -3,6 +3,40 @@
 
 class D3Funnel {
 
+	static DEFAULTS = {
+		chart: {
+			width: 350,
+			height: 400,
+			bottomWidth: 1 / 3,
+			bottomPinch: 0,
+			inverted: false,
+			animate: false,
+			curve: {
+				enabled: false,
+				height: 20,
+			},
+		},
+		block: {
+			dynamicHeight: false,
+			fill: {
+				scale: d3.scale.category10(),
+				type: 'solid',
+			},
+			minHeight: false,
+			highlight: false,
+		},
+		label: {
+			fontSize: '14px',
+			fill: '#fff',
+			format: '{l}: {f}',
+		},
+		events: {
+			click: {
+				block: null,
+			},
+		},
+	};
+
 	/**
 	 * @param {string} selector A selector for the container element.
 	 *
@@ -10,41 +44,6 @@ class D3Funnel {
 	 */
 	constructor(selector) {
 		this.selector = selector;
-
-		// Default configuration values
-		this.defaults = {
-			chart: {
-				width: 350,
-				height: 400,
-				bottomWidth: 1 / 3,
-				bottomPinch: 0,
-				inverted: false,
-				animate: false,
-				curve: {
-					enabled: false,
-					height: 20,
-				},
-			},
-			block: {
-				dynamicHeight: false,
-				fill: {
-					scale: d3.scale.category10(),
-					type: 'solid',
-				},
-				minHeight: false,
-				highlight: false,
-			},
-			label: {
-				fontSize: '14px',
-				fill: '#fff',
-				format: '{l}: {f}',
-			},
-			events: {
-				click: {
-					block: null,
-				},
-			},
-		};
 
 		this.colorizer = new Colorizer();
 
@@ -155,7 +154,7 @@ class D3Funnel {
 	_getSettings(options) {
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
-		let settings = Utils.extend({}, this.defaults);
+		let settings = Utils.extend({}, D3Funnel.DEFAULTS);
 		settings.chart.width  = parseInt(d3.select(this.selector).style('width'), 10);
 		settings.chart.height = parseInt(d3.select(this.selector).style('height'), 10);
 
@@ -165,10 +164,10 @@ class D3Funnel {
 		// In the case that the width or height is not valid, set
 		// the width/height as its default hard-coded value
 		if (settings.chart.width <= 0) {
-			settings.chart.width = this.defaults.chart.width;
+			settings.chart.width = D3Funnel.DEFAULTS.chart.width;
 		}
 		if (settings.chart.height <= 0) {
-			settings.chart.height = this.defaults.chart.height;
+			settings.chart.height = D3Funnel.DEFAULTS.chart.height;
 		}
 
 		return settings;
