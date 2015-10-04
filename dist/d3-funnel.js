@@ -9,7 +9,7 @@
   }
 }(this, function(d3) {
 
-/* global d3, LabelFormatter, Navigator, Utils */
+/* global d3, Colorizer, LabelFormatter, Navigator, Utils */
 /* exported D3Funnel */
 
 'use strict';
@@ -19,46 +19,64 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var D3Funnel = (function () {
+	_createClass(D3Funnel, null, [{
+		key: 'defaults',
+		value: {
+			chart: {
+				width: 350,
+				height: 400,
+				bottomWidth: 1 / 3,
+				bottomPinch: 0,
+				inverted: false,
+				animate: false,
+				curve: {
+					enabled: false,
+					height: 20
+				}
+			},
+			block: {
+				dynamicHeight: false,
+				fill: {
+					scale: d3.scale.category10().domain(d3.range(0, 10)),
+					type: 'solid'
+				},
+				minHeight: false,
+				highlight: false
+			},
+			label: {
+				fontSize: '14px',
+				fill: '#fff',
+				format: '{l}: {f}'
+			},
+			events: {
+				click: {
+					block: null
+				}
+			}
+		},
 
-	/**
-  * @param {string} selector A selector for the container element.
-  *
-  * @return {void}
-  */
+		/**
+   * @param {string} selector A selector for the container element.
+   *
+   * @return {void}
+   */
+		enumerable: true
+	}]);
 
 	function D3Funnel(selector) {
 		_classCallCheck(this, D3Funnel);
 
 		this.selector = selector;
 
-		// Default configuration values
-		this.defaults = {
-			width: 350,
-			height: 400,
-			bottomWidth: 1 / 3,
-			bottomPinch: 0,
-			isCurved: false,
-			curveHeight: 20,
-			fillType: 'solid',
-			isInverted: false,
-			hoverEffects: false,
-			dynamicArea: false,
-			minHeight: false,
-			animation: false,
-			label: {
-				fontSize: '14px',
-				fill: '#fff',
-				format: '{l}: {f}'
-			},
-			onItemClick: null
-		};
+		this.colorizer = new Colorizer();
 
 		this.labelFormatter = new LabelFormatter();
 
 		this.navigator = new Navigator();
 	}
 
-	/* exported LabelFormatter */
+	/* exported Colorizer */
+	/* jshint bitwise: false */
 
 	/**
   * Remove the funnel and its events from the DOM.
@@ -110,27 +128,34 @@ var D3Funnel = (function () {
 		value: function _initialize(data, options) {
 			this._validateData(data);
 
-			this._setData(data);
-
 			var settings = this._getSettings(options);
 
 			// Set labels
 			this.label = settings.label;
 			this.labelFormatter.setFormat(this.label.format);
 
+			// Set color scales
+			this.colorizer.setLabelFill(settings.label.fill);
+			this.colorizer.setScale(settings.block.fill.scale);
+
 			// Initialize funnel chart settings
-			this.width = settings.width;
-			this.height = settings.height;
-			this.bottomWidth = settings.width * settings.bottomWidth;
-			this.bottomPinch = settings.bottomPinch;
-			this.isCurved = settings.isCurved;
-			this.curveHeight = settings.curveHeight;
-			this.fillType = settings.fillType;
-			this.isInverted = settings.isInverted;
-			this.hoverEffects = settings.hoverEffects;
-			this.dynamicArea = settings.dynamicArea;
-			this.minHeight = settings.minHeight;
-			this.animation = settings.animation;
+			this.width = settings.chart.width;
+			this.height = settings.chart.height;
+			this.bottomWidth = settings.chart.width * settings.chart.bottomWidth;
+			this.bottomPinch = settings.chart.bottomPinch;
+			this.isInverted = settings.chart.inverted;
+			this.isCurved = settings.chart.curve.enabled;
+			this.curveHeight = settings.chart.curve.height;
+			this.fillType = settings.block.fill.type;
+			this.hoverEffects = settings.block.highlight;
+			this.dynamicHeight = settings.block.dynamicHeight;
+			this.minHeight = settings.block.minHeight;
+			this.animation = settings.chart.animate;
+
+			// Support for events
+			this.onBlockClick = settings.events.click.block;
+
+			this._setBlocks(data);
 
 			// Calculate the bottom left x position
 			this.bottomLeftX = (this.width - this.bottomWidth) / 2;
@@ -140,9 +165,6 @@ var D3Funnel = (function () {
 
 			// Change in y direction
 			this.dy = this._getDy();
-
-			// Support for events
-			this.onItemClick = settings.onItemClick;
 		}
 
 		/**
@@ -159,40 +181,6 @@ var D3Funnel = (function () {
 		}
 
 		/**
-   * @param {Array} data
-   *
-   * @return void
-   */
-	}, {
-		key: '_setData',
-		value: function _setData(data) {
-			this.data = data;
-
-			this._setColors();
-		}
-
-		/**
-   * Set the colors for each block.
-   *
-   * @return {void}
-   */
-	}, {
-		key: '_setColors',
-		value: function _setColors() {
-			var _this = this;
-
-			var colorScale = d3.scale.category10();
-			var hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-
-			// Add a color for for each block without one
-			this.data.forEach(function (block, index) {
-				if (block.length < 3 || !hexExpression.test(block[2])) {
-					_this.data[index][2] = colorScale(index);
-				}
-			});
-		}
-
-		/**
    * @param {Object} options
    *
    * @returns {Object}
@@ -202,23 +190,113 @@ var D3Funnel = (function () {
 		value: function _getSettings(options) {
 			// Prepare the configuration settings based on the defaults
 			// Set the default width and height based on the container
-			var settings = Utils.extend({}, this.defaults);
-			settings.width = parseInt(d3.select(this.selector).style('width'), 10);
-			settings.height = parseInt(d3.select(this.selector).style('height'), 10);
+			var settings = Utils.extend({}, D3Funnel.defaults);
+			settings.chart.width = parseInt(d3.select(this.selector).style('width'), 10);
+			settings.chart.height = parseInt(d3.select(this.selector).style('height'), 10);
 
 			// Overwrite default settings with user options
 			settings = Utils.extend(settings, options);
 
 			// In the case that the width or height is not valid, set
 			// the width/height as its default hard-coded value
-			if (settings.width <= 0) {
-				settings.width = this.defaults.width;
+			if (settings.chart.width <= 0) {
+				settings.chart.width = D3Funnel.defaults.chart.width;
 			}
-			if (settings.height <= 0) {
-				settings.height = this.defaults.height;
+			if (settings.chart.height <= 0) {
+				settings.chart.height = D3Funnel.defaults.chart.height;
 			}
 
 			return settings;
+		}
+
+		/**
+   * Register the raw data into a standard block format and pre-calculate
+   * some values.
+   *
+   * @param {Array} data
+   *
+   * @return void
+   */
+	}, {
+		key: '_setBlocks',
+		value: function _setBlocks(data) {
+			var totalCount = this._getTotalCount(data);
+
+			this.blocks = this._standardizeData(data, totalCount);
+		}
+
+		/**
+   * Return the total count of all blocks.
+   *
+   * @return {Number}
+   */
+	}, {
+		key: '_getTotalCount',
+		value: function _getTotalCount(data) {
+			var _this = this;
+
+			var total = 0;
+
+			data.forEach(function (block) {
+				total += _this._getRawBlockCount(block);
+			});
+
+			return total;
+		}
+
+		/**
+   * Convert the raw data into a standardized format.
+   *
+   * @param {Array}  data
+   * @param {Number} totalCount
+   *
+   * @return {Array}
+   */
+	}, {
+		key: '_standardizeData',
+		value: function _standardizeData(data, totalCount) {
+			var _this2 = this;
+
+			var standardized = [];
+
+			var count = undefined;
+			var ratio = undefined;
+			var label = undefined;
+
+			data.forEach(function (block, index) {
+				count = _this2._getRawBlockCount(block);
+				ratio = count / totalCount;
+				label = block[0];
+
+				standardized.push({
+					index: index,
+					value: count,
+					ratio: ratio,
+					height: _this2.height * ratio,
+					formatted: _this2.labelFormatter.format(label, count),
+					fill: _this2.colorizer.getBlockFill(block, index),
+					label: {
+						raw: label,
+						formatted: _this2.labelFormatter.format(label, count),
+						color: _this2.colorizer.getLabelFill(block, index)
+					}
+				});
+			});
+
+			return standardized;
+		}
+
+		/**
+   * Given a raw data block, return its count.
+   *
+   * @param {Array} block
+   *
+   * @return {Number}
+   */
+	}, {
+		key: '_getRawBlockCount',
+		value: function _getRawBlockCount(block) {
+			return Array.isArray(block[1]) ? block[1][0] : block[1];
 		}
 
 		/**
@@ -229,10 +307,10 @@ var D3Funnel = (function () {
 		value: function _getDx() {
 			// Will be sharper if there is a pinch
 			if (this.bottomPinch > 0) {
-				return this.bottomLeftX / (this.data.length - this.bottomPinch);
+				return this.bottomLeftX / (this.blocks.length - this.bottomPinch);
 			}
 
-			return this.bottomLeftX / this.data.length;
+			return this.bottomLeftX / this.blocks.length;
 		}
 
 		/**
@@ -243,10 +321,10 @@ var D3Funnel = (function () {
 		value: function _getDy() {
 			// Curved chart needs reserved pixels to account for curvature
 			if (this.isCurved) {
-				return (this.height - this.curveHeight) / this.data.length;
+				return (this.height - this.curveHeight) / this.blocks.length;
 			}
 
-			return this.height / this.data.length;
+			return this.height / this.blocks.length;
 		}
 
 		/**
@@ -285,7 +363,7 @@ var D3Funnel = (function () {
 	}, {
 		key: '_makePaths',
 		value: function _makePaths() {
-			var _this2 = this;
+			var _this3 = this;
 
 			var paths = [];
 
@@ -316,69 +394,94 @@ var D3Funnel = (function () {
 				prevHeight = 10;
 			}
 
-			var topBase = this.width;
-			var bottomBase = 0;
-
-			var totalArea = this.height * (this.width + this.bottomWidth) / 2;
-			var slope = 2 * this.height / (this.width - this.bottomWidth);
+			var totalHeight = this.height;
 
 			// This is greedy in that the block will have a guaranteed height
 			// and the remaining is shared among the ratio, instead of being
 			// shared according to the remaining minus the guaranteed
 			if (this.minHeight !== false) {
-				totalArea = (this.height - this.minHeight * this.data.length) * (this.width + this.bottomWidth) / 2;
+				totalHeight = this.height - this.minHeight * this.blocks.length;
 			}
 
-			var totalCount = 0;
-			var count = 0;
+			var slopeHeight = this.height;
 
-			// Harvest total count
-			this.data.forEach(function (block) {
-				totalCount += Array.isArray(block[1]) ? block[1][0] : block[1];
+			// Correct slope height if there are blocks being pinched (and thus
+			// requiring a sharper curve)
+			this.blocks.forEach(function (block, i) {
+				if (_this3.bottomPinch > 0) {
+					if (_this3.isInverted) {
+						if (i < _this3.bottomPinch) {
+							slopeHeight -= block.height;
+						}
+					} else if (i >= _this3.blocks.length - _this3.bottomPinch) {
+						slopeHeight -= block.height;
+					}
+				}
 			});
+
+			// The slope will determine the where the x points on each block
+			// iteration
+			var slope = 2 * slopeHeight / (this.width - this.bottomWidth);
 
 			// Create the path definition for each funnel block
 			// Remember to loop back to the beginning point for a closed path
-			this.data.forEach(function (block, i) {
-				count = Array.isArray(block[1]) ? block[0] : block[1];
+			this.blocks.forEach(function (block, i) {
+				// Make heights proportional to block weight
+				if (_this3.dynamicHeight) {
+					// Slice off the height proportional to this block
+					dy = totalHeight * block.ratio;
 
-				// Calculate dynamic shapes based on area
-				if (_this2.dynamicArea) {
-					var ratio = count / totalCount;
-					var area = ratio * totalArea;
-
-					if (_this2.minHeight !== false) {
-						area += _this2.minHeight * (_this2.width + _this2.bottomWidth) / 2;
+					// Add greedy minimum height
+					if (_this3.minHeight !== false) {
+						dy += _this3.minHeight;
 					}
 
-					bottomBase = Math.sqrt((slope * topBase * topBase - 4 * area) / slope);
-
-					// Prevent bottm points from becomming NaN
-					if (_this2.bottomWidth === 0 && i === _this2.data.length - 1) {
-						bottomBase = 0;
+					// Account for any curvature
+					if (_this3.isCurved) {
+						dy = dy - _this3.curveHeight / _this3.blocks.length;
 					}
 
-					// Prevent NaN slope
-					if (_this2.bottomWidth === _this2.width) {
-						bottomBase = topBase;
+					// Given: y = mx + b
+					// Given: b = 0 (when funnel), b = this.height (when pyramid)
+					// For funnel, x_i = y_i / slope
+					nextLeftX = (prevHeight + dy) / slope;
+
+					// For pyramid, x_i = y_i - this.height / -slope
+					if (_this3.isInverted) {
+						nextLeftX = (prevHeight + dy - _this3.height) / (-1 * slope);
 					}
 
-					dx = topBase / 2 - bottomBase / 2;
-					dy = area * 2 / (topBase + bottomBase);
+					// If bottomWidth is 0, adjust last x position (to circumvent
+					// errors associated with rounding)
+					if (_this3.bottomWidth === 0 && i === _this3.blocks.length - 1) {
+						// For funnel, last position is the center
+						nextLeftX = _this3.width / 2;
 
-					if (_this2.isCurved) {
-						dy = dy - _this2.curveHeight / _this2.data.length;
+						// For pyramid, last position is the origin
+						if (_this3.isInverted) {
+							nextLeftX = 0;
+						}
 					}
 
-					topBase = bottomBase;
+					// If bottomWidth is same as width, stop x velocity
+					if (_this3.bottomWidth === _this3.width) {
+						nextLeftX = prevLeftX;
+					}
+
+					// Calculate the shift necessary for both x points
+					dx = nextLeftX - prevLeftX;
+
+					if (_this3.isInverted) {
+						dx = prevLeftX - nextLeftX;
+					}
 				}
 
 				// Stop velocity for pinched blocks
-				if (_this2.bottomPinch > 0) {
+				if (_this3.bottomPinch > 0) {
 					// Check if we've reached the bottom of the pinch
 					// If so, stop changing on x
-					if (!_this2.isInverted) {
-						if (i >= _this2.data.length - _this2.bottomPinch) {
+					if (!_this3.isInverted) {
+						if (i >= _this3.blocks.length - _this3.bottomPinch) {
 							dx = 0;
 						}
 						// Pinch at the first blocks relating to the bottom pinch
@@ -386,13 +489,13 @@ var D3Funnel = (function () {
 					} else {
 							// Revert velocity back to the initial if we are using
 							// static area's (prevents zero velocity if isInverted
-							// and bottomPinch are non trivial and dynamicArea is
+							// and bottomPinch are non trivial and dynamicHeight is
 							// false)
-							if (!_this2.dynamicArea) {
-								dx = _this2.dx;
+							if (!_this3.dynamicHeight) {
+								dx = _this3.dx;
 							}
 
-							dx = i < _this2.bottomPinch ? 0 : dx;
+							dx = i < _this3.bottomPinch ? 0 : dx;
 						}
 				}
 
@@ -402,20 +505,20 @@ var D3Funnel = (function () {
 				nextHeight = prevHeight + dy;
 
 				// Expand outward if inverted
-				if (_this2.isInverted) {
+				if (_this3.isInverted) {
 					nextLeftX = prevLeftX - dx;
 					nextRightX = prevRightX + dx;
 				}
 
 				// Plot curved lines
-				if (_this2.isCurved) {
+				if (_this3.isCurved) {
 					paths.push([
 					// Top Bezier curve
-					[prevLeftX, prevHeight, 'M'], [middle, prevHeight + (_this2.curveHeight - 10), 'Q'], [prevRightX, prevHeight, ''],
+					[prevLeftX, prevHeight, 'M'], [middle, prevHeight + (_this3.curveHeight - 10), 'Q'], [prevRightX, prevHeight, ''],
 					// Right line
 					[nextRightX, nextHeight, 'L'],
 					// Bottom Bezier curve
-					[nextRightX, nextHeight, 'M'], [middle, nextHeight + _this2.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
+					[nextRightX, nextHeight, 'M'], [middle, nextHeight + _this3.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
 					// Left line
 					[prevLeftX, prevHeight, 'L']]);
 					// Plot straight lines
@@ -455,9 +558,9 @@ var D3Funnel = (function () {
 			var defs = svg.append('defs');
 
 			// Create a gradient for each block
-			this.data.forEach(function (block, index) {
-				var color = block[2];
-				var shade = Utils.shadeColor(color, -0.25);
+			this.blocks.forEach(function (block, index) {
+				var color = block.fill;
+				var shade = Colorizer.shade(color, -0.25);
 
 				// Create linear gradient
 				var gradient = defs.append('linearGradient').attr({
@@ -504,7 +607,7 @@ var D3Funnel = (function () {
 			var path = this.navigator.plot([['M', leftX, paths[0][1]], ['Q', centerX, topCurve], [' ', rightX, paths[2][1]], ['M', rightX, 10], ['Q', centerX, 0], [' ', leftX, 10]]);
 
 			// Draw top oval
-			svg.append('path').attr('fill', Utils.shadeColor(this.data[0][2], -0.4)).attr('d', path);
+			svg.append('path').attr('fill', Colorizer.shade(this.blocks[0].fill, -0.4)).attr('d', path);
 		}
 
 		/**
@@ -517,9 +620,9 @@ var D3Funnel = (function () {
 	}, {
 		key: '_drawBlock',
 		value: function _drawBlock(index) {
-			var _this3 = this;
+			var _this4 = this;
 
-			if (index === this.data.length) {
+			if (index === this.blocks.length) {
 				return;
 			}
 
@@ -528,15 +631,15 @@ var D3Funnel = (function () {
 
 			// Fetch path element
 			var path = this._getBlockPath(group, index);
-			path.data(this._getBlockData(index));
+			path.data(this._getD3Data(index));
 
 			// Add animation components
 			if (this.animation !== false) {
-				path.transition().duration(this.animation).ease('linear').attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
-					_this3._drawBlock(index + 1);
+				path.transition().duration(this.animation).ease('linear').attr('fill', this._getFillColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
+					_this4._drawBlock(index + 1);
 				});
 			} else {
-				path.attr('fill', this._getColor(index)).attr('d', this._getPathDefinition(index));
+				path.attr('fill', this._getFillColor(index)).attr('d', this._getPathDefinition(index));
 				this._drawBlock(index + 1);
 			}
 
@@ -546,8 +649,8 @@ var D3Funnel = (function () {
 			}
 
 			// ItemClick event
-			if (this.onItemClick !== null) {
-				path.on('click', this.onItemClick);
+			if (this.onBlockClick !== null) {
+				path.on('click', this.onBlockClick);
 			}
 
 			this._addBlockLabel(group, index);
@@ -596,52 +699,44 @@ var D3Funnel = (function () {
 			}
 
 			// Use previous fill color, if available
-			if (this.fillType === 'solid') {
-				beforeFill = index > 0 ? this._getColor(index - 1) : this._getColor(index);
-				// Use current background if gradient (gradients do not transition)
+			if (this.fillType === 'solid' && index > 0) {
+				beforeFill = this._getFillColor(index - 1);
+				// Otherwise use current background
 			} else {
-					beforeFill = this._getColor(index);
+					beforeFill = this._getFillColor(index);
 				}
 
 			path.attr('d', beforePath).attr('fill', beforeFill);
 		}
 
 		/**
+   * Return d3 formatted data for the given block.
+   *
    * @param {int} index
    *
    * @return {Array}
    */
 	}, {
-		key: '_getBlockData',
-		value: function _getBlockData(index) {
-			var label = this.data[index][0];
-			var value = this.data[index][1];
-
-			return [{
-				index: index,
-				label: label,
-				value: value,
-				formatted: this.labelFormatter.format(label, value),
-				baseColor: this.data[index][2],
-				fill: this._getColor(index)
-			}];
+		key: '_getD3Data',
+		value: function _getD3Data(index) {
+			return [this.blocks[index]];
 		}
 
 		/**
-   * Return the color for the given index.
+   * Return the block fill color for the given index.
    *
    * @param {int} index
    *
    * @return {string}
    */
 	}, {
-		key: '_getColor',
-		value: function _getColor(index) {
+		key: '_getFillColor',
+		value: function _getFillColor(index) {
 			if (this.fillType === 'solid') {
-				return this.data[index][2];
-			} else {
-				return 'url(#gradient-' + index + ')';
+				return this.blocks[index].fill;
 			}
+
+			return 'url(#gradient-' + index + ')';
 		}
 
 		/**
@@ -669,7 +764,7 @@ var D3Funnel = (function () {
 	}, {
 		key: '_onMouseOver',
 		value: function _onMouseOver(data) {
-			d3.select(this).attr('fill', Utils.shadeColor(data.baseColor, -0.2));
+			d3.select(this).attr('fill', Colorizer.shade(data.fill, -0.2));
 		}
 
 		/**
@@ -694,13 +789,13 @@ var D3Funnel = (function () {
 		value: function _addBlockLabel(group, index) {
 			var paths = this.blockPaths[index];
 
-			var label = this._getBlockData(index)[0].formatted;
-			var fill = this.data[index][3] || this.label.fill;
+			var text = this.blocks[index].label.formatted;
+			var fill = this.blocks[index].label.color;
 
 			var x = this.width / 2; // Center the text
 			var y = this._getTextY(paths);
 
-			group.append('text').text(label).attr({
+			group.append('text').text(text).attr({
 				'x': x,
 				'y': y,
 				'text-anchor': 'middle',
@@ -722,7 +817,7 @@ var D3Funnel = (function () {
 		key: '_getTextY',
 		value: function _getTextY(paths) {
 			if (this.isCurved) {
-				return (paths[2][1] + paths[3][1]) / 2 + this.curveHeight / this.data.length;
+				return (paths[2][1] + paths[3][1]) / 2 + this.curveHeight / this.blocks.length;
 			}
 
 			return (paths[1][1] + paths[2][1]) / 2;
@@ -730,6 +825,130 @@ var D3Funnel = (function () {
 	}]);
 
 	return D3Funnel;
+})();
+
+var Colorizer = (function () {
+	function Colorizer() {
+		_classCallCheck(this, Colorizer);
+
+		this.hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+		this.labelFill = null;
+
+		this.scale = null;
+	}
+
+	/* exported LabelFormatter */
+
+	/**
+  * @param {string} fill
+  *
+  * @return {void}
+  */
+
+	_createClass(Colorizer, [{
+		key: 'setLabelFill',
+		value: function setLabelFill(fill) {
+			this.labelFill = fill;
+		}
+
+		/**
+   * @param {function|Array} scale
+   *
+   * @return {void}
+   */
+	}, {
+		key: 'setScale',
+		value: function setScale(scale) {
+			this.scale = scale;
+		}
+
+		/**
+   * Given a raw data block, return an appropriate color for the block.
+   *
+   * @param {Array}  block
+   * @param {Number} index
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'getBlockFill',
+		value: function getBlockFill(block, index) {
+			// Use the block's color, if set and valid
+			if (block.length > 2 && this.hexExpression.test(block[2])) {
+				return block[2];
+			}
+
+			if (Array.isArray(this.scale)) {
+				return this.scale[index];
+			}
+
+			return this.scale(index);
+		}
+
+		/**
+   * Given a raw data block, return an appropriate label color.
+   *
+   * @param {Array} block
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'getLabelFill',
+		value: function getLabelFill(block) {
+			// Use the label's color, if set and valid
+			if (block.length > 3 && this.hexExpression.test(block[3])) {
+				return block[3];
+			}
+
+			return this.labelFill;
+		}
+
+		/**
+   * Shade a color to the given percentage.
+   *
+   * @param {string} color A hex color.
+   * @param {number} shade The shade adjustment. Can be positive or negative.
+   *
+   * @return {string}
+   */
+	}], [{
+		key: 'shade',
+		value: function shade(color, _shade) {
+			var hex = color.slice(1);
+
+			if (hex.length === 3) {
+				hex = Colorizer.expandHex(hex);
+			}
+
+			var f = parseInt(hex, 16);
+			var t = _shade < 0 ? 0 : 255;
+			var p = _shade < 0 ? _shade * -1 : _shade;
+
+			var R = f >> 16;
+			var G = f >> 8 & 0x00FF;
+			var B = f & 0x0000FF;
+
+			var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
+
+			return '#' + converted.toString(16).slice(1);
+		}
+
+		/**
+   * Expands a three character hex code to six characters.
+   *
+   * @param {string} hex
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'expandHex',
+		value: function expandHex(hex) {
+			return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+		}
+	}]);
+
+	return Colorizer;
 })();
 
 var LabelFormatter = (function () {
@@ -782,9 +1001,9 @@ var LabelFormatter = (function () {
 			// Otherwise, attempt to use the format function
 			if (Array.isArray(value)) {
 				return this.formatter(label, value[0], value[1]);
-			} else {
-				return this.formatter(label, value, null);
 			}
+
+			return this.formatter(label, value, null);
 		}
 
 		/**
@@ -805,13 +1024,15 @@ var LabelFormatter = (function () {
 		value: function stringFormatter(label, value) {
 			var fValue = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
+			var formatted = fValue;
+
 			// Attempt to use supplied formatted value
 			// Otherwise, use the default
 			if (fValue === null) {
-				fValue = this.getDefaultFormattedValue(value);
+				formatted = this.getDefaultFormattedValue(value);
 			}
 
-			return this.expression.split('{l}').join(label).split('{v}').join(value).split('{f}').join(fValue);
+			return this.expression.split('{l}').join(label).split('{v}').join(value).split('{f}').join(formatted);
 		}
 
 		/**
@@ -835,7 +1056,6 @@ var Navigator = (function () {
 	}
 
 	/* exported Utils */
-	/* jshint bitwise: false */
 
 	/**
   * Simple utility class.
@@ -886,8 +1106,12 @@ var Utils = (function () {
 
 			for (prop in b) {
 				if (b.hasOwnProperty(prop)) {
-					if (typeof a[prop] === 'object' && typeof b[prop] === 'object') {
-						a[prop] = Utils.extend(a[prop], b[prop]);
+					if (typeof b[prop] === 'object' && !Array.isArray(b[prop])) {
+						if (typeof a[prop] === 'object' && !Array.isArray(a[prop])) {
+							a[prop] = Utils.extend(a[prop], b[prop]);
+						} else {
+							a[prop] = Utils.extend({}, b[prop]);
+						}
 					} else {
 						a[prop] = b[prop];
 					}
@@ -895,49 +1119,6 @@ var Utils = (function () {
 			}
 
 			return a;
-		}
-
-		/**
-   * Shade a color to the given percentage.
-   *
-   * @param {string} color A hex color.
-   * @param {number} shade The shade adjustment. Can be positive or negative.
-   *
-   * @return {string}
-   */
-	}, {
-		key: 'shadeColor',
-		value: function shadeColor(color, shade) {
-			var hex = color.slice(1);
-
-			if (hex.length === 3) {
-				hex = Utils.expandHex(hex);
-			}
-
-			var f = parseInt(hex, 16);
-			var t = shade < 0 ? 0 : 255;
-			var p = shade < 0 ? shade * -1 : shade;
-
-			var R = f >> 16;
-			var G = f >> 8 & 0x00FF;
-			var B = f & 0x0000FF;
-
-			var converted = 0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B);
-
-			return '#' + converted.toString(16).slice(1);
-		}
-
-		/**
-   * Expands a three character hex code to six characters.
-   *
-   * @param {string} hex
-   *
-   * @return {string}
-   */
-	}, {
-		key: 'expandHex',
-		value: function expandHex(hex) {
-			return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 		}
 	}]);
 

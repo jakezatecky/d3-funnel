@@ -1,4 +1,4 @@
-## v0.7.0 (TBA)
+## v0.7.0 (October 4, 2015)
 
 D3Funnel v0.7 is a **backwards-incompatible** release that resolves some
 outstanding bugs, standardizes several option names and formats, and introduces
