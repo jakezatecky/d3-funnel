@@ -117,20 +117,24 @@ describe('D3Funnel', function () {
 	});
 
 	describe('options', function () {
-		describe('width', function () {
+		describe('chart.width', function () {
 			it('should set the funnel\'s width to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
-					width: 200,
+					chart: {
+						width: 200,
+					},
 				});
 
 				assert.equal(200, getSvg().node().getBBox().width);
 			});
 		});
 
-		describe('height', function () {
+		describe('chart.height', function () {
 			it('should set the funnel\'s height to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
-					height: 200,
+					chart: {
+						height: 200,
+					},
 				});
 
 				assert.equal(200, getSvg().node().getBBox().height);
@@ -187,7 +191,9 @@ describe('D3Funnel', function () {
 					['A', 1],
 					['B', 2],
 				], {
-					height: 300,
+					chart: {
+						height: 300,
+					},
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
@@ -203,7 +209,9 @@ describe('D3Funnel', function () {
 					['A', 1],
 					['B', 2],
 				], {
-					height: 300,
+					chart: {
+						height: 300,
+					},
 					block: {
 						dynamicHeight: true,
 					},
@@ -225,11 +233,13 @@ describe('D3Funnel', function () {
 					['C', 20],
 					['D', 15],
 				], {
-					height: 300,
+					chart: {
+						height: 300,
+						bottomWidth: 0,
+					},
 					block: {
 						dynamicHeight: true,
 					},
-					bottomWidth: 0,
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
@@ -244,11 +254,13 @@ describe('D3Funnel', function () {
 					['A', 1],
 					['B', 2],
 				], {
-					height: 300,
+					chart: {
+						height: 300,
+						bottomWidth: 1,
+					},
 					block: {
 						dynamicHeight: true,
 					},
-					bottomWidth: 1,
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
@@ -293,7 +305,9 @@ describe('D3Funnel', function () {
 					['A', 299],
 					['B', 1],
 				], {
-					height: 300,
+					chart: {
+						height: 300,
+					},
 					block: {
 						dynamicHeight: true,
 						minHeight: 10,
@@ -313,7 +327,9 @@ describe('D3Funnel', function () {
 					['A', 299],
 					['B', 1],
 				], {
-					height: 300,
+					chart: {
+						height: 300,
+					},
 					block: {
 						dynamicHeight: true,
 						minHeight: 10,

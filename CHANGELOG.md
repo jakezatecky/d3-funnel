@@ -27,6 +27,10 @@ below for the new equivalent option:
 
 | Old option    | New option            | Notes           |
 | ------------- | --------------------- | --------------- |
+| `width`       | `chart.width`         |                 |
+| `height`      | `chart.height`        |                 |
+| `bottomWidth` | `chart.bottomWidth`   |                 |
+| `bottomPinch` | `chart.bottomPinch`   |                 |
 | `dynamicArea` | `block.dynamicHeight` | See change #29. |
 | `fillType`    | `block.fill.type`     |                 |
 | `minHeight`   | `block.minHeight`     |                 |

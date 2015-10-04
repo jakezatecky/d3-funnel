@@ -91,7 +91,9 @@
 						],
 						pinch: [
 							data.normal, {
-								bottomPinch: 1,
+								chart: {
+									bottomPinch: 1,
+								},
 							},
 						],
 						gradient: [
@@ -115,7 +117,9 @@
 						],
 						dynamic: [
 							data.normal, {
-								bottomWidth: 1 / 2,
+								chart: {
+									bottomWidth: 1 / 2,
+								},
 								block: {
 									dynamicHeight: true,
 								},
@@ -157,9 +161,11 @@
 						labelsColor: [data.labelsColor, {}],
 						works: [
 							data.normal, {
+								chart: {
+									bottomPinch: 2,
+									bottomWidth: 1 / 2,
+								},
 								isCurved: true,
-								bottomPinch: 2,
-								bottomWidth: 1 / 2,
 								hoverEffects: true,
 								block : {
 									dynamicHeight: true,

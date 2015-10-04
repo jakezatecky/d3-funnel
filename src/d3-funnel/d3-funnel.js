@@ -13,10 +13,12 @@ class D3Funnel {
 
 		// Default configuration values
 		this.defaults = {
-			width: 350,
-			height: 400,
-			bottomWidth: 1 / 3,
-			bottomPinch: 0,
+			chart: {
+				width: 350,
+				height: 400,
+				bottomWidth: 1 / 3,
+				bottomPinch: 0,
+			},
 			isCurved: false,
 			curveHeight: 20,
 			isInverted: false,
@@ -101,10 +103,10 @@ class D3Funnel {
 		this.colorizer.setScale(settings.block.fill.scale);
 
 		// Initialize funnel chart settings
-		this.width = settings.width;
-		this.height = settings.height;
-		this.bottomWidth = settings.width * settings.bottomWidth;
-		this.bottomPinch = settings.bottomPinch;
+		this.width = settings.chart.width;
+		this.height = settings.chart.height;
+		this.bottomWidth = settings.chart.width * settings.chart.bottomWidth;
+		this.bottomPinch = settings.chart.bottomPinch;
 		this.isCurved = settings.isCurved;
 		this.curveHeight = settings.curveHeight;
 		this.fillType = settings.block.fill.type;
