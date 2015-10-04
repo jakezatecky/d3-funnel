@@ -21,7 +21,7 @@ class Colorizer {
 	}
 
 	/**
-	 * @param {function} scale
+	 * @param {function|Array} scale
 	 *
 	 * @return {void}
 	 */
@@ -41,6 +41,10 @@ class Colorizer {
 		// Use the block's color, if set and valid
 		if (block.length > 2 && this.hexExpression.test(block[2])) {
 			return block[2];
+		}
+
+		if (Array.isArray(this.scale)) {
+			return this.scale[index];
 		}
 
 		return this.scale(index);

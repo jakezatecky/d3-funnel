@@ -292,6 +292,50 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('block.fill.scale', function () {
+			it('should use a function\'s return value', function () {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					block: {
+						fill: {
+							scale: function (index) {
+								if (index === 0) {
+									return '#111';
+								}
+
+								return '#222';
+							},
+						},
+					},
+				});
+
+				paths = getSvg().selectAll('path')[0];
+
+				assert.equal('#111', d3.select(paths[0]).attr('fill'));
+				assert.equal('#222', d3.select(paths[1]).attr('fill'));
+			});
+
+			it('should use an array\'s return value', function () {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					block: {
+						fill: {
+							scale: ['#111', '#222'],
+						},
+					},
+				});
+
+				paths = getSvg().selectAll('path')[0];
+
+				assert.equal('#111', d3.select(paths[0]).attr('fill'));
+				assert.equal('#222', d3.select(paths[1]).attr('fill'));
+			});
+		});
+
 		describe('block.fill.type', function () {
 			it('should create gradients when set to \'gradient\'', function () {
 				getFunnel().draw(getBasicData(), {

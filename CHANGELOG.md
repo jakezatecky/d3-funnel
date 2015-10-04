@@ -15,6 +15,7 @@ available for a few months.
 
 ### New Features
 
+* [#9]: Block can now have their color scale specified in addition to data points
 * [#34]: Default options are now statically available and overridable
 
 ### Bug Fixes
