@@ -72,6 +72,31 @@ keys will be substituted by the string formatter:
 | `'{v}'` | The block's raw value.       |
 | `'{f}'` | The block's formatted value. |
 
+### Overriding Defaults
+
+You may wish to override the default chart options. For example, you may wish
+for every funnel to have proportional heights. To do this, simplify modify the
+`D3Funnel.defaults` property:
+
+``` javascript
+D3Funnel.defaults.block.dynamicHeight = true;
+```
+
+Should you wish to override multiple properties at a time, you may consider
+using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`:
+
+``` javascript
+D3Funnel.defaults = _.merge(D3Funnel.defaults, {
+	chart: {
+		dynamicHeight: true,
+		animate: 200,
+	},
+	label: {
+		format: '{l}: ${f}',
+	},
+});
+```
+
 ## API
 
 Additional methods beyond `draw()` are accessible after instantiating the chart:
@@ -112,3 +137,5 @@ MIT license.
 
 [d3]: http://d3js.org/
 [examples]: http://jakezatecky.github.io/d3-funnel/
+[jQuery-extend]: https://api.jquery.com/jquery.extend/
+[lodash-merge]: https://lodash.com/docs#merge

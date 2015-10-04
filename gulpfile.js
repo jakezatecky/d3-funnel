@@ -42,7 +42,9 @@ gulp.task('test-format', function () {
 gulp.task('compile', function () {
 	return gulp.src(src)
 		.pipe(concat('d3-funnel.js'))
-		.pipe(babel())
+		.pipe(babel({
+			stage: 0,
+		}))
 		.pipe(umd(umdOptions))
 		.pipe(gulp.dest('./compiled/'));
 });

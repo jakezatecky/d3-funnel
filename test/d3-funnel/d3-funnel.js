@@ -22,9 +22,13 @@ function getCommandHeight(command) {
 	return parseFloat(command.split(',')[1]);
 }
 
+var defaults = _.clone(D3Funnel.defaults, true);
+
 describe('D3Funnel', function () {
 	beforeEach(function (done) {
 		d3.select('#funnel').attr('style', null);
+
+		D3Funnel.defaults = _.clone(defaults, true);
 
 		done();
 	});
@@ -117,6 +121,16 @@ describe('D3Funnel', function () {
 
 				assert.equal(0, getSvg()[0].length);
 			});
+		});
+	});
+
+	describe('defaults', function () {
+		it('should affect all default options', function () {
+			D3Funnel.defaults.label.fill = '#777';
+
+			getFunnel().draw(getBasicData(), {});
+
+			assert.isTrue(d3.select('#funnel text').attr('fill').indexOf('#777') > -1);
 		});
 	});
 
@@ -402,7 +416,7 @@ describe('D3Funnel', function () {
 				getFunnel().draw(getBasicData(), {
 					label: {
 						format: '{l} {v} {f}',
-					}
+					},
 				});
 
 				// Node.js does not have localization, so toLocaleString() will

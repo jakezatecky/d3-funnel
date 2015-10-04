@@ -15,6 +15,8 @@ available for a few months.
 
 ### New Features
 
+* [#34]: Default options are now statically available and overridable
+
 ### Bug Fixes
 
 * [#25]: Fix issues with `isInverted` and `dynamicArea` producing odd pyramids

@@ -3,7 +3,7 @@
 
 class D3Funnel {
 
-	static DEFAULTS = {
+	static defaults = {
 		chart: {
 			width: 350,
 			height: 400,
@@ -154,7 +154,7 @@ class D3Funnel {
 	_getSettings(options) {
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
-		let settings = Utils.extend({}, D3Funnel.DEFAULTS);
+		let settings = Utils.extend({}, D3Funnel.defaults);
 		settings.chart.width  = parseInt(d3.select(this.selector).style('width'), 10);
 		settings.chart.height = parseInt(d3.select(this.selector).style('height'), 10);
 
@@ -164,10 +164,10 @@ class D3Funnel {
 		// In the case that the width or height is not valid, set
 		// the width/height as its default hard-coded value
 		if (settings.chart.width <= 0) {
-			settings.chart.width = D3Funnel.DEFAULTS.chart.width;
+			settings.chart.width = D3Funnel.defaults.chart.width;
 		}
 		if (settings.chart.height <= 0) {
-			settings.chart.height = D3Funnel.DEFAULTS.chart.height;
+			settings.chart.height = D3Funnel.defaults.chart.height;
 		}
 
 		return settings;
