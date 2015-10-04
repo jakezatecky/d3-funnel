@@ -101,13 +101,15 @@ using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`
 
 ``` javascript
 D3Funnel.defaults = _.merge(D3Funnel.defaults, {
-	chart: {
-		dynamicHeight: true,
-		animate: 200,
-	},
-	label: {
-		format: '{l}: ${f}',
-	},
+    block: {
+        dynamicHeight: true,
+        fill: {
+            type: 'gradient',
+        },
+    },
+    label: {
+        format: '{l}: ${f}',
+    },
 });
 ```
 
