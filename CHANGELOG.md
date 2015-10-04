@@ -1,7 +1,7 @@
 ## v0.7.0 (TBA)
 
-D3Funnel v0.7 is a **backwards-incompatible** release that resolves several
-outstanding bugs, standardizing several option names and formats, and introduces
+D3Funnel v0.7 is a **backwards-incompatible** release that resolves some
+outstanding bugs, standardizes several option names and formats, and introduces
 a few new features.
 
 No new features will be added to the v0.6 series, but minor patches will be
@@ -43,6 +43,8 @@ below for the new equivalent option:
 | `onItemClick`  | `events.click.block`  |                 |
 | `minHeight`    | `block.minHeight`     |                 |
 | `width`        | `chart.width`         |                 |
+
+In addition, please refer to change #29.
 
 ## v0.6.12 (September 25, 2015)
 
