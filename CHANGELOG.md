@@ -25,20 +25,21 @@ available for a few months.
 Several options have been renamed for standardization. Please refer to the table
 below for the new equivalent option:
 
-| Old option    | New option            | Notes           |
-| ------------- | --------------------- | --------------- |
-| `width`       | `chart.width`         |                 |
-| `height`      | `chart.height`        |                 |
-| `bottomWidth` | `chart.bottomWidth`   |                 |
-| `bottomPinch` | `chart.bottomPinch`   |                 |
-| `isInverted`  | `chart.inverted`      |                 |
-| `animation`   | `chart.animate`       |                 |
-| `isCurved`    | `chart.curve.enabled` |                 |
-| `curveHeight  | `chart.curve.height`  |                 |
-| `dynamicArea` | `block.dynamicHeight` | See change #29. |
-| `fillType`    | `block.fill.type`     |                 |
-| `minHeight`   | `block.minHeight`     |                 |
-| `onItemClick` | `events.click.block`  |                 |
+| Old option     | New option            | Notes           |
+| -------------- | --------------------- | --------------- |
+| `width`        | `chart.width`         |                 |
+| `height`       | `chart.height`        |                 |
+| `bottomWidth`  | `chart.bottomWidth`   |                 |
+| `bottomPinch`  | `chart.bottomPinch`   |                 |
+| `isInverted`   | `chart.inverted`      |                 |
+| `animation`    | `chart.animate`       |                 |
+| `isCurved`     | `chart.curve.enabled` |                 |
+| `curveHeight   | `chart.curve.height`  |                 |
+| `dynamicArea`  | `block.dynamicHeight` | See change #29. |
+| `fillType`     | `block.fill.type`     |                 |
+| `minHeight`    | `block.minHeight`     |                 |
+| `hoverEffects` | `block.hightlight`    |                 |
+| `onItemClick`  | `events.click.block`  |                 |
 
 ## v0.6.12 (September 25, 2015)
 

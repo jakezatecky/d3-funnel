@@ -118,7 +118,9 @@
 						],
 						hover: [
 							data.normal, {
-								hoverEffects: true,
+								block: {
+									highlight: true,
+								},
 							},
 						],
 						dynamic: [
@@ -177,12 +179,12 @@
 										enabled: true,
 									},
 								},
-								hoverEffects: true,
 								block : {
 									dynamicHeight: true,
 									fill: {
 										type: 'gradient',
 									},
+									highlight: true,
 								},
 								events: {
 									click: {

@@ -52,10 +52,10 @@ You must also create a container element and instantiate a new chart:
 | `chart.animate`       | The load animation speed in milliseconds.                                   | int/bool | `false`            |
 | `chart.curve.enabled` | Whether the funnel is curved.                                               | bool     | `false`            |
 | `chart.curve.height`  | The curvature amount.                                                       | int      | `20`               |
-| `hoverEffects`        | Whether the funnel has effects on hover.                                    | bool     | `false`            |
 | `block.dynamicHeight` | Whether the block heights are proportional to its weight.                   | bool     | `false`            |
 | `block.fill.type`     | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
 | `block.minHeight`     | The minimum pixel height of a block.                                        | int/bool | `false`            |
+| `block.highlight`     | Whether the blocks are highlighted on hover.                                | bool     | `false`            |
 | `label.fontSize`      | Any valid font size for the labels.                                         | string   | `'14px'`           |
 | `label.fill`          | Any valid hex color for the label color                                     | string   | `'#fff'`           |
 | `label.format`        | Either `function(label, value)` or a format string. See below.              | mixed    | `'{l}: {f}'`       |

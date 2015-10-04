@@ -25,7 +25,6 @@ class D3Funnel {
 					height: 20,
 				},
 			},
-			hoverEffects: false,
 			block: {
 				dynamicHeight: false,
 				fill: {
@@ -33,6 +32,7 @@ class D3Funnel {
 					type: 'solid',
 				},
 				minHeight: false,
+				highlight: false,
 			},
 			label: {
 				fontSize: '14px',
@@ -113,7 +113,7 @@ class D3Funnel {
 		this.isCurved = settings.chart.curve.enabled;
 		this.curveHeight = settings.chart.curve.height;
 		this.fillType = settings.block.fill.type;
-		this.hoverEffects = settings.hoverEffects;
+		this.hoverEffects = settings.block.highlight;
 		this.dynamicHeight = settings.block.dynamicHeight;
 		this.minHeight = settings.block.minHeight;
 		this.animation = settings.chart.animate;

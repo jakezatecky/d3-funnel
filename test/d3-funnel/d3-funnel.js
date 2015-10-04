@@ -173,7 +173,7 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('hoverEffects', function () {
+		describe('block.highlight', function () {
 			it('should change block color on hover', function () {
 				var event = document.createEvent('CustomEvent');
 				event.initCustomEvent('mouseover', false, false, null);
@@ -181,7 +181,9 @@ describe('D3Funnel', function () {
 				getFunnel().draw([
 					['A', 1, '#fff'],
 				], {
-					hoverEffects: true,
+					block: {
+						highlight: true,
+					},
 				});
 
 				d3.select('#funnel path').node().dispatchEvent(event);
