@@ -1,27 +1,29 @@
 /* global d3, assert, chai, D3Funnel */
 
+function getFunnel() {
+	return new D3Funnel('#funnel');
+}
+
+function getSvg() {
+	return d3.select('#funnel').selectAll('svg');
+}
+
+function getBasicData() {
+	return [['Node', 1000]];
+}
+
+function getPathHeight(path) {
+	var commands = path.attr('d').split(' ');
+
+	return getCommandHeight(commands[2]) - getCommandHeight(commands[0]);
+}
+
+function getCommandHeight(command) {
+	return parseFloat(command.split(',')[1]);
+}
+
 describe('D3Funnel', function () {
-	var getFunnel, getSvg, getBasicData, getPathHeight, getCommandHeight;
-
 	beforeEach(function (done) {
-		getFunnel = function () {
-			return new D3Funnel('#funnel');
-		};
-		getSvg = function () {
-			return d3.select('#funnel').selectAll('svg');
-		};
-		getBasicData = function () {
-			return [['Node', 1000]];
-		};
-		getPathHeight = function (path) {
-			var commands = path.attr('d').split(' ');
-
-			return getCommandHeight(commands[2]) - getCommandHeight(commands[0]);
-		};
-		getCommandHeight = function (command) {
-			return parseFloat(command.split(',')[1]);
-		};
-
 		done();
 	});
 
