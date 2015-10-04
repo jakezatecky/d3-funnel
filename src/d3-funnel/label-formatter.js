@@ -40,9 +40,9 @@ class LabelFormatter {
 		// Otherwise, attempt to use the format function
 		if (Array.isArray(value)) {
 			return this.formatter(label, value[0], value[1]);
-		} else {
-			return this.formatter(label, value, null);
 		}
+
+		return this.formatter(label, value, null);
 	}
 
 	/**
@@ -59,16 +59,18 @@ class LabelFormatter {
 	 * @return {string}
 	 */
 	stringFormatter(label, value, fValue = null) {
+		let formatted = fValue;
+
 		// Attempt to use supplied formatted value
 		// Otherwise, use the default
 		if (fValue === null) {
-			fValue = this.getDefaultFormattedValue(value);
+			formatted = this.getDefaultFormattedValue(value);
 		}
 
 		return this.expression
 			.split('{l}').join(label)
 			.split('{v}').join(value)
-			.split('{f}').join(fValue);
+			.split('{f}').join(formatted);
 	}
 
 	/**

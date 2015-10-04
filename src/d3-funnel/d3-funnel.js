@@ -155,7 +155,7 @@ class D3Funnel {
 		// Prepare the configuration settings based on the defaults
 		// Set the default width and height based on the container
 		let settings = Utils.extend({}, D3Funnel.defaults);
-		settings.chart.width  = parseInt(d3.select(this.selector).style('width'), 10);
+		settings.chart.width = parseInt(d3.select(this.selector).style('width'), 10);
 		settings.chart.height = parseInt(d3.select(this.selector).style('height'), 10);
 
 		// Overwrite default settings with user options
@@ -339,9 +339,6 @@ class D3Funnel {
 			prevHeight = 10;
 		}
 
-		let topBase = this.width;
-		let bottomBase = 0;
-
 		let totalHeight = this.height;
 
 		// This is greedy in that the block will have a guaranteed height
@@ -422,8 +419,6 @@ class D3Funnel {
 				if (this.isInverted) {
 					dx = prevLeftX - nextLeftX;
 				}
-
-				topBase = bottomBase;
 			}
 
 			// Stop velocity for pinched blocks
@@ -710,9 +705,9 @@ class D3Funnel {
 	_getFillColor(index) {
 		if (this.fillType === 'solid') {
 			return this.blocks[index].fill;
-		} else {
-			return 'url(#gradient-' + index + ')';
 		}
+
+		return 'url(#gradient-' + index + ')';
 	}
 
 	/**
