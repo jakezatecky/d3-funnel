@@ -1,3 +1,51 @@
+## v0.7.0 (TBA)
+
+D3Funnel v0.7 is a **backwards-incompatible** release that resolves some
+outstanding bugs, standardizes several option names and formats, and introduces
+a few new features.
+
+No new features will be added to the v0.6 series, but minor patches will be
+available for a few months.
+
+### Behavior Changes
+
+* [#29]: Dynamic block heights are no longer determined by their weighted area, but by their weighted height
+	* Heights determined by weighted area: http://jsfiddle.net/zq4L82kv/2/ (legacy v0.6.x)
+	* Heights determined by weighted height: http://jsfiddle.net/bawv6m0j/1/ (v0.7+)
+
+### New Features
+
+* [#9]: Block can now have their color scale specified in addition to data points
+* [#34]: Default options are now statically available and overridable
+
+### Bug Fixes
+
+* [#25]: Fix issues with `isInverted` and `dynamicArea` producing odd pyramids
+* [#32]: Fix issue where pinched blocks were not having the same width as `bottomWidth`
+
+### Upgrading from v0.6.x
+
+Several options have been renamed for standardization. Please refer to the table
+below for the new equivalent option:
+
+| Old option     | New option            | Notes           |
+| -------------- | --------------------- | --------------- |
+| `animation`    | `chart.animate`       |                 |
+| `bottomPinch`  | `chart.bottomPinch`   |                 |
+| `bottomWidth`  | `chart.bottomWidth`   |                 |
+| `curveHeight   | `chart.curve.height`  |                 |
+| `dynamicArea`  | `block.dynamicHeight` | See change #29. |
+| `fillType`     | `block.fill.type`     |                 |
+| `height`       | `chart.height`        |                 |
+| `hoverEffects` | `block.hightlight`    |                 |
+| `isCurved`     | `chart.curve.enabled` |                 |
+| `isInverted`   | `chart.inverted`      |                 |
+| `onItemClick`  | `events.click.block`  |                 |
+| `minHeight`    | `block.minHeight`     |                 |
+| `width`        | `chart.width`         |                 |
+
+In addition, please refer to change #29.
+
 ## v0.6.13 (October 2, 2015)
 
 ### Bug Fixes

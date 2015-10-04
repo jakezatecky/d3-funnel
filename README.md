@@ -55,24 +55,25 @@ funnel chart:
 
 ## Options
 
-| Option           | Description                                                                 | Type     | Default            |
-| ---------------- | --------------------------------------------------------------------------- | -------- | ------------------ |
-| `width`          | The pixel width of the chart.                                               | int      | Container's width  |
-| `height`         | The pixel height of the chart.                                              | int      | Container's height |
-| `bottomWidth`    | The percent of total width the bottom should be.                            | float    | `1 / 3`            |
-| `bottomPinch`    | How many blocks to pinch on the bottom to create a "neck".                  | int      | `0`                |
-| `isCurved`       | Whether the funnel is curved.                                               | bool     | `false`            |
-| `curveHeight`    | The curvature amount (if `isCurved` is `true`).                             | int      | `20`               |
-| `fillType`       | Either `'solid'` or `'gradient'`.                                           | string   | `'solid'`          |
-| `isInverted`     | Whether the funnel is inverted (like a pyramid).                            | bool     | `false`            |
-| `hoverEffects`   | Whether the funnel has effects on hover.                                    | bool     | `false`            |
-| `dynamicArea`    | Whether block areas are calculated by counts (as opposed to static height). | bool     | `false`            |
-| `minHeight`      | The minimum pixel height of a block.                                        | int/bool | `false`            |
-| `animation`      | The load animation speed in milliseconds.                                   | int/bool | `false`            |
-| `label.fontSize` | Any valid font size for the labels.                                         | string   | `'14px'`           |
-| `label.fill`     | Any valid hex color for the label color                                     | string   | `'#fff'`           |
-| `label.format`   | Either `function(label, value)` or a format string. See below.              | mixed    | `'{l}: {f}'`       |
-| `onItemClick`    | Event handler if one of the items is clicked.                               | function | `null`             |
+| Option                | Description                                                                 | Type           | Default                 |
+| --------------------- | --------------------------------------------------------------------------- | -------------- | ----------------------- |
+| `chart.width`         | The pixel width of the chart.                                               | int            | Container's width       |
+| `chart.height`        | The pixel height of the chart.                                              | int            | Container's height      |
+| `chart.bottomWidth`   | The percent of total width the bottom should be.                            | float          | `1 / 3`                 |
+| `chart.bottomPinch`   | How many blocks to pinch on the bottom to create a "neck".                  | int            | `0`                     |
+| `chart.inverted`      | Whether the funnel is inverted (like a pyramid).                            | bool           | `false`                 |
+| `chart.animate`       | The load animation speed in milliseconds.                                   | int/bool       | `false`                 |
+| `chart.curve.enabled` | Whether the funnel is curved.                                               | bool           | `false`                 |
+| `chart.curve.height`  | The curvature amount.                                                       | int            | `20`                    |
+| `block.dynamicHeight` | Whether the block heights are proportional to its weight.                   | bool           | `false`                 |
+| `block.fill.scale`    | The block background color scale. Expects an index and returns a color.     | function/array | `d3.scale.category10()` |
+| `block.fill.type`     | Either `'solid'` or `'gradient'`.                                           | string         | `'solid'`               |
+| `block.minHeight`     | The minimum pixel height of a block.                                        | int/bool       | `false`                 |
+| `block.highlight`     | Whether the blocks are highlighted on hover.                                | bool           | `false`                 |
+| `label.fontSize`      | Any valid font size for the labels.                                         | string         | `'14px'`                |
+| `label.fill`          | Any valid hex color for the label color                                     | string         | `'#fff'`                |
+| `label.format`        | Either `function(label, value)` or a format string. See below.              | mixed          | `'{l}: {f}'`            |
+| `events.click.block`  | Callback for when a block is clicked.                                       | function       | `null`                  |
 
 ### Label Format
 
@@ -85,6 +86,31 @@ keys will be substituted by the string formatter:
 | `'{v}'` | The block's raw value.       |
 | `'{f}'` | The block's formatted value. |
 
+### Overriding Defaults
+
+You may wish to override the default chart options. For example, you may wish
+for every funnel to have proportional heights. To do this, simplify modify the
+`D3Funnel.defaults` property:
+
+``` javascript
+D3Funnel.defaults.block.dynamicHeight = true;
+```
+
+Should you wish to override multiple properties at a time, you may consider
+using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`:
+
+``` javascript
+D3Funnel.defaults = _.merge(D3Funnel.defaults, {
+	chart: {
+		dynamicHeight: true,
+		animate: 200,
+	},
+	label: {
+		format: '{l}: ${f}',
+	},
+});
+```
+
 ## API
 
 Additional methods beyond `draw()` are accessible after instantiating the chart:
@@ -95,7 +121,8 @@ Additional methods beyond `draw()` are accessible after instantiating the chart:
 
 ## Advanced Data
 
-You can specify overriding colors for any data point (hex only):
+You can specify colors to override `block.fill.scale` and `label.fill` for any
+data point (hex only):
 
 ``` javascript
 var data = [
@@ -125,3 +152,5 @@ MIT license.
 
 [d3]: http://d3js.org/
 [examples]: http://jakezatecky.github.io/d3-funnel/
+[jQuery-extend]: https://api.jquery.com/jquery.extend/
+[lodash-merge]: https://lodash.com/docs#merge

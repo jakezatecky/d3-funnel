@@ -1,26 +1,34 @@
 /* global d3, assert, chai, D3Funnel */
 
+function getFunnel() {
+	return new D3Funnel('#funnel');
+}
+
+function getSvg() {
+	return d3.select('#funnel').selectAll('svg');
+}
+
+function getBasicData() {
+	return [['Node', 1000]];
+}
+
+function getPathHeight(path) {
+	var commands = path.attr('d').split(' ');
+
+	return getCommandHeight(commands[2]) - getCommandHeight(commands[0]);
+}
+
+function getCommandHeight(command) {
+	return parseFloat(command.split(',')[1]);
+}
+
+var defaults = _.clone(D3Funnel.defaults, true);
+
 describe('D3Funnel', function () {
-	var getFunnel, getSvg, getBasicData, getPathHeight, getCommandHeight;
-
 	beforeEach(function (done) {
-		getFunnel = function () {
-			return new D3Funnel('#funnel');
-		};
-		getSvg = function () {
-			return d3.select('#funnel').selectAll('svg');
-		};
-		getBasicData = function () {
-			return [['Node', 1000]];
-		};
-		getPathHeight = function (path) {
-			var commands = path.attr('d').split(' ');
+		d3.select('#funnel').attr('style', null);
 
-			return getCommandHeight(commands[2]) - getCommandHeight(commands[0]);
-		};
-		getCommandHeight = function (command) {
-			return parseFloat(command.split(',')[1]);
-		};
+		D3Funnel.defaults = _.clone(defaults, true);
 
 		done();
 	});
@@ -77,7 +85,7 @@ describe('D3Funnel', function () {
 
 				paths = getSvg().selectAll('path')[0];
 
-				colorScale = d3.scale.category10();
+				colorScale = d3.scale.category10().domain(d3.range(0, 10));
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
@@ -116,31 +124,65 @@ describe('D3Funnel', function () {
 		});
 	});
 
+	describe('defaults', function () {
+		it('should affect all default options', function () {
+			D3Funnel.defaults.label.fill = '#777';
+
+			getFunnel().draw(getBasicData(), {});
+
+			assert.isTrue(d3.select('#funnel text').attr('fill').indexOf('#777') > -1);
+		});
+	});
+
 	describe('options', function () {
-		describe('width', function () {
+		describe('chart.width', function () {
+			it ('should default to the container\'s width', function () {
+				d3.select('#funnel').style('width', '250px');
+
+				getFunnel().draw(getBasicData(), {});
+
+				assert.equal(250, getSvg().node().getBBox().width);
+			});
+
 			it('should set the funnel\'s width to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
-					width: 200,
+					chart: {
+						width: 200,
+					},
 				});
 
 				assert.equal(200, getSvg().node().getBBox().width);
 			});
 		});
 
-		describe('height', function () {
+		describe('chart.height', function () {
+			it ('should default to the container\'s height', function () {
+				d3.select('#funnel').style('height', '250px');
+
+				getFunnel().draw(getBasicData(), {});
+
+				assert.equal(250, getSvg().node().getBBox().height);
+			});
+
 			it('should set the funnel\'s height to the specified amount', function () {
 				getFunnel().draw(getBasicData(), {
-					height: 200,
+					chart: {
+						height: 200,
+					},
 				});
 
 				assert.equal(200, getSvg().node().getBBox().height);
 			});
 		});
 
-		describe('isCurved', function () {
+		describe('chart.curve.enabled', function () {
 			it('should create an additional path on top of the trapezoids', function () {
 				getFunnel().draw(getBasicData(), {
-					isCurved: true,
+					chart: {
+						curve: {
+							enabled: true,
+						},
+					},
 				});
 
 				assert.equal(2, d3.selectAll('#funnel path')[0].length);
@@ -148,7 +190,11 @@ describe('D3Funnel', function () {
 
 			it('should create a quadratic Bezier curve on each path', function () {
 				getFunnel().draw(getBasicData(), {
-					isCurved: true,
+					chart: {
+						curve: {
+							enabled: true,
+						},
+					},
 				});
 
 				var paths = d3.selectAll('#funnel path');
@@ -161,10 +207,143 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('fillType', function () {
+		describe('block.dynamicHeight', function () {
+			it('should use equal heights when false', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					chart: {
+						height: 300,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(150, getPathHeight(d3.select(paths[0])));
+				assert.equal(150, getPathHeight(d3.select(paths[1])));
+			});
+
+			it('should use proportional heights when true', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					chart: {
+						height: 300,
+					},
+					block: {
+						dynamicHeight: true,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(100, parseInt(getPathHeight(d3.select(paths[0])), 10));
+				assert.equal(200, parseInt(getPathHeight(d3.select(paths[1])), 10));
+			});
+
+			it('should not have NaN in the last path when bottomWidth is equal to 0%', function () {
+				var paths;
+
+				// A very specific cooked-up example that could trigger NaN
+				getFunnel().draw([
+					['A', 120],
+					['B', 40],
+					['C', 20],
+					['D', 15],
+				], {
+					chart: {
+						height: 300,
+						bottomWidth: 0,
+					},
+					block: {
+						dynamicHeight: true,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'))
+			});
+
+			it('should not error when bottomWidth is equal to 100%', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					chart: {
+						height: 300,
+						bottomWidth: 1,
+					},
+					block: {
+						dynamicHeight: true,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+			});
+		});
+
+		describe('block.fill.scale', function () {
+			it('should use a function\'s return value', function () {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					block: {
+						fill: {
+							scale: function (index) {
+								if (index === 0) {
+									return '#111';
+								}
+
+								return '#222';
+							},
+						},
+					},
+				});
+
+				paths = getSvg().selectAll('path')[0];
+
+				assert.equal('#111', d3.select(paths[0]).attr('fill'));
+				assert.equal('#222', d3.select(paths[1]).attr('fill'));
+			});
+
+			it('should use an array\'s return value', function () {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					block: {
+						fill: {
+							scale: ['#111', '#222'],
+						},
+					},
+				});
+
+				paths = getSvg().selectAll('path')[0];
+
+				assert.equal('#111', d3.select(paths[0]).attr('fill'));
+				assert.equal('#222', d3.select(paths[1]).attr('fill'));
+			});
+		});
+
+		describe('block.fill.type', function () {
 			it('should create gradients when set to \'gradient\'', function () {
 				getFunnel().draw(getBasicData(), {
-					fillType: 'gradient',
+					block: {
+						fill: {
+							type: 'gradient',
+						},
+					},
 				});
 
 				// Cannot try to re-select the camelCased linearGradient element
@@ -186,7 +365,52 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('hoverEffects', function () {
+		describe('block.minHeight', function () {
+			it('should give each block the minimum height specified', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 299],
+					['B', 1],
+				], {
+					chart: {
+						height: 300,
+					},
+					block: {
+						dynamicHeight: true,
+						minHeight: 10,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[0]))), 10);
+				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[1]))), 10);
+			});
+
+			it('should decrease the height of blocks above the minimum', function () {
+				var paths;
+
+				getFunnel().draw([
+					['A', 299],
+					['B', 1],
+				], {
+					chart: {
+						height: 300,
+					},
+					block: {
+						dynamicHeight: true,
+						minHeight: 10,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.isBelow(parseFloat(getPathHeight(d3.select(paths[0]))), 290);
+			});
+		});
+
+		describe('block.highlight', function () {
 			it('should change block color on hover', function () {
 				var event = document.createEvent('CustomEvent');
 				event.initCustomEvent('mouseover', false, false, null);
@@ -194,7 +418,9 @@ describe('D3Funnel', function () {
 				getFunnel().draw([
 					['A', 1, '#fff'],
 				], {
-					hoverEffects: true,
+					block: {
+						highlight: true,
+					},
 				});
 
 				d3.select('#funnel path').node().dispatchEvent(event);
@@ -204,76 +430,6 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('dynamicArea', function () {
-			it('should use equal heights when false', function () {
-				var paths;
-
-				getFunnel().draw([
-					['A', 1],
-					['B', 2],
-				], {
-					height: 300,
-				});
-
-				paths = d3.selectAll('#funnel path')[0];
-
-				assert.equal(150, getPathHeight(d3.select(paths[0])));
-				assert.equal(150, getPathHeight(d3.select(paths[1])));
-			});
-
-			it('should use proportional heights when true', function () {
-				var paths;
-
-				getFunnel().draw([
-					['A', 1],
-					['B', 2],
-				], {
-					height: 300,
-					dynamicArea: true,
-				});
-
-				paths = d3.selectAll('#funnel path')[0];
-
-				assert.equal(72, parseInt(getPathHeight(d3.select(paths[0])), 10));
-				assert.equal(227, parseInt(getPathHeight(d3.select(paths[1])), 10));
-			});
-
-			it('should not have NaN in the last path when bottomWidth is equal to 0%', function () {
-				var paths;
-
-				// A very specific cooked-up example that could trigger NaN
-				getFunnel().draw([
-					['A', 120],
-					['B', 40],
-					['C', 20],
-					['D', 15],
-				], {
-					height: 300,
-					dynamicArea: true,
-					bottomWidth: 0,
-				});
-
-				paths = d3.selectAll('#funnel path')[0];
-
-				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'))
-			});
-
-			it('should not error when bottomWidth is equal to 100%', function () {
-				var paths;
-
-				getFunnel().draw([
-					['A', 1],
-					['B', 2],
-				], {
-					height: 300,
-					dynamicArea: true,
-					bottomWidth: 1,
-				});
-
-				paths = d3.selectAll('#funnel path')[0];
-
-			});
-		});
 
 		describe('label.fontSize', function () {
 			it('should set the label\'s font size to the specified amount', function () {
@@ -304,7 +460,7 @@ describe('D3Funnel', function () {
 				getFunnel().draw(getBasicData(), {
 					label: {
 						format: '{l} {v} {f}',
-					}
+					},
 				});
 
 				// Node.js does not have localization, so toLocaleString() will
@@ -326,7 +482,7 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('onItemClick', function () {
+		describe('events.click.block', function () {
 			it('should invoke the callback function with the correct data', function () {
 				var event = document.createEvent('CustomEvent');
 				event.initCustomEvent('click', false, false, null);
@@ -334,12 +490,16 @@ describe('D3Funnel', function () {
 				var spy = chai.spy();
 
 				getFunnel().draw(getBasicData(), {
-					onItemClick: function (d, i) {
-						spy({
-							index: d.index,
-							label: d.label,
-							value: d.value,
-						}, i);
+					events: {
+						click: {
+							block: function (d, i) {
+								spy({
+									index: d.index,
+									label: d.label.raw,
+									value: d.value,
+								}, i);
+							},
+						},
 					},
 				});
 

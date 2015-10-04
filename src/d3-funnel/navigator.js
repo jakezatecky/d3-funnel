@@ -10,7 +10,7 @@ class Navigator {
 	 * @returns {string}
 	 */
 	plot(commands) {
-		var path = '';
+		let path = '';
 
 		commands.forEach((command) => {
 			path += command[0] + command[1] + ',' + command[2] + ' ';
