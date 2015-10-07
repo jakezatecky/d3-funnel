@@ -18,33 +18,59 @@ $(function() {
 			];
 		}
 
-		var options = {};
+		var options = {
+			chart: {
+				bottomWidth: 3 / 8,
+			},
+		};
 		var settings = {
 			curved: {
-				isCurved: true,
+				chart: {
+					curve: {
+						enabled: true,
+					},
+				},
 			},
 			pinched: {
-				bottomPinch: 1,
+				chart: {
+					bottomPinch: 1,
+				},
 			},
 			gradient: {
-				fillType: 'gradient',
+				block: {
+					fill: {
+						type: 'gradient',
+					},
+				},
 			},
 			inverted: {
-				isInverted: true,
+				chart: {
+					inverted: true,
+				},
 			},
 			hover: {
-				hoverEffects: true,
+				block: {
+					highlight: true,
+				},
 			},
 			click: {
-				onItemClick: function(d, i) {
-					alert('<' + d.label + '> selected.');
-				}
+				events: {
+					click: {
+						block: function(d, i) {
+							alert('<' + d.label + '> selected.');
+						},
+					},
+				},
 			},
 			dynamic: {
-				dynamicArea: true,
+				block: {
+					dynamicHeight: true,
+				},
 			},
 			animation: {
-				animation: 200,
+				chart: {
+					animate: 200,
+				},
 			},
 			label: {
 				label: {
@@ -55,13 +81,13 @@ $(function() {
 		};
 
 		$('input[type="checkbox"]:checked').each(function() {
-			options = $.extend(options, settings[$(this).val()]);
+			options = $.extend(true, options, settings[$(this).val()]);
 		});
 
-		// Inversion with pinch looks bad
-		// Change bottom width to make it look slightly better
-		if (options.isInverted && options.bottomPinch) {
-			options.bottomWidth = 1 / 2;
+		// Reverse data for inversion
+		if (options.chart.inverted) {
+			options.chart.bottomWidth = 1 / 3;
+			data = data.reverse();
 		}
 
 		(new D3Funnel('#funnel')).draw(data, options);
