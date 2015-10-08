@@ -1,2 +1,3 @@
 d3* linguist-vendored=false
 examples/* linguist-vendored=true
+test/* linguist-vendored=true
