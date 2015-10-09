@@ -128,10 +128,10 @@ data point (hex only):
 
 ``` javascript
 var data = [
-    ['Teal',      12000, '#008080' '#080800'],
+    ['Teal',      12000, '#008080', '#080800'],
     ['Byzantium', 4000,  '#702963'],
-    ['Persimmon', 2500,  '#ff634d' '#6f34fd'],
-    ['Azure',     1500,  '#007fff' '#07fff0'],
+    ['Persimmon', 2500,  '#ff634d', '#6f34fd'],
+    ['Azure',     1500,  '#007fff', '#07fff0'],
     //         Background ---^         ^--- Label
 ];
 ```
