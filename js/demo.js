@@ -57,7 +57,7 @@ $(function() {
 				events: {
 					click: {
 						block: function(d, i) {
-							alert('<' + d.label + '> selected.');
+							alert('<' + d.label.raw + '> selected.');
 						},
 					},
 				},
