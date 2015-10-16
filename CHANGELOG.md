@@ -1,3 +1,9 @@
+## v0.7.1 (TBA)
+
+### Bug Fixes
+
+* [#36]: Fix issue where non-SVG entities were not being removed from container
+
 ## v0.7.0 (October 4, 2015)
 
 D3Funnel v0.7 is a **backwards-incompatible** release that resolves some
