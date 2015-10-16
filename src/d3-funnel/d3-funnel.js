@@ -58,8 +58,15 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	destroy() {
+		let container = d3.select(this.selector);
 		// D3's remove method appears to be sufficient for removing the events
-		d3.select(this.selector).selectAll('svg').remove();
+		container.selectAll('svg').remove();
+
+		// Remove other elements from container
+		container.selectAll('*').remove();
+
+		// Remove inner text from container
+		container.text('');
 	}
 
 	/**
