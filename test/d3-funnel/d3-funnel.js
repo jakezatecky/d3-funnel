@@ -110,6 +110,40 @@ describe('D3Funnel', function () {
 				assert.equal('#fff', d3.select(texts[2]).attr('fill'));
 				assert.equal('#444', d3.select(texts[3]).attr('fill'));
 			});
+
+			it('should remove other elements from container', function () {
+				var container = d3.select('#funnel'),
+					funnel = getFunnel();
+
+				// Make sure the container has no children
+				container.selectAll('*').remove();
+
+				container.append('p');
+				funnel.draw(getBasicData());
+
+				var funnelChildrenSize = getSvg().selectAll('*').size(),
+					// expect funnel children count plus funnel itself
+					expected = funnelChildrenSize + 1,
+					actual = container.selectAll('*').size();
+
+				assert.equal(expected, actual);
+			});
+
+			it('should remove inner text from container', function () {
+				var container = d3.select('#funnel'),
+					funnel = getFunnel();
+
+				// Make sure the container has no text
+				container.text();
+
+				container.text('to be removed');
+				funnel.draw(getBasicData());
+
+				// Make sure the only text in container comes from the funnel
+				assert.equal(getSvg().text(), container.text());
+
+				funnel.destroy();
+			});
 		});
 
 		describe('destroy', function () {
