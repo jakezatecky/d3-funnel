@@ -34,20 +34,57 @@ class Colorizer {
 	 *
 	 * @param {Array}  block
 	 * @param {Number} index
+	 * @param {string} type
+	 *
+	 * @return {Object}
+	 */
+	getBlockFill(block, index, type) {
+		let raw = this.getBlockRawFill(block, index);
+
+		return {
+			raw: raw,
+			actual: this.getBlockActualFill(raw, index, type),
+		};
+	}
+
+	/**
+	 * Return the raw hex color for the block.
+	 *
+	 * @param {Array}  block
+	 * @param {Number} index
 	 *
 	 * @return {string}
 	 */
-	getBlockFill(block, index) {
+	getBlockRawFill(block, index) {
 		// Use the block's color, if set and valid
 		if (block.length > 2 && this.hexExpression.test(block[2])) {
 			return block[2];
 		}
 
+		// Otherwise, attempt to use the array scale
 		if (Array.isArray(this.scale)) {
 			return this.scale[index];
 		}
 
+		// Finally, use a functional scale
 		return this.scale(index);
+	}
+
+	/**
+	 * Return the actual background for the block.
+	 *
+	 * @param {string} raw
+	 * @param {Number} index
+	 * @param {string} type
+	 *
+	 * @return {string}
+	 */
+	getBlockActualFill(raw, index, type) {
+		if (type === 'solid') {
+			return raw;
+		}
+
+		return 'url(#gradient-' + index + ')';
 	}
 
 	/**

@@ -235,7 +235,7 @@ class D3Funnel {
 				ratio: ratio,
 				height: this.height * ratio,
 				formatted: this.labelFormatter.format(label, count),
-				fill: this.colorizer.getBlockFill(block, index),
+				fill: this.colorizer.getBlockFill(block, index, this.fillType),
 				label: {
 					raw: label,
 					formatted: this.labelFormatter.format(label, count),
@@ -515,7 +515,7 @@ class D3Funnel {
 
 		// Create a gradient for each block
 		this.blocks.forEach((block, index) => {
-			let color = block.fill;
+			let color = block.fill.raw;
 			let shade = Colorizer.shade(color, -0.25);
 
 			// Create linear gradient
@@ -575,7 +575,7 @@ class D3Funnel {
 
 		// Draw top oval
 		svg.append('path')
-			.attr('fill', Colorizer.shade(this.blocks[0].fill, -0.4))
+			.attr('fill', Colorizer.shade(this.blocks[0].fill.raw, -0.4))
 			.attr('d', path);
 	}
 
@@ -603,13 +603,13 @@ class D3Funnel {
 			path.transition()
 				.duration(this.animation)
 				.ease('linear')
-				.attr('fill', this._getFillColor(index))
+				.attr('fill', this.blocks[index].fill.actual)
 				.attr('d', this._getPathDefinition(index))
 				.each('end', () => {
 					this._drawBlock(index + 1);
 				});
 		} else {
-			path.attr('fill', this._getFillColor(index))
+			path.attr('fill', this.blocks[index].fill.actual)
 				.attr('d', this._getPathDefinition(index));
 			this._drawBlock(index + 1);
 		}
@@ -681,10 +681,10 @@ class D3Funnel {
 
 		// Use previous fill color, if available
 		if (this.fillType === 'solid' && index > 0) {
-			beforeFill = this._getFillColor(index - 1);
+			beforeFill = this.blocks[index - 1].fill.actual;
 		// Otherwise use current background
 		} else {
-			beforeFill = this._getFillColor(index);
+			beforeFill = this.blocks[index].fill.actual;
 		}
 
 		path.attr('d', beforePath)
@@ -700,21 +700,6 @@ class D3Funnel {
 	 */
 	_getD3Data(index) {
 		return [this.blocks[index]];
-	}
-
-	/**
-	 * Return the block fill color for the given index.
-	 *
-	 * @param {int} index
-	 *
-	 * @return {string}
-	 */
-	_getFillColor(index) {
-		if (this.fillType === 'solid') {
-			return this.blocks[index].fill;
-		}
-
-		return 'url(#gradient-' + index + ')';
 	}
 
 	/**
@@ -738,7 +723,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOver(data) {
-		d3.select(this).attr('fill', Colorizer.shade(data.fill, -0.2));
+		d3.select(this).attr('fill', Colorizer.shade(data.fill.raw, -0.2));
 	}
 
 	/**
@@ -747,7 +732,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOut(data) {
-		d3.select(this).attr('fill', data.fill);
+		d3.select(this).attr('fill', data.fill.actual);
 	}
 
 	/**

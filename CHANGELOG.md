@@ -2,6 +2,7 @@
 
 ### Bug Fixes
 
+* [#35]: Fix issue where gradient background would not persist after mouse out
 * [#36]: Fix issue where non-SVG entities were not being removed from container
 
 ## v0.7.0 (October 4, 2015)
