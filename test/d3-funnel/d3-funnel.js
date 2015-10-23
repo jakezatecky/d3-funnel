@@ -53,12 +53,36 @@ describe('D3Funnel', function () {
 				assert.equal(1, getSvg()[0].length);
 			});
 
-			it('should throw an exception on invalid data', function () {
+			it('should throw an error when the data is not an array', function () {
 				var funnel = getFunnel();
 
 				assert.throws(function () {
-					funnel.draw(['One dimensional', 2], {});
-				}, Error, 'Funnel data is not valid.');
+					funnel.draw('Not array', {});
+				}, Error, 'Data must be an array.');
+			});
+
+			it('should throw an error when the data array does not have an element', function () {
+				var funnel = getFunnel();
+
+				assert.throws(function () {
+					funnel.draw([], {});
+				}, Error, 'Data array must contain at least one element.');
+			});
+
+			it('should throw an error when the first data array element is not an array', function () {
+				var funnel = getFunnel();
+
+				assert.throws(function () {
+					funnel.draw(['Not array'], {});
+				}, Error, 'Data array elements must be arrays.');
+			});
+
+			it('should throw an error when the first data array element does not have two elements', function () {
+				var funnel = getFunnel();
+
+				assert.throws(function () {
+					funnel.draw([['Only one']], {});
+				}, Error, 'Data array elements must contain a label and value.');
 			});
 
 			it('should draw as many blocks as there are elements', function () {

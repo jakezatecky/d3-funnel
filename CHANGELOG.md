@@ -1,5 +1,9 @@
 ## v0.7.1 (TBA)
 
+### New Features
+
+* Errors thrown on data validation are now more descriptive and context-aware
+
 ### Bug Fixes
 
 * [#35]: Fix issue where gradient background would not persist after mouse out

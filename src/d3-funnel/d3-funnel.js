@@ -145,11 +145,20 @@ class D3Funnel {
 	 * @return void
 	 */
 	_validateData(data) {
-		if (Array.isArray(data) === false ||
-			data.length === 0 ||
-			Array.isArray(data[0]) === false ||
-			data[0].length < 2) {
-			throw new Error('Funnel data is not valid.');
+		if (Array.isArray(data) === false) {
+			throw new Error('Data must be an array.');
+		}
+
+		if (data.length === 0) {
+			throw new Error('Data array must contain at least one element.');
+		}
+
+		if (Array.isArray(data[0]) === false) {
+			throw new Error('Data array elements must be arrays.');
+		}
+
+		if (data[0].length < 2) {
+			throw new Error('Data array elements must contain a label and value.');
 		}
 	}
 
