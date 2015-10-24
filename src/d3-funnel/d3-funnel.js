@@ -629,7 +629,7 @@ class D3Funnel {
 				.on('mouseout', this._onMouseOut);
 		}
 
-		// ItemClick event
+		// Add block click event
 		if (this.onBlockClick !== null) {
 			path.on('click', this.onBlockClick);
 		}
