@@ -42,7 +42,7 @@ describe('D3Funnel', function () {
 	describe('methods', function () {
 		describe('draw', function () {
 			it('should draw a chart on the identified target', function () {
-				getFunnel().draw(getBasicData(), {});
+				getFunnel().draw(getBasicData());
 
 				assert.equal(1, getSvg()[0].length);
 			});
@@ -57,7 +57,7 @@ describe('D3Funnel', function () {
 				var funnel = getFunnel();
 
 				assert.throws(function () {
-					funnel.draw('Not array', {});
+					funnel.draw('Not array');
 				}, Error, 'Data must be an array.');
 			});
 
@@ -65,7 +65,7 @@ describe('D3Funnel', function () {
 				var funnel = getFunnel();
 
 				assert.throws(function () {
-					funnel.draw([], {});
+					funnel.draw([]);
 				}, Error, 'Data array must contain at least one element.');
 			});
 
@@ -73,7 +73,7 @@ describe('D3Funnel', function () {
 				var funnel = getFunnel();
 
 				assert.throws(function () {
-					funnel.draw(['Not array'], {});
+					funnel.draw(['Not array']);
 				}, Error, 'Data array elements must be arrays.');
 			});
 
@@ -81,7 +81,7 @@ describe('D3Funnel', function () {
 				var funnel = getFunnel();
 
 				assert.throws(function () {
-					funnel.draw([['Only one']], {});
+					funnel.draw([['Only one']]);
 				}, Error, 'Data array elements must contain a label and value.');
 			});
 
@@ -174,7 +174,7 @@ describe('D3Funnel', function () {
 			it('should remove a drawn SVG element', function () {
 				var funnel = getFunnel();
 
-				funnel.draw(getBasicData(), {});
+				funnel.draw(getBasicData());
 				funnel.destroy();
 
 				assert.equal(0, getSvg()[0].length);
@@ -186,7 +186,7 @@ describe('D3Funnel', function () {
 		it('should affect all default options', function () {
 			D3Funnel.defaults.label.fill = '#777';
 
-			getFunnel().draw(getBasicData(), {});
+			getFunnel().draw(getBasicData());
 
 			assert.isTrue(d3.select('#funnel text').attr('fill').indexOf('#777') > -1);
 		});
@@ -197,7 +197,7 @@ describe('D3Funnel', function () {
 			it ('should default to the container\'s width', function () {
 				d3.select('#funnel').style('width', '250px');
 
-				getFunnel().draw(getBasicData(), {});
+				getFunnel().draw(getBasicData());
 
 				assert.equal(250, getSvg().node().getBBox().width);
 			});
@@ -217,7 +217,7 @@ describe('D3Funnel', function () {
 			it ('should default to the container\'s height', function () {
 				d3.select('#funnel').style('height', '250px');
 
-				getFunnel().draw(getBasicData(), {});
+				getFunnel().draw(getBasicData());
 
 				assert.equal(250, getSvg().node().getBBox().height);
 			});
@@ -414,7 +414,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should use solid fill when not set to \'gradient\'', function () {
-				getFunnel().draw(getBasicData(), {});
+				getFunnel().draw(getBasicData());
 
 				// Check for valid hex string
 				assert.isTrue(/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
