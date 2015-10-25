@@ -525,7 +525,7 @@ class D3Funnel {
 		// Create a gradient for each block
 		this.blocks.forEach((block, index) => {
 			let color = block.fill.raw;
-			let shade = Colorizer.shade(color, -0.25);
+			let shade = Colorizer.shade(color, -0.2);
 
 			// Create linear gradient
 			let gradient = defs.append('linearGradient')
@@ -735,7 +735,7 @@ class D3Funnel {
 		d3.select(this).attr('fill', Colorizer.shade(data.fill.raw, -0.2));
 	}
 
-	/**
+	 /**
 	 * @param {Object} data
 	 *
 	 * @return {void}
@@ -747,7 +747,6 @@ class D3Funnel {
 	/**
 	 * @param {Object} group
 	 * @param {int}    index
-	 *
 	 * @return {void}
 	 */
 	_addBlockLabel(group, index) {
