@@ -165,8 +165,6 @@ describe('D3Funnel', function () {
 
 				// Make sure the only text in container comes from the funnel
 				assert.equal(getSvg().text(), container.text());
-
-				funnel.destroy();
 			});
 		});
 
