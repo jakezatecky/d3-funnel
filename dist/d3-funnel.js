@@ -87,8 +87,15 @@ var D3Funnel = (function () {
 	_createClass(D3Funnel, [{
 		key: 'destroy',
 		value: function destroy() {
+			var container = d3.select(this.selector);
 			// D3's remove method appears to be sufficient for removing the events
-			d3.select(this.selector).selectAll('svg').remove();
+			container.selectAll('svg').remove();
+
+			// Remove other elements from container
+			container.selectAll('*').remove();
+
+			// Remove inner text from container
+			container.text('');
 		}
 
 		/**
@@ -175,8 +182,20 @@ var D3Funnel = (function () {
 	}, {
 		key: '_validateData',
 		value: function _validateData(data) {
-			if (Array.isArray(data) === false || data.length === 0 || Array.isArray(data[0]) === false || data[0].length < 2) {
-				throw new Error('Funnel data is not valid.');
+			if (Array.isArray(data) === false) {
+				throw new Error('Data must be an array.');
+			}
+
+			if (data.length === 0) {
+				throw new Error('Data array must contain at least one element.');
+			}
+
+			if (Array.isArray(data[0]) === false) {
+				throw new Error('Data array elements must be arrays.');
+			}
+
+			if (data[0].length < 2) {
+				throw new Error('Data array elements must contain a label and value.');
 			}
 		}
 
@@ -274,7 +293,7 @@ var D3Funnel = (function () {
 					ratio: ratio,
 					height: _this2.height * ratio,
 					formatted: _this2.labelFormatter.format(label, count),
-					fill: _this2.colorizer.getBlockFill(block, index),
+					fill: _this2.colorizer.getBlockFill(block, index, _this2.fillType),
 					label: {
 						raw: label,
 						formatted: _this2.labelFormatter.format(label, count),
@@ -559,8 +578,8 @@ var D3Funnel = (function () {
 
 			// Create a gradient for each block
 			this.blocks.forEach(function (block, index) {
-				var color = block.fill;
-				var shade = Colorizer.shade(color, -0.25);
+				var color = block.fill.raw;
+				var shade = Colorizer.shade(color, -0.2);
 
 				// Create linear gradient
 				var gradient = defs.append('linearGradient').attr({
@@ -607,7 +626,7 @@ var D3Funnel = (function () {
 			var path = this.navigator.plot([['M', leftX, paths[0][1]], ['Q', centerX, topCurve], [' ', rightX, paths[2][1]], ['M', rightX, 10], ['Q', centerX, 0], [' ', leftX, 10]]);
 
 			// Draw top oval
-			svg.append('path').attr('fill', Colorizer.shade(this.blocks[0].fill, -0.4)).attr('d', path);
+			svg.append('path').attr('fill', Colorizer.shade(this.blocks[0].fill.raw, -0.4)).attr('d', path);
 		}
 
 		/**
@@ -635,11 +654,11 @@ var D3Funnel = (function () {
 
 			// Add animation components
 			if (this.animation !== false) {
-				path.transition().duration(this.animation).ease('linear').attr('fill', this._getFillColor(index)).attr('d', this._getPathDefinition(index)).each('end', function () {
+				path.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index)).each('end', function () {
 					_this4._drawBlock(index + 1);
 				});
 			} else {
-				path.attr('fill', this._getFillColor(index)).attr('d', this._getPathDefinition(index));
+				path.attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index));
 				this._drawBlock(index + 1);
 			}
 
@@ -648,7 +667,7 @@ var D3Funnel = (function () {
 				path.on('mouseover', this._onMouseOver).on('mouseout', this._onMouseOut);
 			}
 
-			// ItemClick event
+			// Add block click event
 			if (this.onBlockClick !== null) {
 				path.on('click', this.onBlockClick);
 			}
@@ -700,10 +719,10 @@ var D3Funnel = (function () {
 
 			// Use previous fill color, if available
 			if (this.fillType === 'solid' && index > 0) {
-				beforeFill = this._getFillColor(index - 1);
+				beforeFill = this.blocks[index - 1].fill.actual;
 				// Otherwise use current background
 			} else {
-					beforeFill = this._getFillColor(index);
+					beforeFill = this.blocks[index].fill.actual;
 				}
 
 			path.attr('d', beforePath).attr('fill', beforeFill);
@@ -720,23 +739,6 @@ var D3Funnel = (function () {
 		key: '_getD3Data',
 		value: function _getD3Data(index) {
 			return [this.blocks[index]];
-		}
-
-		/**
-   * Return the block fill color for the given index.
-   *
-   * @param {int} index
-   *
-   * @return {string}
-   */
-	}, {
-		key: '_getFillColor',
-		value: function _getFillColor(index) {
-			if (this.fillType === 'solid') {
-				return this.blocks[index].fill;
-			}
-
-			return 'url(#gradient-' + index + ')';
 		}
 
 		/**
@@ -764,24 +766,23 @@ var D3Funnel = (function () {
 	}, {
 		key: '_onMouseOver',
 		value: function _onMouseOver(data) {
-			d3.select(this).attr('fill', Colorizer.shade(data.fill, -0.2));
+			d3.select(this).attr('fill', Colorizer.shade(data.fill.raw, -0.2));
 		}
 
 		/**
-   * @param {Object} data
-   *
-   * @return {void}
-   */
+  * @param {Object} data
+  *
+  * @return {void}
+  */
 	}, {
 		key: '_onMouseOut',
 		value: function _onMouseOut(data) {
-			d3.select(this).attr('fill', data.fill);
+			d3.select(this).attr('fill', data.fill.actual);
 		}
 
 		/**
    * @param {Object} group
    * @param {int}    index
-   *
    * @return {void}
    */
 	}, {
@@ -868,22 +869,63 @@ var Colorizer = (function () {
    *
    * @param {Array}  block
    * @param {Number} index
+   * @param {string} type
+   *
+   * @return {Object}
+   */
+	}, {
+		key: 'getBlockFill',
+		value: function getBlockFill(block, index, type) {
+			var raw = this.getBlockRawFill(block, index);
+
+			return {
+				raw: raw,
+				actual: this.getBlockActualFill(raw, index, type)
+			};
+		}
+
+		/**
+   * Return the raw hex color for the block.
+   *
+   * @param {Array}  block
+   * @param {Number} index
    *
    * @return {string}
    */
 	}, {
-		key: 'getBlockFill',
-		value: function getBlockFill(block, index) {
+		key: 'getBlockRawFill',
+		value: function getBlockRawFill(block, index) {
 			// Use the block's color, if set and valid
 			if (block.length > 2 && this.hexExpression.test(block[2])) {
 				return block[2];
 			}
 
+			// Otherwise, attempt to use the array scale
 			if (Array.isArray(this.scale)) {
 				return this.scale[index];
 			}
 
+			// Finally, use a functional scale
 			return this.scale(index);
+		}
+
+		/**
+   * Return the actual background for the block.
+   *
+   * @param {string} raw
+   * @param {Number} index
+   * @param {string} type
+   *
+   * @return {string}
+   */
+	}, {
+		key: 'getBlockActualFill',
+		value: function getBlockActualFill(raw, index, type) {
+			if (type === 'solid') {
+				return raw;
+			}
+
+			return 'url(#gradient-' + index + ')';
 		}
 
 		/**

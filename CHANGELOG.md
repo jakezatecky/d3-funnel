@@ -1,6 +1,6 @@
-## v0.7.1 (TBA)
+## v0.7.1 (October 28, 2015)
 
-### New Features
+### Behavior Changes
 
 * Errors thrown on data validation are now more descriptive and context-aware
 
