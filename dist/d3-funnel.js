@@ -9,59 +9,24 @@
   }
 }(this, function(d3) {
 
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /* global d3, Colorizer, LabelFormatter, Navigator, Utils */
 /* exported D3Funnel */
 
-'use strict';
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
 var D3Funnel = (function () {
-	_createClass(D3Funnel, null, [{
-		key: 'defaults',
-		value: {
-			chart: {
-				width: 350,
-				height: 400,
-				bottomWidth: 1 / 3,
-				bottomPinch: 0,
-				inverted: false,
-				animate: false,
-				curve: {
-					enabled: false,
-					height: 20
-				}
-			},
-			block: {
-				dynamicHeight: false,
-				fill: {
-					scale: d3.scale.category10().domain(d3.range(0, 10)),
-					type: 'solid'
-				},
-				minHeight: false,
-				highlight: false
-			},
-			label: {
-				fontSize: '14px',
-				fill: '#fff',
-				format: '{l}: {f}'
-			},
-			events: {
-				click: {
-					block: null
-				}
-			}
-		},
 
-		/**
-   * @param {string} selector A selector for the container element.
-   *
-   * @return {void}
-   */
-		enumerable: true
-	}]);
+	/**
+  * @param {string} selector A selector for the container element.
+  *
+  * @return {void}
+  */
 
 	function D3Funnel(selector) {
 		_classCallCheck(this, D3Funnel);
@@ -74,9 +39,6 @@ var D3Funnel = (function () {
 
 		this.navigator = new Navigator();
 	}
-
-	/* exported Colorizer */
-	/* jshint bitwise: false */
 
 	/**
   * Remove the funnel and its events from the DOM.
@@ -110,6 +72,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: 'draw',
 		value: function draw(data) {
@@ -130,6 +93,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: '_initialize',
 		value: function _initialize(data, options) {
@@ -179,6 +143,7 @@ var D3Funnel = (function () {
    *
    * @return void
    */
+
 	}, {
 		key: '_validateData',
 		value: function _validateData(data) {
@@ -204,6 +169,7 @@ var D3Funnel = (function () {
    *
    * @returns {Object}
    */
+
 	}, {
 		key: '_getSettings',
 		value: function _getSettings(options) {
@@ -236,6 +202,7 @@ var D3Funnel = (function () {
    *
    * @return void
    */
+
 	}, {
 		key: '_setBlocks',
 		value: function _setBlocks(data) {
@@ -249,6 +216,7 @@ var D3Funnel = (function () {
    *
    * @return {Number}
    */
+
 	}, {
 		key: '_getTotalCount',
 		value: function _getTotalCount(data) {
@@ -271,6 +239,7 @@ var D3Funnel = (function () {
    *
    * @return {Array}
    */
+
 	}, {
 		key: '_standardizeData',
 		value: function _standardizeData(data, totalCount) {
@@ -312,6 +281,7 @@ var D3Funnel = (function () {
    *
    * @return {Number}
    */
+
 	}, {
 		key: '_getRawBlockCount',
 		value: function _getRawBlockCount(block) {
@@ -321,6 +291,7 @@ var D3Funnel = (function () {
 		/**
    * @return {Number}
    */
+
 	}, {
 		key: '_getDx',
 		value: function _getDx() {
@@ -335,6 +306,7 @@ var D3Funnel = (function () {
 		/**
    * @return {Number}
    */
+
 	}, {
 		key: '_getDy',
 		value: function _getDy() {
@@ -351,6 +323,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: '_draw',
 		value: function _draw() {
@@ -379,6 +352,7 @@ var D3Funnel = (function () {
    *
    * @return {Array}
    */
+
 	}, {
 		key: '_makePaths',
 		value: function _makePaths() {
@@ -571,6 +545,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: '_defineColorGradients',
 		value: function _defineColorGradients(svg) {
@@ -607,6 +582,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: '_drawTopOval',
 		value: function _drawTopOval(svg, blockPaths) {
@@ -636,6 +612,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: '_drawBlock',
 		value: function _drawBlock(index) {
@@ -681,6 +658,7 @@ var D3Funnel = (function () {
    *
    * @return {Object}
    */
+
 	}, {
 		key: '_getBlockPath',
 		value: function _getBlockPath(group, index) {
@@ -701,6 +679,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: '_addBeforeTransition',
 		value: function _addBeforeTransition(path, index) {
@@ -735,6 +714,7 @@ var D3Funnel = (function () {
    *
    * @return {Array}
    */
+
 	}, {
 		key: '_getD3Data',
 		value: function _getD3Data(index) {
@@ -746,6 +726,7 @@ var D3Funnel = (function () {
    *
    * @return {string}
    */
+
 	}, {
 		key: '_getPathDefinition',
 		value: function _getPathDefinition(index) {
@@ -763,6 +744,7 @@ var D3Funnel = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: '_onMouseOver',
 		value: function _onMouseOver(data) {
@@ -774,6 +756,7 @@ var D3Funnel = (function () {
   *
   * @return {void}
   */
+
 	}, {
 		key: '_onMouseOut',
 		value: function _onMouseOut(data) {
@@ -785,6 +768,7 @@ var D3Funnel = (function () {
    * @param {int}    index
    * @return {void}
    */
+
 	}, {
 		key: '_addBlockLabel',
 		value: function _addBlockLabel(group, index) {
@@ -814,6 +798,7 @@ var D3Funnel = (function () {
    *
    * @return {Number}
    */
+
 	}, {
 		key: '_getTextY',
 		value: function _getTextY(paths) {
@@ -828,6 +813,43 @@ var D3Funnel = (function () {
 	return D3Funnel;
 })();
 
+/* exported Colorizer */
+/* jshint bitwise: false */
+
+D3Funnel.defaults = {
+	chart: {
+		width: 350,
+		height: 400,
+		bottomWidth: 1 / 3,
+		bottomPinch: 0,
+		inverted: false,
+		animate: false,
+		curve: {
+			enabled: false,
+			height: 20
+		}
+	},
+	block: {
+		dynamicHeight: false,
+		fill: {
+			scale: d3.scale.category10().domain(d3.range(0, 10)),
+			type: 'solid'
+		},
+		minHeight: false,
+		highlight: false
+	},
+	label: {
+		fontSize: '14px',
+		fill: '#fff',
+		format: '{l}: {f}'
+	},
+	events: {
+		click: {
+			block: null
+		}
+	}
+};
+
 var Colorizer = (function () {
 	function Colorizer() {
 		_classCallCheck(this, Colorizer);
@@ -838,8 +860,6 @@ var Colorizer = (function () {
 
 		this.scale = null;
 	}
-
-	/* exported LabelFormatter */
 
 	/**
   * @param {string} fill
@@ -858,6 +878,7 @@ var Colorizer = (function () {
    *
    * @return {void}
    */
+
 	}, {
 		key: 'setScale',
 		value: function setScale(scale) {
@@ -873,6 +894,7 @@ var Colorizer = (function () {
    *
    * @return {Object}
    */
+
 	}, {
 		key: 'getBlockFill',
 		value: function getBlockFill(block, index, type) {
@@ -892,6 +914,7 @@ var Colorizer = (function () {
    *
    * @return {string}
    */
+
 	}, {
 		key: 'getBlockRawFill',
 		value: function getBlockRawFill(block, index) {
@@ -918,6 +941,7 @@ var Colorizer = (function () {
    *
    * @return {string}
    */
+
 	}, {
 		key: 'getBlockActualFill',
 		value: function getBlockActualFill(raw, index, type) {
@@ -935,6 +959,7 @@ var Colorizer = (function () {
    *
    * @return {string}
    */
+
 	}, {
 		key: 'getLabelFill',
 		value: function getLabelFill(block) {
@@ -954,6 +979,7 @@ var Colorizer = (function () {
    *
    * @return {string}
    */
+
 	}], [{
 		key: 'shade',
 		value: function shade(color, _shade) {
@@ -983,6 +1009,7 @@ var Colorizer = (function () {
    *
    * @return {string}
    */
+
 	}, {
 		key: 'expandHex',
 		value: function expandHex(hex) {
@@ -992,6 +1019,8 @@ var Colorizer = (function () {
 
 	return Colorizer;
 })();
+
+/* exported LabelFormatter */
 
 var LabelFormatter = (function () {
 
@@ -1006,8 +1035,6 @@ var LabelFormatter = (function () {
 
 		this.expression = null;
 	}
-
-	/* exported Navigator */
 
 	/**
   * Register the format function.
@@ -1036,6 +1063,7 @@ var LabelFormatter = (function () {
    *
    * @return string
    */
+
 	}, {
 		key: 'format',
 		value: function format(label, value) {
@@ -1061,6 +1089,7 @@ var LabelFormatter = (function () {
    *
    * @return {string}
    */
+
 	}, {
 		key: 'stringFormatter',
 		value: function stringFormatter(label, value) {
@@ -1082,6 +1111,7 @@ var LabelFormatter = (function () {
    *
    * @return {string}
    */
+
 	}, {
 		key: 'getDefaultFormattedValue',
 		value: function getDefaultFormattedValue(value) {
@@ -1092,16 +1122,12 @@ var LabelFormatter = (function () {
 	return LabelFormatter;
 })();
 
+/* exported Navigator */
+
 var Navigator = (function () {
 	function Navigator() {
 		_classCallCheck(this, Navigator);
 	}
-
-	/* exported Utils */
-
-	/**
-  * Simple utility class.
-  */
 
 	_createClass(Navigator, [{
 		key: 'plot',
@@ -1127,6 +1153,12 @@ var Navigator = (function () {
 	return Navigator;
 })();
 
+/* exported Utils */
+
+/**
+ * Simple utility class.
+ */
+
 var Utils = (function () {
 	function Utils() {
 		_classCallCheck(this, Utils);
@@ -1148,8 +1180,8 @@ var Utils = (function () {
 
 			for (prop in b) {
 				if (b.hasOwnProperty(prop)) {
-					if (typeof b[prop] === 'object' && !Array.isArray(b[prop])) {
-						if (typeof a[prop] === 'object' && !Array.isArray(a[prop])) {
+					if (_typeof(b[prop]) === 'object' && !Array.isArray(b[prop])) {
+						if (_typeof(a[prop]) === 'object' && !Array.isArray(a[prop])) {
 							a[prop] = Utils.extend(a[prop], b[prop]);
 						} else {
 							a[prop] = Utils.extend({}, b[prop]);
