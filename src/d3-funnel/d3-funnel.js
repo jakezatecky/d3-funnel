@@ -243,7 +243,6 @@ class D3Funnel {
 				value: count,
 				ratio: ratio,
 				height: this.height * ratio,
-				formatted: this.labelFormatter.format(label, count),
 				fill: this.colorizer.getBlockFill(block, index, this.fillType),
 				label: {
 					raw: label,
