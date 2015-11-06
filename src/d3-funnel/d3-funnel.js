@@ -10,7 +10,7 @@ class D3Funnel {
 			bottomWidth: 1 / 3,
 			bottomPinch: 0,
 			inverted: false,
-			animate: false,
+			animate: 0,
 			curve: {
 				enabled: false,
 				height: 20,
@@ -22,7 +22,7 @@ class D3Funnel {
 				scale: d3.scale.category10().domain(d3.range(0, 10)),
 				type: 'solid',
 			},
-			minHeight: false,
+			minHeight: 0,
 			highlight: false,
 		},
 		label: {
@@ -359,7 +359,7 @@ class D3Funnel {
 		// This is greedy in that the block will have a guaranteed height
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
-		if (this.minHeight !== false) {
+		if (this.minHeight !== 0) {
 			totalHeight = this.height - this.minHeight * this.blocks.length;
 		}
 
@@ -392,7 +392,7 @@ class D3Funnel {
 				dy = totalHeight * block.ratio;
 
 				// Add greedy minimum height
-				if (this.minHeight !== false) {
+				if (this.minHeight !== 0) {
 					dy += this.minHeight;
 				}
 
@@ -607,7 +607,7 @@ class D3Funnel {
 		path.data(this._getD3Data(index));
 
 		// Add animation components
-		if (this.animation !== false) {
+		if (this.animation !== 0) {
 			path.transition()
 				.duration(this.animation)
 				.ease('linear')
@@ -645,7 +645,7 @@ class D3Funnel {
 	_getBlockPath(group, index) {
 		let path = group.append('path');
 
-		if (this.animation !== false) {
+		if (this.animation !== 0) {
 			this._addBeforeTransition(path, index);
 		}
 
