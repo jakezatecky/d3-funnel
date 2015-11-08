@@ -247,7 +247,7 @@ class D3Funnel {
 				label: {
 					raw: label,
 					formatted: this.labelFormatter.format(label, count),
-					color: this.colorizer.getLabelFill(block, index),
+					color: this.colorizer.getLabelFill(block),
 				},
 			});
 		});
