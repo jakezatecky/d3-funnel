@@ -7,7 +7,6 @@
 		"no-multiple-empty-lines": [2, {
 			"max": 1
 		}],
-		"prefer-const": 0,
 		"id-length": 0,
 		// Until exported behavior is fixed: https://github.com/eslint/eslint/issues/3916
 		"no-unused-vars": [1, {"vars": "local", "args": "after-used"}]

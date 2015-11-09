@@ -58,7 +58,8 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	destroy() {
-		let container = d3.select(this.selector);
+		const container = d3.select(this.selector);
+
 		// D3's remove method appears to be sufficient for removing the events
 		container.selectAll('svg').remove();
 
@@ -100,7 +101,7 @@ class D3Funnel {
 	_initialize(data, options) {
 		this._validateData(data);
 
-		let settings = this._getSettings(options);
+		const settings = this._getSettings(options);
 
 		// Set labels
 		this.label = settings.label;
@@ -198,7 +199,7 @@ class D3Funnel {
 	 * @return void
 	 */
 	_setBlocks(data) {
-		let totalCount = this._getTotalCount(data);
+		const totalCount = this._getTotalCount(data);
 
 		this.blocks = this._standardizeData(data, totalCount);
 	}
@@ -227,7 +228,7 @@ class D3Funnel {
 	 * @return {Array}
 	 */
 	_standardizeData(data, totalCount) {
-		let standardized = [];
+		const standardized = [];
 
 		let count;
 		let ratio;
@@ -325,7 +326,7 @@ class D3Funnel {
 	 * @return {Array}
 	 */
 	_makePaths() {
-		let paths = [];
+		const paths = [];
 
 		// Initialize velocity
 		let dx = this.dx;
@@ -347,7 +348,7 @@ class D3Funnel {
 		let nextRightX = 0;
 		let nextHeight = 0;
 
-		let middle = this.width / 2;
+		const middle = this.width / 2;
 
 		// Move down if there is an initial curve
 		if (this.isCurved) {
@@ -381,7 +382,7 @@ class D3Funnel {
 
 		// The slope will determine the where the x points on each block
 		// iteration
-		let slope = 2 * slopeHeight / (this.width - this.bottomWidth);
+		const slope = 2 * slopeHeight / (this.width - this.bottomWidth);
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
@@ -519,21 +520,21 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_defineColorGradients(svg) {
-		let defs = svg.append('defs');
+		const defs = svg.append('defs');
 
 		// Create a gradient for each block
 		this.blocks.forEach((block, index) => {
-			let color = block.fill.raw;
-			let shade = Colorizer.shade(color, -0.2);
+			const color = block.fill.raw;
+			const shade = Colorizer.shade(color, -0.2);
 
 			// Create linear gradient
-			let gradient = defs.append('linearGradient')
+			const gradient = defs.append('linearGradient')
 				.attr({
 					id: 'gradient-' + index,
 				});
 
 			// Define the gradient stops
-			let stops = [
+			const stops = [
 				[0, shade],
 				[40, color],
 				[60, color],
@@ -561,7 +562,7 @@ class D3Funnel {
 	_drawTopOval(svg, blockPaths) {
 		let leftX = 0;
 		let rightX = this.width;
-		let centerX = this.width / 2;
+		const centerX = this.width / 2;
 
 		if (this.isInverted) {
 			leftX = this.bottomLeftX;
@@ -569,10 +570,10 @@ class D3Funnel {
 		}
 
 		// Create path from top-most block
-		let paths = blockPaths[0];
-		let topCurve = paths[1][1] + this.curveHeight - 10;
+		const paths = blockPaths[0];
+		const topCurve = paths[1][1] + this.curveHeight - 10;
 
-		let path = this.navigator.plot([
+		const path = this.navigator.plot([
 			['M', leftX, paths[0][1]],
 			['Q', centerX, topCurve],
 			[' ', rightX, paths[2][1]],
@@ -600,10 +601,10 @@ class D3Funnel {
 		}
 
 		// Create a group just for this block
-		let group = this.svg.append('g');
+		const group = this.svg.append('g');
 
 		// Fetch path element
-		let path = this._getBlockPath(group, index);
+		const path = this._getBlockPath(group, index);
 		path.data(this._getD3Data(index));
 
 		// Add animation components
@@ -643,7 +644,7 @@ class D3Funnel {
 	 * @return {Object}
 	 */
 	_getBlockPath(group, index) {
-		let path = group.append('path');
+		const path = group.append('path');
 
 		if (this.animation !== 0) {
 			this._addBeforeTransition(path, index);
@@ -661,7 +662,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_addBeforeTransition(path, index) {
-		let paths = this.blockPaths[index];
+		const paths = this.blockPaths[index];
 
 		let beforePath = '';
 		let beforeFill = '';
@@ -716,7 +717,7 @@ class D3Funnel {
 	 * @return {string}
 	 */
 	_getPathDefinition(index) {
-		let commands = [];
+		const commands = [];
 
 		this.blockPaths[index].forEach((command) => {
 			commands.push([command[2], command[0], command[1]]);
@@ -749,13 +750,13 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_addBlockLabel(group, index) {
-		let paths = this.blockPaths[index];
+		const paths = this.blockPaths[index];
 
-		let text = this.blocks[index].label.formatted;
-		let fill = this.blocks[index].label.color;
+		const text = this.blocks[index].label.formatted;
+		const fill = this.blocks[index].label.color;
 
-		let x = this.width / 2;  // Center the text
-		let y = this._getTextY(paths);
+		const x = this.width / 2;  // Center the text
+		const y = this._getTextY(paths);
 
 		group.append('text')
 			.text(text)

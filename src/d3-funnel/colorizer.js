@@ -39,7 +39,7 @@ class Colorizer {
 	 * @return {Object}
 	 */
 	getBlockFill(block, index, type) {
-		let raw = this.getBlockRawFill(block, index);
+		const raw = this.getBlockRawFill(block, index);
 
 		return {
 			raw: raw,
@@ -118,15 +118,15 @@ class Colorizer {
 			hex = Colorizer.expandHex(hex);
 		}
 
-		let f = parseInt(hex, 16);
-		let t = shade < 0 ? 0 : 255;
-		let p = shade < 0 ? shade * -1 : shade;
+		const f = parseInt(hex, 16);
+		const t = shade < 0 ? 0 : 255;
+		const p = shade < 0 ? shade * -1 : shade;
 
-		let R = f >> 16;
-		let G = f >> 8 & 0x00FF;
-		let B = f & 0x0000FF;
+		const R = f >> 16;
+		const G = f >> 8 & 0x00FF;
+		const B = f & 0x0000FF;
 
-		let converted = 0x1000000 +
+		const converted = 0x1000000 +
 			(Math.round((t - R) * p) + R) * 0x10000 +
 			(Math.round((t - G) * p) + G) * 0x100 +
 			(Math.round((t - B) * p) + B);
