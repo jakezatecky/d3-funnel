@@ -2,6 +2,7 @@
 // Copy this file, and add rule overrides as needed.
 {
 	"extends": "airbnb/base",
+	"parser": "babel-eslint",
 	"rules": {
 		"indent": [1, "tab"],
 		"no-multiple-empty-lines": [2, {
