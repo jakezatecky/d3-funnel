@@ -88,6 +88,34 @@ keys will be substituted by the string formatter:
 | `'{v}'` | The block's raw value.       |
 | `'{f}'` | The block's formatted value. |
 
+### Event Data
+
+Block-based events are passed a `data` object containing the following elements:
+
+| Key             | Type   | Description                           |
+| --------------- | ------ | ------------------------------------- |
+| index           | number | The index of the block.               |
+| value           | number | The numerical value.                  |
+| fill            | string | The background color.                 |
+| label.raw       | string | The unformatted label.                |
+| label.formatted | string | The result of `options.label.format`. |
+| label.color     | string | The label color.                      |
+
+Example:
+
+``` javascript
+{
+	index: 0,
+	value: 150,
+	fill: '#c33',
+	label: {
+		raw: 'Visitors',
+		formatted: 'Visitors: 150',
+		color: '#fff'',
+	},
+},
+```
+
 ### Overriding Defaults
 
 You may wish to override the default chart options. For example, you may wish
