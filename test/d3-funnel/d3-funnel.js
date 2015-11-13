@@ -12,6 +12,12 @@ function getBasicData() {
 	return [['Node', 1000]];
 }
 
+function getPathBottomWidth(path) {
+	var commands = path.attr('d').split(' ');
+
+	return getCommandPoint(commands[2]).x - getCommandPoint(commands[3]).x;
+}
+
 function getPathHeight(path) {
 	var commands = path.attr('d').split(' ');
 
@@ -245,6 +251,19 @@ describe('D3Funnel', function () {
 				});
 
 				assert.equal(200, getSvg().node().getBBox().height);
+			});
+		});
+
+		describe('chart.bottomWidth', function () {
+			it('should set the bottom tip width to the specified percentage', function () {
+				getFunnel().draw(getBasicData(), {
+					chart: {
+						width: 200,
+						bottomWidth: 1 / 2,
+					},
+				});
+
+				assert.equal(100, getPathBottomWidth(d3.select('path')));
 			});
 		});
 
