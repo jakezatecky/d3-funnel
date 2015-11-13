@@ -15,11 +15,28 @@ function getBasicData() {
 function getPathHeight(path) {
 	var commands = path.attr('d').split(' ');
 
-	return getCommandHeight(commands[2]) - getCommandHeight(commands[0]);
+	return getCommandPoint(commands[2]).y - getCommandPoint(commands[0]).y;
 }
 
-function getCommandHeight(command) {
-	return parseFloat(command.split(',')[1]);
+function getCommandPoint(command) {
+	var points = command.split(',');
+
+	var x = points[0];
+	var y = points[1];
+
+	// Strip any letter in front of number
+	if (isLetter(x[0])) {
+		x = x.substr(1);
+	}
+
+	return {
+		x: parseFloat(x),
+		y: parseFloat(y),
+	};
+}
+
+function isLetter(str) {
+	return str.length === 1 && str.match(/[a-z]/i);
 }
 
 var defaults = _.clone(D3Funnel.defaults, true);
