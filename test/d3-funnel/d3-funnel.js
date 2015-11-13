@@ -266,6 +266,27 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('chart.bottomPinch', function () {
+			it('should set the last n number of blocks to have the width of chart.bottomWidth', function () {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+					['C', 3],
+				], {
+					chart: {
+						width: 450,
+						bottomWidth: 1 / 3,
+						bottomPinch: 2,
+					},
+				});
+
+				var paths = d3.selectAll('path');
+
+				assert.equal(150, paths[0][1].getBBox().width);
+				assert.equal(150, paths[0][2].getBBox().width);
+			});
+		});
+
 		describe('chart.curve.enabled', function () {
 			it('should create an additional path on top of the trapezoids', function () {
 				getFunnel().draw(getBasicData(), {
