@@ -380,12 +380,10 @@ describe('D3Funnel', function () {
 
 				paths = d3.selectAll('#funnel path')[0];
 
-				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'))
+				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'));
 			});
 
 			it('should not error when bottomWidth is equal to 100%', function () {
-				var paths;
-
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -398,13 +396,13 @@ describe('D3Funnel', function () {
 						dynamicHeight: true,
 					},
 				});
-
-				paths = d3.selectAll('#funnel path')[0];
 			});
 		});
 
 		describe('block.fill.scale', function () {
 			it('should use a function\'s return value', function () {
+				var paths;
+
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -429,6 +427,8 @@ describe('D3Funnel', function () {
 			});
 
 			it('should use an array\'s return value', function () {
+				var paths;
+
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
