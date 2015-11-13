@@ -215,7 +215,7 @@ describe('D3Funnel', function () {
 
 	describe('options', function () {
 		describe('chart.width', function () {
-			it ('should default to the container\'s width', function () {
+			it('should default to the container\'s width', function () {
 				d3.select('#funnel').style('width', '250px');
 
 				getFunnel().draw(getBasicData());
