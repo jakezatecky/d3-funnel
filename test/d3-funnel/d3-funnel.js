@@ -159,8 +159,8 @@ describe('D3Funnel', function () {
 			});
 
 			it('should remove other elements from container', function () {
-				var container = d3.select('#funnel'),
-					funnel = getFunnel();
+				var container = d3.select('#funnel');
+				var funnel = getFunnel();
 
 				// Make sure the container has no children
 				container.selectAll('*').remove();
@@ -168,17 +168,16 @@ describe('D3Funnel', function () {
 				container.append('p');
 				funnel.draw(getBasicData());
 
-				var funnelChildrenSize = getSvg().selectAll('*').size(),
-					// expect funnel children count plus funnel itself
-					expected = funnelChildrenSize + 1,
-					actual = container.selectAll('*').size();
+				// Expect funnel children count plus funnel itself
+				var expected = getSvg().selectAll('*').size() + 1;
+				var actual = container.selectAll('*').size();
 
 				assert.equal(expected, actual);
 			});
 
 			it('should remove inner text from container', function () {
-				var container = d3.select('#funnel'),
-					funnel = getFunnel();
+				var container = d3.select('#funnel');
+				var funnel = getFunnel();
 
 				// Make sure the container has no text
 				container.text();
