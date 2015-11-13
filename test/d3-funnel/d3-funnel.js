@@ -212,7 +212,7 @@ describe('D3Funnel', function () {
 		});
 
 		describe('chart.height', function () {
-			it ('should default to the container\'s height', function () {
+			it('should default to the container\'s height', function () {
 				d3.select('#funnel').style('height', '250px');
 
 				getFunnel().draw(getBasicData());
@@ -530,8 +530,8 @@ describe('D3Funnel', function () {
 					label: {
 						format: function (label, value, fValue) {
 							return label + '/' + value + '/' + fValue;
-						}
-					}
+						},
+					},
 				});
 
 				assert.equal('Node/1000/null', d3.select('#funnel text').text());
