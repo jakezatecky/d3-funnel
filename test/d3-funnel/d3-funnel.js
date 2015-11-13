@@ -379,7 +379,6 @@ describe('D3Funnel', function () {
 				});
 
 				paths = d3.selectAll('#funnel path')[0];
-
 			});
 		});
 
