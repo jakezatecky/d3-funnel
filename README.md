@@ -111,7 +111,7 @@ Example:
 	label: {
 		raw: 'Visitors',
 		formatted: 'Visitors: 150',
-		color: '#fff'',
+		color: '#fff',
 	},
 },
 ```
