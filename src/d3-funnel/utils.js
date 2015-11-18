@@ -18,8 +18,8 @@ class Utils {
 
 		for (prop in b) {
 			if (b.hasOwnProperty(prop)) {
-				if (typeof b[prop] === 'object' && !Array.isArray(b[prop])) {
-					if (typeof a[prop] === 'object' && !Array.isArray(a[prop])) {
+				if (typeof b[prop] === 'object' && !Array.isArray(b[prop]) && b[prop] !== null) {
+					if (typeof a[prop] === 'object' && !Array.isArray(a[prop]) && b[prop] !== null) {
 						a[prop] = Utils.extend(a[prop], b[prop]);
 					} else {
 						a[prop] = Utils.extend({}, b[prop]);

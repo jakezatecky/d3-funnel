@@ -622,6 +622,21 @@ describe('D3Funnel', function () {
 					value: 1000,
 				}, 0);
 			});
+
+			it('should not trigger when null', function () {
+				var event = document.createEvent('CustomEvent');
+				event.initCustomEvent('click', false, false, null);
+
+				getFunnel().draw(getBasicData(), {
+					events: {
+						click: {
+							block: null,
+						},
+					},
+				});
+
+				d3.select('#funnel path').node().dispatchEvent(event);
+			});
 		});
 	});
 });
