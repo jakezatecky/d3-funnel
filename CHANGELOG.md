@@ -1,3 +1,9 @@
+## v0.7.2 (November 18, 2015)
+
+### Bug Fixes
+
+* [#41]: Fix issue where `events.click.block` would error on `null`
+
 ## v0.7.1 (October 28, 2015)
 
 ### Behavior Changes
