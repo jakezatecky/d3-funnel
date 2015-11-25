@@ -50,6 +50,7 @@ var D3Funnel = (function () {
 		key: 'destroy',
 		value: function destroy() {
 			var container = d3.select(this.selector);
+
 			// D3's remove method appears to be sufficient for removing the events
 			container.selectAll('svg').remove();
 
@@ -261,12 +262,11 @@ var D3Funnel = (function () {
 					value: count,
 					ratio: ratio,
 					height: _this2.height * ratio,
-					formatted: _this2.labelFormatter.format(label, count),
 					fill: _this2.colorizer.getBlockFill(block, index, _this2.fillType),
 					label: {
 						raw: label,
 						formatted: _this2.labelFormatter.format(label, count),
-						color: _this2.colorizer.getLabelFill(block, index)
+						color: _this2.colorizer.getLabelFill(block)
 					}
 				});
 			});
@@ -392,7 +392,7 @@ var D3Funnel = (function () {
 			// This is greedy in that the block will have a guaranteed height
 			// and the remaining is shared among the ratio, instead of being
 			// shared according to the remaining minus the guaranteed
-			if (this.minHeight !== false) {
+			if (this.minHeight !== 0) {
 				totalHeight = this.height - this.minHeight * this.blocks.length;
 			}
 
@@ -425,7 +425,7 @@ var D3Funnel = (function () {
 					dy = totalHeight * block.ratio;
 
 					// Add greedy minimum height
-					if (_this3.minHeight !== false) {
+					if (_this3.minHeight !== 0) {
 						dy += _this3.minHeight;
 					}
 
@@ -630,7 +630,7 @@ var D3Funnel = (function () {
 			path.data(this._getD3Data(index));
 
 			// Add animation components
-			if (this.animation !== false) {
+			if (this.animation !== 0) {
 				path.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index)).each('end', function () {
 					_this4._drawBlock(index + 1);
 				});
@@ -664,7 +664,7 @@ var D3Funnel = (function () {
 		value: function _getBlockPath(group, index) {
 			var path = group.append('path');
 
-			if (this.animation !== false) {
+			if (this.animation !== 0) {
 				this._addBeforeTransition(path, index);
 			}
 
@@ -752,10 +752,10 @@ var D3Funnel = (function () {
 		}
 
 		/**
-  * @param {Object} data
-  *
-  * @return {void}
-  */
+   * @param {Object} data
+   *
+   * @return {void}
+   */
 
 	}, {
 		key: '_onMouseOut',
@@ -823,7 +823,7 @@ D3Funnel.defaults = {
 		bottomWidth: 1 / 3,
 		bottomPinch: 0,
 		inverted: false,
-		animate: false,
+		animate: 0,
 		curve: {
 			enabled: false,
 			height: 20
@@ -835,7 +835,7 @@ D3Funnel.defaults = {
 			scale: d3.scale.category10().domain(d3.range(0, 10)),
 			type: 'solid'
 		},
-		minHeight: false,
+		minHeight: 0,
 		highlight: false
 	},
 	label: {
@@ -1180,8 +1180,8 @@ var Utils = (function () {
 
 			for (prop in b) {
 				if (b.hasOwnProperty(prop)) {
-					if (_typeof(b[prop]) === 'object' && !Array.isArray(b[prop])) {
-						if (_typeof(a[prop]) === 'object' && !Array.isArray(a[prop])) {
+					if (_typeof(b[prop]) === 'object' && !Array.isArray(b[prop]) && b[prop] !== null) {
+						if (_typeof(a[prop]) === 'object' && !Array.isArray(a[prop]) && b[prop] !== null) {
 							a[prop] = Utils.extend(a[prop], b[prop]);
 						} else {
 							a[prop] = Utils.extend({}, b[prop]);
