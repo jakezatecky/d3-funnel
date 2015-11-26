@@ -623,7 +623,7 @@ describe('D3Funnel', function () {
 				}, 0);
 			});
 
-			it('should not trigger when null', function () {
+			it('should not trigger errors when null', function () {
 				var event = document.createEvent('CustomEvent');
 				event.initCustomEvent('click', false, false, null);
 
