@@ -166,8 +166,8 @@ var data = [
 ];
 ```
 
-If you want to pass formatted values to be shown in the funnel, pass in an array
-containing the value and formatted value:
+In addition to using `label.format`, you can also pass formatted values in an
+array:
 
 ``` javascript
 var data = [
