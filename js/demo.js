@@ -21,30 +21,50 @@ $(function() {
 		var options = {};
 		var settings = {
 			curved: {
-				isCurved: true,
+				chart: {
+					enabled: true,
+				},
 			},
 			pinched: {
-				bottomPinch: 1,
+				chart: {
+					bottomPinch: 1,
+				},
 			},
 			gradient: {
-				fillType: 'gradient',
+				block: {
+					fill: {
+						type: 'gradient',
+					},
+				},
 			},
 			inverted: {
-				isInverted: true,
+				chart: {
+					inverted: true,
+				},
 			},
 			hover: {
-				hoverEffects: true,
+				block: {
+					highlight: true,
+				},
 			},
 			click: {
-				onItemClick: function(d, i) {
-					alert('<' + d.label + '> selected.');
-				}
+				events: {
+					click: {
+						block: function(d, i) {
+							alert('<' + d.label.raw + '> selected.');
+						},
+					},
+				},
 			},
 			dynamic: {
-				dynamicArea: true,
+				block: {
+					dynamicHeight: true,
+				},
 			},
 			animation: {
-				animation: 200,
+				chart: {
+					animate: 200,
+				},
 			},
 			label: {
 				label: {
