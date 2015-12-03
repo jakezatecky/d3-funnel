@@ -18,11 +18,17 @@ $(function() {
 			];
 		}
 
-		var options = {};
+		var options = {
+			chart: {
+				bottomWidth: 3 / 8,
+			},
+		};
 		var settings = {
 			curved: {
 				chart: {
-					enabled: true,
+					curve: {
+						enabled: true,
+					},
 				},
 			},
 			pinched: {
@@ -75,13 +81,13 @@ $(function() {
 		};
 
 		$('input[type="checkbox"]:checked').each(function() {
-			options = $.extend(options, settings[$(this).val()]);
+			options = $.extend(true, options, settings[$(this).val()]);
 		});
 
-		// Inversion with pinch looks bad
-		// Change bottom width to make it look slightly better
-		if (options.isInverted && options.bottomPinch) {
-			options.bottomWidth = 1 / 2;
+		// Reverse data for inversion
+		if (options.chart.inverted) {
+			options.chart.bottomWidth = 1 / 3;
+			data = data.reverse();
 		}
 
 		(new D3Funnel('#funnel')).draw(data, options);
