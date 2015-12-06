@@ -1,1 +1,7 @@
-{"name":"D3-funnel","tagline":"A JavaScript library for rendering SVG funnel charts using the D3.js framework.","body":"Test...","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
+{
+	"name": "D3-funnel",
+	"tagline": "A JavaScript library for rendering SVG funnel charts using the D3.js framework.",
+	"body": "D3Funnel is an extensible, open-source JavaScript library for rendering funnel charts using the D3.js library.",
+	"google": "",
+	"note": "Don't delete this file! It's used internally to help with page regeneration."
+}
