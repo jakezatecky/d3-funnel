@@ -1,5 +1,3 @@
-/* exported Navigator */
-
 class Navigator {
 
 	/**
@@ -20,3 +18,5 @@ class Navigator {
 	}
 
 }
+
+export default Navigator;

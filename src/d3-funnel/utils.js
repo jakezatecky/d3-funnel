@@ -1,8 +1,3 @@
-/* exported Utils */
-
-/**
- * Simple utility class.
- */
 class Utils {
 
 	/**
@@ -34,3 +29,5 @@ class Utils {
 	}
 
 }
+
+export default Utils;

@@ -1,5 +1,3 @@
-/* exported Colorizer */
-
 class Colorizer {
 
 	constructor() {
@@ -145,3 +143,5 @@ class Colorizer {
 	}
 
 }
+
+export default Colorizer;

@@ -1,5 +1,3 @@
-/* exported LabelFormatter */
-
 class LabelFormatter {
 
 	/**
@@ -83,3 +81,5 @@ class LabelFormatter {
 	}
 
 }
+
+export default LabelFormatter;

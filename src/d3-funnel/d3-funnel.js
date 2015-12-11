@@ -1,5 +1,9 @@
-/* global d3, Colorizer, LabelFormatter, Navigator, Utils */
-/* exported D3Funnel */
+import d3 from 'd3';
+
+import Colorizer from './colorizer';
+import LabelFormatter from './label-formatter';
+import Navigator from './navigator';
+import Utils from './utils';
 
 class D3Funnel {
 
@@ -788,3 +792,5 @@ class D3Funnel {
 	}
 
 }
+
+export default D3Funnel;
