@@ -23,14 +23,19 @@ To install this library, simply include both [D3.js][d3] and D3Funnel:
 ```
 
 Alternatively, if you are using Webpack or Browserify, you can install the npm
-package and `require` the module:
+package and `require` or `import` the module. This will include a compatible
+version of D3.js for you:
 
 ```
 npm install d3-funnel --save
 ```
 
 ``` javascript
+// CommonJS
 var D3Funnel = require('d3-funnel');
+
+// ES6
+import D3Funnel from 'd3-funnel';
 ```
 
 # Usage
