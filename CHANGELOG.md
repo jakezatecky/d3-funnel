@@ -1,6 +1,6 @@
 ## v0.7.4 (December 11, 2015)
 
-## Build Changes
+### Build Changes
 
 * [#42]: Use ES6 imports and exports in source files
 * [#43]: Require D3.js for CommonJS environments
