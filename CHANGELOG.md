@@ -1,3 +1,14 @@
+## v0.7.4 (December 11, 2015)
+
+## Build Changes
+
+* [#42]: Use ES6 imports and exports in source files
+* [#43]: Require D3.js for CommonJS environments
+
+## v0.7.3 (skipped)
+
+D3Funnel v0.7.3 is an NPM-only hotfix that adds in missing compiled files.
+
 ## v0.7.2 (November 18, 2015)
 
 ### Bug Fixes
