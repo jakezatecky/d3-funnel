@@ -1,5 +1,4 @@
 /* exported Colorizer */
-/* jshint bitwise: false */
 
 class Colorizer {
 
