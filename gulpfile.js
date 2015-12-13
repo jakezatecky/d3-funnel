@@ -29,13 +29,13 @@ gulp.task('test-mocha', ['compile-test'], function () {
 
 gulp.task('test', ['test-format', 'test-mocha']);
 
-gulp.task('compile', function () {
+gulp.task('compile-build', function () {
 	return gulp.src(['./src/index.js'])
-			.pipe(webpack(require('./webpack.config.js')))
-			.pipe(gulp.dest('./compiled/'));
+		.pipe(webpack(require('./webpack.config.js')))
+		.pipe(gulp.dest('./compiled/'));
 });
 
-gulp.task('build', ['test', 'compile'], function () {
+gulp.task('build', ['test', 'compile-build'], function () {
 	return gulp.src(['./compiled/d3-funnel.js'])
 		.pipe(gulp.dest('./dist/'))
 		.pipe(rename({
