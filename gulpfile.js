@@ -25,7 +25,7 @@ gulp.task('test-format', function () {
 });
 
 gulp.task('compile-test', function () {
-	return gulp.src(['./test/d3-funnel/d3-funnel.js'])
+	return gulp.src(['./test/index.js'])
 		.pipe(webpack(require('./webpack.config.js')))
 		.pipe(gulp.dest('./test/compiled/'));
 });
