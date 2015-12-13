@@ -24,20 +24,26 @@ gulp.task('test-format', function () {
 		.pipe(eslint.failOnError());
 });
 
-gulp.task('compile', function () {
-	return gulp.src(['./src/index.js'])
+gulp.task('compile-test', function () {
+	return gulp.src(['./test/d3-funnel/d3-funnel.js'])
 		.pipe(webpack(require('./webpack.config.js')))
-		.pipe(gulp.dest('./compiled/'));
+		.pipe(gulp.dest('./test/compiled/'));
 });
 
-gulp.task('test-mocha', ['compile'], function () {
+gulp.task('test-mocha', ['compile-test'], function () {
 	return gulp.src(['test/test.html'])
 		.pipe(mocha({reporter: 'spec'}));
 });
 
 gulp.task('test', ['test-format', 'test-mocha']);
 
-gulp.task('build', ['test'], function () {
+gulp.task('compile', function () {
+	return gulp.src(['./src/index.js'])
+			.pipe(webpack(require('./webpack.config.js')))
+			.pipe(gulp.dest('./compiled/'));
+});
+
+gulp.task('build', ['test', 'compile'], function () {
 	return gulp.src(['./compiled/d3-funnel.js'])
 		.pipe(gulp.dest('./dist/'))
 		.pipe(rename({

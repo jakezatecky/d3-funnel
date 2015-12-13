@@ -1,4 +1,13 @@
-/* global d3, assert, chai, D3Funnel */
+import _ from 'lodash';
+import d3 from 'd3';
+import chai from 'chai';
+import spies from 'chai-spies';
+
+import D3Funnel from '../../src/d3-funnel/d3-funnel';
+
+const assert = chai.assert;
+
+chai.use(spies);
 
 function getFunnel() {
 	return new D3Funnel('#funnel');

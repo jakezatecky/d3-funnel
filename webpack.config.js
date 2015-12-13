@@ -3,9 +3,6 @@
 var webpack = require('webpack');
 
 module.exports = {
-	entry: {
-		app: './src/index.js',
-	},
 	output: {
 		filename: 'd3-funnel.js',
 		libraryTarget: 'umd',
