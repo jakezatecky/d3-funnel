@@ -22,22 +22,22 @@ function getBasicData() {
 }
 
 function getPathBottomWidth(path) {
-	var commands = path.attr('d').split(' ');
+	const commands = path.attr('d').split(' ');
 
 	return getCommandPoint(commands[2]).x - getCommandPoint(commands[3]).x;
 }
 
 function getPathHeight(path) {
-	var commands = path.attr('d').split(' ');
+	const commands = path.attr('d').split(' ');
 
 	return getCommandPoint(commands[2]).y - getCommandPoint(commands[0]).y;
 }
 
 function getCommandPoint(command) {
-	var points = command.split(',');
+	const points = command.split(',');
+	const y = points[1];
 
-	var x = points[0];
-	var y = points[1];
+	let x = points[0];
 
 	// Strip any letter in front of number
 	if (isLetter(x[0])) {
@@ -54,7 +54,7 @@ function isLetter(str) {
 	return str.length === 1 && str.match(/[a-z]/i);
 }
 
-var defaults = _.clone(D3Funnel.defaults, true);
+const defaults = _.clone(D3Funnel.defaults, true);
 
 describe('D3Funnel', function () {
 	beforeEach(function (done) {
@@ -86,7 +86,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should throw an error when the data is not an array', function () {
-				var funnel = getFunnel();
+				const funnel = getFunnel();
 
 				assert.throws(function () {
 					funnel.draw('Not array');
@@ -94,7 +94,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should throw an error when the data array does not have an element', function () {
-				var funnel = getFunnel();
+				const funnel = getFunnel();
 
 				assert.throws(function () {
 					funnel.draw([]);
@@ -102,7 +102,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should throw an error when the first data array element is not an array', function () {
-				var funnel = getFunnel();
+				const funnel = getFunnel();
 
 				assert.throws(function () {
 					funnel.draw(['Not array']);
@@ -110,7 +110,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should throw an error when the first data array element does not have two elements', function () {
-				var funnel = getFunnel();
+				const funnel = getFunnel();
 
 				assert.throws(function () {
 					funnel.draw([['Only one']]);
@@ -129,8 +129,8 @@ describe('D3Funnel', function () {
 			});
 
 			it('should use colors assigned to a data element', function () {
-				var paths;
-				var colorScale;
+				let paths;
+				let colorScale;
 
 				getFunnel().draw([
 					['A', 1, '#111'],
@@ -150,7 +150,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should use label colors assigned to a data element', function () {
-				var texts;
+				let texts;
 
 				getFunnel().draw([
 					['A', 1, null, '#111'],
@@ -168,8 +168,8 @@ describe('D3Funnel', function () {
 			});
 
 			it('should remove other elements from container', function () {
-				var container = d3.select('#funnel');
-				var funnel = getFunnel();
+				const container = d3.select('#funnel');
+				const funnel = getFunnel();
 
 				// Make sure the container has no children
 				container.selectAll('*').remove();
@@ -178,15 +178,15 @@ describe('D3Funnel', function () {
 				funnel.draw(getBasicData());
 
 				// Expect funnel children count plus funnel itself
-				var expected = getSvg().selectAll('*').size() + 1;
-				var actual = container.selectAll('*').size();
+				const expected = getSvg().selectAll('*').size() + 1;
+				const actual = container.selectAll('*').size();
 
 				assert.equal(expected, actual);
 			});
 
 			it('should remove inner text from container', function () {
-				var container = d3.select('#funnel');
-				var funnel = getFunnel();
+				const container = d3.select('#funnel');
+				const funnel = getFunnel();
 
 				// Make sure the container has no text
 				container.text();
@@ -201,7 +201,7 @@ describe('D3Funnel', function () {
 
 		describe('destroy', function () {
 			it('should remove a drawn SVG element', function () {
-				var funnel = getFunnel();
+				const funnel = getFunnel();
 
 				funnel.draw(getBasicData());
 				funnel.destroy();
@@ -289,7 +289,7 @@ describe('D3Funnel', function () {
 					},
 				});
 
-				var paths = d3.selectAll('path');
+				const paths = d3.selectAll('path');
 
 				assert.equal(150, paths[0][1].getBBox().width);
 				assert.equal(150, paths[0][2].getBBox().width);
@@ -318,9 +318,9 @@ describe('D3Funnel', function () {
 					},
 				});
 
-				var paths = d3.selectAll('#funnel path');
+				const paths = d3.selectAll('#funnel path');
 
-				var quadraticPaths = paths.filter(function () {
+				const quadraticPaths = paths.filter(function () {
 					return d3.select(this).attr('d').indexOf('Q') > -1;
 				});
 
@@ -330,7 +330,7 @@ describe('D3Funnel', function () {
 
 		describe('block.dynamicHeight', function () {
 			it('should use equal heights when false', function () {
-				var paths;
+				let paths;
 
 				getFunnel().draw([
 					['A', 1],
@@ -348,7 +348,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should use proportional heights when true', function () {
-				var paths;
+				let paths;
 
 				getFunnel().draw([
 					['A', 1],
@@ -369,7 +369,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should not have NaN in the last path when bottomWidth is equal to 0%', function () {
-				var paths;
+				let paths;
 
 				// A very specific cooked-up example that could trigger NaN
 				getFunnel().draw([
@@ -410,7 +410,7 @@ describe('D3Funnel', function () {
 
 		describe('block.fill.scale', function () {
 			it('should use a function\'s return value', function () {
-				var paths;
+				let paths;
 
 				getFunnel().draw([
 					['A', 1],
@@ -436,7 +436,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should use an array\'s return value', function () {
-				var paths;
+				let paths;
 
 				getFunnel().draw([
 					['A', 1],
@@ -487,7 +487,7 @@ describe('D3Funnel', function () {
 
 		describe('block.minHeight', function () {
 			it('should give each block the minimum height specified', function () {
-				var paths;
+				let paths;
 
 				getFunnel().draw([
 					['A', 299],
@@ -509,7 +509,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should decrease the height of blocks above the minimum', function () {
-				var paths;
+				let paths;
 
 				getFunnel().draw([
 					['A', 299],
@@ -532,7 +532,7 @@ describe('D3Funnel', function () {
 
 		describe('block.highlight', function () {
 			it('should change block color on hover', function () {
-				var event = document.createEvent('CustomEvent');
+				const event = document.createEvent('CustomEvent');
 				event.initCustomEvent('mouseover', false, false, null);
 
 				getFunnel().draw([
@@ -604,10 +604,10 @@ describe('D3Funnel', function () {
 
 		describe('events.click.block', function () {
 			it('should invoke the callback function with the correct data', function () {
-				var event = document.createEvent('CustomEvent');
+				const event = document.createEvent('CustomEvent');
 				event.initCustomEvent('click', false, false, null);
 
-				var spy = chai.spy();
+				const spy = chai.spy();
 
 				getFunnel().draw(getBasicData(), {
 					events: {
@@ -633,7 +633,7 @@ describe('D3Funnel', function () {
 			});
 
 			it('should not trigger errors when null', function () {
-				var event = document.createEvent('CustomEvent');
+				const event = document.createEvent('CustomEvent');
 				event.initCustomEvent('click', false, false, null);
 
 				getFunnel().draw(getBasicData(), {
