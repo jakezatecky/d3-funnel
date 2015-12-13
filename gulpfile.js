@@ -9,14 +9,6 @@ var pkg     = require('./package.json');
 
 var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFullYear() %> */\n';
 
-var src = [
-	'./src/d3-funnel/d3-funnel.js',
-	'./src/d3-funnel/colorizer.js',
-	'./src/d3-funnel/label-formatter.js',
-	'./src/d3-funnel/navigator.js',
-	'./src/d3-funnel/utils.js',
-];
-
 gulp.task('test-format', function () {
 	return gulp.src(['./src/d3-funnel/**/*.js'])
 		.pipe(eslint())
