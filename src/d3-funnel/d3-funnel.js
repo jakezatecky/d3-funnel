@@ -244,9 +244,9 @@ class D3Funnel {
 			label = block[0];
 
 			standardized.push({
-				index: index,
+				index,
+				ratio,
 				value: count,
-				ratio: ratio,
 				height: this.height * ratio,
 				fill: this.colorizer.getBlockFill(block, index, this.fillType),
 				label: {
@@ -765,11 +765,11 @@ class D3Funnel {
 		group.append('text')
 			.text(text)
 			.attr({
-				'x': x,
-				'y': y,
+				x,
+				y,
+				fill,
 				'text-anchor': 'middle',
 				'dominant-baseline': 'middle',
-				'fill': fill,
 				'pointer-events': 'none',
 			})
 			.style('font-size', this.label.fontSize);

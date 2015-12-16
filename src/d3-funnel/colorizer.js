@@ -39,7 +39,7 @@ class Colorizer {
 		const raw = this.getBlockRawFill(block, index);
 
 		return {
-			raw: raw,
+			raw,
 			actual: this.getBlockActualFill(raw, index, type),
 		};
 	}
