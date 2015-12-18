@@ -112,7 +112,7 @@ class Colorizer {
 		let hex = color.slice(1);
 
 		if (hex.length === 3) {
-			hex = Colorizer.expandHex(hex);
+			hex = this.expandHex(hex);
 		}
 
 		const f = parseInt(hex, 16);
@@ -138,7 +138,7 @@ class Colorizer {
 	 *
 	 * @return {string}
 	 */
-	static expandHex(hex) {
+	expandHex(hex) {
 		return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 	}
 

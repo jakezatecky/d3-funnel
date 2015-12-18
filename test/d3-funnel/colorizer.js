@@ -9,7 +9,7 @@ describe('Colorizer', function () {
 		it('should expand a three character hex code to six characters', function () {
 			const hex = 'd33';
 
-			assert.equal('dd3333', Colorizer.expandHex(hex));
+			assert.equal('dd3333', (new Colorizer).expandHex(hex));
 		});
 	});
 
