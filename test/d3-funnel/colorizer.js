@@ -17,19 +17,19 @@ describe('Colorizer', function () {
 		it('should brighten a color by the given positive percentage', function () {
 			const color = '#000000';
 
-			assert.equal('#222222', Colorizer.shade(color, 2 / 15));
+			assert.equal('#222222', (new Colorizer).shade(color, 2 / 15));
 		});
 
 		it('should shade a color by the given negative percentage', function () {
 			const color = '#ffffff';
 
-			assert.equal('#dddddd', Colorizer.shade(color, -2 / 15));
+			assert.equal('#dddddd', (new Colorizer).shade(color, -2 / 15));
 		});
 
 		it('should expand a three-character hex', function () {
 			const color = '#fff';
 
-			assert.equal('#ffffff', Colorizer.shade(color, 0));
+			assert.equal('#ffffff', (new Colorizer).shade(color, 0));
 		});
 	});
 });

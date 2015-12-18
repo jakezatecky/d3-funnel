@@ -108,7 +108,7 @@ class Colorizer {
 	 *
 	 * @return {string}
 	 */
-	static shade(color, shade) {
+	shade(color, shade) {
 		let hex = color.slice(1);
 
 		if (hex.length === 3) {

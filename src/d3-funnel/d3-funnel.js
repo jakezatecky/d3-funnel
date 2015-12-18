@@ -529,7 +529,7 @@ class D3Funnel {
 		// Create a gradient for each block
 		this.blocks.forEach((block, index) => {
 			const color = block.fill.raw;
-			const shade = Colorizer.shade(color, -0.2);
+			const shade = this.colorizer.shade(color, -0.2);
 
 			// Create linear gradient
 			const gradient = defs.append('linearGradient')
@@ -588,7 +588,7 @@ class D3Funnel {
 
 		// Draw top oval
 		svg.append('path')
-			.attr('fill', Colorizer.shade(this.blocks[0].fill.raw, -0.4))
+			.attr('fill', this.colorizer.shade(this.blocks[0].fill.raw, -0.4))
 			.attr('d', path);
 	}
 
@@ -629,8 +629,8 @@ class D3Funnel {
 
 		// Add the hover events
 		if (this.hoverEffects) {
-			path.on('mouseover', this._onMouseOver)
-				.on('mouseout', this._onMouseOut);
+			path.on('mouseover', this._onMouseOver.bind(this))
+				.on('mouseout', this._onMouseOut.bind(this));
 		}
 
 		// Add block click event
@@ -736,7 +736,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOver(data) {
-		d3.select(d3.event.target).attr('fill', Colorizer.shade(data.fill.raw, -0.2));
+		d3.select(d3.event.target).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
 	}
 
 	/**
