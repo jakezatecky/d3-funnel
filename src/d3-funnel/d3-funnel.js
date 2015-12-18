@@ -609,7 +609,9 @@ class D3Funnel {
 
 		// Fetch path element
 		const path = this._getBlockPath(group, index);
-		path.data(this._getD3Data(index));
+
+		// Attach data to the element
+		this._attachData(path, this.blocks[index]);
 
 		// Add animation components
 		if (this.animation !== 0) {
@@ -705,14 +707,17 @@ class D3Funnel {
 	}
 
 	/**
-	 * Return d3 formatted data for the given block.
+	 * Attach data to the target element. Also attach the current node to the
+	 * data object.
 	 *
-	 * @param {int} index
+	 * @param {Object} element
 	 *
-	 * @return {Array}
+	 * @return {void}
 	 */
-	_getD3Data(index) {
-		return [this.blocks[index]];
+	_attachData(element, data) {
+		data.node = element.node();
+
+		element.data([data]);
 	}
 
 	/**

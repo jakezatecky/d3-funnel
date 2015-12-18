@@ -100,6 +100,7 @@ Block-based events are passed a `data` object containing the following elements:
 | Key             | Type   | Description                           |
 | --------------- | ------ | ------------------------------------- |
 | index           | number | The index of the block.               |
+| node            | object | The DOM node of the block.            |
 | value           | number | The numerical value.                  |
 | fill            | string | The background color.                 |
 | label.raw       | string | The unformatted label.                |
@@ -111,6 +112,7 @@ Example:
 ``` javascript
 {
 	index: 0,
+	node: { ... },
 	value: 150,
 	fill: '#c33',
 	label: {

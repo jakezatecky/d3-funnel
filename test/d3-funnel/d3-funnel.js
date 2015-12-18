@@ -615,6 +615,7 @@ describe('D3Funnel', function () {
 							block: function (d, i) {
 								spy({
 									index: d.index,
+									node: d.node,
 									label: d.label.raw,
 									value: d.value,
 								}, i);
@@ -627,6 +628,7 @@ describe('D3Funnel', function () {
 
 				chai.expect(spy).to.have.been.called.once.with({
 					index: 0,
+					node: d3.select('#funnel path').node(),
 					label: 'Node',
 					value: 1000,
 				}, 0);
