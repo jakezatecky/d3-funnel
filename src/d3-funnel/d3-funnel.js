@@ -736,7 +736,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOver(data) {
-		d3.select(this).attr('fill', Colorizer.shade(data.fill.raw, -0.2));
+		d3.select(d3.event.target).attr('fill', Colorizer.shade(data.fill.raw, -0.2));
 	}
 
 	/**
@@ -745,7 +745,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOut(data) {
-		d3.select(this).attr('fill', data.fill.actual);
+		d3.select(d3.event.target).attr('fill', data.fill.actual);
 	}
 
 	/**
