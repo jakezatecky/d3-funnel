@@ -1,3 +1,9 @@
+## v0.7.5 (December 19, 2015)
+
+### New Features
+
+* [#44]: Pass DOM node to event data
+
 ## v0.7.4 (December 11, 2015)
 
 ### Build Changes
