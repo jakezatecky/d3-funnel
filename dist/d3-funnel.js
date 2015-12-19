@@ -338,8 +338,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 					standardized.push({
 						index: index,
-						value: count,
 						ratio: ratio,
+						value: count,
 						height: _this2.height * ratio,
 						fill: _this2.colorizer.getBlockFill(block, index, _this2.fillType),
 						label: {
@@ -628,12 +628,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_defineColorGradients',
 			value: function _defineColorGradients(svg) {
+				var _this4 = this;
+
 				var defs = svg.append('defs');
 
 				// Create a gradient for each block
 				this.blocks.forEach(function (block, index) {
 					var color = block.fill.raw;
-					var shade = _colorizer2.default.shade(color, -0.2);
+					var shade = _this4.colorizer.shade(color, -0.2);
 
 					// Create linear gradient
 					var gradient = defs.append('linearGradient').attr({
@@ -681,7 +683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var path = this.navigator.plot([['M', leftX, paths[0][1]], ['Q', centerX, topCurve], [' ', rightX, paths[2][1]], ['M', rightX, 10], ['Q', centerX, 0], [' ', leftX, 10]]);
 
 				// Draw top oval
-				svg.append('path').attr('fill', _colorizer2.default.shade(this.blocks[0].fill.raw, -0.4)).attr('d', path);
+				svg.append('path').attr('fill', this.colorizer.shade(this.blocks[0].fill.raw, -0.4)).attr('d', path);
 			}
 
 			/**
@@ -695,7 +697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_drawBlock',
 			value: function _drawBlock(index) {
-				var _this4 = this;
+				var _this5 = this;
 
 				if (index === this.blocks.length) {
 					return;
@@ -706,12 +708,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				// Fetch path element
 				var path = this._getBlockPath(group, index);
-				path.data(this._getD3Data(index));
+
+				// Attach data to the element
+				this._attachData(path, this.blocks[index]);
 
 				// Add animation components
 				if (this.animation !== 0) {
 					path.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index)).each('end', function () {
-						_this4._drawBlock(index + 1);
+						_this5._drawBlock(index + 1);
 					});
 				} else {
 					path.attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index));
@@ -720,7 +724,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				// Add the hover events
 				if (this.hoverEffects) {
-					path.on('mouseover', this._onMouseOver).on('mouseout', this._onMouseOut);
+					path.on('mouseover', this._onMouseOver.bind(this)).on('mouseout', this._onMouseOut.bind(this));
 				}
 
 				// Add block click event
@@ -787,17 +791,20 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			/**
-	   * Return d3 formatted data for the given block.
+	   * Attach data to the target element. Also attach the current node to the
+	   * data object.
 	   *
-	   * @param {int} index
+	   * @param {Object} element
 	   *
-	   * @return {Array}
+	   * @return {void}
 	   */
 
 		}, {
-			key: '_getD3Data',
-			value: function _getD3Data(index) {
-				return [this.blocks[index]];
+			key: '_attachData',
+			value: function _attachData(element, data) {
+				data.node = element.node();
+
+				element.data([data]);
 			}
 
 			/**
@@ -827,7 +834,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOver',
 			value: function _onMouseOver(data) {
-				_d2.default.select(this).attr('fill', _colorizer2.default.shade(data.fill.raw, -0.2));
+				_d2.default.select(_d2.default.event.target).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
 			}
 
 			/**
@@ -839,7 +846,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOut',
 			value: function _onMouseOut(data) {
-				_d2.default.select(this).attr('fill', data.fill.actual);
+				_d2.default.select(_d2.default.event.target).attr('fill', data.fill.actual);
 			}
 
 			/**
@@ -860,11 +867,11 @@ return /******/ (function(modules) { // webpackBootstrap
 				var y = this._getTextY(paths);
 
 				group.append('text').text(text).attr({
-					'x': x,
-					'y': y,
+					x: x,
+					y: y,
+					fill: fill,
 					'text-anchor': 'middle',
 					'dominant-baseline': 'middle',
-					'fill': fill,
 					'pointer-events': 'none'
 				}).style('font-size', this.label.fontSize);
 			}
@@ -1077,13 +1084,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @return {string}
 	   */
 
-		}], [{
+		}, {
 			key: 'shade',
 			value: function shade(color, _shade) {
 				var hex = color.slice(1);
 
 				if (hex.length === 3) {
-					hex = Colorizer.expandHex(hex);
+					hex = this.expandHex(hex);
 				}
 
 				var f = parseInt(hex, 16);
