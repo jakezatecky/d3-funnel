@@ -711,6 +711,7 @@ class D3Funnel {
 	 * data object.
 	 *
 	 * @param {Object} element
+	 * @param {Object} data
 	 *
 	 * @return {void}
 	 */
