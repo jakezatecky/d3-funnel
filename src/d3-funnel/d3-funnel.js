@@ -13,7 +13,7 @@ class D3Funnel {
 			height: 400,
 			bottomWidth: 1 / 3,
 			bottomPinch: 0,
-			inverted: false,
+			orientation: 'top-to-bottom',
 			animate: 0,
 			curve: {
 				enabled: false,
@@ -120,7 +120,7 @@ class D3Funnel {
 		this.height = settings.chart.height;
 		this.bottomWidth = settings.chart.width * settings.chart.bottomWidth;
 		this.bottomPinch = settings.chart.bottomPinch;
-		this.isInverted = settings.chart.inverted;
+		this.isInverted = settings.chart.orientation === 'bottom-to-top';
 		this.isCurved = settings.chart.curve.enabled;
 		this.curveHeight = settings.chart.curve.height;
 		this.fillType = settings.block.fill.type;
@@ -181,6 +181,12 @@ class D3Funnel {
 
 		// Overwrite default settings with user options
 		settings = Utils.extend(settings, options);
+
+		// Backwards compatibility with chart.inverted
+		if (settings.chart.inverted) {
+			settings.chart.orientation = 'bottom-to-top';
+			console.warn('Warning: chart.inverted is deprecated. Use chart.orientation instead.');
+		}
 
 		// In the case that the width or height is not valid, set
 		// the width/height as its default hard-coded value
