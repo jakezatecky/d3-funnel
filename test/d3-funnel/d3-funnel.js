@@ -21,6 +21,12 @@ function getBasicData() {
 	return [['Node', 1000]];
 }
 
+function getPathTopWidth(path) {
+	const commands = path.attr('d').split(' ');
+
+	return getCommandPoint(commands[1]).x - getCommandPoint(commands[0]).x;
+}
+
 function getPathBottomWidth(path) {
 	const commands = path.attr('d').split(' ');
 
@@ -293,6 +299,43 @@ describe('D3Funnel', function () {
 
 				assert.equal(150, paths[0][1].getBBox().width);
 				assert.equal(150, paths[0][2].getBBox().width);
+			});
+		});
+
+		describe('chart.inverted', function () {
+			it('should draw the chart in a top-to-bottom arrangement by default', function () {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					chart: {
+						width: 200,
+						bottomWidth: 1 / 2,
+					},
+				});
+
+				const paths = d3.selectAll('path');
+
+				assert.equal(200, getPathTopWidth(d3.select(paths[0][0])));
+				assert.equal(100, getPathBottomWidth(d3.select(paths[0][1])));
+			});
+
+			it('should draw the chart in a bottom-to-top arrangement when true', function () {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					chart: {
+						width: 200,
+						bottomWidth: 1 / 2,
+						inverted: true,
+					},
+				});
+
+				const paths = d3.selectAll('path');
+
+				assert.equal(100, getPathTopWidth(d3.select(paths[0][0])));
+				assert.equal(200, getPathBottomWidth(d3.select(paths[0][1])));
 			});
 		});
 

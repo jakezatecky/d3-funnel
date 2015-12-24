@@ -68,7 +68,7 @@ funnel chart:
 | `chart.height`        | The pixel height of the chart.                                            | number   | Container's height      |
 | `chart.bottomWidth`   | The percent of total width the bottom should be.                          | number   | `1 / 3`                 |
 | `chart.bottomPinch`   | How many blocks to pinch on the bottom to create a funnel "neck".         | number   | `0`                     |
-| `chart.inverted`      | Whether the funnel is inverted (like a pyramid).                          | bool     | `false`                 |
+| `chart.inverted`      | Whether the funnel direction is inverted (like a pyramid).                | bool     | `false`                 |
 | `chart.animate`       | The load animation speed in milliseconds.                                 | number   | `0` (disabled)          |
 | `chart.curve.enabled` | Whether the funnel is curved.                                             | bool     | `false`                 |
 | `chart.curve.height`  | The curvature amount.                                                     | number   | `20`                    |
