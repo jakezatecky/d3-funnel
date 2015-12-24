@@ -302,7 +302,7 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('chart.direction', function () {
+		describe('chart.inverted', function () {
 			it('should draw the chart in a top-to-bottom arrangement by default', function () {
 				getFunnel().draw([
 					['A', 1],
@@ -320,7 +320,7 @@ describe('D3Funnel', function () {
 				assert.equal(100, getPathBottomWidth(d3.select(paths[0][1])));
 			});
 
-			it('should draw the chart in a bottom-to-top arrangement when specified', function () {
+			it('should draw the chart in a bottom-to-top arrangement when true', function () {
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -328,7 +328,7 @@ describe('D3Funnel', function () {
 					chart: {
 						width: 200,
 						bottomWidth: 1 / 2,
-						direction: 'bottom-to-top',
+						inverted: true,
 					},
 				});
 
