@@ -1,3 +1,9 @@
+## v0.7.6 (TBA)
+
+### New Features
+
+* [#23]: Add ability to change chart orientation from vertical to horizontal
+
 ## v0.7.5 (December 19, 2015)
 
 ### New Features
