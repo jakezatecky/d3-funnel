@@ -722,9 +722,12 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_attachData(element, data) {
-		data.node = element.node();
+		const nodeData = {
+			node: element.node(),
+			...data,
+		};
 
-		element.data([data]);
+		element.data([nodeData]);
 	}
 
 	/**

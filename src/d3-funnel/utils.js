@@ -11,6 +11,7 @@ class Utils {
 	static extend(a, b) {
 		let prop;
 
+		/* eslint-disable no-param-reassign */
 		for (prop in b) {
 			if (b.hasOwnProperty(prop)) {
 				if (typeof b[prop] === 'object' && !Array.isArray(b[prop]) && b[prop] !== null) {
@@ -24,6 +25,7 @@ class Utils {
 				}
 			}
 		}
+		/* eslint-enable no-param-reassign */
 
 		return a;
 	}
