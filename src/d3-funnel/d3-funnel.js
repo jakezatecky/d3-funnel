@@ -717,8 +717,8 @@ class D3Funnel {
 	 */
 	_attachData(element, data) {
 		const nodeData = {
-			node: element.node(),
 			...data,
+			node: element.node(),
 		};
 
 		element.data([nodeData]);
