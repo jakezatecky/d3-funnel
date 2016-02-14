@@ -1,0 +1,12 @@
+{
+  "name": "d3-funnel-gh-pages",
+  "version": "",
+  "homepage": "",
+  "author": "Jake Zatecky",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-sass": "^2.2.0",
+    "gulp-scss-lint": "^0.3.9"
+  }
+}

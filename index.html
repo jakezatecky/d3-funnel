@@ -1,102 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <title>D3Funnel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="D3Funnel: A JavaScript SVG library for rendering funnel, pipeline, and pyramid charts using the D3.js framework.">
-
-    <link rel="stylesheet" media="screen" href="css/stylesheet.css">
-    <link rel="stylesheet" media="screen" href="css/d3-funnel.css">
-
-    <title>D3Funnel</title>
+    <meta name="theme-color" content="#157878">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700">
+    <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-    <div id="header-wrap" class="outer">
-      <header class="inner">
-        <a id="forkme-banner" href="https://github.com/jakezatecky/d3-funnel">View on GitHub</a>
-        <h1 id="project-title">D3Funnel</h1>
-        <h2 id="project-tagline">A JavaScript library for rendering funnel charts using the D3.js framework.</h2>
-        <section id="downloads">
-          <a class="zip-download-link" href="https://github.com/jakezatecky/d3-funnel/zipball/master">Download this project as a .zip file</a>
-          <a class="tar-download-link" href="https://github.com/jakezatecky/d3-funnel/tarball/master">Download this project as a tar.gz file</a>
-        </section>
-      </header>
-    </div>
+    <section class="page-header">
+      <h1 class="project-name">D3Funnel</h1>
+      <h2 class="project-tagline">A JavaScript library for rendering funnel charts using the D3.js framework.</h2>
+      <a href="https://github.com/jakezatecky/d3-funnel" class="btn">View on GitHub</a>
+      <a href="https://github.com/jakezatecky/d3-funnel/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/jakezatecky/d3-funnel/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <div id="main-content-wrap" class="outer">
-      <section id="main-content" class="inner">
-        <p>
-          <strong>D3Funnel</strong> is an extensible, open-source JavaScript library for rendering
-          funnel charts using the <a href="http://d3js.org/">D3.js</a> library.
-        </p>
-        <p>
-          D3Funnel is focused on providing practical and visually appealing funnels
-          through a variety of customization options. Check out the example below to get a showcasing of the several possible options.
-        </p>
-        <div class="demo">
-          <div class="demo-funnel">
-            <div id="funnel"></div>
-          </div>
-          <div class="demo-options">
-            <form>
-              <label>
-                <input type="checkbox" value="curved">
-                Curved
-              </label>
-              <label>
-                <input type="checkbox" value="pinched" checked>
-                Pinched
-              </label>
-              <label>
-                <input type="checkbox" value="gradient">
-                Gradient
-              </label>
-              <label>
-                <input type="checkbox" value="inverted">
-                Inverted
-              </label>
-              <label>
-                <input type="checkbox" value="hover">
-                Highlight on Hover
-              </label>
-              <label>
-                <input type="checkbox" value="click">
-                Click Event
-              </label>
-              <label>
-                <input type="checkbox" value="dynamic" checked>
-                Dynamic Area
-              </label>
-              <label>
-                <input type="checkbox" value="animation">
-                Load Animation
-              </label>
-              <label>
-                <input type="checkbox" value="label">
-                Style Labels
-              </label>
-              <label>
-                <input type="checkbox" value="color">
-                Custom Color
-              </label>
-            </form>
-          </div>
+    <section class="main-content">
+      <p>
+        <strong>D3Funnel</strong> is an extensible, open-source JavaScript library for rendering
+        funnel charts using the <a href="http://d3js.org/">D3.js</a> library.
+      </p>
+      <p>
+        D3Funnel is focused on providing practical and visually appealing funnels
+        through a variety of customization options. Check out the example below to get a showcasing of the several possible options.
+      </p>
+      <div class="demo">
+        <div class="demo-funnel" id="funnel"></div>
+        <div class="demo-options">
+          <form>
+            <label>
+              <input type="checkbox" value="curved">
+              Curved
+            </label>
+            <label>
+              <input type="checkbox" value="pinched" checked>
+              Pinched
+            </label>
+            <label>
+              <input type="checkbox" value="gradient">
+              Gradient
+            </label>
+            <label>
+              <input type="checkbox" value="inverted">
+              Inverted
+            </label>
+            <label>
+              <input type="checkbox" value="hover">
+              Highlight on Hover
+            </label>
+            <label>
+              <input type="checkbox" value="click">
+              Click Event
+            </label>
+            <label>
+              <input type="checkbox" value="dynamic" checked>
+              Dynamic Area
+            </label>
+            <label>
+              <input type="checkbox" value="animation">
+              Load Animation
+            </label>
+            <label>
+              <input type="checkbox" value="label">
+              Style Labels
+            </label>
+            <label>
+              <input type="checkbox" value="color">
+              Custom Color
+            </label>
+          </form>
         </div>
-      </section>
-    </div>
+      </div>
 
-    <div id="footer-wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">D3Funnel maintained by <a href="https://github.com/jakezatecky">jakezatecky</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/jakezatecky/d3-funnel">D3Funnel</a> is maintained by <a href="https://github.com/jakezatecky">jakezatecky</a>.</span>
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
+
+    </section>
 
     <script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
     <script src="//cdn.rawgit.com/jakezatecky/d3-funnel/v0.7.2/dist/d3-funnel.js"></script>
 
     <script src="js/demo.js"></script>
+
   </body>
 </html>

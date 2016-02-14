@@ -1,0 +1,19 @@
+@import 'cayman';
+
+.demo {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 10px 30px;
+
+  form label {
+    display: block;
+    font-weight: normal;
+  }
+}
+
+.demo-funnel {
+  height: 400px;
+  margin-right: 50px;
+  width: 320px;
+}
