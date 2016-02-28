@@ -236,14 +236,10 @@ class D3Funnel {
 	_standardizeData(data, totalCount) {
 		const standardized = [];
 
-		let count;
-		let ratio;
-		let label;
-
 		data.forEach((block, index) => {
-			count = this._getRawBlockCount(block);
-			ratio = count / totalCount;
-			label = block[0];
+			const count = this._getRawBlockCount(block);
+			const ratio = count / totalCount;
+			const label = block[0];
 
 			standardized.push({
 				index,
