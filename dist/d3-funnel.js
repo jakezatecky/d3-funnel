@@ -729,6 +729,10 @@ return /******/ (function(modules) { // webpackBootstrap
 					this._drawBlock(index + 1);
 				}
 
+				if (this.addValueOverlay) {
+					path.attr('stroke', this.blocks[index].fill.raw);
+				}
+
 				// Add the hover events
 				if (this.hoverEffects) {
 					path.on('mouseover', this._onMouseOver.bind(this)).on('mouseout', this._onMouseOut.bind(this));
