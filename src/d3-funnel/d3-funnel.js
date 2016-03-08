@@ -16,6 +16,8 @@ class D3Funnel {
 			inverted: false,
 			horizontal: false,
 			animate: 0,
+			addValueOverlay: false,
+			totalCount: null,
 			curve: {
 				enabled: false,
 				height: 20,
@@ -124,6 +126,7 @@ class D3Funnel {
 		this.isInverted = settings.chart.inverted;
 		this.isHorizontal = settings.chart.horizontal;
 		this.isCurved = settings.chart.curve.enabled;
+		this.addValueOverlay = settings.chart.addValueOverlay;
 		this.curveHeight = settings.chart.curve.height;
 		this.fillType = settings.block.fill.type;
 		this.hoverEffects = settings.block.highlight;
@@ -134,7 +137,7 @@ class D3Funnel {
 		// Support for events
 		this.onBlockClick = settings.events.click.block;
 
-		this._setBlocks(data);
+		this._setBlocks(data, options);
 
 		// Calculate the bottom left x position
 		this.bottomLeftX = (this.width - this.bottomWidth) / 2;
@@ -204,9 +207,8 @@ class D3Funnel {
 	 *
 	 * @return void
 	 */
-	_setBlocks(data) {
-		const totalCount = this._getTotalCount(data);
-
+	_setBlocks(data, options) {
+		const totalCount = this._getTotalCount(data, options);
 		this.blocks = this._standardizeData(data, totalCount);
 	}
 
@@ -215,13 +217,15 @@ class D3Funnel {
 	 *
 	 * @return {Number}
 	 */
-	_getTotalCount(data) {
-		let total = 0;
+	_getTotalCount(data, options) {
+		if (options.chart && options.chart.totalCount) {
+			return parseInt(options.chart.totalCount, 10) || 0;
+		}
 
+		let total = 0;
 		data.forEach((block) => {
 			total += this._getRawBlockCount(block);
 		});
-
 		return total;
 	}
 
@@ -238,7 +242,7 @@ class D3Funnel {
 
 		data.forEach((block, index) => {
 			const count = this._getRawBlockCount(block);
-			const ratio = count / totalCount;
+			const ratio = (count / totalCount) || 0;
 			const label = block[0];
 
 			standardized.push({
@@ -611,18 +615,23 @@ class D3Funnel {
 		// Attach data to the element
 		this._attachData(path, this.blocks[index]);
 
+		let pathColor = this.blocks[index].fill.raw;
+		if (this.addValueOverlay) {
+			pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
+		}
+
 		// Add animation components
 		if (this.animation !== 0) {
 			path.transition()
 				.duration(this.animation)
 				.ease('linear')
-				.attr('fill', this.blocks[index].fill.actual)
+				.attr('fill', pathColor)
 				.attr('d', this._getPathDefinition(index))
 				.each('end', () => {
 					this._drawBlock(index + 1);
 				});
 		} else {
-			path.attr('fill', this.blocks[index].fill.actual)
+			path.attr('fill', pathColor)
 				.attr('d', this._getPathDefinition(index));
 			this._drawBlock(index + 1);
 		}
@@ -636,6 +645,10 @@ class D3Funnel {
 		// Add block click event
 		if (this.onBlockClick !== null) {
 			path.on('click', this.onBlockClick);
+		}
+
+		if (this.addValueOverlay) {
+			this._drawValueOverlay(group, index);
 		}
 
 		this._addBlockLabel(group, index);
@@ -753,6 +766,42 @@ class D3Funnel {
 	 */
 	_onMouseOut(data) {
 		d3.select(d3.event.target).attr('fill', data.fill.actual);
+	}
+
+	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 * @return {void}
+	 */
+	_drawValueOverlay(group, index) {
+		const paths = this.blockPaths[index];
+		const opts = this.blocks[index];
+		const fill = opts.fill;
+		const offsetTop = paths[0][0];
+		const offsetBtm = paths[3][0];
+		const lengthTop = (paths[1][0] - offsetTop);
+		const lengthBtm = (paths[2][0] - offsetBtm);
+		const rightSideTop = lengthTop * (opts.ratio || 0) + offsetTop;
+		const rightSideBtm = lengthBtm * (opts.ratio || 0) + offsetBtm;
+
+		// don't draw overlay if ratio is zero
+		if (opts.ratio === 0) {
+			return;
+		}
+
+		paths[1][0] = rightSideTop;
+		paths[2][0] = rightSideBtm;
+		const path = this.navigator.plot([
+			['M', paths[0][0], paths[0][1]],
+			['L', paths[1][0], paths[1][1]],
+			['L', paths[2][0], paths[2][1]],
+			['L', paths[3][0], paths[3][1]],
+			['L', paths[4][0], paths[4][1]],
+		]);
+
+		group.append('path')
+			.attr('fill', fill.actual)
+			.attr('d', path);
 	}
 
 	/**
