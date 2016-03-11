@@ -339,6 +339,35 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('chart.addValueOverlay', function () {
+			it('should draw value overlay within each path', function() {
+				getFunnel().draw([
+					['A', 10],
+					['B', 20],
+				], {
+					chart: {
+						addValueOverlay: true,
+					},
+				});
+
+				const paths = d3.selectAll('path');
+			});
+
+			it('should draw value overlay with overridden total count', function() {
+				getFunnel().draw([
+					['A', 10],
+					['B', 20],
+				], {
+					chart: {
+						addValueOverlay: true,
+						totalCount: 100,
+					},
+				});
+
+				const paths = d3.selectAll('path');
+			});
+		});
+
 		describe('chart.curve.enabled', function () {
 			it('should create an additional path on top of the trapezoids', function () {
 				getFunnel().draw(getBasicData(), {
