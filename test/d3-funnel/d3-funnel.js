@@ -500,7 +500,7 @@ describe('D3Funnel', function () {
 		});
 
 		describe('block.fill.type', function () {
-			xit('should create gradients when set to \'gradient\'', function () {
+			it('should create gradients when set to \'gradient\'', function () {
 				getFunnel().draw(getBasicData(), {
 					block: {
 						fill: {

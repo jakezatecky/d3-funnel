@@ -615,7 +615,7 @@ class D3Funnel {
 		// Attach data to the element
 		this._attachData(path, this.blocks[index]);
 
-		let pathColor = this.blocks[index].fill.raw;
+		let pathColor = this.blocks[index].fill.actual;
 		if (this.addValueOverlay) {
 			pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
 		}
