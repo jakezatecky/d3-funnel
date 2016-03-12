@@ -350,7 +350,8 @@ describe('D3Funnel', function () {
 					},
 				});
 
-				const paths = d3.selectAll('path');
+				// draw 2 path for each data point
+				assert.equal(4, d3.selectAll('#funnel path')[0].length);
 			});
 
 			it('should draw value overlay with overridden total count', function() {
@@ -365,6 +366,13 @@ describe('D3Funnel', function () {
 				});
 
 				const paths = d3.selectAll('path');
+				const APathFullWidth = getPathTopWidth(d3.select(paths[0][0]));
+				const APathOverlayWidth = getPathTopWidth(d3.select(paths[0][1]));
+				const BPathFullWidth = getPathTopWidth(d3.select(paths[0][2]));
+				const BPathOverlayWidth = getPathTopWidth(d3.select(paths[0][3]));
+
+				assert.equal(10, Math.round(APathOverlayWidth / APathFullWidth * 100));
+				assert.equal(20, Math.round(BPathOverlayWidth / BPathFullWidth * 100));
 			});
 		});
 
