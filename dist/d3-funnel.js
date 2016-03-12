@@ -1376,7 +1376,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @return {Object}
 	   */
 			value: function extend(a, b) {
-				var prop = undefined;
+				var prop = void 0;
 
 				/* eslint-disable no-param-reassign */
 				for (prop in b) {
