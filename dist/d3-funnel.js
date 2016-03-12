@@ -714,7 +714,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				// Attach data to the element
 				this._attachData(path, this.blocks[index]);
 
-				var pathColor = this.blocks[index].fill.raw;
+				var pathColor = this.blocks[index].fill.actual;
 				if (this.addValueOverlay) {
 					pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
 				}
