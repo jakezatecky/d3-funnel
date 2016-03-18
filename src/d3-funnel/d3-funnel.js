@@ -606,6 +606,9 @@ class D3Funnel {
 			return;
 		}
 
+		// overlay path reference if defined
+		let overlayPath = null;
+
 		// Create a group just for this block
 		const group = this.svg.append('g');
 
@@ -636,23 +639,28 @@ class D3Funnel {
 			this._drawBlock(index + 1);
 		}
 
+		// add path overlay
 		if (this.addValueOverlay) {
 			path.attr('stroke', this.blocks[index].fill.raw);
+			overlayPath = this._drawValueOverlay(group, index);
+			this._attachData(overlayPath, this.blocks[index]);
 		}
 
 		// Add the hover events
 		if (this.hoverEffects) {
-			path.on('mouseover', this._onMouseOver.bind(this))
-				.on('mouseout', this._onMouseOut.bind(this));
+			[path, overlayPath].forEach((each) => {
+				if (!each) return;
+				each.on('mouseover', this._onMouseOver.bind(this))
+					.on('mouseout', this._onMouseOut.bind(this));
+			});
 		}
 
 		// Add block click event
 		if (this.onBlockClick !== null) {
-			path.on('click', this.onBlockClick);
-		}
-
-		if (this.addValueOverlay) {
-			this._drawValueOverlay(group, index);
+			[path, overlayPath].forEach((each) => {
+				if (!each) return;
+				each.on('click', this.onBlockClick);
+			});
 		}
 
 		this._addBlockLabel(group, index);
@@ -775,7 +783,7 @@ class D3Funnel {
 	/**
 	 * @param {Object} group
 	 * @param {int}    index
-	 * @return {void}
+	 * @return {Object}
 	 */
 	_drawValueOverlay(group, index) {
 		const paths = this.blockPaths[index];
@@ -790,7 +798,7 @@ class D3Funnel {
 
 		// don't draw overlay if ratio is zero
 		if (opts.ratio === 0) {
-			return;
+			return null;
 		}
 
 		paths[1][0] = rightSideTop;
@@ -803,9 +811,11 @@ class D3Funnel {
 			['L', paths[4][0], paths[4][1]],
 		]);
 
-		group.append('path')
+		const retValue = group.append('path')
 			.attr('fill', fill.actual)
 			.attr('d', path);
+
+		return retValue;
 	}
 
 	/**
