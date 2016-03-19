@@ -661,11 +661,14 @@ class D3Funnel {
 
 		// Fetch path element
 		const path = this._getBlockPath(group, index);
-
 		// Attach data to the element
 		this._attachData(path, this.blocks[index]);
+
+		let overlayPath = null;
 		let pathColor = this.blocks[index].fill.actual;
 		if (this.addValueOverlay) {
+			overlayPath = this._getOverlayPath(group, index);
+			this._attachData(overlayPath, this.blocks[index]);
 			// default path becomes background of lighter shade
 			pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
 		}
@@ -687,11 +690,7 @@ class D3Funnel {
 		}
 
 		// add path overlay
-		// TODO: fix colors for value overlays
 		if (this.addValueOverlay) {
-			const overlayPath = this._getOverlayPath(group, index);
-			this._attachData(overlayPath, this.blocks[index]);
-
 			path.attr('stroke', this.blocks[index].fill.raw);
 
 			if (this.animation !== 0) {
@@ -707,18 +706,23 @@ class D3Funnel {
 		}
 
 		// Add the hover events
-		// TODO: fix hover for overlay paths
 		if (this.hoverEffects) {
-			[path].forEach((each) => {
-				if (!each) return;
-				each.on('mouseover', this._onMouseOver.bind(this))
+			if (this.addValueOverlay) {
+				// add separate hover effects for each
+				path.on('mouseover', this._onMouseOver.bind(this))
+					.on('mouseout', this._onMouseOutBackgroundPath.bind(this));
+				overlayPath.on('mouseover', this._onMouseOver.bind(this))
 					.on('mouseout', this._onMouseOut.bind(this));
-			});
+			} else {
+				// add hover effects for the regular path
+				path.on('mouseover', this._onMouseOver.bind(this))
+					.on('mouseout', this._onMouseOut.bind(this));
+			}
 		}
 
 		// Add block click event
 		if (this.onBlockClick !== null) {
-			[path].forEach((each) => {
+			[path, overlayPath].forEach((each) => {
 				if (!each) return;
 				each.on('click', this.onBlockClick);
 			});
@@ -870,6 +874,16 @@ class D3Funnel {
 	 */
 	_onMouseOut(data) {
 		d3.select(d3.event.target).attr('fill', data.fill.actual);
+	}
+
+	/**
+	 * @param {Object} data
+	 *
+	 * @return {void}
+	 */
+	_onMouseOutBackgroundPath(data) {
+		const backgroundColor = this.colorizer.shade(data.fill.actual, 0.3);
+		d3.select(d3.event.target).attr('fill', backgroundColor);
 	}
 
 	/**
