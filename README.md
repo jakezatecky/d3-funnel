@@ -62,25 +62,27 @@ funnel chart:
 
 ## Options
 
-| Option                | Description                                                               | Type     | Default                 |
-| --------------------- | ------------------------------------------------------------------------- | -------- | ----------------------- |
-| `chart.width`         | The pixel width of the chart.                                             | number   | Container's width       |
-| `chart.height`        | The pixel height of the chart.                                            | number   | Container's height      |
-| `chart.bottomWidth`   | The percent of total width the bottom should be.                          | number   | `1 / 3`                 |
-| `chart.bottomPinch`   | How many blocks to pinch on the bottom to create a funnel "neck".         | number   | `0`                     |
-| `chart.inverted`      | Whether the funnel direction is inverted (like a pyramid).                | bool     | `false`                 |
-| `chart.animate`       | The load animation speed in milliseconds.                                 | number   | `0` (disabled)          |
-| `chart.curve.enabled` | Whether the funnel is curved.                                             | bool     | `false`                 |
-| `chart.curve.height`  | The curvature amount.                                                     | number   | `20`                    |
-| `block.dynamicHeight` | Whether the block heights are proportional to its weight.                 | bool     | `false`                 |
-| `block.fill.scale`    | The background color scale as an array or function.                       | mixed    | `d3.scale.category10()` |
-| `block.fill.type`     | Either `'solid'` or `'gradient'`.                                         | string   | `'solid'`               |
-| `block.minHeight`     | The minimum pixel height of a block.                                      | number   | `0`                     |
-| `block.highlight`     | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
-| `label.fontSize`      | Any valid font size for the labels.                                       | string   | `'14px'`                |
-| `label.fill`          | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
-| `label.format`        | Either `function(label, value)`, an array, or a format string. See below. | mixed    | `'{l}: {f}'`            |
-| `events.click.block`  | Callback `function(data)` for when a block is clicked.                    | function | `null`                  |
+| Option                 | Description                                                               | Type     | Default                 |
+| ---------------------- | ------------------------------------------------------------------------- | -------- | ----------------------- |
+| `chart.width`          | The pixel width of the chart.                                             | number   | Container's width       |
+| `chart.height`         | The pixel height of the chart.                                            | number   | Container's height      |
+| `chart.bottomWidth`    | The percent of total width the bottom should be.                          | number   | `1 / 3`                 |
+| `chart.bottomPinch`    | How many blocks to pinch on the bottom to create a funnel "neck".         | number   | `0`                     |
+| `chart.inverted`       | Whether the funnel direction is inverted (like a pyramid).                | bool     | `false`                 |
+| `chart.animate`        | The load animation speed in milliseconds.                                 | number   | `0` (disabled)          |
+| `chart.curve.enabled`  | Whether the funnel is curved.                                             | bool     | `false`                 |
+| `chart.curve.height`   | The curvature amount.                                                     | number   | `20`                    |
+| `chart.addValueOverlay`| Render each block in the funnel as a bar chart.                           | bool     | `false`                 |
+| `chart.totalCount`     | Sum of all values for the chart.                                          | number   | `null`                  |
+| `block.dynamicHeight`  | Whether the block heights are proportional to its weight.                 | bool     | `false`                 |
+| `block.fill.scale`     | The background color scale as an array or function.                       | mixed    | `d3.scale.category10()` |
+| `block.fill.type`      | Either `'solid'` or `'gradient'`.                                         | string   | `'solid'`               |
+| `block.minHeight`      | The minimum pixel height of a block.                                      | number   | `0`                     |
+| `block.highlight`      | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
+| `label.fontSize`       | Any valid font size for the labels.                                       | string   | `'14px'`                |
+| `label.fill`           | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
+| `label.format`         | Either `function(label, value)`, an array, or a format string. See below. | mixed    | `'{l}: {f}'`            |
+| `events.click.block`   | Callback `function(data)` for when a block is clicked.                    | function | `null`                  |
 
 ### Label Format
 
