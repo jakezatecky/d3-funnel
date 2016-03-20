@@ -508,6 +508,7 @@ class D3Funnel {
 					[prevLeftX, prevHeight, 'L'],
 				]);
 				// Plot overlay path
+				// TODO: compute more precise values for curved overlays
 				if (this.addValueOverlay) {
 					overlayPaths.push([
 						// Top Bezier curve
@@ -669,6 +670,11 @@ class D3Funnel {
 		if (this.addValueOverlay) {
 			overlayPath = this._getOverlayPath(group, index);
 			this._attachData(overlayPath, this.blocks[index]);
+
+			// add data attribute to distinguish between paths
+			path.node().setAttribute('pathType', 'background');
+			overlayPath.node().setAttribute('pathType', 'foreground');
+
 			// default path becomes background of lighter shade
 			pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
 		}
@@ -707,17 +713,11 @@ class D3Funnel {
 
 		// Add the hover events
 		if (this.hoverEffects) {
-			if (this.addValueOverlay) {
-				// add separate hover effects for each
-				path.on('mouseover', this._onMouseOver.bind(this))
-					.on('mouseout', this._onMouseOutBackgroundPath.bind(this));
-				overlayPath.on('mouseover', this._onMouseOver.bind(this))
+			[path, overlayPath].forEach((each) => {
+				if (!each) return;
+				each.on('mouseover', this._onMouseOver.bind(this))
 					.on('mouseout', this._onMouseOut.bind(this));
-			} else {
-				// add hover effects for the regular path
-				path.on('mouseover', this._onMouseOver.bind(this))
-					.on('mouseout', this._onMouseOut.bind(this));
-			}
+			});
 		}
 
 		// Add block click event
@@ -864,7 +864,19 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOver(data) {
-		d3.select(d3.event.target).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+		const children = d3.event.target.parentElement.childNodes;
+		for (let i = 0; i < children.length; i++) {
+			// highlight all paths within one block
+			const node = children[i];
+			if (node.nodeName.toLowerCase() === 'path') {
+				const type = node.getAttribute('pathType') || '';
+				if (type === 'foreground') {
+					d3.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
+				} else {
+					d3.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+				}
+			}
+		}
 	}
 
 	/**
@@ -873,55 +885,20 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOut(data) {
-		d3.select(d3.event.target).attr('fill', data.fill.actual);
-	}
-
-	/**
-	 * @param {Object} data
-	 *
-	 * @return {void}
-	 */
-	_onMouseOutBackgroundPath(data) {
-		const backgroundColor = this.colorizer.shade(data.fill.actual, 0.3);
-		d3.select(d3.event.target).attr('fill', backgroundColor);
-	}
-
-	/**
-	 * @param {Object} group
-	 * @param {int}    index
-	 * @return {Object}
-	 */
-	_drawValueOverlay(group, index) {
-		const paths = this.blockPaths[index];
-		const opts = this.blocks[index];
-		const fill = opts.fill;
-		const offsetTop = paths[0][0];
-		const offsetBtm = paths[3][0];
-		const lengthTop = (paths[1][0] - offsetTop);
-		const lengthBtm = (paths[2][0] - offsetBtm);
-		const rightSideTop = lengthTop * (opts.ratio || 0) + offsetTop;
-		const rightSideBtm = lengthBtm * (opts.ratio || 0) + offsetBtm;
-
-		// don't draw overlay if ratio is zero
-		if (opts.ratio === 0) {
-			return null;
+		const children = d3.event.target.parentElement.childNodes;
+		for (let i = 0; i < children.length; i++) {
+			// restore original color for all paths of a block
+			const node = children[i];
+			if (node.nodeName.toLowerCase() === 'path') {
+				const type = node.getAttribute('pathType') || '';
+				if (type === 'background') {
+					const backgroundColor = this.colorizer.shade(data.fill.actual, 0.3);
+					d3.select(node).attr('fill', backgroundColor);
+				} else {
+					d3.select(node).attr('fill', data.fill.actual);
+				}
+			}
 		}
-
-		paths[1][0] = rightSideTop;
-		paths[2][0] = rightSideBtm;
-		const path = this.navigator.plot([
-			['M', paths[0][0], paths[0][1]],
-			['L', paths[1][0], paths[1][1]],
-			['L', paths[2][0], paths[2][1]],
-			['L', paths[3][0], paths[3][1]],
-			['L', paths[4][0], paths[4][1]],
-		]);
-
-		const retValue = group.append('path')
-			.attr('fill', fill.actual)
-			.attr('d', path);
-
-		return retValue;
 	}
 
 	/**
