@@ -474,6 +474,12 @@ class D3Funnel {
 			nextRightX = prevRightX - dx;
 			nextHeight = prevHeight + dy;
 
+			// Expand outward if inverted
+			if (this.isInverted) {
+				nextLeftX = prevLeftX - dx;
+				nextRightX = prevRightX + dx;
+			}
+
 			// calculate position of the next overlay
 			const lengthTop = (prevRightX - prevLeftX);
 			const lengthBtm = (nextRightX - nextLeftX);
@@ -484,12 +490,6 @@ class D3Funnel {
 			rightSideBtm = Math.min(rightSideBtm, lengthBtm); // than the max length of the path
 			const curvedOverlayMiddleTopX = (rightSideTop / 2);
 			const curvedOverlayMiddleBtmX = (rightSideBtm / 2);
-
-			// Expand outward if inverted
-			if (this.isInverted) {
-				nextLeftX = prevLeftX - dx;
-				nextRightX = prevRightX + dx;
-			}
 
 			// Plot curved lines
 			if (this.isCurved) {
