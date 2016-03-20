@@ -892,7 +892,7 @@ class D3Funnel {
 			if (node.nodeName.toLowerCase() === 'path') {
 				const type = node.getAttribute('pathType') || '';
 				if (type === 'background') {
-					const backgroundColor = this.colorizer.shade(data.fill.actual, 0.3);
+					const backgroundColor = this.colorizer.shade(data.fill.raw, 0.3);
 					d3.select(node).attr('fill', backgroundColor);
 				} else {
 					d3.select(node).attr('fill', data.fill.actual);
