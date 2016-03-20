@@ -78,6 +78,11 @@ $(function() {
 					fill: '#ffeb81',
 				},
 			},
+			valueOverlay: {
+				chart: {
+					addValueOverlay: true,
+				},
+			},
 		};
 
 		$('input[type="checkbox"]:checked').each(function() {
