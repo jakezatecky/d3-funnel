@@ -581,6 +581,12 @@ return /******/ (function(modules) { // webpackBootstrap
 					nextRightX = prevRightX - dx;
 					nextHeight = prevHeight + dy;
 
+					// Expand outward if inverted
+					if (_this3.isInverted) {
+						nextLeftX = prevLeftX - dx;
+						nextRightX = prevRightX + dx;
+					}
+
 					// calculate position of the next overlay
 					var lengthTop = prevRightX - prevLeftX;
 					var lengthBtm = nextRightX - nextLeftX;
@@ -591,12 +597,6 @@ return /******/ (function(modules) { // webpackBootstrap
 					rightSideBtm = Math.min(rightSideBtm, lengthBtm); // than the max length of the path
 					var curvedOverlayMiddleTopX = rightSideTop / 2;
 					var curvedOverlayMiddleBtmX = rightSideBtm / 2;
-
-					// Expand outward if inverted
-					if (_this3.isInverted) {
-						nextLeftX = prevLeftX - dx;
-						nextRightX = prevRightX + dx;
-					}
 
 					// Plot curved lines
 					if (_this3.isCurved) {
