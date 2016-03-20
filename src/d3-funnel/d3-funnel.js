@@ -488,8 +488,8 @@ class D3Funnel {
 			// overlay should not be longer than the max legnth of the path
 			rightSideTop = Math.min(rightSideTop, lengthTop); // overlay should not be longer
 			rightSideBtm = Math.min(rightSideBtm, lengthBtm); // than the max length of the path
-			const curvedOverlayMiddleTopX = (rightSideTop / 2);
-			const curvedOverlayMiddleBtmX = (rightSideBtm / 2);
+			// const curvedOverlayMiddleTopX = (rightSideTop / 2);
+			// const curvedOverlayMiddleBtmX = (rightSideBtm / 2);
 
 			// Plot curved lines
 			if (this.isCurved) {
@@ -509,22 +509,22 @@ class D3Funnel {
 				]);
 				// Plot overlay path
 				// TODO: compute more precise values for curved overlays
-				if (this.addValueOverlay) {
-					overlayPaths.push([
-						// Top Bezier curve
-						[prevLeftX, prevHeight, 'M'],
-						[curvedOverlayMiddleTopX, prevHeight + this.curveHeight, 'Q'],
-						[rightSideTop, prevHeight, ''],
-						// Right line
-						[rightSideBtm, nextHeight, 'L'],
-						// Bottom Bezier curve
-						[rightSideBtm, nextHeight, 'M'],
-						[curvedOverlayMiddleBtmX, nextHeight + this.curveHeight, 'Q'],
-						[nextLeftX, nextHeight, ''],
-						// Left line
-						[prevLeftX, prevHeight, 'L'],
-					]);
-				}
+				// if (this.addValueOverlay) {
+				// 	overlayPaths.push([
+				// 		// Top Bezier curve
+				// 		[prevLeftX, prevHeight, 'M'],
+				// 		[curvedOverlayMiddleTopX, prevHeight + this.curveHeight, 'Q'],
+				// 		[rightSideTop, prevHeight, ''],
+				// 		// Right line
+				// 		[rightSideBtm, nextHeight, 'L'],
+				// 		// Bottom Bezier curve
+				// 		[rightSideBtm, nextHeight, 'M'],
+				// 		[curvedOverlayMiddleBtmX, nextHeight + this.curveHeight, 'Q'],
+				// 		[nextLeftX, nextHeight, ''],
+				// 		// Left line
+				// 		[prevLeftX, prevHeight, 'L'],
+				// 	]);
+				// }
 
 				// Plot straight lines
 			} else {
@@ -667,7 +667,7 @@ class D3Funnel {
 
 		let overlayPath = null;
 		let pathColor = this.blocks[index].fill.actual;
-		if (this.addValueOverlay) {
+		if (this.addValueOverlay && !this.isCurved) {
 			overlayPath = this._getOverlayPath(group, index);
 			this._attachData(overlayPath, this.blocks[index]);
 
@@ -696,7 +696,7 @@ class D3Funnel {
 		}
 
 		// add path overlay
-		if (this.addValueOverlay) {
+		if (this.addValueOverlay && !this.isCurved) {
 			path.attr('stroke', this.blocks[index].fill.raw);
 
 			if (this.animation !== 0) {
