@@ -982,7 +982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					if (node.nodeName.toLowerCase() === 'path') {
 						var type = node.getAttribute('pathType') || '';
 						if (type === 'background') {
-							var backgroundColor = this.colorizer.shade(data.fill.actual, 0.3);
+							var backgroundColor = this.colorizer.shade(data.fill.raw, 0.3);
 							_d2.default.select(node).attr('fill', backgroundColor);
 						} else {
 							_d2.default.select(node).attr('fill', data.fill.actual);
