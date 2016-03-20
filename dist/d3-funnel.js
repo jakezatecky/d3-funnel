@@ -411,7 +411,9 @@ return /******/ (function(modules) { // webpackBootstrap
 				// Add the SVG
 				this.svg = _d2.default.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
 
-				this.blockPaths = this._makePaths();
+				var newPaths = this._makePaths();
+				this.blockPaths = newPaths[0];
+				this.overlayPaths = newPaths[1];
 
 				// Define color gradients
 				if (this.fillType === 'gradient') {
@@ -431,7 +433,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * Create the paths to be used to define the discrete funnel blocks and
 	   * returns the results in an array.
 	   *
-	   * @return {Array}
+	   * @return {Array, Array}
 	   */
 
 		}, {
@@ -440,6 +442,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var _this3 = this;
 
 				var paths = [];
+				var overlayPaths = [];
 
 				// Initialize velocity
 				var dx = this.dx;
@@ -578,6 +581,17 @@ return /******/ (function(modules) { // webpackBootstrap
 					nextRightX = prevRightX - dx;
 					nextHeight = prevHeight + dy;
 
+					// calculate position of the next overlay
+					var lengthTop = prevRightX - prevLeftX;
+					var lengthBtm = nextRightX - nextLeftX;
+					var rightSideTop = lengthTop * (block.ratio || 0) + prevLeftX;
+					var rightSideBtm = lengthBtm * (block.ratio || 0) + nextLeftX;
+					// overlay should not be longer than the max legnth of the path
+					rightSideTop = Math.min(rightSideTop, lengthTop); // overlay should not be longer
+					rightSideBtm = Math.min(rightSideBtm, lengthBtm); // than the max length of the path
+					var curvedOverlayMiddleTopX = rightSideTop / 2;
+					var curvedOverlayMiddleBtmX = rightSideBtm / 2;
+
 					// Expand outward if inverted
 					if (_this3.isInverted) {
 						nextLeftX = prevLeftX - dx;
@@ -595,6 +609,20 @@ return /******/ (function(modules) { // webpackBootstrap
 						[nextRightX, nextHeight, 'M'], [middle, nextHeight + _this3.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
 						// Left line
 						[prevLeftX, prevHeight, 'L']]);
+						// Plot overlay path
+						// TODO: compute more precise values for curved overlays
+						if (_this3.addValueOverlay) {
+							overlayPaths.push([
+							// Top Bezier curve
+							[prevLeftX, prevHeight, 'M'], [curvedOverlayMiddleTopX, prevHeight + _this3.curveHeight, 'Q'], [rightSideTop, prevHeight, ''],
+							// Right line
+							[rightSideBtm, nextHeight, 'L'],
+							// Bottom Bezier curve
+							[rightSideBtm, nextHeight, 'M'], [curvedOverlayMiddleBtmX, nextHeight + _this3.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
+							// Left line
+							[prevLeftX, prevHeight, 'L']]);
+						}
+
 						// Plot straight lines
 					} else {
 							paths.push([
@@ -608,6 +636,20 @@ return /******/ (function(modules) { // webpackBootstrap
 							[nextLeftX, nextHeight, 'L'],
 							// Wrap back to top
 							[prevLeftX, prevHeight, 'L']]);
+							// Plot overlay path
+							if (_this3.addValueOverlay) {
+								overlayPaths.push([
+								// Start position
+								[prevLeftX, prevHeight, 'M'],
+								// Move to right
+								[rightSideTop, prevHeight, 'L'],
+								// Move down
+								[rightSideBtm, nextHeight, 'L'],
+								// Move to left
+								[nextLeftX, nextHeight, 'L'],
+								// Wrap back to top
+								[prevLeftX, prevHeight, 'L']]);
+							}
 						}
 
 					// Set the next block's previous position
@@ -616,7 +658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					prevHeight = nextHeight;
 				});
 
-				return paths;
+				return [paths, overlayPaths];
 			}
 
 			/**
@@ -705,17 +747,28 @@ return /******/ (function(modules) { // webpackBootstrap
 					return;
 				}
 
+				// overlay path reference if defined
+				// let overlayPath = null;
+
 				// Create a group just for this block
 				var group = this.svg.append('g');
 
 				// Fetch path element
 				var path = this._getBlockPath(group, index);
-
 				// Attach data to the element
 				this._attachData(path, this.blocks[index]);
 
+				var overlayPath = null;
 				var pathColor = this.blocks[index].fill.actual;
 				if (this.addValueOverlay) {
+					overlayPath = this._getOverlayPath(group, index);
+					this._attachData(overlayPath, this.blocks[index]);
+
+					// add data attribute to distinguish between paths
+					path.node().setAttribute('pathType', 'background');
+					overlayPath.node().setAttribute('pathType', 'foreground');
+
+					// default path becomes background of lighter shade
 					pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
 				}
 
@@ -729,22 +782,31 @@ return /******/ (function(modules) { // webpackBootstrap
 					this._drawBlock(index + 1);
 				}
 
+				// add path overlay
 				if (this.addValueOverlay) {
 					path.attr('stroke', this.blocks[index].fill.raw);
+
+					if (this.animation !== 0) {
+						overlayPath.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+					} else {
+						overlayPath.attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+					}
 				}
 
 				// Add the hover events
 				if (this.hoverEffects) {
-					path.on('mouseover', this._onMouseOver.bind(this)).on('mouseout', this._onMouseOut.bind(this));
+					[path, overlayPath].forEach(function (each) {
+						if (!each) return;
+						each.on('mouseover', _this5._onMouseOver.bind(_this5)).on('mouseout', _this5._onMouseOut.bind(_this5));
+					});
 				}
 
 				// Add block click event
 				if (this.onBlockClick !== null) {
-					path.on('click', this.onBlockClick);
-				}
-
-				if (this.addValueOverlay) {
-					this._drawValueOverlay(group, index);
+					[path, overlayPath].forEach(function (each) {
+						if (!each) return;
+						each.on('click', _this5.onBlockClick);
+					});
 				}
 
 				this._addBlockLabel(group, index);
@@ -770,6 +832,25 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			/**
+	   * @param {Object} group
+	   * @param {int}    index
+	   *
+	   * @return {Object}
+	   */
+
+		}, {
+			key: '_getOverlayPath',
+			value: function _getOverlayPath(group, index) {
+				var path = group.append('path');
+
+				if (this.animation !== 0) {
+					this._addBeforeTransition(path, index, true);
+				}
+
+				return path;
+			}
+
+			/**
 	   * Set the attributes of a path element before its animation.
 	   *
 	   * @param {Object} path
@@ -780,8 +861,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		}, {
 			key: '_addBeforeTransition',
-			value: function _addBeforeTransition(path, index) {
-				var paths = this.blockPaths[index];
+			value: function _addBeforeTransition(path, index, isOverlay) {
+				var paths = isOverlay ? this.overlayPaths[index] : this.blockPaths[index];
 
 				var beforePath = '';
 				var beforeFill = '';
@@ -844,6 +925,24 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			/**
+	   * @param {int} index
+	   *
+	   * @return {string}
+	   */
+
+		}, {
+			key: '_getOverlayPathDefinition',
+			value: function _getOverlayPathDefinition(index) {
+				var commands = [];
+
+				this.overlayPaths[index].forEach(function (command) {
+					commands.push([command[2], command[0], command[1]]);
+				});
+
+				return this.navigator.plot(commands);
+			}
+
+			/**
 	   * @param {Object} data
 	   *
 	   * @return {void}
@@ -852,7 +951,19 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOver',
 			value: function _onMouseOver(data) {
-				_d2.default.select(_d2.default.event.target).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+				var children = _d2.default.event.target.parentElement.childNodes;
+				for (var i = 0; i < children.length; i++) {
+					// highlight all paths within one block
+					var node = children[i];
+					if (node.nodeName.toLowerCase() === 'path') {
+						var type = node.getAttribute('pathType') || '';
+						if (type === 'foreground') {
+							_d2.default.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
+						} else {
+							_d2.default.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+						}
+					}
+				}
 			}
 
 			/**
@@ -864,38 +975,20 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOut',
 			value: function _onMouseOut(data) {
-				_d2.default.select(_d2.default.event.target).attr('fill', data.fill.actual);
-			}
-
-			/**
-	   * @param {Object} group
-	   * @param {int}    index
-	   * @return {void}
-	   */
-
-		}, {
-			key: '_drawValueOverlay',
-			value: function _drawValueOverlay(group, index) {
-				var paths = this.blockPaths[index];
-				var opts = this.blocks[index];
-				var fill = opts.fill;
-				var offsetTop = paths[0][0];
-				var offsetBtm = paths[3][0];
-				var lengthTop = paths[1][0] - offsetTop;
-				var lengthBtm = paths[2][0] - offsetBtm;
-				var rightSideTop = lengthTop * (opts.ratio || 0) + offsetTop;
-				var rightSideBtm = lengthBtm * (opts.ratio || 0) + offsetBtm;
-
-				// don't draw overlay if ratio is zero
-				if (opts.ratio === 0) {
-					return;
+				var children = _d2.default.event.target.parentElement.childNodes;
+				for (var i = 0; i < children.length; i++) {
+					// restore original color for all paths of a block
+					var node = children[i];
+					if (node.nodeName.toLowerCase() === 'path') {
+						var type = node.getAttribute('pathType') || '';
+						if (type === 'background') {
+							var backgroundColor = this.colorizer.shade(data.fill.actual, 0.3);
+							_d2.default.select(node).attr('fill', backgroundColor);
+						} else {
+							_d2.default.select(node).attr('fill', data.fill.actual);
+						}
+					}
 				}
-
-				paths[1][0] = rightSideTop;
-				paths[2][0] = rightSideBtm;
-				var path = this.navigator.plot([['M', paths[0][0], paths[0][1]], ['L', paths[1][0], paths[1][1]], ['L', paths[2][0], paths[2][1]], ['L', paths[3][0], paths[3][1]], ['L', paths[4][0], paths[4][1]]]);
-
-				group.append('path').attr('fill', fill.actual).attr('d', path);
 			}
 
 			/**
