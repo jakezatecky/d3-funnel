@@ -78,6 +78,7 @@ funnel chart:
 | `block.minHeight`     | The minimum pixel height of a block.                                      | number   | `0`                     |
 | `block.highlight`     | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
 | `label.fontSize`      | Any valid font size for the labels.                                       | string   | `'14px'`                |
+| `label.font`          | Any valid font for the labels.                                            | string   | `'Arial'`               |
 | `label.fill`          | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
 | `label.format`        | Either `function(label, value)`, an array, or a format string. See below. | mixed    | `'{l}: {f}'`            |
 | `events.click.block`  | Callback `function(data)` for when a block is clicked.                    | function | `null`                  |
