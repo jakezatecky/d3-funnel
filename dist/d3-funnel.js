@@ -69,11 +69,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _d = __webpack_require__(2);
 
@@ -99,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var D3Funnel = (function () {
+	var D3Funnel = function () {
 
 		/**
 	  * @param {string} selector A selector for the container element.
@@ -124,6 +126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  *
 	  * @return {void}
 	  */
+
 
 		_createClass(D3Funnel, [{
 			key: 'destroy',
@@ -195,7 +198,9 @@ return /******/ (function(modules) { // webpackBootstrap
 				this.bottomWidth = settings.chart.width * settings.chart.bottomWidth;
 				this.bottomPinch = settings.chart.bottomPinch;
 				this.isInverted = settings.chart.inverted;
+				this.isHorizontal = settings.chart.horizontal;
 				this.isCurved = settings.chart.curve.enabled;
+				this.addValueOverlay = settings.chart.addValueOverlay;
 				this.curveHeight = settings.chart.curve.height;
 				this.fillType = settings.block.fill.type;
 				this.hoverEffects = settings.block.highlight;
@@ -206,7 +211,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				// Support for events
 				this.onBlockClick = settings.events.click.block;
 
-				this._setBlocks(data);
+				this._setBlocks(data, options);
 
 				// Calculate the bottom left x position
 				this.bottomLeftX = (this.width - this.bottomWidth) / 2;
@@ -285,9 +290,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		}, {
 			key: '_setBlocks',
-			value: function _setBlocks(data) {
-				var totalCount = this._getTotalCount(data);
-
+			value: function _setBlocks(data, options) {
+				var totalCount = this._getTotalCount(data, options);
 				this.blocks = this._standardizeData(data, totalCount);
 			}
 
@@ -299,15 +303,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		}, {
 			key: '_getTotalCount',
-			value: function _getTotalCount(data) {
+			value: function _getTotalCount(data, options) {
 				var _this = this;
 
-				var total = 0;
+				if (options.chart && options.chart.totalCount) {
+					return parseInt(options.chart.totalCount, 10) || 0;
+				}
 
+				var total = 0;
 				data.forEach(function (block) {
 					total += _this._getRawBlockCount(block);
 				});
-
 				return total;
 			}
 
@@ -327,14 +333,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				var standardized = [];
 
-				var count = undefined;
-				var ratio = undefined;
-				var label = undefined;
-
 				data.forEach(function (block, index) {
-					count = _this2._getRawBlockCount(block);
-					ratio = count / totalCount;
-					label = block[0];
+					var count = _this2._getRawBlockCount(block);
+					var ratio = count / totalCount || 0;
+					var label = block[0];
 
 					standardized.push({
 						index: index,
@@ -409,7 +411,9 @@ return /******/ (function(modules) { // webpackBootstrap
 				// Add the SVG
 				this.svg = _d2.default.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
 
-				this.blockPaths = this._makePaths();
+				var newPaths = this._makePaths();
+				this.blockPaths = newPaths[0];
+				this.overlayPaths = newPaths[1];
 
 				// Define color gradients
 				if (this.fillType === 'gradient') {
@@ -429,7 +433,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * Create the paths to be used to define the discrete funnel blocks and
 	   * returns the results in an array.
 	   *
-	   * @return {Array}
+	   * @return {Array, Array}
 	   */
 
 		}, {
@@ -438,6 +442,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var _this3 = this;
 
 				var paths = [];
+				var overlayPaths = [];
 
 				// Initialize velocity
 				var dx = this.dx;
@@ -582,6 +587,17 @@ return /******/ (function(modules) { // webpackBootstrap
 						nextRightX = prevRightX + dx;
 					}
 
+					// calculate position of the next overlay
+					var lengthTop = prevRightX - prevLeftX;
+					var lengthBtm = nextRightX - nextLeftX;
+					var rightSideTop = lengthTop * (block.ratio || 0) + prevLeftX;
+					var rightSideBtm = lengthBtm * (block.ratio || 0) + nextLeftX;
+					// overlay should not be longer than the max legnth of the path
+					rightSideTop = Math.min(rightSideTop, lengthTop); // overlay should not be longer
+					rightSideBtm = Math.min(rightSideBtm, lengthBtm); // than the max length of the path
+					// const curvedOverlayMiddleTopX = (rightSideTop / 2);
+					// const curvedOverlayMiddleBtmX = (rightSideBtm / 2);
+
 					// Plot curved lines
 					if (_this3.isCurved) {
 						paths.push([
@@ -593,6 +609,25 @@ return /******/ (function(modules) { // webpackBootstrap
 						[nextRightX, nextHeight, 'M'], [middle, nextHeight + _this3.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
 						// Left line
 						[prevLeftX, prevHeight, 'L']]);
+						// Plot overlay path
+						// TODO: compute more precise values for curved overlays
+						// if (this.addValueOverlay) {
+						// 	overlayPaths.push([
+						// 		// Top Bezier curve
+						// 		[prevLeftX, prevHeight, 'M'],
+						// 		[curvedOverlayMiddleTopX, prevHeight + this.curveHeight, 'Q'],
+						// 		[rightSideTop, prevHeight, ''],
+						// 		// Right line
+						// 		[rightSideBtm, nextHeight, 'L'],
+						// 		// Bottom Bezier curve
+						// 		[rightSideBtm, nextHeight, 'M'],
+						// 		[curvedOverlayMiddleBtmX, nextHeight + this.curveHeight, 'Q'],
+						// 		[nextLeftX, nextHeight, ''],
+						// 		// Left line
+						// 		[prevLeftX, prevHeight, 'L'],
+						// 	]);
+						// }
+
 						// Plot straight lines
 					} else {
 							paths.push([
@@ -606,6 +641,20 @@ return /******/ (function(modules) { // webpackBootstrap
 							[nextLeftX, nextHeight, 'L'],
 							// Wrap back to top
 							[prevLeftX, prevHeight, 'L']]);
+							// Plot overlay path
+							if (_this3.addValueOverlay) {
+								overlayPaths.push([
+								// Start position
+								[prevLeftX, prevHeight, 'M'],
+								// Move to right
+								[rightSideTop, prevHeight, 'L'],
+								// Move down
+								[rightSideBtm, nextHeight, 'L'],
+								// Move to left
+								[nextLeftX, nextHeight, 'L'],
+								// Wrap back to top
+								[prevLeftX, prevHeight, 'L']]);
+							}
 						}
 
 					// Set the next block's previous position
@@ -614,7 +663,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					prevHeight = nextHeight;
 				});
 
-				return paths;
+				return [paths, overlayPaths];
 			}
 
 			/**
@@ -703,33 +752,66 @@ return /******/ (function(modules) { // webpackBootstrap
 					return;
 				}
 
+				// overlay path reference if defined
+				// let overlayPath = null;
+
 				// Create a group just for this block
 				var group = this.svg.append('g');
 
 				// Fetch path element
 				var path = this._getBlockPath(group, index);
-
 				// Attach data to the element
 				this._attachData(path, this.blocks[index]);
 
+				var overlayPath = null;
+				var pathColor = this.blocks[index].fill.actual;
+				if (this.addValueOverlay && !this.isCurved) {
+					overlayPath = this._getOverlayPath(group, index);
+					this._attachData(overlayPath, this.blocks[index]);
+
+					// add data attribute to distinguish between paths
+					path.node().setAttribute('pathType', 'background');
+					overlayPath.node().setAttribute('pathType', 'foreground');
+
+					// default path becomes background of lighter shade
+					pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
+				}
+
 				// Add animation components
 				if (this.animation !== 0) {
-					path.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index)).each('end', function () {
+					path.transition().duration(this.animation).ease('linear').attr('fill', pathColor).attr('d', this._getPathDefinition(index)).each('end', function () {
 						_this5._drawBlock(index + 1);
 					});
 				} else {
-					path.attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index));
+					path.attr('fill', pathColor).attr('d', this._getPathDefinition(index));
 					this._drawBlock(index + 1);
+				}
+
+				// add path overlay
+				if (this.addValueOverlay && !this.isCurved) {
+					path.attr('stroke', this.blocks[index].fill.raw);
+
+					if (this.animation !== 0) {
+						overlayPath.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+					} else {
+						overlayPath.attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+					}
 				}
 
 				// Add the hover events
 				if (this.hoverEffects) {
-					path.on('mouseover', this._onMouseOver.bind(this)).on('mouseout', this._onMouseOut.bind(this));
+					[path, overlayPath].forEach(function (each) {
+						if (!each) return;
+						each.on('mouseover', _this5._onMouseOver.bind(_this5)).on('mouseout', _this5._onMouseOut.bind(_this5));
+					});
 				}
 
 				// Add block click event
 				if (this.onBlockClick !== null) {
-					path.on('click', this.onBlockClick);
+					[path, overlayPath].forEach(function (each) {
+						if (!each) return;
+						each.on('click', _this5.onBlockClick);
+					});
 				}
 
 				this._addBlockLabel(group, index);
@@ -755,6 +837,25 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			/**
+	   * @param {Object} group
+	   * @param {int}    index
+	   *
+	   * @return {Object}
+	   */
+
+		}, {
+			key: '_getOverlayPath',
+			value: function _getOverlayPath(group, index) {
+				var path = group.append('path');
+
+				if (this.animation !== 0) {
+					this._addBeforeTransition(path, index, true);
+				}
+
+				return path;
+			}
+
+			/**
 	   * Set the attributes of a path element before its animation.
 	   *
 	   * @param {Object} path
@@ -765,8 +866,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		}, {
 			key: '_addBeforeTransition',
-			value: function _addBeforeTransition(path, index) {
-				var paths = this.blockPaths[index];
+			value: function _addBeforeTransition(path, index, isOverlay) {
+				var paths = isOverlay ? this.overlayPaths[index] : this.blockPaths[index];
 
 				var beforePath = '';
 				var beforeFill = '';
@@ -795,6 +896,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * data object.
 	   *
 	   * @param {Object} element
+	   * @param {Object} data
 	   *
 	   * @return {void}
 	   */
@@ -802,9 +904,11 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_attachData',
 			value: function _attachData(element, data) {
-				data.node = element.node();
+				var nodeData = _extends({}, data, {
+					node: element.node()
+				});
 
-				element.data([data]);
+				element.data([nodeData]);
 			}
 
 			/**
@@ -826,6 +930,24 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			/**
+	   * @param {int} index
+	   *
+	   * @return {string}
+	   */
+
+		}, {
+			key: '_getOverlayPathDefinition',
+			value: function _getOverlayPathDefinition(index) {
+				var commands = [];
+
+				this.overlayPaths[index].forEach(function (command) {
+					commands.push([command[2], command[0], command[1]]);
+				});
+
+				return this.navigator.plot(commands);
+			}
+
+			/**
 	   * @param {Object} data
 	   *
 	   * @return {void}
@@ -834,7 +956,19 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOver',
 			value: function _onMouseOver(data) {
-				_d2.default.select(_d2.default.event.target).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+				var children = _d2.default.event.target.parentElement.childNodes;
+				for (var i = 0; i < children.length; i++) {
+					// highlight all paths within one block
+					var node = children[i];
+					if (node.nodeName.toLowerCase() === 'path') {
+						var type = node.getAttribute('pathType') || '';
+						if (type === 'foreground') {
+							_d2.default.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
+						} else {
+							_d2.default.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+						}
+					}
+				}
 			}
 
 			/**
@@ -846,7 +980,20 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOut',
 			value: function _onMouseOut(data) {
-				_d2.default.select(_d2.default.event.target).attr('fill', data.fill.actual);
+				var children = _d2.default.event.target.parentElement.childNodes;
+				for (var i = 0; i < children.length; i++) {
+					// restore original color for all paths of a block
+					var node = children[i];
+					if (node.nodeName.toLowerCase() === 'path') {
+						var type = node.getAttribute('pathType') || '';
+						if (type === 'background') {
+							var backgroundColor = this.colorizer.shade(data.fill.raw, 0.3);
+							_d2.default.select(node).attr('fill', backgroundColor);
+						} else {
+							_d2.default.select(node).attr('fill', data.fill.actual);
+						}
+					}
+				}
 			}
 
 			/**
@@ -897,7 +1044,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}]);
 
 		return D3Funnel;
-	})();
+	}();
 
 	D3Funnel.defaults = {
 		chart: {
@@ -906,7 +1053,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			bottomWidth: 1 / 3,
 			bottomPinch: 0,
 			inverted: false,
+			horizontal: false,
 			animate: 0,
+			addValueOverlay: false,
+			totalCount: null,
 			curve: {
 				enabled: false,
 				height: 20
@@ -946,15 +1096,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Colorizer = (function () {
+	var Colorizer = function () {
 		function Colorizer() {
 			_classCallCheck(this, Colorizer);
 
@@ -970,6 +1120,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  *
 	  * @return {void}
 	  */
+
 
 		_createClass(Colorizer, [{
 			key: 'setLabelFill',
@@ -1122,7 +1273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}]);
 
 		return Colorizer;
-	})();
+	}();
 
 	exports.default = Colorizer;
 
@@ -1132,15 +1283,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var LabelFormatter = (function () {
+	var LabelFormatter = function () {
 
 		/**
 	  * Initial the formatter.
@@ -1161,6 +1312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  *
 	  * @return {void}
 	  */
+
 
 		_createClass(LabelFormatter, [{
 			key: 'setFormat',
@@ -1238,7 +1390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}]);
 
 		return LabelFormatter;
-	})();
+	}();
 
 	exports.default = LabelFormatter;
 
@@ -1248,21 +1400,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Navigator = (function () {
+	var Navigator = function () {
 		function Navigator() {
 			_classCallCheck(this, Navigator);
 		}
 
 		_createClass(Navigator, [{
 			key: 'plot',
+
 
 			/**
 	   * Given a list of path commands, returns the compiled description.
@@ -1283,7 +1436,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}]);
 
 		return Navigator;
-	})();
+	}();
 
 	exports.default = Navigator;
 
@@ -1293,23 +1446,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
 
-	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Utils = (function () {
+	var Utils = function () {
 		function Utils() {
 			_classCallCheck(this, Utils);
 		}
 
 		_createClass(Utils, null, [{
 			key: 'extend',
+
 
 			/**
 	   * Extends an object with the members of another.
@@ -1320,8 +1474,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @return {Object}
 	   */
 			value: function extend(a, b) {
-				var prop = undefined;
+				var prop = void 0;
 
+				/* eslint-disable no-param-reassign */
 				for (prop in b) {
 					if (b.hasOwnProperty(prop)) {
 						if (_typeof(b[prop]) === 'object' && !Array.isArray(b[prop]) && b[prop] !== null) {
@@ -1335,13 +1490,14 @@ return /******/ (function(modules) { // webpackBootstrap
 						}
 					}
 				}
+				/* eslint-enable no-param-reassign */
 
 				return a;
 			}
 		}]);
 
 		return Utils;
-	})();
+	}();
 
 	exports.default = Utils;
 

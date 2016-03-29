@@ -18,7 +18,7 @@
     "babel-preset-stage-0": "^6.1.2",
     "chai": "^3.4.0",
     "chai-spies": "^0.7.1",
-    "eslint": "^2.2.0",
+    "eslint": "~2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "gulp": "^3.9.0",
     "gulp-eslint": "^2.0.0",

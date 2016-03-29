@@ -339,6 +339,43 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('chart.addValueOverlay', function () {
+			it('should draw value overlay within each path', function() {
+				getFunnel().draw([
+					['A', 10],
+					['B', 20],
+				], {
+					chart: {
+						addValueOverlay: true,
+					},
+				});
+
+				// draw 2 path for each data point
+				assert.equal(4, d3.selectAll('#funnel path')[0].length);
+			});
+
+			it('should draw value overlay with overridden total count', function() {
+				getFunnel().draw([
+					['A', 10],
+					['B', 20],
+				], {
+					chart: {
+						addValueOverlay: true,
+						totalCount: 100,
+					},
+				});
+
+				const paths = d3.selectAll('path');
+				const APathFullWidth = getPathTopWidth(d3.select(paths[0][0]));
+				const APathOverlayWidth = getPathTopWidth(d3.select(paths[0][1]));
+				const BPathFullWidth = getPathTopWidth(d3.select(paths[0][2]));
+				const BPathOverlayWidth = getPathTopWidth(d3.select(paths[0][3]));
+
+				assert.equal(10, Math.round(APathOverlayWidth / APathFullWidth * 100));
+				assert.equal(20, Math.round(BPathOverlayWidth / BPathFullWidth * 100));
+			});
+		});
+
 		describe('chart.curve.enabled', function () {
 			it('should create an additional path on top of the trapezoids', function () {
 				getFunnel().draw(getBasicData(), {
