@@ -23,6 +23,7 @@ class D3Funnel {
 		},
 		block: {
 			dynamicHeight: false,
+			dynamicSlope: false,
 			fill: {
 				scale: d3.scale.category10().domain(d3.range(0, 10)),
 				type: 'solid',
@@ -128,6 +129,7 @@ class D3Funnel {
 		this.fillType = settings.block.fill.type;
 		this.hoverEffects = settings.block.highlight;
 		this.dynamicHeight = settings.block.dynamicHeight;
+		this.dynamicSlope = settings.block.dynamicSlope;
 		this.minHeight = settings.block.minHeight;
 		this.animation = settings.chart.animate;
 
@@ -437,6 +439,16 @@ class D3Funnel {
 				if (this.isInverted) {
 					dx = prevLeftX - nextLeftX;
 				}
+			}
+
+			// Make slope width proportional to block value decrease
+			if (this.dynamicSlope) {
+				const nextBlockValue = this.blocks[i + 1] ?
+					this.blocks[i + 1].value :
+					block.value;
+
+				const widthPercent = 1 - (nextBlockValue / block.value);
+				dx = widthPercent * (middle - prevLeftX);
 			}
 
 			// Stop velocity for pinched blocks
