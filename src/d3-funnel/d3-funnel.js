@@ -31,6 +31,7 @@ class D3Funnel {
 			highlight: false,
 		},
 		label: {
+			fontFamily: null,
 			fontSize: '14px',
 			fill: '#fff',
 			format: '{l}: {f}',
@@ -769,7 +770,7 @@ class D3Funnel {
 		const x = this.width / 2;  // Center the text
 		const y = this._getTextY(paths);
 
-		group.append('text')
+		const label = group.append('text')
 			.text(text)
 			.attr({
 				x,
@@ -780,6 +781,10 @@ class D3Funnel {
 				'pointer-events': 'none',
 			})
 			.style('font-size', this.label.fontSize);
+
+		if (this.label.fontFamily !== null) {
+			label.style('font-family', this.label.fontFamily);
+		}
 	}
 
 	/**

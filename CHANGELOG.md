@@ -3,6 +3,7 @@
 ### New Features
 
 * [#23]: Add ability to change chart orientation from vertical to horizontal
+* [#53]: Add `label.fontSize` option
 
 ## v0.7.5 (December 19, 2015)
 
