@@ -780,10 +780,10 @@ class D3Funnel {
 				'dominant-baseline': 'middle',
 				'pointer-events': 'none',
 			})
-			.style('font-size', this.label.fontSize);
+			.attr('font-size', this.label.fontSize);
 
 		if (this.label.fontFamily !== null) {
-			label.style('font-family', this.label.fontFamily);
+			label.attr('font-family', this.label.fontFamily);
 		}
 	}
 

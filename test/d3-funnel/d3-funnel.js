@@ -601,7 +601,7 @@ describe('D3Funnel', function () {
 					},
 				});
 
-				assert.isTrue(d3.select('#funnel text').attr('style').indexOf('font-family: Open Sans') > -1);
+				assert.equal('Open Sans', d3.select('#funnel text').attr('font-family'));
 			});
 		});
 
@@ -613,7 +613,7 @@ describe('D3Funnel', function () {
 					},
 				});
 
-				assert.isTrue(d3.select('#funnel text').attr('style').indexOf('font-size: 16px') > -1);
+				assert.equal('16px', d3.select('#funnel text').attr('font-size'));
 			});
 		});
 
