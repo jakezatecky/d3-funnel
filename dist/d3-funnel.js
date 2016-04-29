@@ -873,7 +873,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					'text-anchor': 'middle',
 					'dominant-baseline': 'middle',
 					'pointer-events': 'none'
-				}).style('font-size', this.label.fontSize);
+				}).style('font-size', this.label.fontSize).style('font-family', this.label.font);
 			}
 
 			/**
@@ -923,6 +923,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 		label: {
 			fontSize: '14px',
+			font: 'Arial',
 			fill: '#fff',
 			format: '{l}: {f}'
 		},

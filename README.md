@@ -79,6 +79,7 @@ funnel chart:
 | `block.highlight`     | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
 | `label.fontFamily`    | Any valid font family for the labels.                                     | string   | `null`                  |
 | `label.fontSize`      | Any valid font size for the labels.                                       | string   | `'14px'`                |
+| `label.font`          | Any valid font for the labels.                                            | string   | `'Arial'`               |
 | `label.fill`          | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
 | `label.format`        | Either `function(label, value)`, an array, or a format string. See below. | mixed    | `'{l}: {f}'`            |
 | `events.click.block`  | Callback `function(data)` for when a block is clicked.                    | function | `null`                  |
