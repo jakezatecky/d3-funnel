@@ -683,6 +683,17 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('label.fontFamily', function () {
+			it('should set the label\'s font size to the specified amount', function () {
+				getFunnel().draw(getBasicData(), {
+					label: {
+						fontFamily: 'Open Sans',
+					},
+				});
+
+				assert.isTrue(d3.select('#funnel text').attr('style').indexOf('font-family: Open Sans') > -1);
+			});
+		});
 
 		describe('label.fontSize', function () {
 			it('should set the label\'s font size to the specified amount', function () {

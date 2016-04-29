@@ -116,6 +116,7 @@ $(function() {
 			label: [
 				data.normal, {
 					label: {
+						fontFamily: 'Open Sans',
 						fontSize: '16px',
 						fill: '#000',
 					},
