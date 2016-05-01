@@ -62,8 +62,8 @@ function isLetter(str) {
 
 const defaults = _.clone(D3Funnel.defaults, true);
 
-describe('D3Funnel', function () {
-	beforeEach(function (done) {
+describe('D3Funnel', () => {
+	beforeEach((done) => {
 		d3.select('#funnel').attr('style', null);
 
 		D3Funnel.defaults = _.clone(defaults, true);
@@ -71,59 +71,59 @@ describe('D3Funnel', function () {
 		done();
 	});
 
-	describe('constructor', function () {
-		it('should instantiate without error', function () {
+	describe('constructor', () => {
+		it('should instantiate without error', () => {
 			new D3Funnel('#funnel');
 		});
 	});
 
-	describe('methods', function () {
-		describe('draw', function () {
-			it('should draw a chart on the identified target', function () {
+	describe('methods', () => {
+		describe('draw', () => {
+			it('should draw a chart on the identified target', () => {
 				getFunnel().draw(getBasicData());
 
 				assert.equal(1, getSvg()[0].length);
 			});
 
-			it('should draw when second argument is missing', function () {
+			it('should draw when second argument is missing', () => {
 				getFunnel().draw(getBasicData());
 
 				assert.equal(1, getSvg()[0].length);
 			});
 
-			it('should throw an error when the data is not an array', function () {
+			it('should throw an error when the data is not an array', () => {
 				const funnel = getFunnel();
 
-				assert.throws(function () {
+				assert.throws(() => {
 					funnel.draw('Not array');
 				}, Error, 'Data must be an array.');
 			});
 
-			it('should throw an error when the data array does not have an element', function () {
+			it('should throw an error when the data array does not have an element', () => {
 				const funnel = getFunnel();
 
-				assert.throws(function () {
+				assert.throws(() => {
 					funnel.draw([]);
 				}, Error, 'Data array must contain at least one element.');
 			});
 
-			it('should throw an error when the first data array element is not an array', function () {
+			it('should throw an error when the first data array element is not an array', () => {
 				const funnel = getFunnel();
 
-				assert.throws(function () {
+				assert.throws(() => {
 					funnel.draw(['Not array']);
 				}, Error, 'Data array elements must be arrays.');
 			});
 
-			it('should throw an error when the first data array element does not have two elements', function () {
+			it('should throw an error when the first data array element does not have two elements', () => {
 				const funnel = getFunnel();
 
-				assert.throws(function () {
+				assert.throws(() => {
 					funnel.draw([['Only one']]);
 				}, Error, 'Data array elements must contain a label and value.');
 			});
 
-			it('should draw as many blocks as there are elements', function () {
+			it('should draw as many blocks as there are elements', () => {
 				getFunnel().draw([
 					['Node A', 1],
 					['Node B', 2],
@@ -134,7 +134,7 @@ describe('D3Funnel', function () {
 				assert.equal(4, getSvg().selectAll('path')[0].length);
 			});
 
-			it('should use colors assigned to a data element', function () {
+			it('should use colors assigned to a data element', () => {
 				let paths;
 				let colorScale;
 
@@ -155,7 +155,7 @@ describe('D3Funnel', function () {
 				assert.equal('#444', d3.select(paths[3]).attr('fill'));
 			});
 
-			it('should use label colors assigned to a data element', function () {
+			it('should use label colors assigned to a data element', () => {
 				let texts;
 
 				getFunnel().draw([
@@ -173,7 +173,7 @@ describe('D3Funnel', function () {
 				assert.equal('#444', d3.select(texts[3]).attr('fill'));
 			});
 
-			it('should remove other elements from container', function () {
+			it('should remove other elements from container', () => {
 				const container = d3.select('#funnel');
 				const funnel = getFunnel();
 
@@ -190,7 +190,7 @@ describe('D3Funnel', function () {
 				assert.equal(expected, actual);
 			});
 
-			it('should remove inner text from container', function () {
+			it('should remove inner text from container', () => {
 				const container = d3.select('#funnel');
 				const funnel = getFunnel();
 
@@ -205,8 +205,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('destroy', function () {
-			it('should remove a drawn SVG element', function () {
+		describe('destroy', () => {
+			it('should remove a drawn SVG element', () => {
 				const funnel = getFunnel();
 
 				funnel.draw(getBasicData());
@@ -217,8 +217,8 @@ describe('D3Funnel', function () {
 		});
 	});
 
-	describe('defaults', function () {
-		it('should affect all default options', function () {
+	describe('defaults', () => {
+		it('should affect all default options', () => {
 			D3Funnel.defaults.label.fill = '#777';
 
 			getFunnel().draw(getBasicData());
@@ -227,9 +227,9 @@ describe('D3Funnel', function () {
 		});
 	});
 
-	describe('options', function () {
-		describe('chart.width', function () {
-			it('should default to the container\'s width', function () {
+	describe('options', () => {
+		describe('chart.width', () => {
+			it('should default to the container\'s width', () => {
 				d3.select('#funnel').style('width', '250px');
 
 				getFunnel().draw(getBasicData());
@@ -237,7 +237,7 @@ describe('D3Funnel', function () {
 				assert.equal(250, getSvg().node().getBBox().width);
 			});
 
-			it('should set the funnel\'s width to the specified amount', function () {
+			it('should set the funnel\'s width to the specified amount', () => {
 				getFunnel().draw(getBasicData(), {
 					chart: {
 						width: 200,
@@ -248,8 +248,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('chart.height', function () {
-			it('should default to the container\'s height', function () {
+		describe('chart.height', () => {
+			it('should default to the container\'s height', () => {
 				d3.select('#funnel').style('height', '250px');
 
 				getFunnel().draw(getBasicData());
@@ -257,7 +257,7 @@ describe('D3Funnel', function () {
 				assert.equal(250, getSvg().node().getBBox().height);
 			});
 
-			it('should set the funnel\'s height to the specified amount', function () {
+			it('should set the funnel\'s height to the specified amount', () => {
 				getFunnel().draw(getBasicData(), {
 					chart: {
 						height: 200,
@@ -268,8 +268,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('chart.bottomWidth', function () {
-			it('should set the bottom tip width to the specified percentage', function () {
+		describe('chart.bottomWidth', () => {
+			it('should set the bottom tip width to the specified percentage', () => {
 				getFunnel().draw(getBasicData(), {
 					chart: {
 						width: 200,
@@ -281,8 +281,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('chart.bottomPinch', function () {
-			it('should set the last n number of blocks to have the width of chart.bottomWidth', function () {
+		describe('chart.bottomPinch', () => {
+			it('should set the last n number of blocks to have the width of chart.bottomWidth', () => {
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -302,8 +302,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('chart.inverted', function () {
-			it('should draw the chart in a top-to-bottom arrangement by default', function () {
+		describe('chart.inverted', () => {
+			it('should draw the chart in a top-to-bottom arrangement by default', () => {
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -320,7 +320,7 @@ describe('D3Funnel', function () {
 				assert.equal(100, getPathBottomWidth(d3.select(paths[0][1])));
 			});
 
-			it('should draw the chart in a bottom-to-top arrangement when true', function () {
+			it('should draw the chart in a bottom-to-top arrangement when true', () => {
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -339,8 +339,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('chart.curve.enabled', function () {
-			it('should create an additional path on top of the trapezoids', function () {
+		describe('chart.curve.enabled', () => {
+			it('should create an additional path on top of the trapezoids', () => {
 				getFunnel().draw(getBasicData(), {
 					chart: {
 						curve: {
@@ -352,7 +352,7 @@ describe('D3Funnel', function () {
 				assert.equal(2, d3.selectAll('#funnel path')[0].length);
 			});
 
-			it('should create a quadratic Bezier curve on each path', function () {
+			it('should create a quadratic Bezier curve on each path', () => {
 				getFunnel().draw(getBasicData(), {
 					chart: {
 						curve: {
@@ -371,8 +371,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('block.dynamicHeight', function () {
-			it('should use equal heights when false', function () {
+		describe('block.dynamicHeight', () => {
+			it('should use equal heights when false', () => {
 				let paths;
 
 				getFunnel().draw([
@@ -390,7 +390,7 @@ describe('D3Funnel', function () {
 				assert.equal(150, getPathHeight(d3.select(paths[1])));
 			});
 
-			it('should use proportional heights when true', function () {
+			it('should use proportional heights when true', () => {
 				let paths;
 
 				getFunnel().draw([
@@ -411,7 +411,7 @@ describe('D3Funnel', function () {
 				assert.equal(200, parseInt(getPathHeight(d3.select(paths[1])), 10));
 			});
 
-			it('should not have NaN in the last path when bottomWidth is equal to 0%', function () {
+			it('should not have NaN in the last path when bottomWidth is equal to 0%', () => {
 				let paths;
 
 				// A very specific cooked-up example that could trigger NaN
@@ -435,7 +435,7 @@ describe('D3Funnel', function () {
 				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'));
 			});
 
-			it('should not error when bottomWidth is equal to 100%', function () {
+			it('should not error when bottomWidth is equal to 100%', () => {
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -541,8 +541,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('block.fill.scale', function () {
-			it('should use a function\'s return value', function () {
+		describe('block.fill.scale', () => {
+			it('should use a function\'s return value', () => {
 				let paths;
 
 				getFunnel().draw([
@@ -568,7 +568,7 @@ describe('D3Funnel', function () {
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
 			});
 
-			it('should use an array\'s return value', function () {
+			it('should use an array\'s return value', () => {
 				let paths;
 
 				getFunnel().draw([
@@ -589,8 +589,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('block.fill.type', function () {
-			it('should create gradients when set to \'gradient\'', function () {
+		describe('block.fill.type', () => {
+			it('should create gradients when set to \'gradient\'', () => {
 				getFunnel().draw(getBasicData(), {
 					block: {
 						fill: {
@@ -608,7 +608,7 @@ describe('D3Funnel', function () {
 				assert.equal('url(#gradient-0)', d3.select('#funnel path').attr('fill'));
 			});
 
-			it('should use solid fill when not set to \'gradient\'', function () {
+			it('should use solid fill when not set to \'gradient\'', () => {
 				getFunnel().draw(getBasicData());
 
 				// Check for valid hex string
@@ -618,8 +618,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('block.minHeight', function () {
-			it('should give each block the minimum height specified', function () {
+		describe('block.minHeight', () => {
+			it('should give each block the minimum height specified', () => {
 				let paths;
 
 				getFunnel().draw([
@@ -641,7 +641,7 @@ describe('D3Funnel', function () {
 				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[1]))), 10);
 			});
 
-			it('should decrease the height of blocks above the minimum', function () {
+			it('should decrease the height of blocks above the minimum', () => {
 				let paths;
 
 				getFunnel().draw([
@@ -663,8 +663,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('block.highlight', function () {
-			it('should change block color on hover', function () {
+		describe('block.highlight', () => {
+			it('should change block color on hover', () => {
 				const event = document.createEvent('CustomEvent');
 				event.initCustomEvent('mouseover', false, false, null);
 
@@ -683,8 +683,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('label.fontFamily', function () {
-			it('should set the label\'s font size to the specified amount', function () {
+		describe('label.fontFamily', () => {
+			it('should set the label\'s font size to the specified amount', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {
 						fontFamily: 'Open Sans',
@@ -695,8 +695,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('label.fontSize', function () {
-			it('should set the label\'s font size to the specified amount', function () {
+		describe('label.fontSize', () => {
+			it('should set the label\'s font size to the specified amount', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {
 						fontSize: '16px',
@@ -707,8 +707,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('label.fill', function () {
-			it('should set the label\'s fill color to the specified color', function () {
+		describe('label.fill', () => {
+			it('should set the label\'s fill color to the specified color', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {
 						fill: '#777',
@@ -719,8 +719,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('label.format', function () {
-			it('should parse a string template', function () {
+		describe('label.format', () => {
+			it('should parse a string template', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {
 						format: '{l} {v} {f}',
@@ -733,7 +733,7 @@ describe('D3Funnel', function () {
 				assert.equal('Node 1000 1000', d3.select('#funnel text').text());
 			});
 
-			it('should pass values to a supplied function', function () {
+			it('should pass values to a supplied function', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {
 						format: function (label, value, fValue) {
@@ -746,8 +746,8 @@ describe('D3Funnel', function () {
 			});
 		});
 
-		describe('events.click.block', function () {
-			it('should invoke the callback function with the correct data', function () {
+		describe('events.click.block', () => {
+			it('should invoke the callback function with the correct data', () => {
 				const event = document.createEvent('CustomEvent');
 				event.initCustomEvent('click', false, false, null);
 
@@ -778,7 +778,7 @@ describe('D3Funnel', function () {
 				}, 0);
 			});
 
-			it('should not trigger errors when null', function () {
+			it('should not trigger errors when null', () => {
 				const event = document.createEvent('CustomEvent');
 				event.initCustomEvent('click', false, false, null);
 

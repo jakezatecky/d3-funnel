@@ -4,9 +4,9 @@ import Utils from '../../src/d3-funnel/utils';
 
 const assert = chai.assert;
 
-describe('Utils', function () {
-	describe('extend', function () {
-		it('should override object a with the properties of object b', function () {
+describe('Utils', () => {
+	describe('extend', () => {
+		it('should override object a with the properties of object b', () => {
 			const a = {
 				name: 'Fluoride',
 			};
@@ -19,7 +19,7 @@ describe('Utils', function () {
 			assert.deepEqual(b, Utils.extend(a, b));
 		});
 
-		it('should add properties of object b to object a', function () {
+		it('should add properties of object b to object a', () => {
 			const a = {
 				name: 'Alpha Centauri',
 			};
