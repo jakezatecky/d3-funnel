@@ -1,6 +1,17 @@
 class Utils {
 
 	/**
+	 * Determine whether the given parameter is an extendable object.
+	 *
+	 * @param {*} a
+	 *
+	 * @return {boolean}
+	 */
+	static isExtendableObject(a) {
+		return typeof a === 'object' && a !== null && !Array.isArray(a);
+	}
+
+	/**
 	 * Extends an object with the members of another.
 	 *
 	 * @param {Object} a The object to be extended.
@@ -9,25 +20,27 @@ class Utils {
 	 * @return {Object}
 	 */
 	static extend(a, b) {
-		let prop;
+		let result = {};
 
-		/* eslint-disable no-param-reassign */
-		for (prop in b) {
-			if (b.hasOwnProperty(prop)) {
-				if (typeof b[prop] === 'object' && !Array.isArray(b[prop]) && b[prop] !== null) {
-					if (typeof a[prop] === 'object' && !Array.isArray(a[prop]) && b[prop] !== null) {
-						a[prop] = Utils.extend(a[prop], b[prop]);
-					} else {
-						a[prop] = Utils.extend({}, b[prop]);
-					}
-				} else {
-					a[prop] = b[prop];
-				}
-			}
+		// If a is non-trivial, extend the result with it
+		if (Object.keys(a).length > 0) {
+			result = Utils.extend({}, a);
 		}
-		/* eslint-enable no-param-reassign */
 
-		return a;
+		// Copy over the properties in b into a
+		Object.keys(b).forEach((prop) => {
+			if (Utils.isExtendableObject(b[prop])) {
+				if (Utils.isExtendableObject(a[prop])) {
+					result[prop] = Utils.extend(a[prop], b[prop]);
+				} else {
+					result[prop] = Utils.extend({}, b[prop]);
+				}
+			} else {
+				result[prop] = b[prop];
+			}
+		});
+
+		return result;
 	}
 
 }

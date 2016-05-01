@@ -3,6 +3,7 @@
 	"parser": "babel-eslint",
 	"rules": {
 		"indent": [2, "tab"],
-		"prefer-template": 0
+		"prefer-template": 0,
+		"no-underscore-dangle": 0
 	}
 }

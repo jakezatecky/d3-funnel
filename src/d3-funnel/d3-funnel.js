@@ -123,7 +123,6 @@ class D3Funnel {
 		this.bottomWidth = settings.chart.width * settings.chart.bottomWidth;
 		this.bottomPinch = settings.chart.bottomPinch;
 		this.isInverted = settings.chart.inverted;
-		this.isHorizontal = settings.chart.horizontal;
 		this.isCurved = settings.chart.curve.enabled;
 		this.curveHeight = settings.chart.curve.height;
 		this.fillType = settings.block.fill.type;
