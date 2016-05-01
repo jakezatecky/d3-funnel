@@ -81,7 +81,7 @@ class Colorizer {
 			return raw;
 		}
 
-		return 'url(#gradient-' + index + ')';
+		return `url(#gradient-${index})`;
 	}
 
 	/**
@@ -128,7 +128,7 @@ class Colorizer {
 			(Math.round((t - G) * p) + G) * 0x100 +
 			(Math.round((t - B) * p) + B);
 
-		return '#' + converted.toString(16).slice(1);
+		return `#${converted.toString(16).slice(1)}`;
 	}
 
 	/**
