@@ -4,9 +4,9 @@ import Navigator from '../../src/d3-funnel/navigator';
 
 const assert = chai.assert;
 
-describe('Navigator', function () {
-	describe('plot', function () {
-		it('should concatenate a list of path commands together', function () {
+describe('Navigator', () => {
+	describe('plot', () => {
+		it('should concatenate a list of path commands together', () => {
 			const commands = [
 				['M', 0, 15],
 				['', 5, 25],
