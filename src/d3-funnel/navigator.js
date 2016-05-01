@@ -11,7 +11,7 @@ class Navigator {
 		let path = '';
 
 		commands.forEach((command) => {
-			path += command[0] + command[1] + ',' + command[2] + ' ';
+			path += `${command[0]}${command[1]},${command[2]} `;
 		});
 
 		return path.replace(/ +/g, ' ').trim();

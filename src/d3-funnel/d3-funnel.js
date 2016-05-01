@@ -532,7 +532,7 @@ class D3Funnel {
 			// Create linear gradient
 			const gradient = defs.append('linearGradient')
 				.attr({
-					id: 'gradient-' + index,
+					id: `gradient-${index}`,
 				});
 
 			// Define the gradient stops
@@ -546,8 +546,8 @@ class D3Funnel {
 			// Add the gradient stops
 			stops.forEach((stop) => {
 				gradient.append('stop').attr({
-					offset: stop[0] + '%',
-					style: 'stop-color:' + stop[1],
+					offset: `${stop[0]}%`,
+					style: `stop-color: ${stop[1]}`,
 				});
 			});
 		});
