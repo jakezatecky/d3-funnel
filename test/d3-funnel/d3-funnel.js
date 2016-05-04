@@ -451,6 +451,96 @@ describe('D3Funnel', function () {
 			});
 		});
 
+		describe('block.dynamicSlope', function () {
+			it('should give each block top width relative to its value', function () {
+				let paths;
+
+				getFunnel().draw([
+					['A', 100],
+					['B', 55],
+					['C', 42],
+					['D', 74],
+				], {
+					chart: {
+						width: 100,
+					},
+					block: {
+						dynamicSlope: true,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
+				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[1]))), 55);
+				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[2]))), 42);
+				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[3]))), 74);
+			});
+
+			it('should give last block top width equal to bottom widht', function () {
+				let paths;
+
+				getFunnel().draw([
+					['A', 100],
+					['B', 55],
+					['C', 42],
+					['D', 74],
+				], {
+					chart: {
+						width: 100,
+					},
+					block: {
+						dynamicSlope: true,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[3]))), 74);
+				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[3]))), 74);
+			});
+
+			it('should use bottomWidth value when false', function () {
+				let paths;
+
+				getFunnel().draw([
+					['A', 100],
+					['B', 90],
+				], {
+					chart: {
+						width: 100,
+						bottomWidth: 0.4,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
+				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 40);
+			});
+
+			it('should use proportional widths when true', function () {
+				let paths;
+
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+				], {
+					chart: {
+						width: 100,
+					},
+					block: {
+						dynamicSlope: true,
+					},
+				});
+
+				paths = d3.selectAll('#funnel path')[0];
+
+				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
+				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 200);
+			});
+		});
+
 		describe('block.fill.scale', function () {
 			it('should use a function\'s return value', function () {
 				let paths;
