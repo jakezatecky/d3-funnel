@@ -9,6 +9,12 @@ $(function() {
 				['Interviewed',  2500],
 				['Hired',        1500],
 			],
+			dynamicSlope: [
+				['Applicants',   10],
+				['Pre-screened', 8],
+				['Interviewed',  6],
+				['Hired',        2],
+			],
 			minHeight: [
 				['Applicants',   12000],
 				['Pre-screened', 4000],
@@ -77,13 +83,20 @@ $(function() {
 					},
 				},
 			],
-			dynamic: [
+			dynamicHeight: [
 				data.normal, {
 					chart: {
 						bottomWidth: 1 / 3,
 					},
 					block: {
 						dynamicHeight: true,
+					},
+				},
+			],
+			dynamicSlope: [
+				data.dynamicSlope, {
+					block: {
+						dynamicSlope: true,
 					},
 				},
 			],
