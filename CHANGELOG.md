@@ -2,8 +2,8 @@
 
 ### New Features
 
-* [#23]: Add ability to change chart orientation from vertical to horizontal
 * [#53]: Add `label.fontSize` option
+* [#57]: Add `block.dynamicSlope` option to make the funnel width proportional to its value
 
 ## v0.7.5 (December 19, 2015)
 
