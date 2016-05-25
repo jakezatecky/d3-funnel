@@ -73,7 +73,7 @@ funnel chart:
 | `chart.curve.enabled` | Whether the funnel is curved.                                             | bool     | `false`                 |
 | `chart.curve.height`  | The curvature amount.                                                     | number   | `20`                    |
 | `block.dynamicHeight` | Whether the block heights are proportional to its weight.                 | bool     | `false`                 |
-| `block.dynamicSlope`  | Whether the block width is proportional to its value decrease.            | bool     | `false`                 |
+| `block.dynamicSlope`  | Whether the block widths are proportional to their value decrease.        | bool     | `false`                 |
 | `block.fill.scale`    | The background color scale as an array or function.                       | mixed    | `d3.scale.category10()` |
 | `block.fill.type`     | Either `'solid'` or `'gradient'`.                                         | string   | `'solid'`               |
 | `block.minHeight`     | The minimum pixel height of a block.                                      | number   | `0`                     |
