@@ -372,9 +372,9 @@ describe('D3Funnel', () => {
 
 				const paths = d3.selectAll('#funnel path');
 
-				const quadraticPaths = paths.filter(() =>
-					d3.select(this).attr('d').indexOf('Q') > -1
-				);
+				const quadraticPaths = paths.filter(function () {  // eslint-disable-line func-names
+					return d3.select(this).attr('d').indexOf('Q') > -1;
+				});
 
 				assert.equal(paths[0].length, quadraticPaths[0].length);
 			});
