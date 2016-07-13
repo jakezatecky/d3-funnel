@@ -49,7 +49,7 @@ gulp.task('build', ['test', 'compile-build'], function () {
 });
 
 gulp.task('watch', function () {
-	gulp.watch(src, ['build']);
+	gulp.watch(['./src/d3-funnel/**/*.js'], ['build']);
 });
 
 gulp.task('default', ['build']);
