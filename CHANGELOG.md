@@ -5,6 +5,10 @@
 * [#53]: Add `label.fontSize` option
 * [#57]: Add `block.dynamicSlope` option to make the funnel width proportional to its value
 
+### Bug Fixes
+
+* [#59]: Fix issue where formatted array values were not being passed to the label formatter
+
 ## v0.7.5 (December 19, 2015)
 
 ### New Features

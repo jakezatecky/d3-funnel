@@ -134,6 +134,20 @@ describe('D3Funnel', () => {
 				assert.equal(4, getSvg().selectAll('path')[0].length);
 			});
 
+			it('should pass any row-specified formatted values to the label formatter', () => {
+				getFunnel().draw([
+					['Node A', [1, 'One']],
+					['Node B', 2],
+					['Node C', [3, 'Three']],
+				]);
+
+				const text = getSvg().selectAll('text')[0];
+
+				assert.equal('Node A: One', d3.select(text[0]).text());
+				assert.equal('Node B: 2', d3.select(text[1]).text());
+				assert.equal('Node C: Three', d3.select(text[2]).text());
+			});
+
 			it('should use colors assigned to a data element', () => {
 				let paths;
 				let colorScale;

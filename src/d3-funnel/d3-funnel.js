@@ -251,7 +251,7 @@ class D3Funnel {
 				fill: this.colorizer.getBlockFill(block, index, this.fillType),
 				label: {
 					raw: label,
-					formatted: this.labelFormatter.format(label, count),
+					formatted: this.labelFormatter.format(label, block[1]),
 					color: this.colorizer.getLabelFill(block),
 				},
 			});
