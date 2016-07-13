@@ -344,7 +344,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						fill: _this2.colorizer.getBlockFill(block, index, _this2.fillType),
 						label: {
 							raw: label,
-							formatted: _this2.labelFormatter.format(label, count),
+							formatted: _this2.labelFormatter.format(label, block[1]),
 							color: _this2.colorizer.getLabelFill(block)
 						}
 					});
