@@ -1,3 +1,4 @@
+/* global describe, it */
 import chai from 'chai';
 
 import Navigator from '../../src/d3-funnel/navigator';

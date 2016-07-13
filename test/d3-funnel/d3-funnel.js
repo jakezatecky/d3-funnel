@@ -1,3 +1,4 @@
+/* global beforeEach, describe, it */
 import _ from 'lodash';
 import d3 from 'd3';
 import chai from 'chai';
@@ -21,22 +22,8 @@ function getBasicData() {
 	return [['Node', 1000]];
 }
 
-function getPathTopWidth(path) {
-	const commands = path.attr('d').split(' ');
-
-	return getCommandPoint(commands[1]).x - getCommandPoint(commands[0]).x;
-}
-
-function getPathBottomWidth(path) {
-	const commands = path.attr('d').split(' ');
-
-	return getCommandPoint(commands[2]).x - getCommandPoint(commands[3]).x;
-}
-
-function getPathHeight(path) {
-	const commands = path.attr('d').split(' ');
-
-	return getCommandPoint(commands[2]).y - getCommandPoint(commands[0]).y;
+function isLetter(str) {
+	return str.length === 1 && str.match(/[a-z]/i);
 }
 
 function getCommandPoint(command) {
@@ -56,8 +43,22 @@ function getCommandPoint(command) {
 	};
 }
 
-function isLetter(str) {
-	return str.length === 1 && str.match(/[a-z]/i);
+function getPathTopWidth(path) {
+	const commands = path.attr('d').split(' ');
+
+	return getCommandPoint(commands[1]).x - getCommandPoint(commands[0]).x;
+}
+
+function getPathBottomWidth(path) {
+	const commands = path.attr('d').split(' ');
+
+	return getCommandPoint(commands[2]).x - getCommandPoint(commands[3]).x;
+}
+
+function getPathHeight(path) {
+	const commands = path.attr('d').split(' ');
+
+	return getCommandPoint(commands[2]).y - getCommandPoint(commands[0]).y;
 }
 
 const defaults = _.clone(D3Funnel.defaults, true);
@@ -73,7 +74,7 @@ describe('D3Funnel', () => {
 
 	describe('constructor', () => {
 		it('should instantiate without error', () => {
-			new D3Funnel('#funnel');
+			new D3Funnel('#funnel');  // eslint-disable-line no-new
 		});
 	});
 
@@ -115,7 +116,7 @@ describe('D3Funnel', () => {
 				}, Error, 'Data array elements must be arrays.');
 			});
 
-			it('should throw an error when the first data array element does not have two elements', () => {
+			it('should throw an error when the first data array element does not have a count', () => {
 				const funnel = getFunnel();
 
 				assert.throws(() => {
@@ -149,9 +150,6 @@ describe('D3Funnel', () => {
 			});
 
 			it('should use colors assigned to a data element', () => {
-				let paths;
-				let colorScale;
-
 				getFunnel().draw([
 					['A', 1, '#111'],
 					['B', 2, '#222'],
@@ -159,9 +157,8 @@ describe('D3Funnel', () => {
 					['D', 4, '#444'],
 				]);
 
-				paths = getSvg().selectAll('path')[0];
-
-				colorScale = d3.scale.category10().domain(d3.range(0, 10));
+				const paths = getSvg().selectAll('path')[0];
+				const colorScale = d3.scale.category10().domain(d3.range(0, 10));
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
@@ -170,8 +167,6 @@ describe('D3Funnel', () => {
 			});
 
 			it('should use label colors assigned to a data element', () => {
-				let texts;
-
 				getFunnel().draw([
 					['A', 1, null, '#111'],
 					['B', 2, null, '#222'],
@@ -179,7 +174,7 @@ describe('D3Funnel', () => {
 					['D', 4, null, '#444'],
 				]);
 
-				texts = getSvg().selectAll('text')[0];
+				const texts = getSvg().selectAll('text')[0];
 
 				assert.equal('#111', d3.select(texts[0]).attr('fill'));
 				assert.equal('#222', d3.select(texts[1]).attr('fill'));
@@ -377,9 +372,9 @@ describe('D3Funnel', () => {
 
 				const paths = d3.selectAll('#funnel path');
 
-				const quadraticPaths = paths.filter(function () {
-					return d3.select(this).attr('d').indexOf('Q') > -1;
-				});
+				const quadraticPaths = paths.filter(() =>
+					d3.select(this).attr('d').indexOf('Q') > -1
+				);
 
 				assert.equal(paths[0].length, quadraticPaths[0].length);
 			});
@@ -387,8 +382,6 @@ describe('D3Funnel', () => {
 
 		describe('block.dynamicHeight', () => {
 			it('should use equal heights when false', () => {
-				let paths;
-
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -398,15 +391,13 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.equal(150, getPathHeight(d3.select(paths[0])));
 				assert.equal(150, getPathHeight(d3.select(paths[1])));
 			});
 
 			it('should use proportional heights when true', () => {
-				let paths;
-
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -419,15 +410,13 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.equal(100, parseInt(getPathHeight(d3.select(paths[0])), 10));
 				assert.equal(200, parseInt(getPathHeight(d3.select(paths[1])), 10));
 			});
 
 			it('should not have NaN in the last path when bottomWidth is equal to 0%', () => {
-				let paths;
-
 				// A very specific cooked-up example that could trigger NaN
 				getFunnel().draw([
 					['A', 120],
@@ -444,7 +433,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'));
 			});
@@ -465,10 +454,8 @@ describe('D3Funnel', () => {
 			});
 		});
 
-		describe('block.dynamicSlope', function () {
-			it('should give each block top width relative to its value', function () {
-				let paths;
-
+		describe('block.dynamicSlope', () => {
+			it('should give each block top width relative to its value', () => {
 				getFunnel().draw([
 					['A', 100],
 					['B', 55],
@@ -483,7 +470,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[1]))), 55);
@@ -491,9 +478,7 @@ describe('D3Funnel', () => {
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[3]))), 74);
 			});
 
-			it('should give last block top width equal to bottom widht', function () {
-				let paths;
-
+			it('should give last block top width equal to bottom widht', () => {
 				getFunnel().draw([
 					['A', 100],
 					['B', 55],
@@ -508,15 +493,13 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[3]))), 74);
 				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[3]))), 74);
 			});
 
-			it('should use bottomWidth value when false', function () {
-				let paths;
-
+			it('should use bottomWidth value when false', () => {
 				getFunnel().draw([
 					['A', 100],
 					['B', 90],
@@ -527,15 +510,13 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
 				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 40);
 			});
 
-			it('should use proportional widths when true', function () {
-				let paths;
-
+			it('should use proportional widths when true', () => {
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -548,7 +529,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
 				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 200);
@@ -557,15 +538,13 @@ describe('D3Funnel', () => {
 
 		describe('block.fill.scale', () => {
 			it('should use a function\'s return value', () => {
-				let paths;
-
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
 				], {
 					block: {
 						fill: {
-							scale: function (index) {
+							scale: (index) => {
 								if (index === 0) {
 									return '#111';
 								}
@@ -576,15 +555,13 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = getSvg().selectAll('path')[0];
+				const paths = getSvg().selectAll('path')[0];
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
 			});
 
 			it('should use an array\'s return value', () => {
-				let paths;
-
 				getFunnel().draw([
 					['A', 1],
 					['B', 2],
@@ -596,7 +573,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = getSvg().selectAll('path')[0];
+				const paths = getSvg().selectAll('path')[0];
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
@@ -634,8 +611,6 @@ describe('D3Funnel', () => {
 
 		describe('block.minHeight', () => {
 			it('should give each block the minimum height specified', () => {
-				let paths;
-
 				getFunnel().draw([
 					['A', 299],
 					['B', 1],
@@ -649,15 +624,13 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[0]))), 10);
 				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[1]))), 10);
 			});
 
 			it('should decrease the height of blocks above the minimum', () => {
-				let paths;
-
 				getFunnel().draw([
 					['A', 299],
 					['B', 1],
@@ -671,7 +644,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path')[0];
 
 				assert.isBelow(parseFloat(getPathHeight(d3.select(paths[0]))), 290);
 			});
@@ -750,9 +723,7 @@ describe('D3Funnel', () => {
 			it('should pass values to a supplied function', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {
-						format: function (label, value, fValue) {
-							return label + '/' + value + '/' + fValue;
-						},
+						format: (label, value, fValue) => `${label}/${value}/${fValue}`,
 					},
 				});
 
@@ -770,7 +741,7 @@ describe('D3Funnel', () => {
 				getFunnel().draw(getBasicData(), {
 					events: {
 						click: {
-							block: function (d, i) {
+							block: (d, i) => {
 								spy({
 									index: d.index,
 									node: d.node,
