@@ -85,7 +85,7 @@ describe('D3Funnel', () => {
 				assert.equal(1, getSvg()[0].length);
 			});
 
-			it('should draw when second argument is missing', () => {
+			it('should draw when no options are specified', () => {
 				getFunnel().draw(getBasicData());
 
 				assert.equal(1, getSvg()[0].length);
