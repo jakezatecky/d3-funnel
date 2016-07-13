@@ -142,11 +142,11 @@ describe('D3Funnel', () => {
 					['Node C', [3, 'Three']],
 				]);
 
-				const text = getSvg().selectAll('text')[0];
+				const texts = getSvg().selectAll('text')[0];
 
-				assert.equal('Node A: One', d3.select(text[0]).text());
-				assert.equal('Node B: 2', d3.select(text[1]).text());
-				assert.equal('Node C: Three', d3.select(text[2]).text());
+				assert.equal('Node A: One', d3.select(texts[0]).text());
+				assert.equal('Node B: 2', d3.select(texts[1]).text());
+				assert.equal('Node C: Three', d3.select(texts[2]).text());
 			});
 
 			it('should use colors assigned to a data element', () => {
