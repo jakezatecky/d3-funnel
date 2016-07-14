@@ -1,3 +1,9 @@
+## v0.7.7 (TBA)
+
+### New Features
+
+* [#50]: Add `block.overlay` option
+
 ## v0.7.6 (July 12, 2016)
 
 ### New Features
