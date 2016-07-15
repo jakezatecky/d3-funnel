@@ -1,7 +1,7 @@
 /* global describe, it */
 import chai from 'chai';
 
-import Utils from '../../src/d3-funnel/utils';
+import Utils from '../../src/d3-funnel/Utils';
 
 const assert = chai.assert;
 

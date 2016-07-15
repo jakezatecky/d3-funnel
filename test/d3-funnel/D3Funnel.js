@@ -4,7 +4,7 @@ import d3 from 'd3';
 import chai from 'chai';
 import spies from 'chai-spies';
 
-import D3Funnel from '../../src/d3-funnel/d3-funnel';
+import D3Funnel from '../../src/d3-funnel/D3Funnel';
 
 const assert = chai.assert;
 

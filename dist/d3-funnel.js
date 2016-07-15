@@ -81,21 +81,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _d2 = _interopRequireDefault(_d);
 
-	var _colorizer = __webpack_require__(3);
+	var _Colorizer = __webpack_require__(3);
 
-	var _colorizer2 = _interopRequireDefault(_colorizer);
+	var _Colorizer2 = _interopRequireDefault(_Colorizer);
 
-	var _labelFormatter = __webpack_require__(4);
+	var _LabelFormatter = __webpack_require__(4);
 
-	var _labelFormatter2 = _interopRequireDefault(_labelFormatter);
+	var _LabelFormatter2 = _interopRequireDefault(_LabelFormatter);
 
-	var _navigator = __webpack_require__(5);
+	var _Navigator = __webpack_require__(5);
 
-	var _navigator2 = _interopRequireDefault(_navigator);
+	var _Navigator2 = _interopRequireDefault(_Navigator);
 
-	var _utils = __webpack_require__(6);
+	var _Utils = __webpack_require__(6);
 
-	var _utils2 = _interopRequireDefault(_utils);
+	var _Utils2 = _interopRequireDefault(_Utils);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -116,11 +116,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			this.selector = selector;
 
-			this.colorizer = new _colorizer2.default();
+			this.colorizer = new _Colorizer2.default();
 
-			this.labelFormatter = new _labelFormatter2.default();
+			this.labelFormatter = new _LabelFormatter2.default();
 
-			this.navigator = new _navigator2.default();
+			this.navigator = new _Navigator2.default();
 		}
 
 		/**
@@ -263,12 +263,12 @@ return /******/ (function(modules) { // webpackBootstrap
 			value: function _getSettings(options) {
 				// Prepare the configuration settings based on the defaults
 				// Set the default width and height based on the container
-				var settings = _utils2.default.extend({}, D3Funnel.defaults);
+				var settings = _Utils2.default.extend({}, D3Funnel.defaults);
 				settings.chart.width = parseInt(_d2.default.select(this.selector).style('width'), 10);
 				settings.chart.height = parseInt(_d2.default.select(this.selector).style('height'), 10);
 
 				// Overwrite default settings with user options
-				settings = _utils2.default.extend(settings, options);
+				settings = _Utils2.default.extend(settings, options);
 
 				// In the case that the width or height is not valid, set
 				// the width/height as its default hard-coded value

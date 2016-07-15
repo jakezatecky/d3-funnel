@@ -3,4 +3,4 @@
 //
 // See: https://github.com/webpack/webpack/issues/706
 
-module.exports = require('./d3-funnel/d3-funnel.js').default;
+module.exports = require('./d3-funnel/D3Funnel.js').default;

@@ -1,9 +1,9 @@
 import d3 from 'd3';
 
-import Colorizer from './colorizer';
-import LabelFormatter from './label-formatter';
-import Navigator from './navigator';
-import Utils from './utils';
+import Colorizer from './Colorizer';
+import LabelFormatter from './LabelFormatter';
+import Navigator from './Navigator';
+import Utils from './Utils';
 
 class D3Funnel {
 

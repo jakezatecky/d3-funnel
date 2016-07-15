@@ -1,7 +1,7 @@
 /* global describe, it */
 import chai from 'chai';
 
-import Colorizer from '../../src/d3-funnel/colorizer';
+import Colorizer from '../../src/d3-funnel/Colorizer';
 
 const assert = chai.assert;
 
