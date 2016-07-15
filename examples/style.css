@@ -1,13 +1,13 @@
-body {
-	text-align: center;
+.container {
+  text-align: center;
 }
 
-form {
-    margin: 20px 0;
+.chart-example form {
+  margin: 20px 0;
 }
 
-#funnel {
-	width: 300px;
-	height: 400px;
-	margin: 0 auto;
+.chart {
+  width: 300px;
+  height: 400px;
+  margin: 0 auto;
 }
