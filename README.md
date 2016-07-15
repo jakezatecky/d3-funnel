@@ -47,15 +47,15 @@ funnel chart:
 <div id="funnel"></div>
 
 <script>
-    var data = [
+    const data = [
         ['Plants',     5000],
         ['Flowers',    2500],
         ['Perennials', 200],
         ['Roses',      50],
     ];
-    var options = {};
+    const options = { block: { dynamicHeight: true } };
 
-    var chart = new D3Funnel('#funnel');
+    const chart = new D3Funnel('#funnel');
     chart.draw(data, options);
 </script>
 ```
