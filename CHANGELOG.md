@@ -2,7 +2,8 @@
 
 ### New Features
 
-* [#50]: Add `block.overlay` option
+* [#50]: Add `block.barOverlay` option to display bar charts proportional to block value
+* [#52]: Add `chart.totalCount` option to override total counts used in ratio calculations
 
 ## v0.7.6 (July 12, 2016)
 
