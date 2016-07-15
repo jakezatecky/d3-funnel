@@ -1,5 +1,4 @@
 class LabelFormatter {
-
 	/**
 	 * Initial the formatter.
 	 *
@@ -79,7 +78,6 @@ class LabelFormatter {
 	getDefaultFormattedValue(value) {
 		return value.toLocaleString();
 	}
-
 }
 
 export default LabelFormatter;

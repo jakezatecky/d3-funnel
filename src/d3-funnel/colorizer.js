@@ -1,5 +1,4 @@
 class Colorizer {
-
 	constructor() {
 		this.hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
@@ -141,7 +140,6 @@ class Colorizer {
 	expandHex(hex) {
 		return hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 	}
-
 }
 
 export default Colorizer;

@@ -1,5 +1,4 @@
 class Navigator {
-
 	/**
 	 * Given a list of path commands, returns the compiled description.
 	 *
@@ -234,7 +233,6 @@ class Navigator {
 			[prevLeftX, prevHeight, 'L'],
 		];
 	}
-
 }
 
 export default Navigator;

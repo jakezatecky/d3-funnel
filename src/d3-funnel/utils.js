@@ -1,5 +1,4 @@
 class Utils {
-
 	/**
 	 * Determine whether the given parameter is an extendable object.
 	 *
@@ -42,7 +41,6 @@ class Utils {
 
 		return result;
 	}
-
 }
 
 export default Utils;

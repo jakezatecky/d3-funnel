@@ -6,7 +6,6 @@ import Navigator from './Navigator';
 import Utils from './Utils';
 
 class D3Funnel {
-
 	static defaults = {
 		chart: {
 			width: 350,
@@ -927,7 +926,6 @@ class D3Funnel {
 
 		return (paths[1][1] + paths[2][1]) / 2;
 	}
-
 }
 
 export default D3Funnel;
