@@ -5,6 +5,10 @@
 * [#50]: Add `block.barOverlay` option to display bar charts proportional to block value
 * [#52]: Add `chart.totalCount` option to override total counts used in ratio calculations
 
+### Other
+
+* Simplify and clean up examples
+
 ## v0.7.6 (July 12, 2016)
 
 ### New Features
