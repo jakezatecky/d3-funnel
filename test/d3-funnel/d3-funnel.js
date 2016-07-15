@@ -536,6 +536,45 @@ describe('D3Funnel', () => {
 			});
 		});
 
+		describe('block.barOverlay', () => {
+			it('should draw value overlay within each path', () => {
+				getFunnel().draw([
+					['A', 10],
+					['B', 20],
+				], {
+					block: {
+						barOverlay: true,
+					},
+				});
+
+				// draw 2 path for each data point
+				assert.equal(4, d3.selectAll('#funnel path')[0].length);
+			});
+
+			it('should draw value overlay with overridden total count', () => {
+				getFunnel().draw([
+					['A', 10],
+					['B', 20],
+				], {
+					chart: {
+						totalCount: 100,
+					},
+					block: {
+						barOverlay: true,
+					},
+				});
+
+				const paths = d3.selectAll('path');
+				const APathFullWidth = getPathTopWidth(d3.select(paths[0][0]));
+				const APathOverlayWidth = getPathTopWidth(d3.select(paths[0][1]));
+				const BPathFullWidth = getPathTopWidth(d3.select(paths[0][2]));
+				const BPathOverlayWidth = getPathTopWidth(d3.select(paths[0][3]));
+
+				assert.equal(10, Math.round(APathOverlayWidth / APathFullWidth * 100));
+				assert.equal(20, Math.round(BPathOverlayWidth / BPathFullWidth * 100));
+			});
+		});
+
 		describe('block.fill.scale', () => {
 			it('should use a function\'s return value', () => {
 				getFunnel().draw([

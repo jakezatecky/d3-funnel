@@ -137,6 +137,13 @@ $(function() {
 			],
 			color: [data.color, {}],
 			labelsColor: [data.labelsColor, {}],
+			valueOverlay: [
+				data.normal, {
+					block: {
+						barOverlay: true,
+					},
+				},
+			],
 			works: [
 				data.normal, {
 					chart: {
@@ -144,10 +151,10 @@ $(function() {
 						bottomWidth: 1 / 2,
 						animate: 200,
 						curve: {
-							enabled: true,
+							enabled: false,
 						},
 					},
-					block : {
+					block: {
 						dynamicHeight: true,
 						fill: {
 							type: 'gradient',

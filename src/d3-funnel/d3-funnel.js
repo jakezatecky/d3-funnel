@@ -20,10 +20,12 @@ class D3Funnel {
 				enabled: false,
 				height: 20,
 			},
+			totalCount: null,
 		},
 		block: {
 			dynamicHeight: false,
 			dynamicSlope: false,
+			barOverlay: false,
 			fill: {
 				scale: d3.scale.category10().domain(d3.range(0, 10)),
 				type: 'solid',
@@ -125,6 +127,7 @@ class D3Funnel {
 		this.bottomPinch = settings.chart.bottomPinch;
 		this.isInverted = settings.chart.inverted;
 		this.isCurved = settings.chart.curve.enabled;
+		this.addValueOverlay = settings.block.barOverlay;
 		this.curveHeight = settings.chart.curve.height;
 		this.fillType = settings.block.fill.type;
 		this.hoverEffects = settings.block.highlight;
@@ -132,6 +135,7 @@ class D3Funnel {
 		this.dynamicSlope = settings.block.dynamicSlope;
 		this.minHeight = settings.block.minHeight;
 		this.animation = settings.chart.animate;
+		this.totalCount = settings.chart.totalCount;
 
 		// Support for events
 		this.onBlockClick = settings.events.click.block;
@@ -215,9 +219,15 @@ class D3Funnel {
 	/**
 	 * Return the total count of all blocks.
 	 *
+	 * @param {Array} data
+	 *
 	 * @return {Number}
 	 */
 	_getTotalCount(data) {
+		if (this.totalCount !== null) {
+			return this.totalCount || 0;
+		}
+
 		let total = 0;
 
 		data.forEach((block) => {
@@ -240,7 +250,7 @@ class D3Funnel {
 
 		data.forEach((block, index) => {
 			const count = this._getRawBlockCount(block);
-			const ratio = count / totalCount;
+			const ratio = (count / totalCount) || 0;
 			const label = block[0];
 
 			standardized.push({
@@ -307,7 +317,9 @@ class D3Funnel {
 			.attr('width', this.width)
 			.attr('height', this.height);
 
-		this.blockPaths = this._makePaths();
+		const newPaths = this._makePaths();
+		this.blockPaths = newPaths[0];
+		this.overlayPaths = newPaths[1];
 
 		// Define color gradients
 		if (this.fillType === 'gradient') {
@@ -327,10 +339,11 @@ class D3Funnel {
 	 * Create the paths to be used to define the discrete funnel blocks and
 	 * returns the results in an array.
 	 *
-	 * @return {Array}
+	 * @return {Array, Array}
 	 */
 	_makePaths() {
-		const paths = [];
+		let paths = [];
+		let overlayPaths = [];
 
 		// Initialize velocity
 		let dx = this.dx;
@@ -352,7 +365,7 @@ class D3Funnel {
 		let nextRightX = 0;
 		let nextHeight = 0;
 
-		const middle = this.width / 2;
+		const centerX = this.width / 2;
 
 		// Move down if there is an initial curve
 		if (this.isCurved) {
@@ -448,7 +461,7 @@ class D3Funnel {
 					block.value;
 
 				const widthPercent = 1 - (nextBlockValue / block.value);
-				dx = widthPercent * (middle - prevLeftX);
+				dx = widthPercent * (centerX - prevLeftX);
 			}
 
 			// Stop velocity for pinched blocks
@@ -485,36 +498,30 @@ class D3Funnel {
 				nextRightX = prevRightX + dx;
 			}
 
-			// Plot curved lines
+			const dimensions = {
+				centerX,
+				prevLeftX,
+				prevRightX,
+				prevHeight,
+				nextLeftX,
+				nextRightX,
+				nextHeight,
+				curveHeight: this.curveHeight,
+				ratio: block.ratio,
+			};
+
 			if (this.isCurved) {
-				paths.push([
-					// Top Bezier curve
-					[prevLeftX, prevHeight, 'M'],
-					[middle, prevHeight + (this.curveHeight - 10), 'Q'],
-					[prevRightX, prevHeight, ''],
-					// Right line
-					[nextRightX, nextHeight, 'L'],
-					// Bottom Bezier curve
-					[nextRightX, nextHeight, 'M'],
-					[middle, nextHeight + this.curveHeight, 'Q'],
-					[nextLeftX, nextHeight, ''],
-					// Left line
-					[prevLeftX, prevHeight, 'L'],
-				]);
-				// Plot straight lines
+				paths = [...paths, this.navigator.makeCurvedPaths(dimensions)];
+
+				if (this.addValueOverlay) {
+					overlayPaths = [...overlayPaths, this.navigator.makeCurvedPaths(dimensions, true)];
+				}
 			} else {
-				paths.push([
-					// Start position
-					[prevLeftX, prevHeight, 'M'],
-					// Move to right
-					[prevRightX, prevHeight, 'L'],
-					// Move down
-					[nextRightX, nextHeight, 'L'],
-					// Move to left
-					[nextLeftX, nextHeight, 'L'],
-					// Wrap back to top
-					[prevLeftX, prevHeight, 'L'],
-				]);
+				paths = [...paths, this.navigator.makeStraightPaths(dimensions)];
+
+				if (this.addValueOverlay) {
+					overlayPaths = [...overlayPaths, this.navigator.makeStraightPaths(dimensions, true)];
+				}
 			}
 
 			// Set the next block's previous position
@@ -523,7 +530,7 @@ class D3Funnel {
 			prevHeight = nextHeight;
 		});
 
-		return paths;
+		return [paths, overlayPaths];
 	}
 
 	/**
@@ -623,31 +630,74 @@ class D3Funnel {
 		// Attach data to the element
 		this._attachData(path, this.blocks[index]);
 
+		let overlayPath = null;
+		let pathColor = this.blocks[index].fill.actual;
+
+		if (this.addValueOverlay) {
+			overlayPath = this._getOverlayPath(group, index);
+			this._attachData(overlayPath, this.blocks[index]);
+
+			// Add data attribute to distinguish between paths
+			path.node().setAttribute('pathType', 'background');
+			overlayPath.node().setAttribute('pathType', 'foreground');
+
+			// Default path becomes background of lighter shade
+			pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
+		}
+
 		// Add animation components
 		if (this.animation !== 0) {
 			path.transition()
 				.duration(this.animation)
 				.ease('linear')
-				.attr('fill', this.blocks[index].fill.actual)
+				.attr('fill', pathColor)
 				.attr('d', this._getPathDefinition(index))
 				.each('end', () => {
 					this._drawBlock(index + 1);
 				});
 		} else {
-			path.attr('fill', this.blocks[index].fill.actual)
+			path.attr('fill', pathColor)
 				.attr('d', this._getPathDefinition(index));
 			this._drawBlock(index + 1);
 		}
 
+		// Add path overlay
+		if (this.addValueOverlay) {
+			path.attr('stroke', this.blocks[index].fill.raw);
+
+			if (this.animation !== 0) {
+				overlayPath.transition()
+					.duration(this.animation)
+					.ease('linear')
+					.attr('fill', this.blocks[index].fill.actual)
+					.attr('d', this._getOverlayPathDefinition(index));
+			} else {
+				overlayPath.attr('fill', this.blocks[index].fill.actual)
+					.attr('d', this._getOverlayPathDefinition(index));
+			}
+		}
+
 		// Add the hover events
 		if (this.hoverEffects) {
-			path.on('mouseover', this._onMouseOver.bind(this))
-				.on('mouseout', this._onMouseOut.bind(this));
+			[path, overlayPath].forEach((target) => {
+				if (!target) {
+					return;
+				}
+
+				target.on('mouseover', this._onMouseOver.bind(this))
+					.on('mouseout', this._onMouseOut.bind(this));
+			});
 		}
 
 		// Add block click event
 		if (this.onBlockClick !== null) {
-			path.on('click', this.onBlockClick);
+			[path, overlayPath].forEach((target) => {
+				if (!target) {
+					return;
+				}
+
+				target.on('click', this.onBlockClick);
+			});
 		}
 
 		this._addBlockLabel(group, index);
@@ -670,15 +720,32 @@ class D3Funnel {
 	}
 
 	/**
+	 * @param {Object} group
+	 * @param {int}    index
+	 *
+	 * @return {Object}
+	 */
+	_getOverlayPath(group, index) {
+		const path = group.append('path');
+
+		if (this.animation !== 0) {
+			this._addBeforeTransition(path, index, true);
+		}
+
+		return path;
+	}
+
+	/**
 	 * Set the attributes of a path element before its animation.
 	 *
-	 * @param {Object} path
-	 * @param {int}    index
+	 * @param {Object}  path
+	 * @param {int}     index
+	 * @param {boolean} isOverlay
 	 *
 	 * @return {void}
 	 */
-	_addBeforeTransition(path, index) {
-		const paths = this.blockPaths[index];
+	_addBeforeTransition(path, index, isOverlay) {
+		const paths = isOverlay ? this.overlayPaths[index] : this.blockPaths[index];
 
 		let beforePath = '';
 		let beforeFill = '';
@@ -707,7 +774,7 @@ class D3Funnel {
 		// Use previous fill color, if available
 		if (this.fillType === 'solid' && index > 0) {
 			beforeFill = this.blocks[index - 1].fill.actual;
-		// Otherwise use current background
+			// Otherwise use current background
 		} else {
 			beforeFill = this.blocks[index].fill.actual;
 		}
@@ -750,12 +817,42 @@ class D3Funnel {
 	}
 
 	/**
+	 * @param {int} index
+	 *
+	 * @return {string}
+	 */
+	_getOverlayPathDefinition(index) {
+		const commands = [];
+
+		this.overlayPaths[index].forEach((command) => {
+			commands.push([command[2], command[0], command[1]]);
+		});
+
+		return this.navigator.plot(commands);
+	}
+
+	/**
 	 * @param {Object} data
 	 *
 	 * @return {void}
 	 */
 	_onMouseOver(data) {
-		d3.select(d3.event.target).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+		const children = d3.event.target.parentElement.childNodes;
+
+		for (let i = 0; i < children.length; i++) {
+			// Highlight all paths within one block
+			const node = children[i];
+
+			if (node.nodeName.toLowerCase() === 'path') {
+				const type = node.getAttribute('pathType') || '';
+
+				if (type === 'foreground') {
+					d3.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
+				} else {
+					d3.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+				}
+			}
+		}
 	}
 
 	/**
@@ -764,12 +861,29 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	_onMouseOut(data) {
-		d3.select(d3.event.target).attr('fill', data.fill.actual);
+		const children = d3.event.target.parentElement.childNodes;
+
+		for (let i = 0; i < children.length; i++) {
+			// Restore original color for all paths of a block
+			const node = children[i];
+
+			if (node.nodeName.toLowerCase() === 'path') {
+				const type = node.getAttribute('pathType') || '';
+
+				if (type === 'background') {
+					const backgroundColor = this.colorizer.shade(data.fill.raw, 0.3);
+					d3.select(node).attr('fill', backgroundColor);
+				} else {
+					d3.select(node).attr('fill', data.fill.actual);
+				}
+			}
+		}
 	}
 
 	/**
 	 * @param {Object} group
 	 * @param {int}    index
+	 *
 	 * @return {void}
 	 */
 	_addBlockLabel(group, index) {

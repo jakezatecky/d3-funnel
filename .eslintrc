@@ -4,5 +4,8 @@
 	"rules": {
 		"indent": [2, "tab"],
 		"no-underscore-dangle": 0
+	},
+	"env": {
+		"mocha": true
 	}
 }
