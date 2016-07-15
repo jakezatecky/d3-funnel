@@ -1,7 +1,3 @@
-/* eslint-disable */
-
-var webpack = require('webpack');
-
 module.exports = {
 	output: {
 		filename: 'd3-funnel.js',
