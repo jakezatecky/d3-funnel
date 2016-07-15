@@ -1,4 +1,4 @@
-## v0.7.7 (TBA)
+## v0.7.7 (July 15, 2016)
 
 ### New Features
 

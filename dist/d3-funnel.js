@@ -99,6 +99,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var D3Funnel = function () {
@@ -199,6 +201,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				this.bottomPinch = settings.chart.bottomPinch;
 				this.isInverted = settings.chart.inverted;
 				this.isCurved = settings.chart.curve.enabled;
+				this.addValueOverlay = settings.block.barOverlay;
 				this.curveHeight = settings.chart.curve.height;
 				this.fillType = settings.block.fill.type;
 				this.hoverEffects = settings.block.highlight;
@@ -206,6 +209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				this.dynamicSlope = settings.block.dynamicSlope;
 				this.minHeight = settings.block.minHeight;
 				this.animation = settings.chart.animate;
+				this.totalCount = settings.chart.totalCount;
 
 				// Support for events
 				this.onBlockClick = settings.events.click.block;
@@ -298,6 +302,8 @@ return /******/ (function(modules) { // webpackBootstrap
 			/**
 	   * Return the total count of all blocks.
 	   *
+	   * @param {Array} data
+	   *
 	   * @return {Number}
 	   */
 
@@ -305,6 +311,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			key: '_getTotalCount',
 			value: function _getTotalCount(data) {
 				var _this = this;
+
+				if (this.totalCount !== null) {
+					return this.totalCount || 0;
+				}
 
 				var total = 0;
 
@@ -333,7 +343,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				data.forEach(function (block, index) {
 					var count = _this2._getRawBlockCount(block);
-					var ratio = count / totalCount;
+					var ratio = count / totalCount || 0;
 					var label = block[0];
 
 					standardized.push({
@@ -409,7 +419,9 @@ return /******/ (function(modules) { // webpackBootstrap
 				// Add the SVG
 				this.svg = _d2.default.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
 
-				this.blockPaths = this._makePaths();
+				var newPaths = this._makePaths();
+				this.blockPaths = newPaths[0];
+				this.overlayPaths = newPaths[1];
 
 				// Define color gradients
 				if (this.fillType === 'gradient') {
@@ -429,7 +441,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * Create the paths to be used to define the discrete funnel blocks and
 	   * returns the results in an array.
 	   *
-	   * @return {Array}
+	   * @return {Array, Array}
 	   */
 
 		}, {
@@ -438,6 +450,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var _this3 = this;
 
 				var paths = [];
+				var overlayPaths = [];
 
 				// Initialize velocity
 				var dx = this.dx;
@@ -459,7 +472,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var nextRightX = 0;
 				var nextHeight = 0;
 
-				var middle = this.width / 2;
+				var centerX = this.width / 2;
 
 				// Move down if there is an initial curve
 				if (this.isCurved) {
@@ -553,7 +566,7 @@ return /******/ (function(modules) { // webpackBootstrap
 						var nextBlockValue = _this3.blocks[i + 1] ? _this3.blocks[i + 1].value : block.value;
 
 						var widthPercent = 1 - nextBlockValue / block.value;
-						dx = widthPercent * (middle - prevLeftX);
+						dx = widthPercent * (centerX - prevLeftX);
 					}
 
 					// Stop velocity for pinched blocks
@@ -590,31 +603,31 @@ return /******/ (function(modules) { // webpackBootstrap
 						nextRightX = prevRightX + dx;
 					}
 
-					// Plot curved lines
+					var dimensions = {
+						centerX: centerX,
+						prevLeftX: prevLeftX,
+						prevRightX: prevRightX,
+						prevHeight: prevHeight,
+						nextLeftX: nextLeftX,
+						nextRightX: nextRightX,
+						nextHeight: nextHeight,
+						curveHeight: _this3.curveHeight,
+						ratio: block.ratio
+					};
+
 					if (_this3.isCurved) {
-						paths.push([
-						// Top Bezier curve
-						[prevLeftX, prevHeight, 'M'], [middle, prevHeight + (_this3.curveHeight - 10), 'Q'], [prevRightX, prevHeight, ''],
-						// Right line
-						[nextRightX, nextHeight, 'L'],
-						// Bottom Bezier curve
-						[nextRightX, nextHeight, 'M'], [middle, nextHeight + _this3.curveHeight, 'Q'], [nextLeftX, nextHeight, ''],
-						// Left line
-						[prevLeftX, prevHeight, 'L']]);
-						// Plot straight lines
-					} else {
-							paths.push([
-							// Start position
-							[prevLeftX, prevHeight, 'M'],
-							// Move to right
-							[prevRightX, prevHeight, 'L'],
-							// Move down
-							[nextRightX, nextHeight, 'L'],
-							// Move to left
-							[nextLeftX, nextHeight, 'L'],
-							// Wrap back to top
-							[prevLeftX, prevHeight, 'L']]);
+						paths = [].concat(_toConsumableArray(paths), [_this3.navigator.makeCurvedPaths(dimensions)]);
+
+						if (_this3.addValueOverlay) {
+							overlayPaths = [].concat(_toConsumableArray(overlayPaths), [_this3.navigator.makeCurvedPaths(dimensions, true)]);
 						}
+					} else {
+						paths = [].concat(_toConsumableArray(paths), [_this3.navigator.makeStraightPaths(dimensions)]);
+
+						if (_this3.addValueOverlay) {
+							overlayPaths = [].concat(_toConsumableArray(overlayPaths), [_this3.navigator.makeStraightPaths(dimensions, true)]);
+						}
+					}
 
 					// Set the next block's previous position
 					prevLeftX = nextLeftX;
@@ -622,7 +635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					prevHeight = nextHeight;
 				});
 
-				return paths;
+				return [paths, overlayPaths];
 			}
 
 			/**
@@ -720,24 +733,62 @@ return /******/ (function(modules) { // webpackBootstrap
 				// Attach data to the element
 				this._attachData(path, this.blocks[index]);
 
+				var overlayPath = null;
+				var pathColor = this.blocks[index].fill.actual;
+
+				if (this.addValueOverlay) {
+					overlayPath = this._getOverlayPath(group, index);
+					this._attachData(overlayPath, this.blocks[index]);
+
+					// Add data attribute to distinguish between paths
+					path.node().setAttribute('pathType', 'background');
+					overlayPath.node().setAttribute('pathType', 'foreground');
+
+					// Default path becomes background of lighter shade
+					pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
+				}
+
 				// Add animation components
 				if (this.animation !== 0) {
-					path.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index)).each('end', function () {
+					path.transition().duration(this.animation).ease('linear').attr('fill', pathColor).attr('d', this._getPathDefinition(index)).each('end', function () {
 						_this5._drawBlock(index + 1);
 					});
 				} else {
-					path.attr('fill', this.blocks[index].fill.actual).attr('d', this._getPathDefinition(index));
+					path.attr('fill', pathColor).attr('d', this._getPathDefinition(index));
 					this._drawBlock(index + 1);
+				}
+
+				// Add path overlay
+				if (this.addValueOverlay) {
+					path.attr('stroke', this.blocks[index].fill.raw);
+
+					if (this.animation !== 0) {
+						overlayPath.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+					} else {
+						overlayPath.attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+					}
 				}
 
 				// Add the hover events
 				if (this.hoverEffects) {
-					path.on('mouseover', this._onMouseOver.bind(this)).on('mouseout', this._onMouseOut.bind(this));
+					[path, overlayPath].forEach(function (target) {
+						if (!target) {
+							return;
+						}
+
+						target.on('mouseover', _this5._onMouseOver.bind(_this5)).on('mouseout', _this5._onMouseOut.bind(_this5));
+					});
 				}
 
 				// Add block click event
 				if (this.onBlockClick !== null) {
-					path.on('click', this.onBlockClick);
+					[path, overlayPath].forEach(function (target) {
+						if (!target) {
+							return;
+						}
+
+						target.on('click', _this5.onBlockClick);
+					});
 				}
 
 				this._addBlockLabel(group, index);
@@ -763,18 +814,38 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			/**
+	   * @param {Object} group
+	   * @param {int}    index
+	   *
+	   * @return {Object}
+	   */
+
+		}, {
+			key: '_getOverlayPath',
+			value: function _getOverlayPath(group, index) {
+				var path = group.append('path');
+
+				if (this.animation !== 0) {
+					this._addBeforeTransition(path, index, true);
+				}
+
+				return path;
+			}
+
+			/**
 	   * Set the attributes of a path element before its animation.
 	   *
-	   * @param {Object} path
-	   * @param {int}    index
+	   * @param {Object}  path
+	   * @param {int}     index
+	   * @param {boolean} isOverlay
 	   *
 	   * @return {void}
 	   */
 
 		}, {
 			key: '_addBeforeTransition',
-			value: function _addBeforeTransition(path, index) {
-				var paths = this.blockPaths[index];
+			value: function _addBeforeTransition(path, index, isOverlay) {
+				var paths = isOverlay ? this.overlayPaths[index] : this.blockPaths[index];
 
 				var beforePath = '';
 				var beforeFill = '';
@@ -837,6 +908,24 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 
 			/**
+	   * @param {int} index
+	   *
+	   * @return {string}
+	   */
+
+		}, {
+			key: '_getOverlayPathDefinition',
+			value: function _getOverlayPathDefinition(index) {
+				var commands = [];
+
+				this.overlayPaths[index].forEach(function (command) {
+					commands.push([command[2], command[0], command[1]]);
+				});
+
+				return this.navigator.plot(commands);
+			}
+
+			/**
 	   * @param {Object} data
 	   *
 	   * @return {void}
@@ -845,7 +934,22 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOver',
 			value: function _onMouseOver(data) {
-				_d2.default.select(_d2.default.event.target).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+				var children = _d2.default.event.target.parentElement.childNodes;
+
+				for (var i = 0; i < children.length; i++) {
+					// Highlight all paths within one block
+					var node = children[i];
+
+					if (node.nodeName.toLowerCase() === 'path') {
+						var type = node.getAttribute('pathType') || '';
+
+						if (type === 'foreground') {
+							_d2.default.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
+						} else {
+							_d2.default.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+						}
+					}
+				}
 			}
 
 			/**
@@ -857,12 +961,29 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: '_onMouseOut',
 			value: function _onMouseOut(data) {
-				_d2.default.select(_d2.default.event.target).attr('fill', data.fill.actual);
+				var children = _d2.default.event.target.parentElement.childNodes;
+
+				for (var i = 0; i < children.length; i++) {
+					// Restore original color for all paths of a block
+					var node = children[i];
+
+					if (node.nodeName.toLowerCase() === 'path') {
+						var type = node.getAttribute('pathType') || '';
+
+						if (type === 'background') {
+							var backgroundColor = this.colorizer.shade(data.fill.raw, 0.3);
+							_d2.default.select(node).attr('fill', backgroundColor);
+						} else {
+							_d2.default.select(node).attr('fill', data.fill.actual);
+						}
+					}
+				}
 			}
 
 			/**
 	   * @param {Object} group
 	   * @param {int}    index
+	   *
 	   * @return {void}
 	   */
 
@@ -926,11 +1047,13 @@ return /******/ (function(modules) { // webpackBootstrap
 			curve: {
 				enabled: false,
 				height: 20
-			}
+			},
+			totalCount: null
 		},
 		block: {
 			dynamicHeight: false,
 			dynamicSlope: false,
+			barOverlay: false,
 			fill: {
 				scale: _d2.default.scale.category10().domain(_d2.default.range(0, 10)),
 				type: 'solid'
@@ -1300,6 +1423,249 @@ return /******/ (function(modules) { // webpackBootstrap
 				});
 
 				return path.replace(/ +/g, ' ').trim();
+			}
+
+			/**
+	   * @param {Object}  dimensions
+	   * @param {boolean} isValueOverlay
+	   *
+	   * @return {Array}
+	   */
+
+		}, {
+			key: 'makeCurvedPaths',
+			value: function makeCurvedPaths(dimensions) {
+				var isValueOverlay = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+				var points = this.makeBezierPoints(dimensions);
+
+				if (isValueOverlay) {
+					return this.makeBezierPath(points, dimensions.ratio);
+				}
+
+				return this.makeBezierPath(points);
+			}
+
+			/**
+	   * @param {Number} centerX
+	   * @param {Number} prevLeftX
+	   * @param {Number} prevRightX
+	   * @param {Number} prevHeight
+	   * @param {Number} nextLeftX
+	   * @param {Number} nextRightX
+	   * @param {Number} nextHeight
+	   * @param {Number} curveHeight
+	   *
+	   * @returns {Object}
+	   */
+
+		}, {
+			key: 'makeBezierPoints',
+			value: function makeBezierPoints(_ref) {
+				var centerX = _ref.centerX;
+				var prevLeftX = _ref.prevLeftX;
+				var prevRightX = _ref.prevRightX;
+				var prevHeight = _ref.prevHeight;
+				var nextLeftX = _ref.nextLeftX;
+				var nextRightX = _ref.nextRightX;
+				var nextHeight = _ref.nextHeight;
+				var curveHeight = _ref.curveHeight;
+
+				return {
+					p00: {
+						x: prevLeftX,
+						y: prevHeight
+					},
+					p01: {
+						x: centerX,
+						y: prevHeight + curveHeight - 10
+					},
+					p02: {
+						x: prevRightX,
+						y: prevHeight
+					},
+
+					p10: {
+						x: nextLeftX,
+						y: nextHeight
+					},
+					p11: {
+						x: centerX,
+						y: nextHeight + curveHeight
+					},
+					p12: {
+						x: nextRightX,
+						y: nextHeight
+					}
+				};
+			}
+
+			/**
+	   * @param {Object} p00
+	   * @param {Object} p01
+	   * @param {Object} p02
+	   * @param {Object} p10
+	   * @param {Object} p11
+	   * @param {Object} p12
+	   * @param {Number} ratio
+	   *
+	   * @returns {Array}
+	   */
+
+		}, {
+			key: 'makeBezierPath',
+			value: function makeBezierPath(_ref2) {
+				var p00 = _ref2.p00;
+				var p01 = _ref2.p01;
+				var p02 = _ref2.p02;
+				var p10 = _ref2.p10;
+				var p11 = _ref2.p11;
+				var p12 = _ref2.p12;
+				var ratio = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+
+				var curve0 = this.getQuadraticBezierCurve(p00, p01, p02, ratio);
+				var curve1 = this.getQuadraticBezierCurve(p10, p11, p12, ratio);
+
+				return [
+				// Top Bezier curve
+				[curve0.p0.x, curve0.p0.y, 'M'], [curve0.p1.x, curve0.p1.y, 'Q'], [curve0.p2.x, curve0.p2.y, ''],
+				// Right line
+				[curve1.p2.x, curve1.p2.y, 'L'],
+				// Bottom Bezier curve
+				[curve1.p2.x, curve1.p2.y, 'M'], [curve1.p1.x, curve1.p1.y, 'Q'], [curve1.p0.x, curve1.p0.y, ''],
+				// Left line
+				[curve0.p0.x, curve0.p0.y, 'L']];
+			}
+
+			/**
+	   * @param {Object} p0
+	   * @param {Object} p1
+	   * @param {Object} p2
+	   * @param {Number} t
+	   *
+	   * @return {Object}
+	   */
+
+		}, {
+			key: 'getQuadraticBezierCurve',
+			value: function getQuadraticBezierCurve(p0, p1, p2) {
+				var t = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+
+				// Quadratic Bezier curve syntax: M(P0) Q(P1) P2
+				// Where P0, P2 are the curve endpoints and P1 is the control point
+
+				// More generally, at 0 <= t <= 1, we have the following:
+				// Q0(t), which varies linearly from P0 to P1
+				// Q1(t), which varies linearly from P1 to P2
+				// B(t), which is interpolated linearly between Q0(t) and Q1(t)
+
+				// For an intermediate curve at 0 <= t <= 1:
+				// P1(t) = Q0(t)
+				// P2(t) = B(t)
+
+				return {
+					p0: p0,
+					p1: {
+						x: this.getLinearInterpolation(p0, p1, t, 'x'),
+						y: this.getLinearInterpolation(p0, p1, t, 'y')
+					},
+					p2: {
+						x: this.getQuadraticInterpolation(p0, p1, p2, t, 'x'),
+						y: this.getQuadraticInterpolation(p0, p1, p2, t, 'y')
+					}
+				};
+			}
+
+			/**
+	   * @param {Object} p0
+	   * @param {Object} p1
+	   * @param {Number} t
+	   * @param {string} axis
+	   *
+	   * @return {Number}
+	   */
+
+		}, {
+			key: 'getLinearInterpolation',
+			value: function getLinearInterpolation(p0, p1, t, axis) {
+				return p0[axis] + t * (p1[axis] - p0[axis]);
+			}
+
+			/**
+	   * @param {Object} p0
+	   * @param {Object} p1
+	   * @param {Object} p2
+	   * @param {Number} t
+	   * @param {string} axis
+	   *
+	   * @return {Number}
+	   */
+
+		}, {
+			key: 'getQuadraticInterpolation',
+			value: function getQuadraticInterpolation(p0, p1, p2, t, axis) {
+				return Math.pow(1 - t, 2) * p0[axis] + 2 * (1 - t) * t * p1[axis] + Math.pow(t, 2) * p2[axis];
+			}
+
+			/**
+	   * @param {Number}  prevLeftX
+	   * @param {Number}  prevRightX
+	   * @param {Number}  prevHeight
+	   * @param {Number}  nextLeftX
+	   * @param {Number}  nextRightX
+	   * @param {Number}  nextHeight
+	   * @param {Number}  ratio
+	   * @param {boolean} isValueOverlay
+	   *
+	   * @return {Object}
+	   */
+
+		}, {
+			key: 'makeStraightPaths',
+			value: function makeStraightPaths(_ref3) {
+				var prevLeftX = _ref3.prevLeftX;
+				var prevRightX = _ref3.prevRightX;
+				var prevHeight = _ref3.prevHeight;
+				var nextLeftX = _ref3.nextLeftX;
+				var nextRightX = _ref3.nextRightX;
+				var nextHeight = _ref3.nextHeight;
+				var ratio = _ref3.ratio;
+				var isValueOverlay = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+				if (isValueOverlay) {
+					var lengthTop = prevRightX - prevLeftX;
+					var lengthBtm = nextRightX - nextLeftX;
+					var rightSideTop = lengthTop * (ratio || 0) + prevLeftX;
+					var rightSideBtm = lengthBtm * (ratio || 0) + nextLeftX;
+
+					// Overlay should not be longer than the max length of the path
+					rightSideTop = Math.min(rightSideTop, lengthTop);
+					rightSideBtm = Math.min(rightSideBtm, lengthBtm);
+
+					return [
+					// Start position
+					[prevLeftX, prevHeight, 'M'],
+					// Move to right
+					[rightSideTop, prevHeight, 'L'],
+					// Move down
+					[rightSideBtm, nextHeight, 'L'],
+					// Move to left
+					[nextLeftX, nextHeight, 'L'],
+					// Wrap back to top
+					[prevLeftX, prevHeight, 'L']];
+				}
+
+				return [
+				// Start position
+				[prevLeftX, prevHeight, 'M'],
+				// Move to right
+				[prevRightX, prevHeight, 'L'],
+				// Move down
+				[nextRightX, nextHeight, 'L'],
+				// Move to left
+				[nextLeftX, nextHeight, 'L'],
+				// Wrap back to top
+				[prevLeftX, prevHeight, 'L']];
 			}
 		}]);
 
