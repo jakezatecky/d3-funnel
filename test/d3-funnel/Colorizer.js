@@ -1,4 +1,3 @@
-/* global describe, it */
 import chai from 'chai';
 
 import Colorizer from '../../src/d3-funnel/Colorizer';

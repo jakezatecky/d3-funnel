@@ -1,4 +1,3 @@
-/* global beforeEach, describe, it */
 import _ from 'lodash';
 import d3 from 'd3';
 import chai from 'chai';
