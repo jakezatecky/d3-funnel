@@ -64,8 +64,8 @@ funnel chart:
 
 | Option                 | Description                                                               | Type     | Default                 |
 | ---------------------- | ------------------------------------------------------------------------- | -------- | ----------------------- |
-| `chart.width`          | The pixel width of the chart.                                             | number   | Container's width       |
-| `chart.height`         | The pixel height of the chart.                                            | number   | Container's height      |
+| `chart.width`          | The width of the chart in pixels or a percentage.                         | mixed    | Container's width       |
+| `chart.height`         | The height of the chart in pixels or a percentage.                        | mixed    | Container's height      |
 | `chart.bottomWidth`    | The percent of total width the bottom should be.                          | number   | `1 / 3`                 |
 | `chart.bottomPinch`    | How many blocks to pinch on the bottom to create a funnel "neck".         | number   | `0`                     |
 | `chart.inverted`       | Whether the funnel direction is inverted (like a pyramid).                | bool     | `false`                 |

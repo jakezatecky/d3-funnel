@@ -236,23 +236,41 @@ describe('D3Funnel', () => {
 	});
 
 	describe('options', () => {
-		describe('chart.width', () => {
-			it('should default to the container\'s width', () => {
-				d3.select('#funnel').style('width', '250px');
+		describe('chart.width/height', () => {
+			it('should default to the container\'s dimensions', () => {
+				['width', 'height'].forEach((direction) => {
+					d3.select('#funnel').style(direction, '250px');
 
-				getFunnel().draw(getBasicData());
+					getFunnel().draw(getBasicData());
 
-				assert.equal(250, getSvg().node().getBBox().width);
+					assert.equal(250, getSvg().node().getBBox()[direction]);
+				});
 			});
 
-			it('should set the funnel\'s width to the specified amount', () => {
-				getFunnel().draw(getBasicData(), {
-					chart: {
-						width: 200,
-					},
-				});
+			it('should set the funnel\'s width/height to the specified amount', () => {
+				['width', 'height'].forEach((direction) => {
+					getFunnel().draw(getBasicData(), {
+						chart: {
+							[direction]: 200,
+						},
+					});
 
-				assert.equal(200, getSvg().node().getBBox().width);
+					assert.equal(200, getSvg().node().getBBox()[direction]);
+				});
+			});
+
+			it('should set the funnel\'s percent width/height to the specified amount', () => {
+				['width', 'height'].forEach((direction) => {
+					d3.select('#funnel').style(direction, '200px');
+
+					getFunnel().draw(getBasicData(), {
+						chart: {
+							[direction]: '75%',
+						},
+					});
+
+					assert.equal(150, getSvg().node().getBBox()[direction]);
+				});
 			});
 		});
 
@@ -273,6 +291,18 @@ describe('D3Funnel', () => {
 				});
 
 				assert.equal(200, getSvg().node().getBBox().height);
+			});
+
+			it('should set the funnel\'s percentage height to the specified amount', () => {
+				d3.select('#funnel').style('height', '300px');
+
+				getFunnel().draw(getBasicData(), {
+					chart: {
+						height: '50%',
+					},
+				});
+
+				assert.equal(150, getSvg().node().getBBox().height);
 			});
 		});
 

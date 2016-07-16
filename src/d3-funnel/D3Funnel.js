@@ -54,9 +54,7 @@ class D3Funnel {
 		this.selector = selector;
 
 		this.colorizer = new Colorizer();
-
 		this.labelFormatter = new LabelFormatter();
-
 		this.navigator = new Navigator();
 
 		// Bind event handlers
@@ -184,25 +182,82 @@ class D3Funnel {
 	 * @return {Object}
 	 */
 	getSettings(options) {
-		// Prepare the configuration settings based on the defaults
-		// Set the default width and height based on the container
-		let settings = Utils.extend({}, D3Funnel.defaults);
-		settings.chart.width = parseInt(d3.select(this.selector).style('width'), 10);
-		settings.chart.height = parseInt(d3.select(this.selector).style('height'), 10);
+		const containerDimensions = this.getContainerDimensions();
+		const defaults = this.getDefaultSettings(containerDimensions);
 
-		// Overwrite default settings with user options
+		// Prepare the configuration settings based on the defaults
+		let settings = Utils.extend({}, defaults);
+
+		// Override default settings with user options
 		settings = Utils.extend(settings, options);
 
-		// In the case that the width or height is not valid, set
-		// the width/height as its default hard-coded value
-		if (settings.chart.width <= 0) {
-			settings.chart.width = D3Funnel.defaults.chart.width;
-		}
-		if (settings.chart.height <= 0) {
-			settings.chart.height = D3Funnel.defaults.chart.height;
-		}
+		// Account for any percentage-based dimensions
+		settings.chart = {
+			...settings.chart,
+			...this.castDimensions(settings, containerDimensions),
+		};
 
 		return settings;
+	}
+
+	/**
+	 * Return default settings.
+	 *
+	 * @param {Object} containerDimensions
+	 *
+	 * @return {Object}
+	 */
+	getDefaultSettings(containerDimensions) {
+		const settings = D3Funnel.defaults;
+
+		// Set the default width and height based on the container
+		settings.chart = {
+			...settings.chart,
+			...containerDimensions,
+		};
+
+		return settings;
+	}
+
+	/**
+	 * Get the width/height dimensions of the container.
+	 *
+	 * @return {{width: Number, height: Number}}
+	 */
+	getContainerDimensions() {
+		return {
+			width: parseFloat(d3.select(this.selector).style('width')),
+			height: parseFloat(d3.select(this.selector).style('height')),
+		};
+	}
+
+	/**
+	 * Cast dimensions into tangible or meaningful numbers.
+	 *
+	 * @param {Object} chart
+	 * @param {Object} containerDimensions
+	 *
+	 * @return {{width: Number, height: Number}}
+	 */
+	castDimensions({ chart }, containerDimensions) {
+		const dimensions = {};
+
+		['width', 'height'].forEach((direction) => {
+			const chartDimension = chart[direction];
+			const containerDimension = containerDimensions[direction];
+
+			if (/%$/.test(String(chartDimension))) {
+				// Convert string into a percentage of the container
+				dimensions[direction] = (parseFloat(chartDimension) / 100) * containerDimension;
+			} else if (chartDimension <= 0) {
+				// If case of non-positive number, set to a usable number
+				dimensions[direction] = D3Funnel.defaults.chart[direction];
+			} else {
+				dimensions[direction] = chartDimension;
+			}
+		});
+
+		return dimensions;
 	}
 
 	/**

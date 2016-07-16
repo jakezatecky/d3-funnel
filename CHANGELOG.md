@@ -1,3 +1,9 @@
+## v0.7.8 (TBA)
+
+### New Features
+
+* [#19]: Add support for percentages in `chart.width` and `chart.height` (e.g. `'75%'`)
+
 ## v0.7.7 (July 15, 2016)
 
 ### New Features
