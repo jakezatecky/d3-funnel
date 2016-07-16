@@ -716,7 +716,7 @@ class D3Funnel {
 		const path = group.append('path');
 
 		if (this.animation !== 0) {
-			this.addBeforeTransition(path, index);
+			this.addBeforeTransition(path, index, false);
 		}
 
 		return path;
