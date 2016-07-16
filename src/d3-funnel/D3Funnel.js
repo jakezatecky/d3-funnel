@@ -177,7 +177,7 @@ class D3Funnel {
 	/**
 	 * @param {Object} options
 	 *
-	 * @returns {Object}
+	 * @return {Object}
 	 */
 	_getSettings(options) {
 		// Prepare the configuration settings based on the defaults

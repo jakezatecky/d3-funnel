@@ -4,7 +4,7 @@ class Navigator {
 	 *
 	 * @param {Array} commands
 	 *
-	 * @returns {string}
+	 * @return {string}
 	 */
 	plot(commands) {
 		let path = '';
@@ -42,7 +42,7 @@ class Navigator {
 	 * @param {Number} nextHeight
 	 * @param {Number} curveHeight
 	 *
-	 * @returns {Object}
+	 * @return {Object}
 	 */
 	makeBezierPoints({
 		centerX,
@@ -92,7 +92,7 @@ class Navigator {
 	 * @param {Object} p12
 	 * @param {Number} ratio
 	 *
-	 * @returns {Array}
+	 * @return {Array}
 	 */
 	makeBezierPath({ p00, p01, p02, p10, p11, p12 }, ratio = 1) {
 		const curve0 = this.getQuadraticBezierCurve(p00, p01, p02, ratio);
