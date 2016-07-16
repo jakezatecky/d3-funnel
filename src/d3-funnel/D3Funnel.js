@@ -58,6 +58,10 @@ class D3Funnel {
 		this.labelFormatter = new LabelFormatter();
 
 		this.navigator = new Navigator();
+
+		// Bind event handlers
+		this.onMouseOver = this.onMouseOver.bind(this);
+		this.onMouseOut = this.onMouseOut.bind(this);
 	}
 
 	/**
@@ -683,8 +687,8 @@ class D3Funnel {
 					return;
 				}
 
-				target.on('mouseover', this.onMouseOver.bind(this))
-					.on('mouseout', this.onMouseOut.bind(this));
+				target.on('mouseover', this.onMouseOver)
+					.on('mouseout', this.onMouseOut);
 			});
 		}
 
