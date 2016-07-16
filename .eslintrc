@@ -2,8 +2,7 @@
 	"extends": "airbnb/base",
 	"parser": "babel-eslint",
 	"rules": {
-		"indent": [2, "tab"],
-		"no-underscore-dangle": 0
+		"indent": [2, "tab"]
 	},
 	"env": {
 		"mocha": true
