@@ -788,6 +788,36 @@ describe('D3Funnel', () => {
 				assert.equal('Node 1000 1000', d3.select('#funnel text').text());
 			});
 
+			it('should create split multiple lines into multiple tspans', () => {
+				getFunnel().draw(getBasicData(), {
+					label: {
+						format: '{l}\n{v}',
+					},
+				});
+
+				const tspans = d3.selectAll('#funnel text tspan')[0];
+
+				assert.equal('Node', d3.select(tspans[0]).text());
+				assert.equal('1000', d3.select(tspans[1]).text());
+			});
+
+			it('should create position multiple lines in a vertically-centered manner', () => {
+				getFunnel().draw(getBasicData(), {
+					chart: {
+						height: 200,
+					},
+					label: {
+						format: '{l}\n{v}\n{f}',
+					},
+				});
+
+				const tspans = d3.selectAll('#funnel text tspan')[0];
+
+				assert.equal(-20, d3.select(tspans[0]).attr('dy'));
+				assert.equal(20, d3.select(tspans[1]).attr('dy'));
+				assert.equal(20, d3.select(tspans[2]).attr('dy'));
+			});
+
 			it('should pass values to a supplied function', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {

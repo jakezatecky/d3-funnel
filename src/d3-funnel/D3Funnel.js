@@ -947,27 +947,54 @@ class D3Funnel {
 	addBlockLabel(group, index) {
 		const paths = this.blockPaths[index];
 
-		const text = this.blocks[index].label.formatted;
+		const formattedLabel = this.blocks[index].label.formatted;
 		const fill = this.blocks[index].label.color;
 
 		const x = this.width / 2;  // Center the text
 		const y = this.getTextY(paths);
 
-		const label = group.append('text')
-			.text(text)
+		const text = group.append('text')
 			.attr({
 				x,
 				y,
 				fill,
+				'font-size': this.label.fontSize,
 				'text-anchor': 'middle',
 				'dominant-baseline': 'middle',
 				'pointer-events': 'none',
-			})
-			.attr('font-size', this.label.fontSize);
+			});
 
+		// Add font-family, if exists
 		if (this.label.fontFamily !== null) {
-			label.attr('font-family', this.label.fontFamily);
+			text.attr('font-family', this.label.fontFamily);
 		}
+
+		this.addLabelLines(text, formattedLabel, x);
+	}
+
+	/**
+	 * Add <tspan> elements for each line of the formatted label.
+	 *
+	 * @param {Object} text
+	 * @param {String} formattedLabel
+	 * @param {Number} x
+	 *
+	 * @return {void}
+	 */
+	addLabelLines(text, formattedLabel, x) {
+		const lines = formattedLabel.split('\n');
+		const lineHeight = 20;
+
+		// dy will signify the change from the initial height y
+		// We need to initially start the first line at the very top, factoring
+		// in the other number of lines
+		const initialDy = (-1 * lineHeight * (lines.length - 1)) / 2;
+
+		lines.forEach((line, i) => {
+			const dy = i === 0 ? initialDy : lineHeight;
+
+			text.append('tspan').attr({ x, dy }).text(line);
+		});
 	}
 
 	/**

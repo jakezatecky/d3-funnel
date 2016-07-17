@@ -37,7 +37,7 @@ const options = {
 	formatted: [
 		data.normal, {
 			label: {
-				format: '{l}: ${f}',
+				format: '{l}\n+{f}',
 			},
 		},
 	],

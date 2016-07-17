@@ -1,8 +1,9 @@
-## v0.7.8 (TBA)
+## v0.8.0 (TBA)
 
 ### New Features
 
 * [#19]: Add support for percentages in `chart.width` and `chart.height` (e.g. `'75%'`)
+* [#38]: Split line break characters found in `label.format` into multiple lines
 
 ## v0.7.7 (July 15, 2016)
 
