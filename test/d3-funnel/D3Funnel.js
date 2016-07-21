@@ -64,9 +64,14 @@ const defaults = _.clone(D3Funnel.defaults, true);
 
 describe('D3Funnel', () => {
 	beforeEach((done) => {
+		// Reset any styles
 		d3.select('#funnel').attr('style', null);
 
+		// Reset defaults
 		D3Funnel.defaults = _.clone(defaults, true);
+
+		// Clear out sandbox
+		document.getElementById('sandbox').innerHTML = '';
 
 		done();
 	});
@@ -210,6 +215,33 @@ describe('D3Funnel', () => {
 
 				// Make sure the only text in container comes from the funnel
 				assert.equal(getSvg().text(), container.text());
+			});
+
+			it('should assign a unique ID upon draw', () => {
+				getFunnel().draw(getBasicData());
+
+				assert.isTrue(document.getElementById('d3-funnel-chart-0') !== null);
+			});
+
+			it('should skip any IDs that exist on the dom', () => {
+				const maxId = 5;
+				const sandbox = document.querySelector('#sandbox');
+
+				// Add multiple IDs to the DOM
+				for (let i = 0; i < maxId; i++) {
+					const span = document.createElement('span');
+
+					span.id = `d3-funnel-chart-${i}`;
+
+					sandbox.appendChild(span);
+				}
+
+				getFunnel().draw(getBasicData());
+
+				const chart = document.getElementById('d3-funnel-chart-5');
+
+				assert.isTrue(chart !== null);
+				assert.equal('svg', chart.tagName);
 			});
 		});
 

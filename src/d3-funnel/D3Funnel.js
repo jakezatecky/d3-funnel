@@ -57,6 +57,8 @@ class D3Funnel {
 		this.labelFormatter = new LabelFormatter();
 		this.navigator = new Navigator();
 
+		this.autoId = 0;
+
 		// Bind event handlers
 		this.onMouseOver = this.onMouseOver.bind(this);
 		this.onMouseOut = this.onMouseOut.bind(this);
@@ -369,9 +371,12 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	drawOntoDom() {
+		const id = this.generateUniqueId();
+
 		// Add the SVG
 		this.svg = d3.select(this.selector)
 			.append('svg')
+			.attr('id', id)
 			.attr('width', this.width)
 			.attr('height', this.height);
 
@@ -391,6 +396,28 @@ class D3Funnel {
 
 		// Add each block
 		this.drawBlock(0);
+	}
+
+	/**
+	 * Return a unique ID for the funnel on the document.
+	 *
+	 * @return {string}
+	 */
+	generateUniqueId() {
+		let findingId = true;
+		let id = '';
+
+		while (findingId) {
+			id = `d3-funnel-chart-${this.autoId}`;
+
+			if (document.getElementById(id) === null) {
+				findingId = false;
+			}
+
+			this.autoId++;
+		}
+
+		return id;
 	}
 
 	/**
