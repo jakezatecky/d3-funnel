@@ -130,7 +130,7 @@ Example:
 ### Overriding Defaults
 
 You may wish to override the default chart options. For example, you may wish
-for every funnel to have proportional heights. To do this, simplify modify the
+for every funnel to have proportional heights. To do this, simply modify the
 `D3Funnel.defaults` property:
 
 ``` javascript
