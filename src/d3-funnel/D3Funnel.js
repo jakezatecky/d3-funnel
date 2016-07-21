@@ -57,6 +57,7 @@ class D3Funnel {
 		this.labelFormatter = new LabelFormatter();
 		this.navigator = new Navigator();
 
+		this.id = null;
 		this.autoId = 0;
 
 		// Bind event handlers
@@ -114,6 +115,9 @@ class D3Funnel {
 		this.validateData(data);
 
 		const settings = this.getSettings(options);
+
+		this.id = this.generateUniqueId();
+		this.colorizer.setInstanceId(this.id);
 
 		// Set labels
 		this.label = settings.label;
@@ -371,12 +375,9 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	drawOntoDom() {
-		const id = this.generateUniqueId();
-
-		// Add the SVG
-		this.svg = d3.select(this.selector)
+		this.svg = d3.select(this.selector)// Add the SVG
 			.append('svg')
-			.attr('id', id)
+			.attr('id', this.id)
 			.attr('width', this.width)
 			.attr('height', this.height);
 
@@ -635,9 +636,7 @@ class D3Funnel {
 
 			// Create linear gradient
 			const gradient = defs.append('linearGradient')
-				.attr({
-					id: `gradient-${index}`,
-				});
+				.attr({ id: this.colorizer.getGradientId(index) });
 
 			// Define the gradient stops
 			const stops = [

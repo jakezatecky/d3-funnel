@@ -4,10 +4,18 @@ class Colorizer {
 	 */
 	constructor() {
 		this.hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-
+		this.instanceId = null;
 		this.labelFill = null;
-
 		this.scale = null;
+	}
+
+	/**
+	 * @param {string} instanceId
+	 *
+	 * @return {void}
+	 */
+	setInstanceId(instanceId) {
+		this.instanceId = instanceId;
 	}
 
 	/**
@@ -34,15 +42,16 @@ class Colorizer {
 	 * @param {Array}  block
 	 * @param {Number} index
 	 * @param {string} type
+	 * @param {string} instanceId
 	 *
 	 * @return {Object}
 	 */
-	getBlockFill(block, index, type) {
+	getBlockFill(block, index, type, instanceId) {
 		const raw = this.getBlockRawFill(block, index);
 
 		return {
 			raw,
-			actual: this.getBlockActualFill(raw, index, type),
+			actual: this.getBlockActualFill(raw, index, type, instanceId),
 		};
 	}
 
@@ -83,7 +92,18 @@ class Colorizer {
 			return raw;
 		}
 
-		return `url(#gradient-${index})`;
+		return `url(#${this.getGradientId(index)})`;
+	}
+
+	/**
+	 * Return the gradient ID for the given index.
+	 *
+	 * @param {Number} index
+	 *
+	 * @return {string}
+	 */
+	getGradientId(index) {
+		return `${this.instanceId}-gradient-${index}`;
 	}
 
 	/**

@@ -694,9 +694,9 @@ describe('D3Funnel', () => {
 				// due to a Webkit bug in the current PhantomJS; workaround is
 				// to select the known ID of the linearGradient element
 				// https://bugs.webkit.org/show_bug.cgi?id=83438
-				assert.equal(1, d3.selectAll('#funnel defs #gradient-0')[0].length);
+				assert.equal(1, d3.selectAll('#funnel defs #d3-funnel-chart-0-gradient-0')[0].length);
 
-				assert.equal('url(#gradient-0)', d3.select('#funnel path').attr('fill'));
+				assert.equal('url(#d3-funnel-chart-0-gradient-0)', d3.select('#funnel path').attr('fill'));
 			});
 
 			it('should use solid fill when not set to \'gradient\'', () => {

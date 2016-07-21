@@ -5,6 +5,10 @@
 * [#19]: Add support for percentages in `chart.width` and `chart.height` (e.g. `'75%'`)
 * [#38]: Split line break characters found in `label.format` into multiple lines
 
+### Bug Fixes
+
+* [#49]: Fix issue where gradient definitions could conflict with existing definitions
+
 ## v0.7.7 (July 15, 2016)
 
 ### New Features
