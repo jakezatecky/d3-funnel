@@ -117,10 +117,15 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.selector = selector;
 
 			this.colorizer = new _Colorizer2.default();
-
 			this.labelFormatter = new _LabelFormatter2.default();
-
 			this.navigator = new _Navigator2.default();
+
+			this.id = null;
+			this.autoId = 0;
+
+			// Bind event handlers
+			this.onMouseOver = this.onMouseOver.bind(this);
+			this.onMouseOut = this.onMouseOut.bind(this);
 		}
 
 		/**
@@ -165,9 +170,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				this.destroy();
 
-				this._initialize(data, options);
+				this.initialize(data, options);
 
-				this._draw();
+				this.drawOntoDom();
 			}
 
 			/**
@@ -180,11 +185,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_initialize',
-			value: function _initialize(data, options) {
-				this._validateData(data);
+			key: 'initialize',
+			value: function initialize(data, options) {
+				this.validateData(data);
 
-				var settings = this._getSettings(options);
+				var settings = this.getSettings(options);
+
+				this.id = this.generateUniqueId();
+				this.colorizer.setInstanceId(this.id);
 
 				// Set labels
 				this.label = settings.label;
@@ -214,16 +222,16 @@ return /******/ (function(modules) { // webpackBootstrap
 				// Support for events
 				this.onBlockClick = settings.events.click.block;
 
-				this._setBlocks(data);
+				this.setBlocks(data);
 
 				// Calculate the bottom left x position
 				this.bottomLeftX = (this.width - this.bottomWidth) / 2;
 
 				// Change in x direction
-				this.dx = this._getDx();
+				this.dx = this.getDx();
 
 				// Change in y direction
-				this.dy = this._getDy();
+				this.dy = this.getDy();
 			}
 
 			/**
@@ -233,8 +241,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_validateData',
-			value: function _validateData(data) {
+			key: 'validateData',
+			value: function validateData(data) {
 				if (Array.isArray(data) === false) {
 					throw new Error('Data must be an array.');
 				}
@@ -255,31 +263,93 @@ return /******/ (function(modules) { // webpackBootstrap
 			/**
 	   * @param {Object} options
 	   *
-	   * @returns {Object}
+	   * @return {Object}
 	   */
 
 		}, {
-			key: '_getSettings',
-			value: function _getSettings(options) {
-				// Prepare the configuration settings based on the defaults
-				// Set the default width and height based on the container
-				var settings = _Utils2.default.extend({}, D3Funnel.defaults);
-				settings.chart.width = parseInt(_d2.default.select(this.selector).style('width'), 10);
-				settings.chart.height = parseInt(_d2.default.select(this.selector).style('height'), 10);
+			key: 'getSettings',
+			value: function getSettings(options) {
+				var containerDimensions = this.getContainerDimensions();
+				var defaults = this.getDefaultSettings(containerDimensions);
 
-				// Overwrite default settings with user options
+				// Prepare the configuration settings based on the defaults
+				var settings = _Utils2.default.extend({}, defaults);
+
+				// Override default settings with user options
 				settings = _Utils2.default.extend(settings, options);
 
-				// In the case that the width or height is not valid, set
-				// the width/height as its default hard-coded value
-				if (settings.chart.width <= 0) {
-					settings.chart.width = D3Funnel.defaults.chart.width;
-				}
-				if (settings.chart.height <= 0) {
-					settings.chart.height = D3Funnel.defaults.chart.height;
-				}
+				// Account for any percentage-based dimensions
+				settings.chart = _extends({}, settings.chart, this.castDimensions(settings, containerDimensions));
 
 				return settings;
+			}
+
+			/**
+	   * Return default settings.
+	   *
+	   * @param {Object} containerDimensions
+	   *
+	   * @return {Object}
+	   */
+
+		}, {
+			key: 'getDefaultSettings',
+			value: function getDefaultSettings(containerDimensions) {
+				var settings = D3Funnel.defaults;
+
+				// Set the default width and height based on the container
+				settings.chart = _extends({}, settings.chart, containerDimensions);
+
+				return settings;
+			}
+
+			/**
+	   * Get the width/height dimensions of the container.
+	   *
+	   * @return {{width: Number, height: Number}}
+	   */
+
+		}, {
+			key: 'getContainerDimensions',
+			value: function getContainerDimensions() {
+				return {
+					width: parseFloat(_d2.default.select(this.selector).style('width')),
+					height: parseFloat(_d2.default.select(this.selector).style('height'))
+				};
+			}
+
+			/**
+	   * Cast dimensions into tangible or meaningful numbers.
+	   *
+	   * @param {Object} chart
+	   * @param {Object} containerDimensions
+	   *
+	   * @return {{width: Number, height: Number}}
+	   */
+
+		}, {
+			key: 'castDimensions',
+			value: function castDimensions(_ref, containerDimensions) {
+				var chart = _ref.chart;
+
+				var dimensions = {};
+
+				['width', 'height'].forEach(function (direction) {
+					var chartDimension = chart[direction];
+					var containerDimension = containerDimensions[direction];
+
+					if (/%$/.test(String(chartDimension))) {
+						// Convert string into a percentage of the container
+						dimensions[direction] = parseFloat(chartDimension) / 100 * containerDimension;
+					} else if (chartDimension <= 0) {
+						// If case of non-positive number, set to a usable number
+						dimensions[direction] = D3Funnel.defaults.chart[direction];
+					} else {
+						dimensions[direction] = chartDimension;
+					}
+				});
+
+				return dimensions;
 			}
 
 			/**
@@ -292,11 +362,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_setBlocks',
-			value: function _setBlocks(data) {
-				var totalCount = this._getTotalCount(data);
+			key: 'setBlocks',
+			value: function setBlocks(data) {
+				var totalCount = this.getTotalCount(data);
 
-				this.blocks = this._standardizeData(data, totalCount);
+				this.blocks = this.standardizeData(data, totalCount);
 			}
 
 			/**
@@ -308,8 +378,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getTotalCount',
-			value: function _getTotalCount(data) {
+			key: 'getTotalCount',
+			value: function getTotalCount(data) {
 				var _this = this;
 
 				if (this.totalCount !== null) {
@@ -319,7 +389,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var total = 0;
 
 				data.forEach(function (block) {
-					total += _this._getRawBlockCount(block);
+					total += _this.getRawBlockCount(block);
 				});
 
 				return total;
@@ -335,14 +405,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_standardizeData',
-			value: function _standardizeData(data, totalCount) {
+			key: 'standardizeData',
+			value: function standardizeData(data, totalCount) {
 				var _this2 = this;
 
 				var standardized = [];
 
 				data.forEach(function (block, index) {
-					var count = _this2._getRawBlockCount(block);
+					var count = _this2.getRawBlockCount(block);
 					var ratio = count / totalCount || 0;
 					var label = block[0];
 
@@ -372,8 +442,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getRawBlockCount',
-			value: function _getRawBlockCount(block) {
+			key: 'getRawBlockCount',
+			value: function getRawBlockCount(block) {
 				return Array.isArray(block[1]) ? block[1][0] : block[1];
 			}
 
@@ -382,8 +452,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getDx',
-			value: function _getDx() {
+			key: 'getDx',
+			value: function getDx() {
 				// Will be sharper if there is a pinch
 				if (this.bottomPinch > 0) {
 					return this.bottomLeftX / (this.blocks.length - this.bottomPinch);
@@ -397,8 +467,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getDy',
-			value: function _getDy() {
+			key: 'getDy',
+			value: function getDy() {
 				// Curved chart needs reserved pixels to account for curvature
 				if (this.isCurved) {
 					return (this.height - this.curveHeight) / this.blocks.length;
@@ -414,27 +484,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_draw',
-			value: function _draw() {
-				// Add the SVG
-				this.svg = _d2.default.select(this.selector).append('svg').attr('width', this.width).attr('height', this.height);
+			key: 'drawOntoDom',
+			value: function drawOntoDom() {
+				this.svg = _d2.default.select(this.selector) // Add the SVG
+				.append('svg').attr('id', this.id).attr('width', this.width).attr('height', this.height);
 
-				var newPaths = this._makePaths();
+				var newPaths = this.makePaths();
 				this.blockPaths = newPaths[0];
 				this.overlayPaths = newPaths[1];
 
 				// Define color gradients
 				if (this.fillType === 'gradient') {
-					this._defineColorGradients(this.svg);
+					this.defineColorGradients(this.svg);
 				}
 
 				// Add top oval if curved
 				if (this.isCurved) {
-					this._drawTopOval(this.svg, this.blockPaths);
+					this.drawTopOval(this.svg, this.blockPaths);
 				}
 
 				// Add each block
-				this._drawBlock(0);
+				this.drawBlock(0);
+			}
+
+			/**
+	   * Return a unique ID for the funnel on the document.
+	   *
+	   * @return {string}
+	   */
+
+		}, {
+			key: 'generateUniqueId',
+			value: function generateUniqueId() {
+				var findingId = true;
+				var id = '';
+
+				while (findingId) {
+					id = 'd3-funnel-chart-' + this.autoId;
+
+					if (document.getElementById(id) === null) {
+						findingId = false;
+					}
+
+					this.autoId++;
+				}
+
+				return id;
 			}
 
 			/**
@@ -445,8 +540,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_makePaths',
-			value: function _makePaths() {
+			key: 'makePaths',
+			value: function makePaths() {
 				var _this3 = this;
 
 				var paths = [];
@@ -647,8 +742,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_defineColorGradients',
-			value: function _defineColorGradients(svg) {
+			key: 'defineColorGradients',
+			value: function defineColorGradients(svg) {
 				var _this4 = this;
 
 				var defs = svg.append('defs');
@@ -659,9 +754,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					var shade = _this4.colorizer.shade(color, -0.2);
 
 					// Create linear gradient
-					var gradient = defs.append('linearGradient').attr({
-						id: 'gradient-' + index
-					});
+					var gradient = defs.append('linearGradient').attr({ id: _this4.colorizer.getGradientId(index) });
 
 					// Define the gradient stops
 					var stops = [[0, shade], [40, color], [60, color], [100, shade]];
@@ -686,8 +779,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_drawTopOval',
-			value: function _drawTopOval(svg, blockPaths) {
+			key: 'drawTopOval',
+			value: function drawTopOval(svg, blockPaths) {
 				var leftX = 0;
 				var rightX = this.width;
 				var centerX = this.width / 2;
@@ -716,8 +809,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_drawBlock',
-			value: function _drawBlock(index) {
+			key: 'drawBlock',
+			value: function drawBlock(index) {
 				var _this5 = this;
 
 				if (index === this.blocks.length) {
@@ -728,17 +821,17 @@ return /******/ (function(modules) { // webpackBootstrap
 				var group = this.svg.append('g');
 
 				// Fetch path element
-				var path = this._getBlockPath(group, index);
+				var path = this.getBlockPath(group, index);
 
 				// Attach data to the element
-				this._attachData(path, this.blocks[index]);
+				this.attachData(path, this.blocks[index]);
 
 				var overlayPath = null;
 				var pathColor = this.blocks[index].fill.actual;
 
 				if (this.addValueOverlay) {
-					overlayPath = this._getOverlayPath(group, index);
-					this._attachData(overlayPath, this.blocks[index]);
+					overlayPath = this.getOverlayPath(group, index);
+					this.attachData(overlayPath, this.blocks[index]);
 
 					// Add data attribute to distinguish between paths
 					path.node().setAttribute('pathType', 'background');
@@ -750,12 +843,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				// Add animation components
 				if (this.animation !== 0) {
-					path.transition().duration(this.animation).ease('linear').attr('fill', pathColor).attr('d', this._getPathDefinition(index)).each('end', function () {
-						_this5._drawBlock(index + 1);
+					path.transition().duration(this.animation).ease('linear').attr('fill', pathColor).attr('d', this.getPathDefinition(index)).each('end', function () {
+						_this5.drawBlock(index + 1);
 					});
 				} else {
-					path.attr('fill', pathColor).attr('d', this._getPathDefinition(index));
-					this._drawBlock(index + 1);
+					path.attr('fill', pathColor).attr('d', this.getPathDefinition(index));
+					this.drawBlock(index + 1);
 				}
 
 				// Add path overlay
@@ -763,9 +856,9 @@ return /******/ (function(modules) { // webpackBootstrap
 					path.attr('stroke', this.blocks[index].fill.raw);
 
 					if (this.animation !== 0) {
-						overlayPath.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+						overlayPath.transition().duration(this.animation).ease('linear').attr('fill', this.blocks[index].fill.actual).attr('d', this.getOverlayPathDefinition(index));
 					} else {
-						overlayPath.attr('fill', this.blocks[index].fill.actual).attr('d', this._getOverlayPathDefinition(index));
+						overlayPath.attr('fill', this.blocks[index].fill.actual).attr('d', this.getOverlayPathDefinition(index));
 					}
 				}
 
@@ -776,7 +869,7 @@ return /******/ (function(modules) { // webpackBootstrap
 							return;
 						}
 
-						target.on('mouseover', _this5._onMouseOver.bind(_this5)).on('mouseout', _this5._onMouseOut.bind(_this5));
+						target.on('mouseover', _this5.onMouseOver).on('mouseout', _this5.onMouseOut);
 					});
 				}
 
@@ -791,7 +884,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					});
 				}
 
-				this._addBlockLabel(group, index);
+				this.addBlockLabel(group, index);
 			}
 
 			/**
@@ -802,12 +895,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getBlockPath',
-			value: function _getBlockPath(group, index) {
+			key: 'getBlockPath',
+			value: function getBlockPath(group, index) {
 				var path = group.append('path');
 
 				if (this.animation !== 0) {
-					this._addBeforeTransition(path, index);
+					this.addBeforeTransition(path, index, false);
 				}
 
 				return path;
@@ -821,12 +914,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getOverlayPath',
-			value: function _getOverlayPath(group, index) {
+			key: 'getOverlayPath',
+			value: function getOverlayPath(group, index) {
 				var path = group.append('path');
 
 				if (this.animation !== 0) {
-					this._addBeforeTransition(path, index, true);
+					this.addBeforeTransition(path, index, true);
 				}
 
 				return path;
@@ -843,8 +936,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_addBeforeTransition',
-			value: function _addBeforeTransition(path, index, isOverlay) {
+			key: 'addBeforeTransition',
+			value: function addBeforeTransition(path, index, isOverlay) {
 				var paths = isOverlay ? this.overlayPaths[index] : this.blockPaths[index];
 
 				var beforePath = '';
@@ -880,8 +973,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_attachData',
-			value: function _attachData(element, data) {
+			key: 'attachData',
+			value: function attachData(element, data) {
 				var nodeData = _extends({}, data, {
 					node: element.node()
 				});
@@ -896,8 +989,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getPathDefinition',
-			value: function _getPathDefinition(index) {
+			key: 'getPathDefinition',
+			value: function getPathDefinition(index) {
 				var commands = [];
 
 				this.blockPaths[index].forEach(function (command) {
@@ -914,8 +1007,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getOverlayPathDefinition',
-			value: function _getOverlayPathDefinition(index) {
+			key: 'getOverlayPathDefinition',
+			value: function getOverlayPathDefinition(index) {
 				var commands = [];
 
 				this.overlayPaths[index].forEach(function (command) {
@@ -932,8 +1025,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_onMouseOver',
-			value: function _onMouseOver(data) {
+			key: 'onMouseOver',
+			value: function onMouseOver(data) {
 				var children = _d2.default.event.target.parentElement.childNodes;
 
 				for (var i = 0; i < children.length; i++) {
@@ -959,8 +1052,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_onMouseOut',
-			value: function _onMouseOut(data) {
+			key: 'onMouseOut',
+			value: function onMouseOut(data) {
 				var children = _d2.default.event.target.parentElement.childNodes;
 
 				for (var i = 0; i < children.length; i++) {
@@ -988,28 +1081,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_addBlockLabel',
-			value: function _addBlockLabel(group, index) {
+			key: 'addBlockLabel',
+			value: function addBlockLabel(group, index) {
 				var paths = this.blockPaths[index];
 
-				var text = this.blocks[index].label.formatted;
+				var formattedLabel = this.blocks[index].label.formatted;
 				var fill = this.blocks[index].label.color;
 
 				var x = this.width / 2; // Center the text
-				var y = this._getTextY(paths);
+				var y = this.getTextY(paths);
 
-				var label = group.append('text').text(text).attr({
+				var text = group.append('text').attr({
 					x: x,
 					y: y,
 					fill: fill,
+					'font-size': this.label.fontSize,
 					'text-anchor': 'middle',
 					'dominant-baseline': 'middle',
 					'pointer-events': 'none'
-				}).attr('font-size', this.label.fontSize);
+				});
 
+				// Add font-family, if exists
 				if (this.label.fontFamily !== null) {
-					label.attr('font-family', this.label.fontFamily);
+					text.attr('font-family', this.label.fontFamily);
 				}
+
+				this.addLabelLines(text, formattedLabel, x);
+			}
+
+			/**
+	   * Add <tspan> elements for each line of the formatted label.
+	   *
+	   * @param {Object} text
+	   * @param {String} formattedLabel
+	   * @param {Number} x
+	   *
+	   * @return {void}
+	   */
+
+		}, {
+			key: 'addLabelLines',
+			value: function addLabelLines(text, formattedLabel, x) {
+				var lines = formattedLabel.split('\n');
+				var lineHeight = 20;
+
+				// dy will signify the change from the initial height y
+				// We need to initially start the first line at the very top, factoring
+				// in the other number of lines
+				var initialDy = -1 * lineHeight * (lines.length - 1) / 2;
+
+				lines.forEach(function (line, i) {
+					var dy = i === 0 ? initialDy : lineHeight;
+
+					text.append('tspan').attr({ x: x, dy: dy }).text(line);
+				});
 			}
 
 			/**
@@ -1022,8 +1147,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 
 		}, {
-			key: '_getTextY',
-			value: function _getTextY(paths) {
+			key: 'getTextY',
+			value: function getTextY(paths) {
 				if (this.isCurved) {
 					return (paths[2][1] + paths[3][1]) / 2 + this.curveHeight / this.blocks.length;
 				}
@@ -1096,24 +1221,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Colorizer = function () {
+		/**
+	  * @return {void}
+	  */
+
 		function Colorizer() {
 			_classCallCheck(this, Colorizer);
 
 			this.hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
-
+			this.instanceId = null;
 			this.labelFill = null;
-
 			this.scale = null;
 		}
 
 		/**
-	  * @param {string} fill
+	  * @param {string} instanceId
 	  *
 	  * @return {void}
 	  */
 
 
 		_createClass(Colorizer, [{
+			key: 'setInstanceId',
+			value: function setInstanceId(instanceId) {
+				this.instanceId = instanceId;
+			}
+
+			/**
+	   * @param {string} fill
+	   *
+	   * @return {void}
+	   */
+
+		}, {
 			key: 'setLabelFill',
 			value: function setLabelFill(fill) {
 				this.labelFill = fill;
@@ -1137,18 +1277,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {Array}  block
 	   * @param {Number} index
 	   * @param {string} type
+	   * @param {string} instanceId
 	   *
 	   * @return {Object}
 	   */
 
 		}, {
 			key: 'getBlockFill',
-			value: function getBlockFill(block, index, type) {
+			value: function getBlockFill(block, index, type, instanceId) {
 				var raw = this.getBlockRawFill(block, index);
 
 				return {
 					raw: raw,
-					actual: this.getBlockActualFill(raw, index, type)
+					actual: this.getBlockActualFill(raw, index, type, instanceId)
 				};
 			}
 
@@ -1195,7 +1336,21 @@ return /******/ (function(modules) { // webpackBootstrap
 					return raw;
 				}
 
-				return 'url(#gradient-' + index + ')';
+				return 'url(#' + this.getGradientId(index) + ')';
+			}
+
+			/**
+	   * Return the gradient ID for the given index.
+	   *
+	   * @param {Number} index
+	   *
+	   * @return {string}
+	   */
+
+		}, {
+			key: 'getGradientId',
+			value: function getGradientId(index) {
+				return this.instanceId + '-gradient-' + index;
 			}
 
 			/**
@@ -1283,7 +1438,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var LabelFormatter = function () {
-
 		/**
 	  * Initial the formatter.
 	  *
@@ -1407,13 +1561,12 @@ return /******/ (function(modules) { // webpackBootstrap
 		_createClass(Navigator, [{
 			key: 'plot',
 
-
 			/**
 	   * Given a list of path commands, returns the compiled description.
 	   *
 	   * @param {Array} commands
 	   *
-	   * @returns {string}
+	   * @return {string}
 	   */
 			value: function plot(commands) {
 				var path = '';
@@ -1456,7 +1609,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {Number} nextHeight
 	   * @param {Number} curveHeight
 	   *
-	   * @returns {Object}
+	   * @return {Object}
 	   */
 
 		}, {
@@ -1509,7 +1662,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {Object} p12
 	   * @param {Number} ratio
 	   *
-	   * @returns {Array}
+	   * @return {Array}
 	   */
 
 		}, {
@@ -1697,7 +1850,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		_createClass(Utils, null, [{
 			key: 'isExtendableObject',
-
 
 			/**
 	   * Determine whether the given parameter is an extendable object.
