@@ -158,9 +158,9 @@ D3Funnel.defaults = _.merge(D3Funnel.defaults, {
 
 Additional methods beyond `draw()` are accessible after instantiating the chart:
 
-| Method           | Description                                                                 |
-| ---------------- | --------------------------------------------------------------------------- |
-| `destroy()`      | Removes the funnel and its events from the DOM.                             |
+| Method      | Description                                     |
+| ----------- | ----------------------------------------------- |
+| `destroy()` | Removes the funnel and its events from the DOM. |
 
 ## Advanced Data
 
@@ -173,7 +173,7 @@ var data = [
     ['Byzantium', 4000,  '#702963'],
     ['Persimmon', 2500,  '#ff634d', '#6f34fd'],
     ['Azure',     1500,  '#007fff', '#07fff0'],
-    //         Background ---^         ^--- Label
+    //         Background ---^          ^--- Label
 ];
 ```
 
