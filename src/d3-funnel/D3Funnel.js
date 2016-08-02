@@ -1,5 +1,4 @@
-import { easeLinear, range } from 'd3';
-import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
+import { easeLinear, range, scaleOrdinal, schemeCategory10 } from 'd3';
 import { select } from 'd3-selection';
 import 'd3-selection-multi';
 
