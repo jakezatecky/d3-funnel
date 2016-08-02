@@ -177,7 +177,7 @@ picker.addEventListener('change', () => {
 
 	// Reverse the dataset if the isInverted option is present
 	// Otherwise, just use the regular data
-	if (options[index][1].hasOwnProperty('isInverted')) {
+	if ('isInverted' in options[index][1]) {
 		chart.draw(options[index][0].reverse(), options[index][1]);
 	} else {
 		chart.draw(options[index][0], options[index][1]);
