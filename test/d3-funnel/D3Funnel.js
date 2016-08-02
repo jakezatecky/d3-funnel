@@ -633,8 +633,8 @@ describe('D3Funnel', () => {
 				const BPathFullWidth = getPathTopWidth(d3.select(paths[2]));
 				const BPathOverlayWidth = getPathTopWidth(d3.select(paths[3]));
 
-				assert.equal(10, Math.round(APathOverlayWidth / (APathFullWidth * 100)));
-				assert.equal(20, Math.round(BPathOverlayWidth / (BPathFullWidth * 100)));
+				assert.equal(10, Math.round((APathOverlayWidth / APathFullWidth) * 100));
+				assert.equal(20, Math.round((BPathOverlayWidth / BPathFullWidth) * 100));
 			});
 		});
 
