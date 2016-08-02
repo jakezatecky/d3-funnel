@@ -15,10 +15,10 @@ to get a showcasing of the several possible options.
 
 # Installation
 
-To install this library, simply include both [D3.js][d3] and D3Funnel:
+To install this library, simply include both [D3.js v4.x][d3] and D3Funnel:
 
 ``` html
-<script src="/path/to/d3.min.js"></script>
+<script src="/path/to/d3.v4.js"></script>
 <script src="/path/to/dist/d3-funnel.js"></script>
 ```
 
@@ -76,7 +76,7 @@ funnel chart:
 | `block.dynamicHeight`  | Whether the block heights are proportional to their weight.               | bool     | `false`                 |
 | `block.dynamicSlope`   | Whether the block widths are proportional to their value decrease.        | bool     | `false`                 |
 | `block.barOverlay`     | Whether the blocks have bar chart overlays proportional to its weight.    | bool     | `false`                 |
-| `block.fill.scale`     | The background color scale as an array or function.                       | mixed    | `d3.scale.category10()` |
+| `block.fill.scale`     | The background color scale as an array or function.                       | mixed    | `d3.schemeCategory10`   |
 | `block.fill.type`      | Either `'solid'` or `'gradient'`.                                         | string   | `'solid'`               |
 | `block.minHeight`      | The minimum pixel height of a block.                                      | number   | `0`                     |
 | `block.highlight`      | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
