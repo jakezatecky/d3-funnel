@@ -1,3 +1,14 @@
+## v1.0.0 (August 2, 2016)
+
+This release breaks major backwards compatibility by upgrading D3 3.x to
+D3 4.x. Refer to D3's [changes documentation](d3-changes) for more info.
+
+### Behavior Changes
+
+* [#62]: Upgrade D3 3.x to 4.x
+
+[d3-changes]: https://github.com/d3/d3/blob/master/CHANGES.md
+
 ## v0.8.0 (July 21, 2016)
 
 ### New Features
