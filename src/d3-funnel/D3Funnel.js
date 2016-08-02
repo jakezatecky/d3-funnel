@@ -1,4 +1,7 @@
-import d3 from 'd3';
+import { easeLinear, range } from 'd3';
+import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
+import { select } from 'd3-selection';
+import 'd3-selection-multi';
 
 import Colorizer from './Colorizer';
 import LabelFormatter from './LabelFormatter';
@@ -26,7 +29,7 @@ class D3Funnel {
 			dynamicSlope: false,
 			barOverlay: false,
 			fill: {
-				scale: d3.scale.category10().domain(d3.range(0, 10)),
+				scale: scaleOrdinal(schemeCategory10).domain(range(0, 10)),
 				type: 'solid',
 			},
 			minHeight: 0,
@@ -71,7 +74,7 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	destroy() {
-		const container = d3.select(this.selector);
+		const container = select(this.selector);
 
 		// D3's remove method appears to be sufficient for removing the events
 		container.selectAll('svg').remove();
@@ -232,8 +235,8 @@ class D3Funnel {
 	 */
 	getContainerDimensions() {
 		return {
-			width: parseFloat(d3.select(this.selector).style('width')),
-			height: parseFloat(d3.select(this.selector).style('height')),
+			width: parseFloat(select(this.selector).style('width')),
+			height: parseFloat(select(this.selector).style('height')),
 		};
 	}
 
@@ -375,7 +378,8 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	drawOntoDom() {
-		this.svg = d3.select(this.selector)// Add the SVG
+		// Add the SVG
+		this.svg = select(this.selector)
 			.append('svg')
 			.attr('id', this.id)
 			.attr('width', this.width)
@@ -636,7 +640,7 @@ class D3Funnel {
 
 			// Create linear gradient
 			const gradient = defs.append('linearGradient')
-				.attr({ id: this.colorizer.getGradientId(index) });
+				.attr('id', this.colorizer.getGradientId(index));
 
 			// Define the gradient stops
 			const stops = [
@@ -648,7 +652,7 @@ class D3Funnel {
 
 			// Add the gradient stops
 			stops.forEach((stop) => {
-				gradient.append('stop').attr({
+				gradient.append('stop').attrs({
 					offset: `${stop[0]}%`,
 					style: `stop-color: ${stop[1]}`,
 				});
@@ -733,10 +737,10 @@ class D3Funnel {
 		if (this.animation !== 0) {
 			path.transition()
 				.duration(this.animation)
-				.ease('linear')
+				.ease(easeLinear)
 				.attr('fill', pathColor)
 				.attr('d', this.getPathDefinition(index))
-				.each('end', () => {
+				.on('end', () => {
 					this.drawBlock(index + 1);
 				});
 		} else {
@@ -752,7 +756,7 @@ class D3Funnel {
 			if (this.animation !== 0) {
 				overlayPath.transition()
 					.duration(this.animation)
-					.ease('linear')
+					.ease(easeLinear)
 					.attr('fill', this.blocks[index].fill.actual)
 					.attr('d', this.getOverlayPathDefinition(index));
 			} else {
@@ -917,11 +921,13 @@ class D3Funnel {
 
 	/**
 	 * @param {Object} data
+	 * @param {Number} groupIndex
+	 * @param {Array} nodes
 	 *
 	 * @return {void}
 	 */
-	onMouseOver(data) {
-		const children = d3.event.target.parentElement.childNodes;
+	onMouseOver(data, groupIndex, nodes) {
+		const children = nodes[0].parentElement.childNodes;
 
 		for (let i = 0; i < children.length; i++) {
 			// Highlight all paths within one block
@@ -931,9 +937,9 @@ class D3Funnel {
 				const type = node.getAttribute('pathType') || '';
 
 				if (type === 'foreground') {
-					d3.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
+					select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
 				} else {
-					d3.select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
+					select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
 				}
 			}
 		}
@@ -941,11 +947,13 @@ class D3Funnel {
 
 	/**
 	 * @param {Object} data
+	 * @param {Number} groupIndex
+	 * @param {Array} nodes
 	 *
 	 * @return {void}
 	 */
-	onMouseOut(data) {
-		const children = d3.event.target.parentElement.childNodes;
+	onMouseOut(data, groupIndex, nodes) {
+		const children = nodes[0].parentElement.childNodes;
 
 		for (let i = 0; i < children.length; i++) {
 			// Restore original color for all paths of a block
@@ -956,9 +964,9 @@ class D3Funnel {
 
 				if (type === 'background') {
 					const backgroundColor = this.colorizer.shade(data.fill.raw, 0.3);
-					d3.select(node).attr('fill', backgroundColor);
+					select(node).attr('fill', backgroundColor);
 				} else {
-					d3.select(node).attr('fill', data.fill.actual);
+					select(node).attr('fill', data.fill.actual);
 				}
 			}
 		}
@@ -980,7 +988,7 @@ class D3Funnel {
 		const y = this.getTextY(paths);
 
 		const text = group.append('text')
-			.attr({
+			.attrs({
 				x,
 				y,
 				fill,
@@ -1019,7 +1027,7 @@ class D3Funnel {
 		lines.forEach((line, i) => {
 			const dy = i === 0 ? initialDy : lineHeight;
 
-			text.append('tspan').attr({ x, dy }).text(line);
+			text.append('tspan').attrs({ x, dy }).text(line);
 		});
 	}
 

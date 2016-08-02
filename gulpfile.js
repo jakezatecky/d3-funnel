@@ -6,6 +6,7 @@ const uglify = require('gulp-uglify');
 const header = require('gulp-header');
 const webpack = require('webpack-stream');
 const webpackConfig = require('./webpack.config.js');
+const testWebpackConfig = require('./webpack.test.config.js');
 const pkg = require('./package.json');
 
 const banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFullYear() %> */\n';
@@ -19,7 +20,7 @@ gulp.task('test-format', () =>
 
 gulp.task('compile-test', () =>
 	gulp.src(['./test/index.js'])
-		.pipe(webpack(webpackConfig))
+		.pipe(webpack(testWebpackConfig))
 		.pipe(gulp.dest('./test/compiled/'))
 );
 

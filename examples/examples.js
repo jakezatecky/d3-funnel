@@ -1,4 +1,4 @@
-/* global D3Funnel, $ */
+/* global D3Funnel */
 
 const data = {
 	normal: [

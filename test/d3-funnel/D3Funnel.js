@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import d3 from 'd3';
+import * as d3 from 'd3';
+import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
 import chai from 'chai';
 import spies from 'chai-spies';
 
@@ -87,13 +88,13 @@ describe('D3Funnel', () => {
 			it('should draw a chart on the identified target', () => {
 				getFunnel().draw(getBasicData());
 
-				assert.equal(1, getSvg()[0].length);
+				assert.equal(1, getSvg().nodes().length);
 			});
 
 			it('should draw when no options are specified', () => {
 				getFunnel().draw(getBasicData());
 
-				assert.equal(1, getSvg()[0].length);
+				assert.equal(1, getSvg().nodes().length);
 			});
 
 			it('should throw an error when the data is not an array', () => {
@@ -136,7 +137,7 @@ describe('D3Funnel', () => {
 					['Node D', 4],
 				]);
 
-				assert.equal(4, getSvg().selectAll('path')[0].length);
+				assert.equal(4, getSvg().selectAll('path').nodes().length);
 			});
 
 			it('should pass any row-specified formatted values to the label formatter', () => {
@@ -146,7 +147,7 @@ describe('D3Funnel', () => {
 					['Node C', [3, 'Three']],
 				]);
 
-				const texts = getSvg().selectAll('text')[0];
+				const texts = getSvg().selectAll('text').nodes();
 
 				assert.equal('Node A: One', d3.select(texts[0]).text());
 				assert.equal('Node B: 2', d3.select(texts[1]).text());
@@ -161,8 +162,8 @@ describe('D3Funnel', () => {
 					['D', 4, '#444'],
 				]);
 
-				const paths = getSvg().selectAll('path')[0];
-				const colorScale = d3.scale.category10().domain(d3.range(0, 10));
+				const paths = getSvg().selectAll('path').nodes();
+				const colorScale = scaleOrdinal(schemeCategory10).domain(d3.range(0, 10));
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
@@ -178,7 +179,7 @@ describe('D3Funnel', () => {
 					['D', 4, null, '#444'],
 				]);
 
-				const texts = getSvg().selectAll('text')[0];
+				const texts = getSvg().selectAll('text').nodes();
 
 				assert.equal('#111', d3.select(texts[0]).attr('fill'));
 				assert.equal('#222', d3.select(texts[1]).attr('fill'));
@@ -252,7 +253,7 @@ describe('D3Funnel', () => {
 				funnel.draw(getBasicData());
 				funnel.destroy();
 
-				assert.equal(0, getSvg()[0].length);
+				assert.equal(0, getSvg().nodes().length);
 			});
 		});
 	});
@@ -365,10 +366,10 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('path');
+				const paths = d3.selectAll('path').nodes();
 
-				assert.equal(150, paths[0][1].getBBox().width);
-				assert.equal(150, paths[0][2].getBBox().width);
+				assert.equal(150, paths[1].getBBox().width);
+				assert.equal(150, paths[2].getBBox().width);
 			});
 		});
 
@@ -384,10 +385,10 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('path');
+				const paths = d3.selectAll('path').nodes();
 
-				assert.equal(200, getPathTopWidth(d3.select(paths[0][0])));
-				assert.equal(100, getPathBottomWidth(d3.select(paths[0][1])));
+				assert.equal(200, getPathTopWidth(d3.select(paths[0])));
+				assert.equal(100, getPathBottomWidth(d3.select(paths[1])));
 			});
 
 			it('should draw the chart in a bottom-to-top arrangement when true', () => {
@@ -402,10 +403,10 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('path');
+				const paths = d3.selectAll('path').nodes();
 
-				assert.equal(100, getPathTopWidth(d3.select(paths[0][0])));
-				assert.equal(200, getPathBottomWidth(d3.select(paths[0][1])));
+				assert.equal(100, getPathTopWidth(d3.select(paths[0])));
+				assert.equal(200, getPathBottomWidth(d3.select(paths[1])));
 			});
 		});
 
@@ -419,7 +420,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				assert.equal(2, d3.selectAll('#funnel path')[0].length);
+				assert.equal(2, d3.selectAll('#funnel path').nodes().length);
 			});
 
 			it('should create a quadratic Bezier curve on each path', () => {
@@ -431,13 +432,13 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path');
+				const paths = d3.selectAll('#funnel path').nodes();
 
-				const quadraticPaths = paths.filter(function () {  // eslint-disable-line func-names
-					return d3.select(this).attr('d').indexOf('Q') > -1;
-				});
+				const quadraticPaths = paths.filter((path) =>
+					d3.select(path).attr('d').indexOf('Q') > -1
+				);
 
-				assert.equal(paths[0].length, quadraticPaths[0].length);
+				assert.equal(paths.length, quadraticPaths.length);
 			});
 		});
 
@@ -452,7 +453,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.equal(150, getPathHeight(d3.select(paths[0])));
 				assert.equal(150, getPathHeight(d3.select(paths[1])));
@@ -471,7 +472,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.equal(100, parseInt(getPathHeight(d3.select(paths[0])), 10));
 				assert.equal(200, parseInt(getPathHeight(d3.select(paths[1])), 10));
@@ -494,7 +495,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.equal(-1, d3.select(paths[3]).attr('d').indexOf('NaN'));
 			});
@@ -531,7 +532,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[1]))), 55);
@@ -554,7 +555,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[3]))), 74);
 				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[3]))), 74);
@@ -571,7 +572,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
 				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 40);
@@ -590,7 +591,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
 				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 200);
@@ -609,7 +610,7 @@ describe('D3Funnel', () => {
 				});
 
 				// draw 2 path for each data point
-				assert.equal(4, d3.selectAll('#funnel path')[0].length);
+				assert.equal(4, d3.selectAll('#funnel path').nodes().length);
 			});
 
 			it('should draw value overlay with overridden total count', () => {
@@ -625,11 +626,12 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('path');
-				const APathFullWidth = getPathTopWidth(d3.select(paths[0][0]));
-				const APathOverlayWidth = getPathTopWidth(d3.select(paths[0][1]));
-				const BPathFullWidth = getPathTopWidth(d3.select(paths[0][2]));
-				const BPathOverlayWidth = getPathTopWidth(d3.select(paths[0][3]));
+				const paths = d3.selectAll('path').nodes();
+
+				const APathFullWidth = getPathTopWidth(d3.select(paths[0]));
+				const APathOverlayWidth = getPathTopWidth(d3.select(paths[1]));
+				const BPathFullWidth = getPathTopWidth(d3.select(paths[2]));
+				const BPathOverlayWidth = getPathTopWidth(d3.select(paths[3]));
 
 				assert.equal(10, Math.round(APathOverlayWidth / APathFullWidth * 100));
 				assert.equal(20, Math.round(BPathOverlayWidth / BPathFullWidth * 100));
@@ -655,7 +657,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = getSvg().selectAll('path')[0];
+				const paths = getSvg().selectAll('path').nodes();
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
@@ -673,7 +675,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = getSvg().selectAll('path')[0];
+				const paths = getSvg().selectAll('path').nodes();
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
@@ -694,7 +696,7 @@ describe('D3Funnel', () => {
 				// due to a Webkit bug in the current PhantomJS; workaround is
 				// to select the known ID of the linearGradient element
 				// https://bugs.webkit.org/show_bug.cgi?id=83438
-				assert.equal(1, d3.selectAll('#funnel defs #d3-funnel-chart-0-gradient-0')[0].length);
+				assert.equal(1, d3.selectAll('#funnel defs #d3-funnel-chart-0-gradient-0').nodes().length);
 
 				assert.equal('url(#d3-funnel-chart-0-gradient-0)', d3.select('#funnel path').attr('fill'));
 			});
@@ -724,7 +726,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[0]))), 10);
 				assert.isAbove(parseFloat(getPathHeight(d3.select(paths[1]))), 10);
@@ -744,7 +746,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const paths = d3.selectAll('#funnel path')[0];
+				const paths = d3.selectAll('#funnel path').nodes();
 
 				assert.isBelow(parseFloat(getPathHeight(d3.select(paths[0]))), 290);
 			});
@@ -827,7 +829,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const tspans = d3.selectAll('#funnel text tspan')[0];
+				const tspans = d3.selectAll('#funnel text tspan').nodes();
 
 				assert.equal('Node', d3.select(tspans[0]).text());
 				assert.equal('1000', d3.select(tspans[1]).text());
@@ -843,7 +845,7 @@ describe('D3Funnel', () => {
 					},
 				});
 
-				const tspans = d3.selectAll('#funnel text tspan')[0];
+				const tspans = d3.selectAll('#funnel text tspan').nodes();
 
 				assert.equal(-20, d3.select(tspans[0]).attr('dy'));
 				assert.equal(20, d3.select(tspans[1]).attr('dy'));
