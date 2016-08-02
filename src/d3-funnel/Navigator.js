@@ -61,7 +61,7 @@ class Navigator {
 			},
 			p01: {
 				x: centerX,
-				y: prevHeight + curveHeight - 10,
+				y: prevHeight + (curveHeight - 10),
 			},
 			p02: {
 				x: prevRightX,
@@ -157,7 +157,7 @@ class Navigator {
 	 * @return {Number}
 	 */
 	getLinearInterpolation(p0, p1, t, axis) {
-		return p0[axis] + t * (p1[axis] - p0[axis]);
+		return p0[axis] + (t * (p1[axis] - p0[axis]));
 	}
 
 	/**
@@ -170,9 +170,9 @@ class Navigator {
 	 * @return {Number}
 	 */
 	getQuadraticInterpolation(p0, p1, p2, t, axis) {
-		return Math.pow(1 - t, 2) * p0[axis] +
-			2 * (1 - t) * t * p1[axis] +
-			Math.pow(t, 2) * p2[axis];
+		return (Math.pow(1 - t, 2) * p0[axis]) +
+			(2 * (1 - t) * t * p1[axis]) +
+			(Math.pow(t, 2) * p2[axis]);
 	}
 
 	/**
@@ -199,8 +199,8 @@ class Navigator {
 		if (isValueOverlay) {
 			const lengthTop = (prevRightX - prevLeftX);
 			const lengthBtm = (nextRightX - nextLeftX);
-			let rightSideTop = lengthTop * (ratio || 0) + prevLeftX;
-			let rightSideBtm = lengthBtm * (ratio || 0) + nextLeftX;
+			let rightSideTop = (lengthTop * (ratio || 0)) + prevLeftX;
+			let rightSideBtm = (lengthBtm * (ratio || 0)) + nextLeftX;
 
 			// Overlay should not be longer than the max length of the path
 			rightSideTop = Math.min(rightSideTop, lengthTop);

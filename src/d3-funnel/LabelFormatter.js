@@ -65,9 +65,12 @@ class LabelFormatter {
 		}
 
 		return this.expression
-			.split('{l}').join(label)
-			.split('{v}').join(value)
-			.split('{f}').join(formatted);
+			.split('{l}')
+			.join(label)
+			.split('{v}')
+			.join(value)
+			.split('{f}')
+			.join(formatted);
 	}
 
 	/**

@@ -5,6 +5,7 @@
 		"indent": [2, "tab"]
 	},
 	"env": {
+		"browser": true,
 		"mocha": true
 	}
 }

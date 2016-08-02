@@ -464,7 +464,7 @@ class D3Funnel {
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
 		if (this.minHeight !== 0) {
-			totalHeight = this.height - this.minHeight * this.blocks.length;
+			totalHeight = this.height - (this.minHeight * this.blocks.length);
 		}
 
 		let slopeHeight = this.height;
@@ -485,7 +485,7 @@ class D3Funnel {
 
 		// The slope will determine the where the x points on each block
 		// iteration
-		const slope = 2 * slopeHeight / (this.width - this.bottomWidth);
+		const slope = (2 * slopeHeight) / (this.width - this.bottomWidth);
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
@@ -502,7 +502,7 @@ class D3Funnel {
 
 				// Account for any curvature
 				if (this.isCurved) {
-					dy = dy - (this.curveHeight / this.blocks.length);
+					dy -= this.curveHeight / this.blocks.length;
 				}
 
 				// Given: y = mx + b
@@ -512,7 +512,7 @@ class D3Funnel {
 
 				// For pyramid, x_i = y_i - this.height / -slope
 				if (this.isInverted) {
-					nextLeftX = (prevHeight + dy - this.height) / (-1 * slope);
+					nextLeftX = ((prevHeight + dy) - this.height) / (-1 * slope);
 				}
 
 				// If bottomWidth is 0, adjust last x position (to circumvent
@@ -676,7 +676,7 @@ class D3Funnel {
 
 		// Create path from top-most block
 		const paths = blockPaths[0];
-		const topCurve = paths[1][1] + this.curveHeight - 10;
+		const topCurve = paths[1][1] + (this.curveHeight - 10);
 
 		const path = this.navigator.plot([
 			['M', leftX, paths[0][1]],
@@ -1033,7 +1033,7 @@ class D3Funnel {
 	 */
 	getTextY(paths) {
 		if (this.isCurved) {
-			return (paths[2][1] + paths[3][1]) / 2 + (this.curveHeight / this.blocks.length);
+			return ((paths[2][1] + paths[3][1]) / 2) + (this.curveHeight / this.blocks.length);
 		}
 
 		return (paths[1][1] + paths[2][1]) / 2;
