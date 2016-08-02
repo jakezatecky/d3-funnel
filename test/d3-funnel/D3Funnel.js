@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import * as d3 from 'd3';
-import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
 import chai from 'chai';
 import spies from 'chai-spies';
 
@@ -163,7 +162,7 @@ describe('D3Funnel', () => {
 				]);
 
 				const paths = getSvg().selectAll('path').nodes();
-				const colorScale = scaleOrdinal(schemeCategory10).domain(d3.range(0, 10));
+				const colorScale = d3.scaleOrdinal(d3.schemeCategory10).domain(d3.range(0, 10));
 
 				assert.equal('#111', d3.select(paths[0]).attr('fill'));
 				assert.equal('#222', d3.select(paths[1]).attr('fill'));
