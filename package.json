@@ -4,6 +4,13 @@
   "description": "A library for rendering SVG funnel charts using D3.js",
   "author": "Jake Zatecky",
   "license": "MIT",
+  "keywords": [
+    "d3",
+    "funnel",
+    "pyramid",
+    "svg",
+    "chart"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/jakezatecky/d3-funnel"
