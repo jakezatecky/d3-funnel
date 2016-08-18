@@ -783,7 +783,8 @@ class D3Funnel {
 					return;
 				}
 
-				target.on('click', this.onBlockClick);
+				target.style('cursor', 'pointer')
+					.on('click', this.onBlockClick);
 			});
 		}
 

@@ -908,6 +908,18 @@ describe('D3Funnel', () => {
 
 				d3.select('#funnel path').node().dispatchEvent(event);
 			});
+
+			it('should set the block style to `cursor: pointer` when non-null', () => {
+				getFunnel().draw(getBasicData(), {
+					events: {
+						click: {
+							block: () => {},
+						},
+					},
+				});
+
+				assert.equal('pointer', d3.select('#funnel path').style('cursor'));
+			});
 		});
 	});
 });

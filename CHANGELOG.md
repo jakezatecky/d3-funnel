@@ -1,3 +1,9 @@
+## v1.0.1 (TBA)
+
+### Bug Fixes
+
+* [#67]: Add `cursor: pointer` style to blocks when clickable
+
 ## v1.0.0 (August 2, 2016)
 
 This release breaks major backwards compatibility by upgrading D3 3.x to
