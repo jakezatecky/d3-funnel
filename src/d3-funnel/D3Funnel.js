@@ -418,7 +418,7 @@ class D3Funnel {
 				findingId = false;
 			}
 
-			this.autoId++;
+			this.autoId += 1;
 		}
 
 		return id;
@@ -929,10 +929,8 @@ class D3Funnel {
 	onMouseOver(data, groupIndex, nodes) {
 		const children = nodes[0].parentElement.childNodes;
 
-		for (let i = 0; i < children.length; i++) {
-			// Highlight all paths within one block
-			const node = children[i];
-
+		// Highlight all paths within one block
+		[].slice.call(children).forEach((node) => {
 			if (node.nodeName.toLowerCase() === 'path') {
 				const type = node.getAttribute('pathType') || '';
 
@@ -942,7 +940,7 @@ class D3Funnel {
 					select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
 				}
 			}
-		}
+		});
 	}
 
 	/**
@@ -955,10 +953,8 @@ class D3Funnel {
 	onMouseOut(data, groupIndex, nodes) {
 		const children = nodes[0].parentElement.childNodes;
 
-		for (let i = 0; i < children.length; i++) {
-			// Restore original color for all paths of a block
-			const node = children[i];
-
+		// Restore original color for all paths of a block
+		[].slice.call(children).forEach((node) => {
 			if (node.nodeName.toLowerCase() === 'path') {
 				const type = node.getAttribute('pathType') || '';
 
@@ -969,7 +965,7 @@ class D3Funnel {
 					select(node).attr('fill', data.fill.actual);
 				}
 			}
-		}
+		});
 	}
 
 	/**

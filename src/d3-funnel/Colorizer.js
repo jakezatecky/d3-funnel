@@ -141,9 +141,11 @@ class Colorizer {
 		const t = shade < 0 ? 0 : 255;
 		const p = shade < 0 ? shade * -1 : shade;
 
+		/* eslint-disable no-bitwise */
 		const R = f >> 16;
 		const G = (f >> 8) & 0x00FF;
 		const B = f & 0x0000FF;
+		/* eslint-enable */
 
 		const converted = 0x1000000 +
 			((Math.round((t - R) * p) + R) * 0x10000) +

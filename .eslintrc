@@ -2,7 +2,9 @@
 	"extends": "airbnb/base",
 	"parser": "babel-eslint",
 	"rules": {
-		"indent": [2, "tab"]
+		"class-methods-use-this": 0,
+		"indent": [2, "tab"],
+		"no-tabs": 0
 	},
 	"env": {
 		"browser": true,
