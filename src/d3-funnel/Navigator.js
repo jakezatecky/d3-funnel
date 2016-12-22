@@ -170,9 +170,9 @@ class Navigator {
 	 * @return {Number}
 	 */
 	getQuadraticInterpolation(p0, p1, p2, t, axis) {
-		return (Math.pow(1 - t, 2) * p0[axis]) +
+		return (((1 - t) ** 2) * p0[axis]) +
 			(2 * (1 - t) * t * p1[axis]) +
-			(Math.pow(t, 2) * p2[axis]);
+			((t ** 2) * p2[axis]);
 	}
 
 	/**
