@@ -4,6 +4,9 @@ const mocha = require('gulp-mocha-phantomjs');
 const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
 const header = require('gulp-header');
+const scsslint = require('gulp-scss-lint');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
 const webpack = require('webpack-stream');
 const webpackConfig = require('./webpack.config.js');
 const testWebpackConfig = require('./webpack.test.config.js');
@@ -46,6 +49,30 @@ gulp.task('build', ['test', 'compile-build'], () =>
 		.pipe(uglify())
 		.pipe(header(banner, { pkg }))
 		.pipe(gulp.dest('./dist/'))
+);
+
+gulp.task('build-examples-style', () =>
+	gulp.src('./examples/src/sass/**/*.scss')
+		.pipe(scsslint())
+		.pipe(scsslint.failReporter())
+		.pipe(sass({
+			outputStyle: 'expanded',
+		}).on('error', sass.logError))
+		.pipe(autoprefixer({
+			browsers: ['last 2 versions'],
+		}))
+		.pipe(gulp.dest('./examples/dist/css'))
+);
+
+gulp.task('build-examples-script', () =>
+	gulp.src(['./examples/src/js/index.js'])
+		.pipe(webpack(testWebpackConfig))
+		.pipe(gulp.dest('./examples/dist/js'))
+);
+
+gulp.task('build-examples', ['build-examples-style', 'build-examples-script'], () =>
+	gulp.src('./examples/src/index.html')
+		.pipe(gulp.dest('./examples/dist'))
 );
 
 gulp.task('watch', () =>

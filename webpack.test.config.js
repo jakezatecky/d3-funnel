@@ -1,6 +1,6 @@
 module.exports = {
 	output: {
-		filename: 'd3-funnel.js',
+		filename: 'index.js',
 		libraryTarget: 'umd',
 		library: 'D3Funnel',
 	},
