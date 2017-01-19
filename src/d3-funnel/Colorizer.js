@@ -42,16 +42,15 @@ class Colorizer {
 	 * @param {Array}  block
 	 * @param {Number} index
 	 * @param {string} type
-	 * @param {string} instanceId
 	 *
 	 * @return {Object}
 	 */
-	getBlockFill(block, index, type, instanceId) {
+	getBlockFill(block, index, type) {
 		const raw = this.getBlockRawFill(block, index);
 
 		return {
 			raw,
-			actual: this.getBlockActualFill(raw, index, type, instanceId),
+			actual: this.getBlockActualFill(raw, index, type),
 		};
 	}
 
