@@ -581,6 +581,8 @@ class D3Funnel {
 			nextRightX = prevRightX - dx;
 			nextHeight = prevHeight + dy;
 
+			this.blocks[i].height = dy;
+
 			// Expand outward if inverted
 			if (this.isInverted) {
 				nextLeftX = prevLeftX - dx;
