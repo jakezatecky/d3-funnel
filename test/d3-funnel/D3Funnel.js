@@ -228,7 +228,7 @@ describe('D3Funnel', () => {
 				const sandbox = document.querySelector('#sandbox');
 
 				// Add multiple IDs to the DOM
-				for (let i = 0; i < maxId; i++) {
+				for (let i = 0; i < maxId; i += 1) {
 					const span = document.createElement('span');
 
 					span.id = `d3-funnel-chart-${i}`;
@@ -433,8 +433,8 @@ describe('D3Funnel', () => {
 
 				const paths = d3.selectAll('#funnel path').nodes();
 
-				const quadraticPaths = paths.filter((path) =>
-					d3.select(path).attr('d').indexOf('Q') > -1
+				const quadraticPaths = paths.filter(path =>
+					d3.select(path).attr('d').indexOf('Q') > -1,
 				);
 
 				assert.equal(paths.length, quadraticPaths.length);
@@ -705,7 +705,7 @@ describe('D3Funnel', () => {
 
 				// Check for valid hex string
 				assert.isTrue(/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(
-					d3.select('#funnel path').attr('fill')
+					d3.select('#funnel path').attr('fill'),
 				));
 			});
 		});
