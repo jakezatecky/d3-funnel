@@ -32,4 +32,18 @@ describe('Colorizer', () => {
 			assert.equal('#ffffff', (new Colorizer()).shade(color, 0));
 		});
 	});
+
+	describe('hexToRg', () => {
+		it('should convert a hex value to its RGB value', () => {
+			const color = '#007fff';
+
+			assert.deepEqual({ R: 0, G: 127, B: 255 }, (new Colorizer()).hexToRgb(color));
+		});
+
+		it('should expand a three-character hex', () => {
+			const color = '#d33';
+
+			assert.deepEqual({ R: 221, G: 51, B: 51 }, (new Colorizer()).hexToRgb(color));
+		});
+	});
 });

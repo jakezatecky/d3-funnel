@@ -130,21 +130,9 @@ class Colorizer {
 	 * @return {string}
 	 */
 	shade(color, shade) {
-		let hex = color.slice(1);
-
-		if (hex.length === 3) {
-			hex = this.expandHex(hex);
-		}
-
-		const f = parseInt(hex, 16);
+		const { R, G, B } = this.hexToRgb(color);
 		const t = shade < 0 ? 0 : 255;
 		const p = shade < 0 ? shade * -1 : shade;
-
-		/* eslint-disable no-bitwise */
-		const R = f >> 16;
-		const G = (f >> 8) & 0x00FF;
-		const B = f & 0x0000FF;
-		/* eslint-enable */
 
 		const converted = 0x1000000 +
 			((Math.round((t - R) * p) + R) * 0x10000) +
@@ -152,6 +140,31 @@ class Colorizer {
 			(Math.round((t - B) * p) + B);
 
 		return `#${converted.toString(16).slice(1)}`;
+	}
+
+	/**
+	 * Convert a hex color to an RGB object.
+	 *
+	 * @param {string} color
+	 *
+	 * @returns {{R: Number, G: number, B: number}}
+	 */
+	hexToRgb(color) {
+		let hex = color.slice(1);
+
+		if (hex.length === 3) {
+			hex = this.expandHex(hex);
+		}
+
+		const f = parseInt(hex, 16);
+
+		/* eslint-disable no-bitwise */
+		const R = f >> 16;
+		const G = (f >> 8) & 0x00FF;
+		const B = f & 0x0000FF;
+		/* eslint-enable */
+
+		return { R, G, B };
 	}
 
 	/**
