@@ -513,6 +513,23 @@ describe('D3Funnel', () => {
 					},
 				});
 			});
+
+			it('should not generate NaN or Infinite values when zero', () => {
+				getFunnel().draw(getBasicData(), {
+					chart: {
+						height: 0,
+					},
+					block: {
+						dynamicHeight: true,
+					},
+				});
+
+				d3.selectAll('path').nodes().forEach((node) => {
+					const definition = String(d3.select(node).attr('d'));
+
+					assert.equal(false, definition.indexOf('NaN') > -1 || definition.indexOf('Infinity') > -1);
+				});
+			});
 		});
 
 		describe('block.dynamicSlope', () => {

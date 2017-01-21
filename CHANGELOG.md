@@ -3,6 +3,7 @@
 ### Bug Fixes
 
 * [#67]: Add missing `cursor: pointer` style to blocks when clickable
+* [#70]: Fix NaN and Infinity values in block paths when height is zero and `dynamicHeight: true`
 
 ## v1.0.0 (August 2, 2016)
 

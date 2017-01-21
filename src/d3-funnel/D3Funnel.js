@@ -535,6 +535,11 @@ class D3Funnel {
 					nextLeftX = prevLeftX;
 				}
 
+				// Prevent NaN or Infinite values (caused by zero heights)
+				if (isNaN(nextLeftX) || !isFinite(nextLeftX)) {
+					nextLeftX = 0;
+				}
+
 				// Calculate the shift necessary for both x points
 				dx = nextLeftX - prevLeftX;
 
