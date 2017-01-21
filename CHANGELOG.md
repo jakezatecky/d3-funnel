@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-* [#67]: Add `cursor: pointer` style to blocks when clickable
+* [#67]: Add missing `cursor: pointer` style to blocks when clickable
 
 ## v1.0.0 (August 2, 2016)
 
