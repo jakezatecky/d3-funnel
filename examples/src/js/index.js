@@ -1,5 +1,7 @@
 /* global _, D3Funnel */
 
+import D3Funnel from '../../../src/index';
+
 const settings = {
 	curved: {
 		chart: {
