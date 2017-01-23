@@ -486,9 +486,11 @@ class D3Funnel {
 			}
 		});
 
-		// The slope will determine the where the x points on each block
-		// iteration
-		const slope = (2 * slopeHeight) / (this.width - this.bottomWidth);
+		// The slope will determine the x points on each block iteration
+		// Given: slope = (y1 - y2) / (x1 - x2)
+		// (x1, y1) = (bottomLeftX, height)
+		// (x2, y2) = (0, 0)
+		const slope = slopeHeight / this.bottomLeftX;
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
