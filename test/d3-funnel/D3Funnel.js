@@ -370,6 +370,55 @@ describe('D3Funnel', () => {
 				assert.equal(150, paths[1].getBBox().width);
 				assert.equal(150, paths[2].getBBox().width);
 			});
+
+			it('should maintain chart.bottomWidth when combined with block.minHeight', () => {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+					['C', 3],
+				], {
+					chart: {
+						width: 450,
+						height: 100,
+						bottomWidth: 1 / 3,
+						bottomPinch: 1,
+					},
+					block: {
+						dynamicHeight: true,
+						minHeight: 20,
+					},
+				});
+
+				const paths = d3.selectAll('path').nodes();
+
+				assert.equal(150, paths[2].getBBox().width);
+			});
+
+			it('should maintain chart.bottomWidth when combined with block.dynamicHeight and curve.enabled', () => {
+				getFunnel().draw([
+					['A', 1],
+					['B', 2],
+					['C', 3],
+					['D', 4],
+				], {
+					chart: {
+						width: 320,
+						height: 400,
+						bottomWidth: 3 / 8,
+						bottomPinch: 1,
+						curve: {
+							enabled: true,
+						},
+					},
+					block: {
+						dynamicHeight: true,
+					},
+				});
+
+				const paths = d3.selectAll('path').nodes();
+
+				assert.equal(120, paths[4].getBBox().width);
+			});
 		});
 
 		describe('chart.inverted', () => {

@@ -474,17 +474,29 @@ class D3Funnel {
 
 		// Correct slope height if there are blocks being pinched (and thus
 		// requiring a sharper curve)
-		this.blocks.forEach((block, i) => {
-			if (this.bottomPinch > 0) {
+		if (this.bottomPinch > 0) {
+			this.blocks.forEach((block, i) => {
+				let height = (totalHeight * block.ratio);
+
+				// Add greedy minimum height
+				if (this.minHeight !== 0) {
+					height += this.minHeight;
+				}
+
+				// Account for any curvature
+				if (this.isCurved) {
+					height += this.curveHeight / this.blocks.length;
+				}
+
 				if (this.isInverted) {
 					if (i < this.bottomPinch) {
-						slopeHeight -= block.height;
+						slopeHeight -= height;
 					}
 				} else if (i >= this.blocks.length - this.bottomPinch) {
-					slopeHeight -= block.height;
+					slopeHeight -= height;
 				}
-			}
-		});
+			});
+		}
 
 		// The slope will determine the x points on each block iteration
 		// Given: slope = (y1 - y2) / (x1 - x2)
