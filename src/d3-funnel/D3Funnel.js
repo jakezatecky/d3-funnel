@@ -562,14 +562,14 @@ class D3Funnel {
 				}
 			}
 
-			// Make slope width proportional to block value decrease
-			if (this.dynamicSlope) {
+			// Make slope width proportional to change in block value
+			if (this.dynamicSlope && !this.isInverted) {
 				const nextBlockValue = this.blocks[i + 1] ?
 					this.blocks[i + 1].value :
 					block.value;
 
-				const widthPercent = 1 - (nextBlockValue / block.value);
-				dx = widthPercent * (centerX - prevLeftX);
+				const widthRatio = nextBlockValue / block.value;
+				dx = (1 - widthRatio) * (centerX - prevLeftX);
 			}
 
 			// Stop velocity for pinched blocks

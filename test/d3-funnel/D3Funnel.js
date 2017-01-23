@@ -605,7 +605,7 @@ describe('D3Funnel', () => {
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[3]))), 74);
 			});
 
-			it('should give last block top width equal to bottom widht', () => {
+			it('should make the last block top width equal to bottom width', () => {
 				getFunnel().draw([
 					['A', 100],
 					['B', 55],
@@ -641,25 +641,6 @@ describe('D3Funnel', () => {
 
 				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
 				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 40);
-			});
-
-			it('should use proportional widths when true', () => {
-				getFunnel().draw([
-					['A', 1],
-					['B', 2],
-				], {
-					chart: {
-						width: 100,
-					},
-					block: {
-						dynamicSlope: true,
-					},
-				});
-
-				const paths = d3.selectAll('#funnel path').nodes();
-
-				assert.equal(parseFloat(getPathTopWidth(d3.select(paths[0]))), 100);
-				assert.equal(parseFloat(getPathBottomWidth(d3.select(paths[1]))), 200);
 			});
 		});
 
