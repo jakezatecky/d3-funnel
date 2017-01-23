@@ -570,7 +570,7 @@ class D3Funnel {
 					// Revert back to normal velocity after pinch
 				} else {
 					// Revert velocity back to the initial if we are using
-					// static area's (prevents zero velocity if isInverted
+					// static heights (prevents zero velocity if isInverted
 					// and bottomPinch are non trivial and dynamicHeight is
 					// false)
 					if (!this.dynamicHeight) {
@@ -675,26 +675,19 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	drawTopOval(svg, blockPaths) {
-		let leftX = 0;
-		let rightX = this.width;
 		const centerX = this.width / 2;
-
-		if (this.isInverted) {
-			leftX = this.bottomLeftX;
-			rightX = this.width - this.bottomLeftX;
-		}
 
 		// Create path from top-most block
 		const paths = blockPaths[0];
 		const topCurve = paths[1][1] + (this.curveHeight - 10);
 
 		const path = this.navigator.plot([
-			['M', leftX, paths[0][1]],
+			['M', paths[0][0], paths[0][1]],
 			['Q', centerX, topCurve],
-			[' ', rightX, paths[2][1]],
-			['M', rightX, 10],
+			[' ', paths[2][0], paths[2][1]],
+			['M', paths[2][0], 10],
 			['Q', centerX, 0],
-			[' ', leftX, 10],
+			[' ', paths[0][0], 10],
 		]);
 
 		// Draw top oval
