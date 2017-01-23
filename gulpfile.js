@@ -76,7 +76,7 @@ gulp.task('build-examples', ['build-examples-style', 'build-examples-script'], (
 );
 
 gulp.task('watch', () =>
-	gulp.watch(['./src/d3-funnel/**/*.js'], ['build'])
+	gulp.watch(['./src/d3-funnel/**/*.js', './examples/src/**/*.js'], ['build-examples'])
 );
 
 gulp.task('default', ['build']);

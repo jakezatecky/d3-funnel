@@ -1,4 +1,4 @@
-/* global _, D3Funnel */
+/* global _ */
 
 import D3Funnel from '../../../src/index';
 
