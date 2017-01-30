@@ -47,6 +47,7 @@
     "webpack-stream": "^3.0.0"
   },
   "dependencies": {
+    "browser-sync": "^2.18.6",
     "d3": "^4.2.0",
     "d3-selection": "^1.0.1",
     "d3-selection-multi": "^1.0.0"

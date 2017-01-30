@@ -8,6 +8,7 @@ const scsslint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const webpack = require('webpack-stream');
+const browserSync = require('browser-sync').create();
 const webpackConfig = require('./webpack.config.js');
 const testWebpackConfig = require('./webpack.test.config.js');
 const pkg = require('./package.json');
@@ -62,18 +63,30 @@ gulp.task('build-examples-style', () =>
 			browsers: ['last 2 versions'],
 		}))
 		.pipe(gulp.dest('./examples/dist/css'))
+		.pipe(browserSync.stream())
 );
 
 gulp.task('build-examples-script', () =>
 	gulp.src(['./examples/src/js/index.js'])
 		.pipe(webpack(testWebpackConfig))
 		.pipe(gulp.dest('./examples/dist/js'))
+		.pipe(browserSync.stream())
 );
 
-gulp.task('build-examples', ['build-examples-style', 'build-examples-script'], () =>
+gulp.task('build-examples-html', () =>
 	gulp.src('./examples/src/index.html')
 		.pipe(gulp.dest('./examples/dist'))
+		.pipe(browserSync.stream())
 );
+
+gulp.task('examples', ['build-examples-style', 'build-examples-script', 'build-examples-html'], () => {
+	browserSync.init({ server: './examples/dist' });
+
+	gulp.watch(['./src/**/*.js', './examples/src/**/*.js'], ['build-examples-script']);
+	gulp.watch(['./examples/src/sass/**/*.scss'], ['build-examples-style']);
+	gulp.watch(['./examples/src/**/*.html'], ['build-examples-html']).on('change', browserSync.reload);
+});
+
 
 gulp.task('watch', () =>
 	gulp.watch(['./src/d3-funnel/**/*.js', './examples/src/**/*.js'], ['build-examples'])
