@@ -119,46 +119,37 @@ class D3Funnel {
 		const settings = this.getSettings(options);
 
 		this.id = this.generateUniqueId();
-		this.colorizer.setInstanceId(this.id);
 
 		// Set labels
-		this.label = settings.label;
-		this.labelFormatter.setFormat(this.label.format);
+		this.labelFormatter.setFormat(settings.label.format);
 
 		// Set color scales
+		this.colorizer.setInstanceId(this.id);
 		this.colorizer.setLabelFill(settings.label.fill);
 		this.colorizer.setScale(settings.block.fill.scale);
 
 		// Initialize funnel chart settings
-		this.width = settings.chart.width;
-		this.height = settings.chart.height;
-		this.bottomWidth = settings.chart.width * settings.chart.bottomWidth;
-		this.bottomPinch = settings.chart.bottomPinch;
-		this.isInverted = settings.chart.inverted;
-		this.isCurved = settings.chart.curve.enabled;
-		this.addValueOverlay = settings.block.barOverlay;
-		this.curveHeight = settings.chart.curve.height;
-		this.fillType = settings.block.fill.type;
-		this.hoverEffects = settings.block.highlight;
-		this.dynamicHeight = settings.block.dynamicHeight;
-		this.dynamicSlope = settings.block.dynamicSlope;
-		this.minHeight = settings.block.minHeight;
-		this.animation = settings.chart.animate;
-		this.totalCount = settings.chart.totalCount;
-
-		// Support for events
-		this.onBlockClick = settings.events.click.block;
+		this.settings = {
+			width: settings.chart.width,
+			height: settings.chart.height,
+			bottomWidth: settings.chart.width * settings.chart.bottomWidth,
+			bottomPinch: settings.chart.bottomPinch,
+			isInverted: settings.chart.inverted,
+			isCurved: settings.chart.curve.enabled,
+			addValueOverlay: settings.block.barOverlay,
+			curveHeight: settings.chart.curve.height,
+			animation: settings.chart.animate,
+			totalCount: settings.chart.totalCount,
+			fillType: settings.block.fill.type,
+			hoverEffects: settings.block.highlight,
+			dynamicHeight: settings.block.dynamicHeight,
+			dynamicSlope: settings.block.dynamicSlope,
+			minHeight: settings.block.minHeight,
+			label: settings.label,
+			onBlockClick: settings.events.click.block,
+		};
 
 		this.setBlocks(data);
-
-		// Calculate the bottom left x position
-		this.bottomLeftX = (this.width - this.bottomWidth) / 2;
-
-		// Change in x direction
-		this.dx = this.getDx();
-
-		// Change in y direction
-		this.dy = this.getDy();
 	}
 
 	/**
@@ -290,8 +281,8 @@ class D3Funnel {
 	 * @return {Number}
 	 */
 	getTotalCount(data) {
-		if (this.totalCount !== null) {
-			return this.totalCount || 0;
+		if (this.settings.totalCount !== null) {
+			return this.settings.totalCount || 0;
 		}
 
 		let total = 0;
@@ -323,8 +314,8 @@ class D3Funnel {
 				index,
 				ratio,
 				value: count,
-				height: this.height * ratio,
-				fill: this.colorizer.getBlockFill(block, index, this.fillType),
+				height: this.settings.height * ratio,
+				fill: this.colorizer.getBlockFill(block, index, this.settings.fillType),
 				label: {
 					raw: label,
 					formatted: this.labelFormatter.format(label, block[1]),
@@ -348,30 +339,6 @@ class D3Funnel {
 	}
 
 	/**
-	 * @return {Number}
-	 */
-	getDx() {
-		// Will be sharper if there is a pinch
-		if (this.bottomPinch > 0) {
-			return this.bottomLeftX / (this.blocks.length - this.bottomPinch);
-		}
-
-		return this.bottomLeftX / this.blocks.length;
-	}
-
-	/**
-	 * @return {Number}
-	 */
-	getDy() {
-		// Curved chart needs reserved pixels to account for curvature
-		if (this.isCurved) {
-			return (this.height - this.curveHeight) / this.blocks.length;
-		}
-
-		return this.height / this.blocks.length;
-	}
-
-	/**
 	 * Draw the chart onto the DOM.
 	 *
 	 * @return {void}
@@ -381,20 +348,20 @@ class D3Funnel {
 		this.svg = select(this.selector)
 			.append('svg')
 			.attr('id', this.id)
-			.attr('width', this.width)
-			.attr('height', this.height);
+			.attr('width', this.settings.width)
+			.attr('height', this.settings.height);
 
 		const newPaths = this.makePaths();
 		this.blockPaths = newPaths[0];
 		this.overlayPaths = newPaths[1];
 
 		// Define color gradients
-		if (this.fillType === 'gradient') {
+		if (this.settings.fillType === 'gradient') {
 			this.defineColorGradients(this.svg);
 		}
 
 		// Add top oval if curved
-		if (this.isCurved) {
+		if (this.settings.isCurved) {
 			this.drawTopOval(this.svg, this.blockPaths);
 		}
 
@@ -431,8 +398,16 @@ class D3Funnel {
 	 * @return {Array, Array}
 	 */
 	makePaths() {
+		// Calculate the important fixed positions
+		const bottomLeftX = (this.settings.width - this.settings.bottomWidth) / 2;
+		const centerX = this.settings.width / 2;
+
 		let paths = [];
 		let overlayPaths = [];
+
+		// Calculate change in x, y direction
+		this.dx = this.getDx(bottomLeftX);
+		this.dy = this.getDy();
 
 		// Initialize velocity
 		let dx = this.dx;
@@ -440,13 +415,13 @@ class D3Funnel {
 
 		// Initialize starting positions
 		let prevLeftX = 0;
-		let prevRightX = this.width;
+		let prevRightX = this.settings.width;
 		let prevHeight = 0;
 
 		// Start from the bottom for inverted
-		if (this.isInverted) {
-			prevLeftX = this.bottomLeftX;
-			prevRightX = this.width - this.bottomLeftX;
+		if (this.settings.isInverted) {
+			prevLeftX = bottomLeftX;
+			prevRightX = this.settings.width - bottomLeftX;
 		}
 
 		// Initialize next positions
@@ -454,45 +429,43 @@ class D3Funnel {
 		let nextRightX = 0;
 		let nextHeight = 0;
 
-		const centerX = this.width / 2;
-
 		// Move down if there is an initial curve
-		if (this.isCurved) {
-			prevHeight = this.curveHeight / 2;
+		if (this.settings.isCurved) {
+			prevHeight = this.settings.curveHeight / 2;
 		}
 
-		let totalHeight = this.height;
+		let totalHeight = this.settings.height;
 
 		// This is greedy in that the block will have a guaranteed height
 		// and the remaining is shared among the ratio, instead of being
 		// shared according to the remaining minus the guaranteed
-		if (this.minHeight !== 0) {
-			totalHeight = this.height - (this.minHeight * this.blocks.length);
+		if (this.settings.minHeight !== 0) {
+			totalHeight = this.settings.height - (this.settings.minHeight * this.blocks.length);
 		}
 
-		let slopeHeight = this.height;
+		let slopeHeight = this.settings.height;
 
 		// Correct slope height if there are blocks being pinched (and thus
 		// requiring a sharper curve)
-		if (this.bottomPinch > 0) {
+		if (this.settings.bottomPinch > 0) {
 			this.blocks.forEach((block, i) => {
 				let height = (totalHeight * block.ratio);
 
 				// Add greedy minimum height
-				if (this.minHeight !== 0) {
-					height += this.minHeight;
+				if (this.settings.minHeight !== 0) {
+					height += this.settings.minHeight;
 				}
 
 				// Account for any curvature
-				if (this.isCurved) {
-					height += this.curveHeight / this.blocks.length;
+				if (this.settings.isCurved) {
+					height += this.settings.curveHeight / this.blocks.length;
 				}
 
-				if (this.isInverted) {
-					if (i < this.bottomPinch) {
+				if (this.settings.isInverted) {
+					if (i < this.settings.bottomPinch) {
 						slopeHeight -= height;
 					}
-				} else if (i >= this.blocks.length - this.bottomPinch) {
+				} else if (i >= this.blocks.length - this.settings.bottomPinch) {
 					slopeHeight -= height;
 				}
 			});
@@ -502,50 +475,50 @@ class D3Funnel {
 		// Given: slope = (y1 - y2) / (x1 - x2)
 		// (x1, y1) = (bottomLeftX, height)
 		// (x2, y2) = (0, 0)
-		const slope = slopeHeight / this.bottomLeftX;
+		const slope = slopeHeight / bottomLeftX;
 
 		// Create the path definition for each funnel block
 		// Remember to loop back to the beginning point for a closed path
 		this.blocks.forEach((block, i) => {
 			// Make heights proportional to block weight
-			if (this.dynamicHeight) {
+			if (this.settings.dynamicHeight) {
 				// Slice off the height proportional to this block
 				dy = totalHeight * block.ratio;
 
 				// Add greedy minimum height
-				if (this.minHeight !== 0) {
-					dy += this.minHeight;
+				if (this.settings.minHeight !== 0) {
+					dy += this.settings.minHeight;
 				}
 
 				// Account for any curvature
-				if (this.isCurved) {
-					dy -= this.curveHeight / this.blocks.length;
+				if (this.settings.isCurved) {
+					dy -= this.settings.curveHeight / this.blocks.length;
 				}
 
 				// Given: y = mx + b
-				// Given: b = 0 (when funnel), b = this.height (when pyramid)
+				// Given: b = 0 (when funnel), b = this.settings.height (when pyramid)
 				// For funnel, x_i = y_i / slope
 				nextLeftX = (prevHeight + dy) / slope;
 
-				// For pyramid, x_i = y_i - this.height / -slope
-				if (this.isInverted) {
-					nextLeftX = ((prevHeight + dy) - this.height) / (-1 * slope);
+				// For pyramid, x_i = y_i - this.settings.height / -slope
+				if (this.settings.isInverted) {
+					nextLeftX = ((prevHeight + dy) - this.settings.height) / (-1 * slope);
 				}
 
 				// If bottomWidth is 0, adjust last x position (to circumvent
 				// errors associated with rounding)
-				if (this.bottomWidth === 0 && i === this.blocks.length - 1) {
+				if (this.settings.bottomWidth === 0 && i === this.blocks.length - 1) {
 					// For funnel, last position is the center
-					nextLeftX = this.width / 2;
+					nextLeftX = this.settings.width / 2;
 
 					// For pyramid, last position is the origin
-					if (this.isInverted) {
+					if (this.settings.isInverted) {
 						nextLeftX = 0;
 					}
 				}
 
 				// If bottomWidth is same as width, stop x velocity
-				if (this.bottomWidth === this.width) {
+				if (this.settings.bottomWidth === this.settings.width) {
 					nextLeftX = prevLeftX;
 				}
 
@@ -557,13 +530,13 @@ class D3Funnel {
 				// Calculate the shift necessary for both x points
 				dx = nextLeftX - prevLeftX;
 
-				if (this.isInverted) {
+				if (this.settings.isInverted) {
 					dx = prevLeftX - nextLeftX;
 				}
 			}
 
 			// Make slope width proportional to change in block value
-			if (this.dynamicSlope && !this.isInverted) {
+			if (this.settings.dynamicSlope && !this.settings.isInverted) {
 				const nextBlockValue = this.blocks[i + 1] ?
 					this.blocks[i + 1].value :
 					block.value;
@@ -573,11 +546,11 @@ class D3Funnel {
 			}
 
 			// Stop velocity for pinched blocks
-			if (this.bottomPinch > 0) {
+			if (this.settings.bottomPinch > 0) {
 				// Check if we've reached the bottom of the pinch
 				// If so, stop changing on x
-				if (!this.isInverted) {
-					if (i >= this.blocks.length - this.bottomPinch) {
+				if (!this.settings.isInverted) {
+					if (i >= this.blocks.length - this.settings.bottomPinch) {
 						dx = 0;
 					}
 					// Pinch at the first blocks relating to the bottom pinch
@@ -587,11 +560,11 @@ class D3Funnel {
 					// static heights (prevents zero velocity if isInverted
 					// and bottomPinch are non trivial and dynamicHeight is
 					// false)
-					if (!this.dynamicHeight) {
+					if (!this.settings.dynamicHeight) {
 						dx = this.dx;
 					}
 
-					dx = i < this.bottomPinch ? 0 : dx;
+					dx = i < this.settings.bottomPinch ? 0 : dx;
 				}
 			}
 
@@ -603,7 +576,7 @@ class D3Funnel {
 			this.blocks[i].height = dy;
 
 			// Expand outward if inverted
-			if (this.isInverted) {
+			if (this.settings.isInverted) {
 				nextLeftX = prevLeftX - dx;
 				nextRightX = prevRightX + dx;
 			}
@@ -616,20 +589,20 @@ class D3Funnel {
 				nextLeftX,
 				nextRightX,
 				nextHeight,
-				curveHeight: this.curveHeight,
+				curveHeight: this.settings.curveHeight,
 				ratio: block.ratio,
 			};
 
-			if (this.isCurved) {
+			if (this.settings.isCurved) {
 				paths = [...paths, this.navigator.makeCurvedPaths(dimensions)];
 
-				if (this.addValueOverlay) {
+				if (this.settings.addValueOverlay) {
 					overlayPaths = [...overlayPaths, this.navigator.makeCurvedPaths(dimensions, true)];
 				}
 			} else {
 				paths = [...paths, this.navigator.makeStraightPaths(dimensions)];
 
-				if (this.addValueOverlay) {
+				if (this.settings.addValueOverlay) {
 					overlayPaths = [...overlayPaths, this.navigator.makeStraightPaths(dimensions, true)];
 				}
 			}
@@ -641,6 +614,32 @@ class D3Funnel {
 		});
 
 		return [paths, overlayPaths];
+	}
+
+	/**
+	 * @param {Number} bottomLeftX
+	 *
+	 * @return {Number}
+	 */
+	getDx(bottomLeftX) {
+		// Will be sharper if there is a pinch
+		if (this.settings.bottomPinch > 0) {
+			return bottomLeftX / (this.blocks.length - this.settings.bottomPinch);
+		}
+
+		return bottomLeftX / this.blocks.length;
+	}
+
+	/**
+	 * @return {Number}
+	 */
+	getDy() {
+		// Curved chart needs reserved pixels to account for curvature
+		if (this.settings.isCurved) {
+			return (this.settings.height - this.settings.curveHeight) / this.blocks.length;
+		}
+
+		return this.settings.height / this.blocks.length;
 	}
 
 	/**
@@ -689,19 +688,19 @@ class D3Funnel {
 	 * @return {void}
 	 */
 	drawTopOval(svg, blockPaths) {
-		const centerX = this.width / 2;
+		const centerX = this.settings.width / 2;
 
 		// Create path from top-most block
 		const paths = blockPaths[0];
-		const topCurve = paths[1][1] + (this.curveHeight / 2);
+		const topCurve = paths[1][1] + (this.settings.curveHeight / 2);
 
 		const path = this.navigator.plot([
 			['M', paths[0][0], paths[0][1]],
 			['Q', centerX, topCurve],
 			[' ', paths[2][0], paths[2][1]],
-			['M', paths[2][0], this.curveHeight / 2],
+			['M', paths[2][0], this.settings.curveHeight / 2],
 			['Q', centerX, 0],
-			[' ', paths[0][0], this.curveHeight / 2],
+			[' ', paths[0][0], this.settings.curveHeight / 2],
 		]);
 
 		// Draw top oval
@@ -734,7 +733,7 @@ class D3Funnel {
 		let overlayPath = null;
 		let pathColor = this.blocks[index].fill.actual;
 
-		if (this.addValueOverlay) {
+		if (this.settings.addValueOverlay) {
 			overlayPath = this.getOverlayPath(group, index);
 			this.attachData(overlayPath, this.blocks[index]);
 
@@ -747,9 +746,9 @@ class D3Funnel {
 		}
 
 		// Add animation components
-		if (this.animation !== 0) {
+		if (this.settings.animation !== 0) {
 			path.transition()
-				.duration(this.animation)
+				.duration(this.settings.animation)
 				.ease(easeLinear)
 				.attr('fill', pathColor)
 				.attr('d', this.getPathDefinition(index))
@@ -763,12 +762,12 @@ class D3Funnel {
 		}
 
 		// Add path overlay
-		if (this.addValueOverlay) {
+		if (this.settings.addValueOverlay) {
 			path.attr('stroke', this.blocks[index].fill.raw);
 
-			if (this.animation !== 0) {
+			if (this.settings.animation !== 0) {
 				overlayPath.transition()
-					.duration(this.animation)
+					.duration(this.settings.animation)
 					.ease(easeLinear)
 					.attr('fill', this.blocks[index].fill.actual)
 					.attr('d', this.getOverlayPathDefinition(index));
@@ -779,7 +778,7 @@ class D3Funnel {
 		}
 
 		// Add the hover events
-		if (this.hoverEffects) {
+		if (this.settings.hoverEffects) {
 			[path, overlayPath].forEach((target) => {
 				if (!target) {
 					return;
@@ -791,14 +790,14 @@ class D3Funnel {
 		}
 
 		// Add block click event
-		if (this.onBlockClick !== null) {
+		if (this.settings.onBlockClick !== null) {
 			[path, overlayPath].forEach((target) => {
 				if (!target) {
 					return;
 				}
 
 				target.style('cursor', 'pointer')
-					.on('click', this.onBlockClick);
+					.on('click', this.settings.onBlockClick);
 			});
 		}
 
@@ -814,7 +813,7 @@ class D3Funnel {
 	getBlockPath(group, index) {
 		const path = group.append('path');
 
-		if (this.animation !== 0) {
+		if (this.settings.animation !== 0) {
 			this.addBeforeTransition(path, index, false);
 		}
 
@@ -830,7 +829,7 @@ class D3Funnel {
 	getOverlayPath(group, index) {
 		const path = group.append('path');
 
-		if (this.animation !== 0) {
+		if (this.settings.animation !== 0) {
 			this.addBeforeTransition(path, index, true);
 		}
 
@@ -854,7 +853,7 @@ class D3Funnel {
 
 		// Construct the top of the trapezoid and leave the other elements
 		// hovering around to expand downward on animation
-		if (!this.isCurved) {
+		if (!this.settings.isCurved) {
 			beforePath = this.navigator.plot([
 				['M', paths[0][0], paths[0][1]],
 				['L', paths[1][0], paths[1][1]],
@@ -874,7 +873,7 @@ class D3Funnel {
 		}
 
 		// Use previous fill color, if available
-		if (this.fillType === 'solid' && index > 0) {
+		if (this.settings.fillType === 'solid' && index > 0) {
 			beforeFill = this.blocks[index - 1].fill.actual;
 			// Otherwise use current background
 		} else {
@@ -994,7 +993,8 @@ class D3Funnel {
 		const formattedLabel = this.blocks[index].label.formatted;
 		const fill = this.blocks[index].label.color;
 
-		const x = this.width / 2;  // Center the text
+		// Center the text
+		const x = this.settings.width / 2;
 		const y = this.getTextY(paths);
 
 		const text = group.append('text')
@@ -1002,15 +1002,15 @@ class D3Funnel {
 				x,
 				y,
 				fill,
-				'font-size': this.label.fontSize,
+				'font-size': this.settings.label.fontSize,
 				'text-anchor': 'middle',
 				'dominant-baseline': 'middle',
 				'pointer-events': 'none',
 			});
 
 		// Add font-family, if exists
-		if (this.label.fontFamily !== null) {
-			text.attr('font-family', this.label.fontFamily);
+		if (this.settings.label.fontFamily !== null) {
+			text.attr('font-family', this.settings.label.fontFamily);
 		}
 
 		this.addLabelLines(text, formattedLabel, x);
@@ -1050,8 +1050,10 @@ class D3Funnel {
 	 * @return {Number}
 	 */
 	getTextY(paths) {
-		if (this.isCurved) {
-			return ((paths[2][1] + paths[3][1]) / 2) + ((1.5 * this.curveHeight) / this.blocks.length);
+		const { isCurved, curveHeight } = this.settings;
+
+		if (isCurved) {
+			return ((paths[2][1] + paths[3][1]) / 2) + ((1.5 * curveHeight) / this.blocks.length);
 		}
 
 		return (paths[1][1] + paths[2][1]) / 2;
