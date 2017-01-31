@@ -1,4 +1,4 @@
-## v1.0.1 (TBA)
+## v1.0.1 (January 30, 2017)
 
 ### Bug Fixes
 
