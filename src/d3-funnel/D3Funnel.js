@@ -5,6 +5,7 @@ import 'd3-selection-multi';
 import Colorizer from './Colorizer';
 import LabelFormatter from './LabelFormatter';
 import Navigator from './Navigator';
+import uniqueDomId from './uniqueDomId';
 import Utils from './Utils';
 
 class D3Funnel {
@@ -60,7 +61,6 @@ class D3Funnel {
 		this.navigator = new Navigator();
 
 		this.id = null;
-		this.autoId = 0;
 
 		// Bind event handlers
 		this.onMouseOver = this.onMouseOver.bind(this);
@@ -118,7 +118,7 @@ class D3Funnel {
 
 		const settings = this.getSettings(options);
 
-		this.id = this.generateUniqueId();
+		this.id = uniqueDomId('d3-funnel-chart');
 
 		// Set labels
 		this.labelFormatter.setFormat(settings.label.format);

@@ -17,6 +17,10 @@ function getSvg() {
 	return d3.select('#funnel').selectAll('svg');
 }
 
+function getSvgId() {
+	return document.querySelector('#funnel svg').id;
+}
+
 function getBasicData() {
 	return [['Node', 1000]];
 }
@@ -220,15 +224,22 @@ describe('D3Funnel', () => {
 			it('should assign a unique ID upon draw', () => {
 				getFunnel().draw(getBasicData());
 
-				assert.isTrue(document.getElementById('d3-funnel-chart-0') !== null);
+				const id = getSvgId();
+
+				assert.isTrue(document.querySelectorAll(`#${id}`).length === 1);
 			});
 
 			it('should skip any IDs that exist on the dom', () => {
-				const maxId = 5;
+				getFunnel().draw(getBasicData());
+
+				// Get the last ID generated
+				const idParts = getSvgId().split('-');
+				const lastId = parseInt(idParts[idParts.length - 1], 10);
+
 				const sandbox = document.querySelector('#sandbox');
 
 				// Add multiple IDs to the DOM
-				for (let i = 0; i < maxId; i += 1) {
+				for (let i = lastId; i < lastId + 5; i += 1) {
 					const span = document.createElement('span');
 
 					span.id = `d3-funnel-chart-${i}`;
@@ -238,7 +249,7 @@ describe('D3Funnel', () => {
 
 				getFunnel().draw(getBasicData());
 
-				const chart = document.getElementById('d3-funnel-chart-5');
+				const chart = document.getElementById(`d3-funnel-chart-${lastId + 5}`);
 
 				assert.isTrue(chart !== null);
 				assert.equal('svg', chart.tagName);
@@ -738,13 +749,15 @@ describe('D3Funnel', () => {
 					},
 				});
 
+				const id = getSvgId();
+
 				// Cannot try to re-select the camelCased linearGradient element
 				// due to a Webkit bug in the current PhantomJS; workaround is
 				// to select the known ID of the linearGradient element
 				// https://bugs.webkit.org/show_bug.cgi?id=83438
-				assert.equal(1, d3.selectAll('#funnel defs #d3-funnel-chart-0-gradient-0').nodes().length);
+				assert.equal(1, d3.selectAll(`#funnel defs #${id}-gradient-0`).nodes().length);
 
-				assert.equal('url(#d3-funnel-chart-0-gradient-0)', d3.select('#funnel path').attr('fill'));
+				assert.equal(`url(#${id}-gradient-0)`, d3.select('#funnel path').attr('fill'));
 			});
 
 			it('should use solid fill when not set to \'gradient\'', () => {
