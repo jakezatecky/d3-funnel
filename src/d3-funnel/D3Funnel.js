@@ -458,7 +458,7 @@ class D3Funnel {
 
 		// Move down if there is an initial curve
 		if (this.isCurved) {
-			prevHeight = 10;
+			prevHeight = this.curveHeight / 2;
 		}
 
 		let totalHeight = this.height;
@@ -693,15 +693,15 @@ class D3Funnel {
 
 		// Create path from top-most block
 		const paths = blockPaths[0];
-		const topCurve = paths[1][1] + (this.curveHeight - 10);
+		const topCurve = paths[1][1] + (this.curveHeight / 2);
 
 		const path = this.navigator.plot([
 			['M', paths[0][0], paths[0][1]],
 			['Q', centerX, topCurve],
 			[' ', paths[2][0], paths[2][1]],
-			['M', paths[2][0], 10],
+			['M', paths[2][0], this.curveHeight / 2],
 			['Q', centerX, 0],
-			[' ', paths[0][0], 10],
+			[' ', paths[0][0], this.curveHeight / 2],
 		]);
 
 		// Draw top oval
