@@ -1051,7 +1051,7 @@ class D3Funnel {
 	 */
 	getTextY(paths) {
 		if (this.isCurved) {
-			return ((paths[2][1] + paths[3][1]) / 2) + (this.curveHeight / this.blocks.length);
+			return ((paths[2][1] + paths[3][1]) / 2) + ((1.5 * this.curveHeight) / this.blocks.length);
 		}
 
 		return (paths[1][1] + paths[2][1]) / 2;
