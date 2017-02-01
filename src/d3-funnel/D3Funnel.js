@@ -370,28 +370,6 @@ class D3Funnel {
 	}
 
 	/**
-	 * Return a unique ID for the funnel on the document.
-	 *
-	 * @return {string}
-	 */
-	generateUniqueId() {
-		let findingId = true;
-		let id = '';
-
-		while (findingId) {
-			id = `d3-funnel-chart-${this.autoId}`;
-
-			if (document.getElementById(id) === null) {
-				findingId = false;
-			}
-
-			this.autoId += 1;
-		}
-
-		return id;
-	}
-
-	/**
 	 * Create the paths to be used to define the discrete funnel blocks and
 	 * returns the results in an array.
 	 *
