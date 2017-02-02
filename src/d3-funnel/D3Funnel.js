@@ -241,7 +241,7 @@ class D3Funnel {
 	castDimensions({ chart }, containerDimensions) {
 		const dimensions = {};
 
-		['width', 'height'].forEach((direction) => {
+		Object.keys(containerDimensions).forEach((direction) => {
 			const chartDimension = chart[direction];
 			const containerDimension = containerDimensions[direction];
 
