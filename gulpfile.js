@@ -7,7 +7,8 @@ const header = require('gulp-header');
 const scsslint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
-const webpack = require('webpack-stream');
+const webpack = require('webpack');
+const webpackStream = require('webpack-stream');
 const browserSync = require('browser-sync').create();
 const webpackConfig = require('./webpack.config.js');
 const testWebpackConfig = require('./webpack.test.config.js');
@@ -24,7 +25,7 @@ gulp.task('test-format', () =>
 
 gulp.task('compile-test', () =>
 	gulp.src(['./test/index.js'])
-		.pipe(webpack(testWebpackConfig))
+		.pipe(webpackStream(testWebpackConfig, webpack))
 		.pipe(gulp.dest('./test/compiled/'))
 );
 
@@ -37,7 +38,7 @@ gulp.task('test', ['test-format', 'test-mocha']);
 
 gulp.task('compile-build', () =>
 	gulp.src(['./src/index.js'])
-		.pipe(webpack(webpackConfig))
+		.pipe(webpackStream(webpackConfig, webpack))
 		.pipe(gulp.dest('./compiled/'))
 );
 
@@ -68,7 +69,7 @@ gulp.task('build-examples-style', () =>
 
 gulp.task('build-examples-script', () =>
 	gulp.src(['./examples/src/js/index.js'])
-		.pipe(webpack(testWebpackConfig))
+		.pipe(webpackStream(testWebpackConfig, webpack))
 		.pipe(gulp.dest('./examples/dist/js'))
 		.pipe(browserSync.stream())
 );
