@@ -1,7 +1,7 @@
 let autoId = 0;
 
 /**
- * Return a unique ID for the funnel on the document.
+ * Return a unique DOM ID for an element on the document.
  *
  * @param {string} prefix
  *
