@@ -228,32 +228,6 @@ describe('D3Funnel', () => {
 
 				assert.isTrue(document.querySelectorAll(`#${id}`).length === 1);
 			});
-
-			it('should skip any IDs that exist on the dom', () => {
-				getFunnel().draw(getBasicData());
-
-				// Get the last ID generated
-				const idParts = getSvgId().split('-');
-				const lastId = parseInt(idParts[idParts.length - 1], 10);
-
-				const sandbox = document.querySelector('#sandbox');
-
-				// Add multiple IDs to the DOM
-				for (let i = lastId; i < lastId + 5; i += 1) {
-					const span = document.createElement('span');
-
-					span.id = `d3-funnel-chart-${i}`;
-
-					sandbox.appendChild(span);
-				}
-
-				getFunnel().draw(getBasicData());
-
-				const chart = document.getElementById(`d3-funnel-chart-${lastId + 5}`);
-
-				assert.isTrue(chart !== null);
-				assert.equal('svg', chart.tagName);
-			});
 		});
 
 		describe('destroy', () => {

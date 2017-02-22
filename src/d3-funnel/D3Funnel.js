@@ -1,3 +1,4 @@
+import shortid from 'shortid';
 import { easeLinear, range, scaleOrdinal, schemeCategory10 } from 'd3';
 import { select } from 'd3-selection';
 import 'd3-selection-multi';
@@ -5,7 +6,6 @@ import 'd3-selection-multi';
 import Colorizer from './Colorizer';
 import LabelFormatter from './LabelFormatter';
 import Navigator from './Navigator';
-import uniqueDomId from './uniqueDomId';
 import Utils from './Utils';
 
 class D3Funnel {
@@ -118,7 +118,7 @@ class D3Funnel {
 
 		const settings = this.getSettings(options);
 
-		this.id = uniqueDomId('d3-funnel-chart');
+		this.id = `d3-funnel-${shortid.generate()}`;
 
 		// Set labels
 		this.labelFormatter.setFormat(settings.label.format);
