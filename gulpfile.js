@@ -16,33 +16,33 @@ const pkg = require('./package.json');
 
 const banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFullYear() %> */\n';
 
-gulp.task('test-format', () =>
+gulp.task('test-format', () => (
 	gulp.src(['./src/d3-funnel/**/*.js'])
 		.pipe(eslint())
 		.pipe(eslint.format())
 		.pipe(eslint.failOnError())
-);
+));
 
-gulp.task('compile-test', () =>
+gulp.task('compile-test', () => (
 	gulp.src(['./test/index.js'])
 		.pipe(webpackStream(testWebpackConfig, webpack))
 		.pipe(gulp.dest('./test/compiled/'))
-);
+));
 
-gulp.task('test-mocha', ['compile-test'], () =>
+gulp.task('test-mocha', ['compile-test'], () => (
 	gulp.src(['test/test.html'])
 		.pipe(mocha({ reporter: 'spec' }))
-);
+));
 
 gulp.task('test', ['test-format', 'test-mocha']);
 
-gulp.task('compile-build', () =>
+gulp.task('compile-build', () => (
 	gulp.src(['./src/index.js'])
 		.pipe(webpackStream(webpackConfig, webpack))
 		.pipe(gulp.dest('./compiled/'))
-);
+));
 
-gulp.task('build', ['test', 'compile-build'], () =>
+gulp.task('build', ['test', 'compile-build'], () => (
 	gulp.src(['./compiled/d3-funnel.js'])
 		.pipe(gulp.dest('./dist/'))
 		.pipe(rename({
@@ -51,9 +51,9 @@ gulp.task('build', ['test', 'compile-build'], () =>
 		.pipe(uglify())
 		.pipe(header(banner, { pkg }))
 		.pipe(gulp.dest('./dist/'))
-);
+));
 
-gulp.task('build-examples-style', () =>
+gulp.task('build-examples-style', () => (
 	gulp.src('./examples/src/sass/**/*.scss')
 		.pipe(scsslint())
 		.pipe(scsslint.failReporter())
@@ -65,20 +65,20 @@ gulp.task('build-examples-style', () =>
 		}))
 		.pipe(gulp.dest('./examples/dist/css'))
 		.pipe(browserSync.stream())
-);
+));
 
-gulp.task('build-examples-script', () =>
+gulp.task('build-examples-script', () => (
 	gulp.src(['./examples/src/js/index.js'])
 		.pipe(webpackStream(testWebpackConfig, webpack))
 		.pipe(gulp.dest('./examples/dist/js'))
 		.pipe(browserSync.stream())
-);
+));
 
-gulp.task('build-examples-html', () =>
+gulp.task('build-examples-html', () => (
 	gulp.src('./examples/src/index.html')
 		.pipe(gulp.dest('./examples/dist'))
 		.pipe(browserSync.stream())
-);
+));
 
 gulp.task('examples', ['build-examples-style', 'build-examples-script', 'build-examples-html'], () => {
 	browserSync.init({ server: './examples/dist' });
