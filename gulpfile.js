@@ -88,9 +88,4 @@ gulp.task('examples', ['build-examples-style', 'build-examples-script', 'build-e
 	gulp.watch(['./examples/src/**/*.html'], ['build-examples-html']).on('change', browserSync.reload);
 });
 
-
-gulp.task('watch', () =>
-	gulp.watch(['./src/d3-funnel/**/*.js', './examples/src/**/*.js'], ['build-examples'])
-);
-
 gulp.task('default', ['build']);
