@@ -36,7 +36,7 @@ const settings = {
 		events: {
 			click: {
 				block(d) {
-					alert(`<${d.label.raw} selected.`);
+					alert(d.label.raw);
 				},
 			},
 		},
