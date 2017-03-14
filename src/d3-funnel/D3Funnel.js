@@ -21,6 +21,7 @@ class D3Funnel {
 			curve: {
 				enabled: false,
 				height: 20,
+				shade: -0.4,
 			},
 			totalCount: null,
 		},
@@ -136,8 +137,9 @@ class D3Funnel {
 			bottomPinch: settings.chart.bottomPinch,
 			isInverted: settings.chart.inverted,
 			isCurved: settings.chart.curve.enabled,
-			addValueOverlay: settings.block.barOverlay,
 			curveHeight: settings.chart.curve.height,
+			curveShade: settings.chart.curve.shade,
+			addValueOverlay: settings.block.barOverlay,
 			animation: settings.chart.animate,
 			totalCount: settings.chart.totalCount,
 			fillType: settings.block.fill.type,
@@ -683,7 +685,7 @@ class D3Funnel {
 
 		// Draw top oval
 		svg.append('path')
-			.attr('fill', this.colorizer.shade(this.blocks[0].fill.raw, -0.4))
+			.attr('fill', this.colorizer.shade(this.blocks[0].fill.raw, this.settings.curveShade))
 			.attr('d', path);
 	}
 
