@@ -1,5 +1,4 @@
-/* global _ */
-
+import { merge } from 'lodash';
 import D3Funnel from '../../../src/index';
 
 const settings = {
@@ -101,7 +100,7 @@ function onChange() {
 
 	checkboxes.forEach((checkbox) => {
 		if (checkbox.checked) {
-			options = _.merge(options, settings[checkbox.value]);
+			options = merge(options, settings[checkbox.value]);
 		}
 	});
 
