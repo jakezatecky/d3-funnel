@@ -41,7 +41,8 @@ import D3Funnel from 'd3-funnel';
 # Usage
 
 To use this library, you must create a container element and instantiate a new
-funnel chart:
+funnel chart. By default, the chart will assume the width and height of the
+parent container:
 
 ``` html
 <div id="funnel"></div>
