@@ -805,6 +805,24 @@ describe('D3Funnel', () => {
 			});
 		});
 
+		describe('label.enabled', () => {
+			it('should render block labels when set to true', () => {
+				getFunnel().draw(getBasicData(), {
+					label: { enabled: true },
+				});
+
+				assert.equal(1, d3.selectAll('#funnel text').size());
+			});
+
+			it('should not render block labels when set to false', () => {
+				getFunnel().draw(getBasicData(), {
+					label: { enabled: false },
+				});
+
+				assert.equal(0, d3.selectAll('#funnel text').size());
+			});
+		});
+
 		describe('label.fontFamily', () => {
 			it('should set the label\'s font size to the specified amount', () => {
 				getFunnel().draw(getBasicData(), {

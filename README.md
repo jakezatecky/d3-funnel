@@ -86,6 +86,7 @@ parent container:
 | `block.fill.type`      | Either `'solid'` or `'gradient'`.                                         | string   | `'solid'`               |
 | `block.minHeight`      | The minimum pixel height of a block.                                      | number   | `0`                     |
 | `block.highlight`      | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
+| `label.enabled`        | Whether the block labels should be displayed.                             | bool     | `true`                  |
 | `label.fontFamily`     | Any valid font family for the labels.                                     | string   | `null`                  |
 | `label.fontSize`       | Any valid font size for the labels.                                       | string   | `'14px'`                |
 | `label.fill`           | Any valid hex color for the label color.                                  | string   | `'#fff'`                |

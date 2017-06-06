@@ -37,6 +37,7 @@ class D3Funnel {
 			highlight: false,
 		},
 		label: {
+			enabled: true,
 			fontFamily: null,
 			fontSize: '14px',
 			fill: '#fff',
@@ -781,7 +782,9 @@ class D3Funnel {
 			});
 		}
 
-		this.addBlockLabel(group, index);
+		if (this.settings.label.enabled) {
+			this.addBlockLabel(group, index);
+		}
 	}
 
 	/**
@@ -970,12 +973,24 @@ class D3Funnel {
 	addBlockLabel(group, index) {
 		const paths = this.blockPaths[index];
 
-		const formattedLabel = this.blocks[index].label.formatted;
-		const fill = this.blocks[index].label.color;
-
 		// Center the text
 		const x = this.settings.width / 2;
 		const y = this.getTextY(paths);
+
+		this.addLabel(group, this.blocks[index], x, y);
+	}
+
+	/**
+	 * @param {Object} group
+	 * @param {Object} block
+	 * @param {Number} x
+	 * @param {Number} y
+	 *
+	 * @return {void}
+	 */
+	addLabel(group, block, x, y) {
+		const formattedLabel = block.label.formatted;
+		const fill = block.label.color;
 
 		const text = group.append('text')
 			.attrs({
