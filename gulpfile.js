@@ -54,7 +54,7 @@ gulp.task('build', ['test', 'compile-build'], () => (
 ));
 
 gulp.task('build-examples-style', () => (
-	gulp.src('./examples/src/sass/**/*.scss')
+	gulp.src('./examples/src/scss/**/*.scss')
 		.pipe(scsslint())
 		.pipe(scsslint.failReporter())
 		.pipe(sass({
@@ -84,7 +84,7 @@ gulp.task('examples', ['build-examples-style', 'build-examples-script', 'build-e
 	browserSync.init({ server: './examples/dist' });
 
 	gulp.watch(['./src/**/*.js', './examples/src/**/*.js'], ['build-examples-script']);
-	gulp.watch(['./examples/src/sass/**/*.scss'], ['build-examples-style']);
+	gulp.watch(['./examples/src/scss/**/*.scss'], ['build-examples-style']);
 	gulp.watch(['./examples/src/**/*.html'], ['build-examples-html']).on('change', browserSync.reload);
 });
 
