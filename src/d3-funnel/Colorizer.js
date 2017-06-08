@@ -39,33 +39,33 @@ class Colorizer {
 	/**
 	 * Given a raw data block, return an appropriate color for the block.
 	 *
-	 * @param {Array}  block
+	 * @param {string} fill
 	 * @param {Number} index
-	 * @param {string} type
+	 * @param {string} fillType
 	 *
 	 * @return {Object}
 	 */
-	getBlockFill(block, index, type) {
-		const raw = this.getBlockRawFill(block, index);
+	getBlockFill(fill, index, fillType) {
+		const raw = this.getBlockRawFill(fill, index);
 
 		return {
 			raw,
-			actual: this.getBlockActualFill(raw, index, type),
+			actual: this.getBlockActualFill(raw, index, fillType),
 		};
 	}
 
 	/**
 	 * Return the raw hex color for the block.
 	 *
-	 * @param {Array}  block
+	 * @param {string} fill
 	 * @param {Number} index
 	 *
 	 * @return {string}
 	 */
-	getBlockRawFill(block, index) {
+	getBlockRawFill(fill, index) {
 		// Use the block's color, if set and valid
-		if (block.length > 2 && this.hexExpression.test(block[2])) {
-			return block[2];
+		if (this.hexExpression.test(fill)) {
+			return fill;
 		}
 
 		// Otherwise, attempt to use the array scale
@@ -82,12 +82,12 @@ class Colorizer {
 	 *
 	 * @param {string} raw
 	 * @param {Number} index
-	 * @param {string} type
+	 * @param {string} fillType
 	 *
 	 * @return {string}
 	 */
-	getBlockActualFill(raw, index, type) {
-		if (type === 'solid') {
+	getBlockActualFill(raw, index, fillType) {
+		if (fillType === 'solid') {
 			return raw;
 		}
 
@@ -108,17 +108,12 @@ class Colorizer {
 	/**
 	 * Given a raw data block, return an appropriate label color.
 	 *
-	 * @param {Array} block
+	 * @param {string} labelFill
 	 *
 	 * @return {string}
 	 */
-	getLabelFill(block) {
-		// Use the label's color, if set and valid
-		if (block.length > 3 && this.hexExpression.test(block[3])) {
-			return block[3];
-		}
-
-		return this.labelFill;
+	getLabelColor(labelFill) {
+		return this.hexExpression.test(labelFill) ? labelFill : this.labelFill;
 	}
 
 	/**

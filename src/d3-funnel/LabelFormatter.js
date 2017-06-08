@@ -29,17 +29,12 @@ class LabelFormatter {
 	 *
 	 * @param {string} label
 	 * @param {number} value
+	 * @param {*}      formattedValue
 	 *
 	 * @return string
 	 */
-	format(label, value) {
-		// Try to use any formatted value specified through the data
-		// Otherwise, attempt to use the format function
-		if (Array.isArray(value)) {
-			return this.formatter(label, value[0], value[1]);
-		}
-
-		return this.formatter(label, value, null);
+	format({ label, value, formattedValue }) {
+		return this.formatter(label, value, formattedValue);
 	}
 
 	/**
@@ -51,16 +46,16 @@ class LabelFormatter {
 	 *
 	 * @param {string} label
 	 * @param {number} value
-	 * @param {*}      fValue
+	 * @param {*}      formattedValue
 	 *
 	 * @return {string}
 	 */
-	stringFormatter(label, value, fValue = null) {
-		let formatted = fValue;
+	stringFormatter(label, value, formattedValue = null) {
+		let formatted = formattedValue;
 
 		// Attempt to use supplied formatted value
 		// Otherwise, use the default
-		if (fValue === null) {
+		if (formattedValue === null) {
 			formatted = this.getDefaultFormattedValue(value);
 		}
 

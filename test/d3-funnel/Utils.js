@@ -50,4 +50,34 @@ describe('Utils', () => {
 			assert.deepEqual(merged, Utils.extend(a, b));
 		});
 	});
+
+	describe('convertLegacyBlock', () => {
+		it('should translate a standard legacy block array into an object', () => {
+			const block = ['Terran', 200];
+			const { label, value } = Utils.convertLegacyBlock(block);
+
+			assert.deepEqual({ label: 'Terran', value: 200 }, { label, value });
+		});
+
+		it('should translate a formatted value', () => {
+			const block = ['Terran', [200, 'Two Hundred']];
+			const { formattedValue } = Utils.convertLegacyBlock(block);
+
+			assert.equal('Two Hundred', formattedValue);
+		});
+
+		it('should translate a background color', () => {
+			const block = ['Terran', 200, '#e5b81f'];
+			const { backgroundColor } = Utils.convertLegacyBlock(block);
+
+			assert.equal('#e5b81f', backgroundColor);
+		});
+
+		it('should translate a label color', () => {
+			const block = ['Terran', 200, null, '#e5b81f'];
+			const { labelColor } = Utils.convertLegacyBlock(block);
+
+			assert.equal('#e5b81f', labelColor);
+		});
+	});
 });

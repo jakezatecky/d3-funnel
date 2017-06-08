@@ -41,6 +41,34 @@ class Utils {
 
 		return result;
 	}
+
+	/**
+	 * Convert the legacy block array to a block object.
+	 *
+	 * @param {Array} block
+	 *
+	 * @returns {Object}
+	 */
+	static convertLegacyBlock(block) {
+		return {
+			label: block[0],
+			value: Utils.getRawBlockCount(block),
+			formattedValue: Array.isArray(block[1]) ? block[1][1] : null,
+			backgroundColor: block[2],
+			labelColor: block[3],
+		};
+	}
+
+	/**
+	 * Given a raw data block, return its count.
+	 *
+	 * @param {Array} block
+	 *
+	 * @return {Number}
+	 */
+	static getRawBlockCount(block) {
+		return Array.isArray(block[1]) ? block[1][0] : block[1];
+	}
 }
 
 export default Utils;

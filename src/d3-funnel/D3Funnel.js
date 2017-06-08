@@ -288,13 +288,7 @@ class D3Funnel {
 			return this.settings.totalCount || 0;
 		}
 
-		let total = 0;
-
-		data.forEach((block) => {
-			total += this.getRawBlockCount(block);
-		});
-
-		return total;
+		return data.reduce((a, b) => a + Utils.getRawBlockCount(b), 0);
 	}
 
 	/**
@@ -306,39 +300,23 @@ class D3Funnel {
 	 * @return {Array}
 	 */
 	standardizeData(data, totalCount) {
-		const standardized = [];
+		return data.map((rawBlock, index) => {
+			const block = Array.isArray(rawBlock) ? Utils.convertLegacyBlock(rawBlock) : rawBlock;
+			const ratio = (block.value / totalCount) || 0;
 
-		data.forEach((block, index) => {
-			const count = this.getRawBlockCount(block);
-			const ratio = (count / totalCount) || 0;
-			const label = block[0];
-
-			standardized.push({
+			return {
 				index,
 				ratio,
-				value: count,
+				value: block.value,
 				height: this.settings.height * ratio,
-				fill: this.colorizer.getBlockFill(block, index, this.settings.fillType),
+				fill: this.colorizer.getBlockFill(block.backgroundColor, index, this.settings.fillType),
 				label: {
-					raw: label,
-					formatted: this.labelFormatter.format(label, block[1]),
-					color: this.colorizer.getLabelFill(block),
+					raw: block.label,
+					formatted: this.labelFormatter.format(block),
+					color: this.colorizer.getLabelColor(block.labelColor),
 				},
-			});
+			};
 		});
-
-		return standardized;
-	}
-
-	/**
-	 * Given a raw data block, return its count.
-	 *
-	 * @param {Array} block
-	 *
-	 * @return {Number}
-	 */
-	getRawBlockCount(block) {
-		return Array.isArray(block[1]) ? block[1][0] : block[1];
 	}
 
 	/**
@@ -973,24 +951,12 @@ class D3Funnel {
 	addBlockLabel(group, index) {
 		const paths = this.blockPaths[index];
 
+		const formattedLabel = this.blocks[index].label.formatted;
+		const fill = this.blocks[index].label.color;
+
 		// Center the text
 		const x = this.settings.width / 2;
 		const y = this.getTextY(paths);
-
-		this.addLabel(group, this.blocks[index], x, y);
-	}
-
-	/**
-	 * @param {Object} group
-	 * @param {Object} block
-	 * @param {Number} x
-	 * @param {Number} y
-	 *
-	 * @return {void}
-	 */
-	addLabel(group, block, x, y) {
-		const formattedLabel = block.label.formatted;
-		const fill = block.label.color;
 
 		const text = group.append('text')
 			.attrs({

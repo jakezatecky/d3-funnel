@@ -1,3 +1,9 @@
+## v1.1.0 (TBA)
+
+### Deprecations
+
+* [#73]: An array of objects is now the preferred data structure, and the array-of-arrays structure will will be dropped in the 2.0 release
+
 ## v1.0.1 (January 30, 2017)
 
 ### Bug Fixes
