@@ -174,7 +174,7 @@ You can specify colors to override `block.fill.scale` and `label.fill` for any
 data point (hex only):
 
 ``` javascript
-var data = [
+const data = [
     ['Teal',      12000, '#008080', '#080800'],
     ['Byzantium', 4000,  '#702963'],
     ['Persimmon', 2500,  '#ff634d', '#6f34fd'],
@@ -187,7 +187,7 @@ In addition to using `label.format`, you can also pass formatted values in an
 array:
 
 ``` javascript
-var data = [
+const data = [
     ['Teal',      [12000, 'USD 12,000']],
     ['Byzantium', [4000,  'USD 4,000']],
     ['Persimmon', [2500,  'USD 2,500']],
