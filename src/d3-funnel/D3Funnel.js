@@ -169,11 +169,16 @@ class D3Funnel {
 			throw new Error('Data array must contain at least one element.');
 		}
 
-		if (Array.isArray(data[0]) === false) {
-			throw new Error('Data array elements must be arrays.');
+		if (typeof data[0] !== 'object') {
+			throw new Error('Data array elements must be an object.');
 		}
 
-		if (data[0].length < 2) {
+		if (
+			(Array.isArray(data[0]) && data[0].length < 2) ||
+			(Array.isArray(data[0]) === false && (
+				data[0].label === undefined || data[0].value === undefined
+			))
+		) {
 			throw new Error('Data array elements must contain a label and value.');
 		}
 	}
@@ -682,26 +687,27 @@ class D3Funnel {
 
 		// Create a group just for this block
 		const group = this.svg.append('g');
+		const block = this.blocks[index];
 
 		// Fetch path element
 		const path = this.getBlockPath(group, index);
 
 		// Attach data to the element
-		this.attachData(path, this.blocks[index]);
+		this.attachData(path, block);
 
 		let overlayPath = null;
-		let pathColor = this.blocks[index].fill.actual;
+		let pathColor = block.fill.actual;
 
 		if (this.settings.addValueOverlay) {
 			overlayPath = this.getOverlayPath(group, index);
-			this.attachData(overlayPath, this.blocks[index]);
+			this.attachData(overlayPath, block);
 
 			// Add data attribute to distinguish between paths
 			path.node().setAttribute('pathType', 'background');
 			overlayPath.node().setAttribute('pathType', 'foreground');
 
 			// Default path becomes background of lighter shade
-			pathColor = this.colorizer.shade(this.blocks[index].fill.raw, 0.3);
+			pathColor = this.colorizer.shade(block.fill.raw, 0.3);
 		}
 
 		// Add animation components
@@ -728,10 +734,10 @@ class D3Funnel {
 				overlayPath.transition()
 					.duration(this.settings.animation)
 					.ease(easeLinear)
-					.attr('fill', this.blocks[index].fill.actual)
+					.attr('fill', block.fill.actual)
 					.attr('d', this.getOverlayPathDefinition(index));
 			} else {
-				overlayPath.attr('fill', this.blocks[index].fill.actual)
+				overlayPath.attr('fill', block.fill.actual)
 					.attr('d', this.getOverlayPathDefinition(index));
 			}
 		}

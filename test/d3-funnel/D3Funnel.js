@@ -116,19 +116,19 @@ describe('D3Funnel', () => {
 				}, Error, 'Data array must contain at least one element.');
 			});
 
-			it('should throw an error when the first data array element is not an array', () => {
+			it('should throw an error when the first data array element is not an object', () => {
 				const funnel = getFunnel();
 
 				assert.throws(() => {
 					funnel.draw(['Not array']);
-				}, Error, 'Data array elements must be arrays.');
+				}, Error, 'Data array elements must be an object.');
 			});
 
-			it('should throw an error when the first data array element does not have a count', () => {
+			it('should throw an error when the first data array element does not have a value', () => {
 				const funnel = getFunnel();
 
 				assert.throws(() => {
-					funnel.draw([['Only one']]);
+					funnel.draw([{ label: 'Only Label' }]);
 				}, Error, 'Data array elements must contain a label and value.');
 			});
 
