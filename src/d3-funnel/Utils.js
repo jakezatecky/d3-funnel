@@ -67,7 +67,11 @@ class Utils {
 	 * @return {Number}
 	 */
 	static getRawBlockCount(block) {
-		return Array.isArray(block[1]) ? block[1][0] : block[1];
+		if (Array.isArray(block)) {
+			return Array.isArray(block[1]) ? block[1][0] : block[1];
+		}
+
+		return block.value;
 	}
 }
 
