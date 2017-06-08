@@ -4,6 +4,10 @@
 
 * [#73]: An array of objects is now the preferred data structure, and the array-of-arrays structure will will be dropped in the 2.0 release
 
+### New Features
+
+* [#74]: Add `label.enabled` property
+
 ## v1.0.1 (January 30, 2017)
 
 ### Bug Fixes
