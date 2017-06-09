@@ -1,8 +1,20 @@
 ## v1.1.0 (TBA)
 
+Release **v1.1.0** adds a variety of exciting new functionality to the funnel, and introduces a new data structure that allows for more flexibility on a row level than previously capable:
+
+``` javascript
+funnel.draw([{
+    label: 'Prospects',
+    value: 5000,
+    backgroundColor: '#d33',
+}]);
+```
+
+The old structure of an array of arrays has been deprecated and will be removed into the **v2.0** release. Please update to the newest data structure as soon as possible. Refer to the README for the list of available options, which includes all of the capabilities previously held in the data array.
+
 ### Deprecations
 
-* [#73]: An array of objects is now the preferred data structure, and the array-of-arrays structure will will be dropped in the 2.0 release
+* [#73]: The old array-of-arrays data structure has been deprecated in favor of a data objects
 
 ### New Features
 
