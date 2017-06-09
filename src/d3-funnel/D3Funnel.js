@@ -316,6 +316,7 @@ class D3Funnel {
 				height: this.settings.height * ratio,
 				fill: this.colorizer.getBlockFill(block.backgroundColor, index, this.settings.fillType),
 				label: {
+					enabled: !block.hideLabel,
 					raw: block.label,
 					formatted: this.labelFormatter.format(block),
 					color: this.colorizer.getLabelColor(block.labelColor),
@@ -766,7 +767,7 @@ class D3Funnel {
 			});
 		}
 
-		if (this.settings.label.enabled) {
+		if (this.settings.label.enabled && block.label.enabled) {
 			this.addBlockLabel(group, index);
 		}
 	}

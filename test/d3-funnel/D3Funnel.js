@@ -157,6 +157,19 @@ describe('D3Funnel', () => {
 				assert.equal('Node C: Three', d3.select(texts[2]).text());
 			});
 
+			it('should hide the labels of any row specified', () => {
+				getFunnel().draw([
+					{ label: 'Node A', value: 1, hideLabel: true },
+					{ label: 'Node B', value: 2 },
+					{ label: 'Node C', value: 3, hideLabel: true },
+				]);
+
+				const texts = getSvg().selectAll('text').nodes();
+
+				assert.equal('Node B: 2', d3.select(texts[0]).text());
+				assert.equal(undefined, texts[1]);
+			});
+
 			it('should use colors assigned to a data element', () => {
 				getFunnel().draw([
 					['A', 1, '#111'],
