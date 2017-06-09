@@ -6,7 +6,8 @@
 
 ### New Features
 
-* [#74]: Add `label.enabled` property
+* [#71]: Add `hideLabel` option to the data object
+* [#74]: Add `label.enabled` chart option
 
 ## v1.0.1 (January 30, 2017)
 
