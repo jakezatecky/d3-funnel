@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import D3Funnel from '../../../src/index';
+import D3Funnel from 'd3-funnel';
 
 const settings = {
 	curved: {
