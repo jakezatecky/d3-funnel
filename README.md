@@ -161,6 +161,21 @@ D3Funnel.defaults = _.merge(D3Funnel.defaults, {
 });
 ```
 
+## Advanced Data
+
+In the examples above, both `label` and `value` were just to describe a block
+within the funnel. A complete listing of the available options is included
+below:
+
+| Option          | Type   | Description                                                     | Example       |
+| --------------- | ------ | --------------------------------------------------------------- | ------------- |
+| label           | mixed  | **Required.** The label to associate with the block.            | `'Students'`  |
+| value           | number | **Required.** The value (or count) to associate with the block. | `500`         |
+| backgroundColor | string | A row-level override for `block.fill.scale`. Hex only.          | `'#008080'`   |
+| formattedValue  | mixed  | A row-level override for `label.format`.                        | `'USD: $150'` |
+| hideLabel       | bool   | Whether to hide the formatted label for this block.             | `true`        |
+| labelColor      | string | A row-level override for `label.fill`. Hex only.                | `'#333'`      |
+
 ## API
 
 Additional methods beyond `draw()` are accessible after instantiating the chart:
@@ -168,33 +183,6 @@ Additional methods beyond `draw()` are accessible after instantiating the chart:
 | Method      | Description                                     |
 | ----------- | ----------------------------------------------- |
 | `destroy()` | Removes the funnel and its events from the DOM. |
-
-## Advanced Data
-
-You can specify colors to override `block.fill.scale` and `label.fill` for any
-data point (hex only):
-
-``` javascript
-var data = [
-    ['Teal',      12000, '#008080', '#080800'],
-    ['Byzantium', 4000,  '#702963'],
-    ['Persimmon', 2500,  '#ff634d', '#6f34fd'],
-    ['Azure',     1500,  '#007fff', '#07fff0'],
-    //         Background ---^          ^--- Label
-];
-```
-
-In addition to using `label.format`, you can also pass formatted values in an
-array:
-
-``` javascript
-var data = [
-    ['Teal',      [12000, 'USD 12,000']],
-    ['Byzantium', [4000,  'USD 4,000']],
-    ['Persimmon', [2500,  'USD 2,500']],
-    ['Azure',     [1500,  'USD 1,500']],
-];
-```
 
 # License
 
