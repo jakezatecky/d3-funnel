@@ -49,10 +49,10 @@ parent container:
 
 <script>
     const data = [
-        ['Inquiries', 5000],
-        ['Applicants', 2500],
-        ['Admits', 500],
-        ['Deposits', 200],
+        { label: 'Inquiries', value: 5000 },
+        { label: 'Applicants', value: 2500 },
+        { label: 'Admits', value: 500 },
+        { label: 'Deposits', value: 200 },
     ];
     const options = {
         block: {
