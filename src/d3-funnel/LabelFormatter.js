@@ -33,7 +33,7 @@ class LabelFormatter {
 	 *
 	 * @return string
 	 */
-	format({ label, value, formattedValue }) {
+	format({ label, value, formattedValue = null }) {
 		return this.formatter(label, value, formattedValue);
 	}
 
