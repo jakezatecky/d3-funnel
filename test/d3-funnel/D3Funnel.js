@@ -6,7 +6,6 @@ import spies from 'chai-spies';
 import D3Funnel from '../../src/d3-funnel/D3Funnel';
 
 const assert = chai.assert;
-
 chai.use(spies);
 
 function getFunnel() {
@@ -22,7 +21,7 @@ function getSvgId() {
 }
 
 function getBasicData() {
-	return [['Node', 1000]];
+	return [{ label: 'Node', value: 1000 }];
 }
 
 function isLetter(str) {
@@ -134,10 +133,10 @@ describe('D3Funnel', () => {
 
 			it('should draw as many blocks as there are elements', () => {
 				getFunnel().draw([
-					['Node A', 1],
-					['Node B', 2],
-					['Node C', 3],
-					['Node D', 4],
+					{ label: 'Node A', value: 1 },
+					{ label: 'Node B', value: 2 },
+					{ label: 'Node C', value: 3 },
+					{ label: 'Node D', value: 4 },
 				]);
 
 				assert.equal(4, getSvg().selectAll('path').nodes().length);
@@ -145,9 +144,9 @@ describe('D3Funnel', () => {
 
 			it('should pass any row-specified formatted values to the label formatter', () => {
 				getFunnel().draw([
-					['Node A', [1, 'One']],
-					['Node B', 2],
-					['Node C', [3, 'Three']],
+					{ label: 'Node A', value: 1, formattedValue: 'One' },
+					{ label: 'Node B', value: 2 },
+					{ label: 'Node C', value: 1, formattedValue: 'Three' },
 				]);
 
 				const texts = getSvg().selectAll('text').nodes();
@@ -172,10 +171,10 @@ describe('D3Funnel', () => {
 
 			it('should use colors assigned to a data element', () => {
 				getFunnel().draw([
-					['A', 1, '#111'],
-					['B', 2, '#222'],
-					['C', 3],
-					['D', 4, '#444'],
+					{ label: 'Node A', value: 1, backgroundColor: '#111' },
+					{ label: 'Node B', value: 2, backgroundColor: '#222' },
+					{ label: 'Node C', value: 3 },
+					{ label: 'Node D', value: 4, backgroundColor: '#444' },
 				]);
 
 				const paths = getSvg().selectAll('path').nodes();
@@ -189,10 +188,10 @@ describe('D3Funnel', () => {
 
 			it('should use label colors assigned to a data element', () => {
 				getFunnel().draw([
-					['A', 1, null, '#111'],
-					['B', 2, null, '#222'],
-					['C', 3],
-					['D', 4, null, '#444'],
+					{ label: 'A', value: 1, labelColor: '#111' },
+					{ label: 'B', value: 2, labelColor: '#222' },
+					{ label: 'C', value: 3 },
+					{ label: 'D', value: 4, labelColor: '#444' },
 				]);
 
 				const texts = getSvg().selectAll('text').nodes();
@@ -352,9 +351,9 @@ describe('D3Funnel', () => {
 		describe('chart.bottomPinch', () => {
 			it('should set the last n number of blocks to have the width of chart.bottomWidth', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
-					['C', 3],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
+					{ label: 'C', value: 3 },
 				], {
 					chart: {
 						width: 450,
@@ -371,9 +370,9 @@ describe('D3Funnel', () => {
 
 			it('should maintain chart.bottomWidth when combined with block.minHeight', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
-					['C', 3],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
+					{ label: 'C', value: 3 },
 				], {
 					chart: {
 						width: 450,
@@ -394,10 +393,10 @@ describe('D3Funnel', () => {
 
 			it('should maintain chart.bottomWidth when combined with block.dynamicHeight and curve.enabled', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
-					['C', 3],
-					['D', 4],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
+					{ label: 'C', value: 3 },
+					{ label: 'D', value: 4 },
 				], {
 					chart: {
 						width: 320,
@@ -422,8 +421,8 @@ describe('D3Funnel', () => {
 		describe('chart.inverted', () => {
 			it('should draw the chart in a top-to-bottom arrangement by default', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
 				], {
 					chart: {
 						width: 200,
@@ -439,8 +438,8 @@ describe('D3Funnel', () => {
 
 			it('should draw the chart in a bottom-to-top arrangement when true', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
 				], {
 					chart: {
 						width: 200,
@@ -491,8 +490,8 @@ describe('D3Funnel', () => {
 		describe('block.dynamicHeight', () => {
 			it('should use equal heights when false', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
 				], {
 					chart: {
 						height: 300,
@@ -507,8 +506,8 @@ describe('D3Funnel', () => {
 
 			it('should use proportional heights when true', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
 				], {
 					chart: {
 						height: 300,
@@ -527,10 +526,10 @@ describe('D3Funnel', () => {
 			it('should not have NaN in the last path when bottomWidth is equal to 0%', () => {
 				// A very specific cooked-up example that could trigger NaN
 				getFunnel().draw([
-					['A', 120],
-					['B', 40],
-					['C', 20],
-					['D', 15],
+					{ label: 'A', value: 120 },
+					{ label: 'B', value: 40 },
+					{ label: 'C', value: 20 },
+					{ label: 'D', value: 15 },
 				], {
 					chart: {
 						height: 300,
@@ -548,8 +547,8 @@ describe('D3Funnel', () => {
 
 			it('should not error when bottomWidth is equal to 100%', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
 				], {
 					chart: {
 						height: 300,
@@ -582,10 +581,10 @@ describe('D3Funnel', () => {
 		describe('block.dynamicSlope', () => {
 			it('should give each block top width relative to its value', () => {
 				getFunnel().draw([
-					['A', 100],
-					['B', 55],
-					['C', 42],
-					['D', 74],
+					{ label: 'A', value: 100 },
+					{ label: 'B', value: 55 },
+					{ label: 'C', value: 42 },
+					{ label: 'D', value: 74 },
 				], {
 					chart: {
 						width: 100,
@@ -605,10 +604,10 @@ describe('D3Funnel', () => {
 
 			it('should make the last block top width equal to bottom width', () => {
 				getFunnel().draw([
-					['A', 100],
-					['B', 55],
-					['C', 42],
-					['D', 74],
+					{ label: 'A', value: 100 },
+					{ label: 'B', value: 52 },
+					{ label: 'C', value: 42 },
+					{ label: 'D', value: 74 },
 				], {
 					chart: {
 						width: 100,
@@ -626,8 +625,8 @@ describe('D3Funnel', () => {
 
 			it('should use bottomWidth value when false', () => {
 				getFunnel().draw([
-					['A', 100],
-					['B', 90],
+					{ label: 'A', value: 100 },
+					{ label: 'B', value: 90 },
 				], {
 					chart: {
 						width: 100,
@@ -645,8 +644,8 @@ describe('D3Funnel', () => {
 		describe('block.barOverlay', () => {
 			it('should draw value overlay within each path', () => {
 				getFunnel().draw([
-					['A', 10],
-					['B', 20],
+					{ label: 'A', value: 10 },
+					{ label: 'B', value: 20 },
 				], {
 					block: {
 						barOverlay: true,
@@ -659,8 +658,8 @@ describe('D3Funnel', () => {
 
 			it('should draw value overlay with overridden total count', () => {
 				getFunnel().draw([
-					['A', 10],
-					['B', 20],
+					{ label: 'A', value: 10 },
+					{ label: 'B', value: 20 },
 				], {
 					chart: {
 						totalCount: 100,
@@ -685,8 +684,8 @@ describe('D3Funnel', () => {
 		describe('block.fill.scale', () => {
 			it('should use a function\'s return value', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
 				], {
 					block: {
 						fill: {
@@ -709,8 +708,8 @@ describe('D3Funnel', () => {
 
 			it('should use an array\'s return value', () => {
 				getFunnel().draw([
-					['A', 1],
-					['B', 2],
+					{ label: 'A', value: 1 },
+					{ label: 'B', value: 2 },
 				], {
 					block: {
 						fill: {
@@ -760,8 +759,8 @@ describe('D3Funnel', () => {
 		describe('block.minHeight', () => {
 			it('should give each block the minimum height specified', () => {
 				getFunnel().draw([
-					['A', 299],
-					['B', 1],
+					{ label: 'A', value: 299 },
+					{ label: 'B', value: 1 },
 				], {
 					chart: {
 						height: 300,
@@ -780,8 +779,8 @@ describe('D3Funnel', () => {
 
 			it('should decrease the height of blocks above the minimum', () => {
 				getFunnel().draw([
-					['A', 299],
-					['B', 1],
+					{ label: 'A', value: 299 },
+					{ label: 'B', value: 1 },
 				], {
 					chart: {
 						height: 300,
@@ -804,7 +803,7 @@ describe('D3Funnel', () => {
 				event.initCustomEvent('mouseover', false, false, null);
 
 				getFunnel().draw([
-					['A', 1, '#fff'],
+					{ label: 'A', value: 1, backgroundColor: '#ff' },
 				], {
 					block: {
 						highlight: true,
@@ -919,7 +918,7 @@ describe('D3Funnel', () => {
 			it('should pass values to a supplied function', () => {
 				getFunnel().draw(getBasicData(), {
 					label: {
-						format: (label, value, fValue) => `${label}/${value}/${fValue}`,
+						format: (label, value, formattedValue) => `${label}/${value}/${formattedValue}`,
 					},
 				});
 
