@@ -43,6 +43,10 @@ class D3Funnel {
 			fill: '#fff',
 			format: '{l}: {f}',
 		},
+		tooltip: {
+			enabled: false,
+			format: '{l}: {f}',
+		},
 		events: {
 			click: {
 				block: null,
