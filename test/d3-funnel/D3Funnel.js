@@ -803,7 +803,7 @@ describe('D3Funnel', () => {
 				event.initCustomEvent('mouseover', false, false, null);
 
 				getFunnel().draw([
-					{ label: 'A', value: 1, backgroundColor: '#ff' },
+					{ label: 'A', value: 1, backgroundColor: '#fff' },
 				], {
 					block: {
 						highlight: true,
