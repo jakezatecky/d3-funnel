@@ -31,6 +31,11 @@ const settings = {
 			highlight: true,
 		},
 	},
+	tooltip: {
+		tooltip: {
+			enabled: true,
+		},
+	},
 	click: {
 		events: {
 			click: {

@@ -4,7 +4,7 @@ import { select } from 'd3-selection';
 import 'd3-selection-multi';
 
 import Colorizer from './Colorizer';
-import LabelFormatter from './LabelFormatter';
+import Formatter from './Formatter';
 import Navigator from './Navigator';
 import Utils from './Utils';
 
@@ -61,9 +61,10 @@ class D3Funnel {
 	 */
 	constructor(selector) {
 		this.selector = selector;
+		this.container = document.querySelector(this.selector);
 
 		this.colorizer = new Colorizer();
-		this.labelFormatter = new LabelFormatter();
+		this.formatter = new Formatter();
 		this.navigator = new Navigator();
 
 		this.id = null;
@@ -127,7 +128,8 @@ class D3Funnel {
 		this.id = `d3-funnel-${shortid.generate()}`;
 
 		// Set labels
-		this.labelFormatter.setFormat(settings.label.format);
+		this.labelFormatter = this.formatter.getFormatter(settings.label.format);
+		this.tooltipFormatter = this.formatter.getFormatter(settings.tooltip.format);
 
 		// Set color scales
 		this.colorizer.setInstanceId(this.id);
@@ -153,6 +155,7 @@ class D3Funnel {
 			dynamicSlope: settings.block.dynamicSlope,
 			minHeight: settings.block.minHeight,
 			label: settings.label,
+			tooltip: settings.tooltip,
 			onBlockClick: settings.events.click.block,
 		};
 
@@ -322,8 +325,12 @@ class D3Funnel {
 				label: {
 					enabled: !block.hideLabel,
 					raw: block.label,
-					formatted: this.labelFormatter.format(block),
+					formatted: this.formatter.format(block, this.labelFormatter),
 					color: this.colorizer.getLabelColor(block.labelColor),
+				},
+				tooltip: {
+					enabled: block.enabled,
+					formatted: this.formatter.format(block, this.tooltipFormatter),
 				},
 			};
 		});
@@ -754,7 +761,8 @@ class D3Funnel {
 					return;
 				}
 
-				target.on('mouseover', this.onMouseOver)
+				target
+					.on('mouseover', this.onMouseOver)
 					.on('mouseout', this.onMouseOut);
 			});
 		}
@@ -768,6 +776,55 @@ class D3Funnel {
 
 				target.style('cursor', 'pointer')
 					.on('click', this.settings.onBlockClick);
+			});
+		}
+
+		// Add tooltips
+		if (this.settings.tooltip.enabled) {
+			[path, overlayPath].forEach((target) => {
+				if (!target) {
+					return;
+				}
+
+				target.node().addEventListener('mouseout', () => {
+					if (this.tooltip) {
+						this.container.removeChild(this.tooltip);
+						this.tooltip = null;
+					}
+				});
+				target.node().addEventListener('mousemove', (e) => {
+					if (!this.tooltip) {
+						this.tooltip = document.createElement('div');
+						this.tooltip.setAttribute('class', 'd3-funnel-tooltip');
+						this.container.appendChild(this.tooltip);
+					}
+
+					this.tooltip.innerText = block.tooltip.formatted;
+
+					const width = this.tooltip.offsetWidth;
+					const height = this.tooltip.offsetHeight;
+					const rect = this.container.getBoundingClientRect();
+					const heightOffset = height + 5;
+					const containerY = rect.y + window.scrollY;
+					const isAbove = e.layerY - heightOffset < containerY;
+					const top = isAbove ? e.layerY + 5 : e.layerY - heightOffset;
+
+					const styles = [
+						'display: inline-block',
+						'position: absolute',
+						`left: ${e.layerX - (width / 2)}px`,
+						`top: ${top}px`,
+						`border: 1px solid ${block.fill.raw}`,
+						'background: rgb(255,255,255,0.75)',
+						'padding: 5px 15px',
+						'color: #000',
+						'font-size: 14px',
+						'font-weight: bold',
+						'text-align: center',
+						'cursor: default',
+					];
+					this.tooltip.setAttribute('style', styles.join(';'));
+				});
 			});
 		}
 

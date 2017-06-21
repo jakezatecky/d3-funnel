@@ -1,40 +1,33 @@
-class LabelFormatter {
-	/**
-	 * Initial the formatter.
-	 *
-	 * @return {void}
-	 */
-	constructor() {
-		this.expression = null;
-	}
-
+class Formatter {
 	/**
 	 * Register the format function.
 	 *
 	 * @param {string|function} format
 	 *
-	 * @return {void}
+	 * @return {function}
 	 */
-	setFormat(format) {
+	getFormatter(format) {
 		if (typeof format === 'function') {
-			this.formatter = format;
-		} else {
-			this.expression = format;
-			this.formatter = this.stringFormatter;
+			return format;
 		}
+
+		return (label, value, formattedValue) => (
+			this.stringFormatter(label, value, formattedValue, format)
+		);
 	}
 
 	/**
 	 * Format the given value according to the data point or the format.
 	 *
-	 * @param {string} label
-	 * @param {number} value
-	 * @param {*}      formattedValue
+	 * @param {string}   label
+	 * @param {number}   value
+	 * @param {*}        formattedValue
+	 * @param {function} formatter
 	 *
 	 * @return string
 	 */
-	format({ label, value, formattedValue = null }) {
-		return this.formatter(label, value, formattedValue);
+	format({ label, value, formattedValue = null }, formatter) {
+		return formatter(label, value, formattedValue);
 	}
 
 	/**
@@ -47,10 +40,11 @@ class LabelFormatter {
 	 * @param {string} label
 	 * @param {number} value
 	 * @param {*}      formattedValue
+	 * @param {string} expression
 	 *
 	 * @return {string}
 	 */
-	stringFormatter(label, value, formattedValue = null) {
+	stringFormatter(label, value, formattedValue, expression) {
 		let formatted = formattedValue;
 
 		// Attempt to use supplied formatted value
@@ -59,7 +53,7 @@ class LabelFormatter {
 			formatted = this.getDefaultFormattedValue(value);
 		}
 
-		return this.expression
+		return expression
 			.split('{l}')
 			.join(label)
 			.split('{v}')
@@ -78,4 +72,4 @@ class LabelFormatter {
 	}
 }
 
-export default LabelFormatter;
+export default Formatter;
