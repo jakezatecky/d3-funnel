@@ -30,7 +30,7 @@
     "chai": "^4.0.1",
     "chai-spies": "^0.7.1",
     "eslint": "^3.12.0",
-    "eslint-config-takiyon": "^0.0.0",
+    "eslint-config-takiyon": "^0.0.1",
     "eslint-plugin-import": "^2.6.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^4.0.0",
