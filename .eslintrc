@@ -1,11 +1,5 @@
 {
-	"extends": "airbnb-base",
-	"parser": "babel-eslint",
-	"rules": {
-		"class-methods-use-this": 0,
-		"indent": [2, "tab"],
-		"no-tabs": 0
-	},
+	"extends": "takiyon",
 	"env": {
 		"browser": true,
 		"mocha": true
