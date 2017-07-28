@@ -53,7 +53,7 @@ class Navigator {
         nextRightX,
         nextHeight,
         curveHeight,
-     }) {
+    }) {
         return {
             p00: {
                 x: prevLeftX,
