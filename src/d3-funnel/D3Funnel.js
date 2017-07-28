@@ -832,6 +832,7 @@ class D3Funnel {
                         'font-weight: bold',
                         'text-align: center',
                         'cursor: default',
+                        'pointer-events: none',
                     ];
                     this.tooltip.setAttribute('style', styles.join(';'));
                 });
