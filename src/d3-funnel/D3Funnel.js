@@ -238,10 +238,19 @@ class D3Funnel {
      * @return {{width: Number, height: Number}}
      */
     getContainerDimensions() {
-        return {
+        const dimensions = {
             width: parseFloat(select(this.container).style('width')),
             height: parseFloat(select(this.container).style('height')),
         };
+
+        // Remove container dimensions that resolve to zero
+        ['width', 'height'].forEach((direction) => {
+            if (dimensions[direction] === 0) {
+                delete dimensions[direction];
+            }
+        });
+
+        return dimensions;
     }
 
     /**

@@ -22,6 +22,10 @@ The old structure of an array-of-arrays has been deprecated and will be removed 
 * [#74]: Add `label.enabled` chart option
 * [#79]: Add support for `HTMLElement` in the D3Funnel constructor
 
+### Bug Fixes
+
+* [#77]: Fix an issue where containers with zero width and/or height would not inherit from the default dimensions
+
 ## v1.0.1 (January 30, 2017)
 
 ### Bug Fixes

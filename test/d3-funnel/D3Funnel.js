@@ -280,6 +280,16 @@ describe('D3Funnel', () => {
                 });
             });
 
+            it('should default to the library defaults if the container dimensions are zero', () => {
+                document.querySelector('#funnel').style.width = '0px';
+                document.querySelector('#funnel').style.height = '0px';
+
+                getFunnel().draw(getBasicData());
+
+                assert.equal(350, getSvg().node().getBBox().width);
+                assert.equal(400, getSvg().node().getBBox().height);
+            });
+
             it('should set the funnel\'s width/height to the specified amount', () => {
                 ['width', 'height'].forEach((direction) => {
                     getFunnel().draw(getBasicData(), {
