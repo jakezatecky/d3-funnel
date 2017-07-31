@@ -80,8 +80,12 @@ describe('D3Funnel', () => {
     });
 
     describe('constructor', () => {
-        it('should instantiate without error', () => {
-            new D3Funnel('#funnel');  // eslint-disable-line no-new
+        it('should instantiate without error when a query string is provided', () => {
+            new D3Funnel('#funnel'); // eslint-disable-line no-new
+        });
+
+        it('should instantiate without error when a DOM node is provided', () => {
+            new D3Funnel(document.querySelector('#funnel')); // eslint-disable-line no-new
         });
     });
 

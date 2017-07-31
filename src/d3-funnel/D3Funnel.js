@@ -55,13 +55,12 @@ class D3Funnel {
     };
 
     /**
-     * @param {string} selector A selector for the container element.
+     * @param {string|HTMLElement} selector A selector for the container element.
      *
      * @return {void}
      */
     constructor(selector) {
-        this.selector = selector;
-        this.container = document.querySelector(this.selector);
+        this.container = select(selector).node();
 
         this.colorizer = new Colorizer();
         this.formatter = new Formatter();
@@ -80,7 +79,7 @@ class D3Funnel {
      * @return {void}
      */
     destroy() {
-        const container = select(this.selector);
+        const container = select(this.container);
 
         // D3's remove method appears to be sufficient for removing the events
         container.selectAll('svg').remove();
@@ -240,8 +239,8 @@ class D3Funnel {
      */
     getContainerDimensions() {
         return {
-            width: parseFloat(select(this.selector).style('width')),
-            height: parseFloat(select(this.selector).style('height')),
+            width: parseFloat(select(this.container).style('width')),
+            height: parseFloat(select(this.container).style('height')),
         };
     }
 
@@ -347,7 +346,7 @@ class D3Funnel {
      */
     drawOntoDom() {
         // Add the SVG
-        this.svg = select(this.selector)
+        this.svg = select(this.container)
             .append('svg')
             .attr('id', this.id)
             .attr('width', this.settings.width)

@@ -20,6 +20,7 @@ The old structure of an array of arrays has been deprecated and will be removed 
 
 * [#71]: Add `hideLabel` option to the data object
 * [#74]: Add `label.enabled` chart option
+* [#79]: Add support for `HTMLElement` in the D3Funnel constructor
 
 ## v1.0.1 (January 30, 2017)
 
