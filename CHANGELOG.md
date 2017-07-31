@@ -1,3 +1,7 @@
+## v1.1.1 (July 31, 2017)
+
+This is a patch for the npm release, which was shipped without the updated `/dist` directory.
+
 ## v1.1.0 (July 31, 2017)
 
 Release **v1.1.0** adds a variety of new functionality to the funnel, and introduces a new data structure that allows for more flexibility on a row level than previously capable:
