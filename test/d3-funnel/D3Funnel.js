@@ -926,6 +926,59 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('tooltip.enabled', () => {
+            it('should render a simple tooltip box when hovering over a block', () => {
+                const event = document.createEvent('CustomEvent');
+                event.initCustomEvent('mousemove', false, false, null);
+
+                getFunnel().draw(getBasicData(), {
+                    tooltip: {
+                        enabled: true,
+                    },
+                });
+
+                d3.select('#funnel path').node().dispatchEvent(event);
+
+                assert.notEqual(null, d3.select('#funnel .d3-funnel-tooltip').node());
+            });
+
+            it('should hide the tooltip on mouseout', () => {
+                const mouseMove = document.createEvent('CustomEvent');
+                const mouseOut = document.createEvent('CustomEvent');
+                mouseMove.initCustomEvent('mousemove', false, false, null);
+                mouseOut.initCustomEvent('mouseout', false, false, null);
+
+                getFunnel().draw(getBasicData(), {
+                    tooltip: {
+                        enabled: true,
+                    },
+                });
+
+                d3.select('#funnel path').node().dispatchEvent(mouseMove);
+                d3.select('#funnel path').node().dispatchEvent(mouseOut);
+
+                assert.equal(null, d3.select('#funnel .d3-funnel-tooltip').node());
+            });
+        });
+
+        describe('tooltip.format', () => {
+            it('should render tooltips according to the format provided', () => {
+                const event = document.createEvent('CustomEvent');
+                event.initCustomEvent('mousemove', false, false, null);
+
+                getFunnel().draw(getBasicData(), {
+                    tooltip: {
+                        enabled: true,
+                        format: '{l} - {v}',
+                    },
+                });
+
+                d3.select('#funnel path').node().dispatchEvent(event);
+
+                assert.equal('Node - 1000', d3.select('#funnel .d3-funnel-tooltip').text());
+            });
+        });
+
         describe('events.click.block', () => {
             it('should invoke the callback function with the correct data', () => {
                 const event = document.createEvent('CustomEvent');
