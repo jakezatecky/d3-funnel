@@ -90,10 +90,12 @@ parent container:
 | `label.fontFamily`     | Any valid font family for the labels.                                     | string   | `null`                  |
 | `label.fontSize`       | Any valid font size for the labels.                                       | string   | `'14px'`                |
 | `label.fill`           | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
-| `label.format`         | Either `function(label, value)`, an array, or a format string. See below. | mixed    | `'{l}: {f}'`            |
+| `label.format`         | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
+| `tooltip.enabled`      | Whether tooltips should be enabled on hover.                              | bool     | `false`                 |
+| `tooltip.format`       | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
 | `events.click.block`   | Callback `function(data)` for when a block is clicked.                    | function | `null`                  |
 
-### Label Format
+### Label/Tooltip Format
 
 The option `label.format` can either be a function or a string. The following
 keys will be substituted by the string formatter:
