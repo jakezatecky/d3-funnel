@@ -1,6 +1,6 @@
-## v1.1.0 (TBA)
+## v1.1.0 (July 31, 2017)
 
-Release **v1.1.0** adds a variety of exciting new functionality to the funnel, and introduces a new data structure that allows for more flexibility on a row level than previously capable:
+Release **v1.1.0** adds a variety of new functionality to the funnel, and introduces a new data structure that allows for more flexibility on a row level than previously capable:
 
 ``` javascript
 funnel.draw([{
@@ -18,6 +18,7 @@ The old structure of an array-of-arrays has been deprecated and will be removed 
 
 ### New Features
 
+* [#45]: Add support for tooltips via `tooltip.enabled` and `tooltip.format`
 * [#71]: Add `hideLabel` option to the data object
 * [#74]: Add `label.enabled` chart option
 * [#79]: Add support for `HTMLElement` in the D3Funnel constructor
