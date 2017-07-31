@@ -10,7 +10,7 @@ funnel.draw([{
 }]);
 ```
 
-The old structure of an array of arrays has been deprecated and will be removed into the **v2.0** release. Please update to the newest data structure as soon as possible. Refer to the README for the list of available options, which includes all of the capabilities previously held in the data array.
+The old structure of an array-of-arrays has been deprecated and will be removed in the **v2.0** release. Please update to the newest data structure as soon as possible. Refer to the README for the list of available options, which includes all of the capabilities previously held in the data array.
 
 ### Deprecations
 
