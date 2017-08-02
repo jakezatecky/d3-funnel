@@ -124,15 +124,15 @@ Example:
 
 ``` javascript
 {
-	index: 0,
-	node: { ... },
-	value: 150,
-	fill: '#c33',
-	label: {
-		raw: 'Visitors',
-		formatted: 'Visitors: 150',
-		color: '#fff',
-	},
+    index: 0,
+    node: { ... },
+    value: 150,
+    fill: '#c33',
+    label: {
+        raw: 'Visitors',
+        formatted: 'Visitors: 150',
+        color: '#fff',
+    },
 },
 ```
 
