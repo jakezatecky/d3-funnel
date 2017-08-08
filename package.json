@@ -45,7 +45,7 @@
     "lodash": "^4.0.0",
     "mocha": "^3.0.0",
     "webpack": "^3.4.1",
-    "webpack-stream": "^3.0.0"
+    "webpack-stream": "^4.0.0"
   },
   "dependencies": {
     "d3": "^4.2.0",
