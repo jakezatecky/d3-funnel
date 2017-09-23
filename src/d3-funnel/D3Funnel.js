@@ -361,9 +361,7 @@ class D3Funnel {
             .attr('width', this.settings.width)
             .attr('height', this.settings.height);
 
-        const newPaths = this.makePaths();
-        this.blockPaths = newPaths[0];
-        this.overlayPaths = newPaths[1];
+        [this.blockPaths, this.overlayPaths] = this.makePaths();
 
         // Define color gradients
         if (this.settings.fillType === 'gradient') {
@@ -398,8 +396,7 @@ class D3Funnel {
         this.dy = this.getDy();
 
         // Initialize velocity
-        let dx = this.dx;
-        let dy = this.dy;
+        let { dx, dy } = this;
 
         // Initialize starting positions
         let prevLeftX = 0;
@@ -511,7 +508,7 @@ class D3Funnel {
                 }
 
                 // Prevent NaN or Infinite values (caused by zero heights)
-                if (isNaN(nextLeftX) || !isFinite(nextLeftX)) {
+                if (Number.isNaN(nextLeftX) || !Number.isFinite(nextLeftX)) {
                     nextLeftX = 0;
                 }
 
@@ -549,7 +546,7 @@ class D3Funnel {
                     // and bottomPinch are non trivial and dynamicHeight is
                     // false)
                     if (!this.settings.dynamicHeight) {
-                        dx = this.dx;
+                        ({ dx } = this);
                     }
 
                     dx = i < this.settings.bottomPinch ? 0 : dx;

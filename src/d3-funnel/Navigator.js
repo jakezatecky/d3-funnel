@@ -94,7 +94,14 @@ class Navigator {
      *
      * @return {Array}
      */
-    makeBezierPath({ p00, p01, p02, p10, p11, p12 }, ratio = 1) {
+    makeBezierPath({
+        p00,
+        p01,
+        p02,
+        p10,
+        p11,
+        p12,
+    }, ratio = 1) {
         const curve0 = this.getQuadraticBezierCurve(p00, p01, p02, ratio);
         const curve1 = this.getQuadraticBezierCurve(p10, p11, p12, ratio);
 
