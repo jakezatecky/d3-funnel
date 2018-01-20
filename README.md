@@ -1,4 +1,4 @@
-# D3 Funnel
+# d3-funnel
 
 [![npm](https://img.shields.io/npm/v/d3-funnel.svg?style=flat-square)](https://www.npmjs.com/package/d3-funnel)
 [![Build Status](https://img.shields.io/travis/jakezatecky/d3-funnel/master.svg?style=flat-square)](https://travis-ci.org/jakezatecky/d3-funnel)
@@ -6,10 +6,10 @@
 [![devDependency Status](https://david-dm.org/jakezatecky/d3-funnel/dev-status.svg?style=flat-square)](https://david-dm.org/jakezatecky/d3-funnel?type=dev)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/jakezatecky/d3-funnel/master/LICENSE.txt)
 
-**D3Funnel** is an extensible, open-source JavaScript library for rendering
+**d3-funnel** is an extensible, open-source JavaScript library for rendering
 funnel charts using the [D3.js][d3] library.
 
-D3Funnel is focused on providing practical and visually appealing funnels
+d3-funnel is focused on providing practical and visually appealing funnels
 through a variety of customization options. Check out the [examples page][examples]
 to get a showcasing of the several possible options.
 
