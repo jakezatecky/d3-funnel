@@ -1,6 +1,6 @@
-## v1.2.0 (TBA)
+## v1.2.0 (June 25, 2018)
 
-### New Features
+### Dependencies
 
 * [#87]: Add official support for D3 v5 (while continuing support for D3 v4)
 
