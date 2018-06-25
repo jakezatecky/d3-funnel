@@ -587,6 +587,25 @@ describe('D3Funnel', () => {
                     assert.equal(false, definition.indexOf('NaN') > -1 || definition.indexOf('Infinity') > -1);
                 });
             });
+
+            it('should give all blocks equal height if the sum of values is zero', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 0 },
+                    { label: 'B', value: 0 },
+                ], {
+                    chart: {
+                        height: 300,
+                    },
+                    block: {
+                        dynamicHeight: true,
+                    },
+                });
+
+                const paths = d3.selectAll('#funnel path').nodes();
+
+                assert.equal(150, getPathHeight(d3.select(paths[0])));
+                assert.equal(150, getPathHeight(d3.select(paths[1])));
+            });
         });
 
         describe('block.dynamicSlope', () => {

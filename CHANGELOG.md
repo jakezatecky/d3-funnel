@@ -2,7 +2,11 @@
 
 ### New Features
 
-* [#87]: Add support for D3 v5
+* [#87]: Add official support for D3 v5 (while continuing support for D3 v4)
+
+### Bug Fixes
+
+* [#86]: Fix issue where heights were being calculated incorrectly when the sum of values was zero
 
 ## v1.1.1 (July 31, 2017)
 

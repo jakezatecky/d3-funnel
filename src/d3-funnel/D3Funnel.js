@@ -322,7 +322,7 @@ class D3Funnel {
     standardizeData(data, totalCount) {
         return data.map((rawBlock, index) => {
             const block = Array.isArray(rawBlock) ? Utils.convertLegacyBlock(rawBlock) : rawBlock;
-            const ratio = block.value / totalCount || 0;
+            const ratio = totalCount > 0 ? (block.value / totalCount || 0) : 1 / data.length;
 
             return {
                 index,
