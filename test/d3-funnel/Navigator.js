@@ -2,7 +2,7 @@ import chai from 'chai';
 
 import Navigator from '../../src/d3-funnel/Navigator';
 
-const assert = chai.assert;
+const { assert } = chai;
 
 describe('Navigator', () => {
     describe('plot', () => {

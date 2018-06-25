@@ -2,7 +2,7 @@ import chai from 'chai';
 
 import Utils from '../../src/d3-funnel/Utils';
 
-const assert = chai.assert;
+const { assert } = chai;
 
 describe('Utils', () => {
     describe('extend', () => {

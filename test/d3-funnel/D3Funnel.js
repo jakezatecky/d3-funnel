@@ -5,7 +5,7 @@ import spies from 'chai-spies';
 
 import D3Funnel from '../../src/d3-funnel/D3Funnel';
 
-const assert = chai.assert;
+const { assert } = chai;
 chai.use(spies);
 
 function getFunnel() {
@@ -492,10 +492,7 @@ describe('D3Funnel', () => {
                 });
 
                 const paths = d3.selectAll('#funnel path').nodes();
-
-                const quadraticPaths = paths.filter(path =>
-                    d3.select(path).attr('d').indexOf('Q') > -1,
-                );
+                const quadraticPaths = paths.filter(path => d3.select(path).attr('d').indexOf('Q') > -1);
 
                 assert.equal(paths.length, quadraticPaths.length);
             });

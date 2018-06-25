@@ -17,7 +17,12 @@ const pkg = require('./package.json');
 const banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFullYear() %> */\n';
 
 gulp.task('test-format', () => (
-    gulp.src(['./src/d3-funnel/**/*.js'])
+    gulp.src([
+        './examples/src/**.js',
+        './src/**/*.js',
+        './test/d3-funnel/**/*.js',
+        './*.js',
+    ])
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failOnError())
