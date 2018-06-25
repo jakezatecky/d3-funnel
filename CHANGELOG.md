@@ -1,3 +1,9 @@
+## v1.2.0 (TBA)
+
+### New Features
+
+* [#87]: Add support for D3 v5
+
 ## v1.1.1 (July 31, 2017)
 
 This is a patch for the npm release, which was shipped without the updated `/dist` directory.
