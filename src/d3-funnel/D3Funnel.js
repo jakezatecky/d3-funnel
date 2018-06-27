@@ -1,5 +1,10 @@
 import shortid from 'shortid';
-import { easeLinear, range, scaleOrdinal, schemeCategory10 } from 'd3';
+import {
+    easeLinear,
+    range,
+    scaleOrdinal,
+    schemeCategory10,
+} from 'd3';
 import { select } from 'd3-selection';
 import 'd3-selection-multi';
 
