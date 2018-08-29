@@ -2,4 +2,5 @@
 /compiled
 /node_modules
 /test/compiled
+package-lock.json
 yarn.lock
