@@ -18,7 +18,7 @@ const banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFu
 
 gulp.task('test-format', () => (
     gulp.src([
-        './examples/src/**.js',
+        './examples/src/**/*.js',
         './src/**/*.js',
         './test/d3-funnel/**/*.js',
         './*.js',
