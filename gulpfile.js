@@ -41,13 +41,13 @@ gulp.task('test-mocha', ['compile-test'], () => (
 
 gulp.task('test', ['test-format', 'test-mocha']);
 
-gulp.task('compile-build', () => (
+gulp.task('compile-build', ['test'], () => (
     gulp.src(['./src/index.js'])
         .pipe(webpackStream(webpackConfig, webpack))
         .pipe(gulp.dest('./compiled/'))
 ));
 
-gulp.task('build', ['test', 'compile-build'], () => (
+gulp.task('build', ['compile-build'], () => (
     gulp.src(['./compiled/d3-funnel.js'])
         .pipe(gulp.dest('./dist/'))
         .pipe(rename({
