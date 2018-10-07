@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha-phantomjs');
 const rename = require('gulp-rename');
-const uglify = require('gulp-uglify');
 const header = require('gulp-header');
 const scsslint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
@@ -41,19 +40,19 @@ gulp.task('test-mocha', ['compile-test'], () => (
 
 gulp.task('test', ['test-format', 'test-mocha']);
 
-gulp.task('compile-build', ['test'], () => (
+gulp.task('build', ['test'], () => (
     gulp.src(['./src/index.js'])
         .pipe(webpackStream(webpackConfig, webpack))
-        .pipe(gulp.dest('./compiled/'))
+        .pipe(gulp.dest('./dist/'))
 ));
 
-gulp.task('build', ['compile-build'], () => (
-    gulp.src(['./compiled/d3-funnel.js'])
-        .pipe(gulp.dest('./dist/'))
-        .pipe(rename({
-            extname: '.min.js',
-        }))
-        .pipe(uglify())
+gulp.task('build-min', ['build'], () => (
+    gulp.src(['./src/index.js'])
+        .pipe(webpackStream({
+            ...webpackConfig,
+            mode: 'production',
+        }, webpack))
+        .pipe(rename({ extname: '.min.js' }))
         .pipe(header(banner, { pkg }))
         .pipe(gulp.dest('./dist/'))
 ));
@@ -93,4 +92,4 @@ gulp.task('examples', ['build-examples-style', 'build-examples-script', 'build-e
     gulp.watch(['./examples/src/**/*.html'], ['build-examples-html']).on('change', browserSync.reload);
 });
 
-gulp.task('default', ['build']);
+gulp.task('default', ['build-min']);

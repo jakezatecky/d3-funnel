@@ -1,3 +1,9 @@
+## v1.2.1 (TBA)
+
+### Build Process
+
+* [#93]: Fix issue where `dist/d3-funnel.js` was being minified alongside `dist/d3-funnel.min.js`
+
 ## v1.2.0 (June 25, 2018)
 
 ### Dependencies

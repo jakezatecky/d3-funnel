@@ -1,5 +1,5 @@
 module.exports = {
-    mode: 'production',
+    mode: 'none',
     output: {
         filename: 'd3-funnel.js',
         libraryTarget: 'umd',
@@ -15,7 +15,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js?$/,
-                exclude: /(node_modules|bower_components|vender_modules)/,
+                exclude: /(node_modules)/,
                 loader: 'babel-loader',
             },
         ],
