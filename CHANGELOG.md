@@ -4,7 +4,7 @@
 
 * [#93]: Fix issue where `dist/d3-funnel.js` was being minified alongside `dist/d3-funnel.min.js`
 
-## v1.2.0 (June 25, 2018)
+## [v1.2.0](https://github.com/jakezatecky/d3-funnel/compare/v1.1.1...v1.2.0) (2018-06-25)
 
 ### Dependencies
 
@@ -14,11 +14,11 @@
 
 * [#86]: Fix issue where heights were being calculated incorrectly when the sum of values was zero
 
-## v1.1.1 (July 31, 2017)
+## [v1.1.1](https://github.com/jakezatecky/d3-funnel/compare/v1.1.0...v1.1.1) (2017-07-31)
 
 This is a patch for the npm release, which was shipped without the updated `/dist` directory.
 
-## v1.1.0 (July 31, 2017)
+## [v1.1.0](https://github.com/jakezatecky/d3-funnel/compare/v1.0.1...v1.1.0) (2017-07-31)
 
 Release **v1.1.0** adds a variety of new functionality to the funnel, and introduces a new data structure that allows for more flexibility on a row level than previously capable:
 
@@ -47,14 +47,14 @@ The old structure of an array-of-arrays has been deprecated and will be removed 
 
 * [#77]: Fix an issue where containers with zero width and/or height would not inherit from the default dimensions
 
-## v1.0.1 (January 30, 2017)
+## [v1.0.1](https://github.com/jakezatecky/d3-funnel/compare/v1.0.0...v1.0.1) (2017-01-30)
 
 ### Bug Fixes
 
 * [#67]: Add missing `cursor: pointer` style to blocks when clickable
 * [#70]: Fix NaN and Infinity values in block paths when height is zero and `dynamicHeight: true`
 
-## v1.0.0 (August 2, 2016)
+## [v1.0.0](https://github.com/jakezatecky/d3-funnel/compare/v0.8.0...v1.0.0) (2016-08-02)
 
 This release breaks major backwards compatibility by upgrading D3 3.x to
 D3 4.x. Refer to D3's [changes documentation](d3-changes) for more info.
@@ -65,7 +65,7 @@ D3 4.x. Refer to D3's [changes documentation](d3-changes) for more info.
 
 [d3-changes]: https://github.com/d3/d3/blob/master/CHANGES.md
 
-## v0.8.0 (July 21, 2016)
+## [v0.8.0](https://github.com/jakezatecky/d3-funnel/compare/v0.7.7...v0.8.0) (2016-07-21)
 
 ### New Features
 
@@ -76,7 +76,7 @@ D3 4.x. Refer to D3's [changes documentation](d3-changes) for more info.
 
 * [#49]: Fix issue where gradient definitions could conflict with existing definitions
 
-## v0.7.7 (July 15, 2016)
+## [v0.7.7](https://github.com/jakezatecky/d3-funnel/compare/v0.7.6...v0.7.7) (2016-07-15)
 
 ### New Features
 
@@ -87,7 +87,7 @@ D3 4.x. Refer to D3's [changes documentation](d3-changes) for more info.
 
 * Simplify and clean up examples
 
-## v0.7.6 (July 12, 2016)
+## [v0.7.6](https://github.com/jakezatecky/d3-funnel/compare/v0.7.5...v0.7.6) (2016-07-12)
 
 ### New Features
 
@@ -98,30 +98,30 @@ D3 4.x. Refer to D3's [changes documentation](d3-changes) for more info.
 
 * [#59]: Fix issue where formatted array values were not being passed to the label formatter
 
-## v0.7.5 (December 19, 2015)
+## [v0.7.5](https://github.com/jakezatecky/d3-funnel/compare/v0.7.4...v0.7.5) (2015-12-19)
 
 ### New Features
 
 * [#44]: Pass DOM node to event data
 
-## v0.7.4 (December 11, 2015)
+## [v0.7.4](https://github.com/jakezatecky/d3-funnel/compare/v0.7.3...v0.7.4) (2015-12-11)
 
 ### Build Changes
 
 * [#42]: Use ES6 imports and exports in source files
 * [#43]: Require D3.js for CommonJS environments
 
-## v0.7.3 (skipped)
+## [v0.7.3](https://github.com/jakezatecky/d3-funnel/compare/v0.7.2...v0.7.3) (skipped)
 
 D3Funnel v0.7.3 is an NPM-only hotfix that adds in missing compiled files.
 
-## v0.7.2 (November 18, 2015)
+## [v0.7.2](https://github.com/jakezatecky/d3-funnel/compare/v0.7.1...v0.7.2) (2015-11-18)
 
 ### Bug Fixes
 
 * [#41]: Fix issue where `events.click.block` would error on `null`
 
-## v0.7.1 (October 28, 2015)
+## [v0.7.1](https://github.com/jakezatecky/d3-funnel/compare/v0.7.0...v0.7.1) (2015-10-28)
 
 ### Behavior Changes
 
@@ -132,7 +132,7 @@ D3Funnel v0.7.3 is an NPM-only hotfix that adds in missing compiled files.
 * [#35]: Fix issue where gradient background would not persist after mouse out
 * [#36]: Fix issue where non-SVG entities were not being removed from container
 
-## v0.7.0 (October 4, 2015)
+## [v0.7.0](https://github.com/jakezatecky/d3-funnel/compare/v0.6.13...v0.7.0) (2015-10-04)
 
 D3Funnel v0.7 is a **backwards-incompatible** release that resolves some
 outstanding bugs, standardizes several option names and formats, and introduces
@@ -180,13 +180,13 @@ below for the new equivalent option:
 
 In addition, please refer to change #29.
 
-## v0.6.13 (October 2, 2015)
+## [v0.6.13](https://github.com/jakezatecky/d3-funnel/compare/v0.6.12...v0.6.13) (2015-10-02)
 
 ### Bug Fixes
 
 * [#33]: Fix issue where `package.json` pointed to the incorrect main file
 
-## v0.6.12 (September 25, 2015)
+## [v0.6.12](https://github.com/jakezatecky/d3-funnel/compare/0.6.11...v0.6.12) (2015-09-25)
 
 ### New Features
 
