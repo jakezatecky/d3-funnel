@@ -1,4 +1,4 @@
-## v1.2.1 (TBA)
+## [v1.2.1](https://github.com/jakezatecky/d3-funnel/compare/v1.2.0...v1.2.1) (2018-10-13)
 
 ### Build Process
 
