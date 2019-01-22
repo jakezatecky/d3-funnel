@@ -4,6 +4,7 @@
 [![Build Status](https://img.shields.io/travis/jakezatecky/d3-funnel/master.svg?style=flat-square)](https://travis-ci.org/jakezatecky/d3-funnel)
 [![Dependency Status](https://img.shields.io/david/jakezatecky/d3-funnel.svg?style=flat-square)](https://david-dm.org/jakezatecky/d3-funnel)
 [![devDependency Status](https://david-dm.org/jakezatecky/d3-funnel/dev-status.svg?style=flat-square)](https://david-dm.org/jakezatecky/d3-funnel?type=dev)
+[![Greenkeeper badge](https://badges.greenkeeper.io/jakezatecky/d3-funnel.svg?style=flat-square)](https://greenkeeper.io/)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/jakezatecky/d3-funnel/master/LICENSE.txt)
 
 **d3-funnel** is an extensible, open-source JavaScript library for rendering
