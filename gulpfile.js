@@ -33,20 +33,20 @@ gulp.task('compile-test', () => (
         .pipe(gulp.dest('./test/compiled/'))
 ));
 
-gulp.task('test-mocha', ['compile-test'], () => (
+gulp.task('test-mocha', gulp.series('compile-test', () => (
     gulp.src(['test/test.html'])
         .pipe(mocha({ reporter: 'spec' }))
-));
+)));
 
-gulp.task('test', ['test-format', 'test-mocha']);
+gulp.task('test', gulp.series('test-format', 'test-mocha'));
 
-gulp.task('build', ['test'], () => (
+gulp.task('build', gulp.series('test', () => (
     gulp.src(['./src/index.js'])
         .pipe(webpackStream(webpackConfig, webpack))
         .pipe(gulp.dest('./dist/'))
-));
+)));
 
-gulp.task('build-min', ['build'], () => (
+gulp.task('build-min', gulp.series('build', () => (
     gulp.src(['./src/index.js'])
         .pipe(webpackStream({
             ...webpackConfig,
@@ -55,7 +55,7 @@ gulp.task('build-min', ['build'], () => (
         .pipe(rename({ extname: '.min.js' }))
         .pipe(header(banner, { pkg }))
         .pipe(gulp.dest('./dist/'))
-));
+)));
 
 gulp.task('build-examples-style', () => (
     gulp.src('./examples/src/scss/**/*.scss')
@@ -84,12 +84,12 @@ gulp.task('build-examples-html', () => (
         .pipe(browserSync.stream())
 ));
 
-gulp.task('examples', ['build-examples-style', 'build-examples-script', 'build-examples-html'], () => {
+gulp.task('examples', gulp.series(gulp.parallel('build-examples-style', 'build-examples-script', 'build-examples-html'), () => {
     browserSync.init({ server: './examples/dist' });
 
-    gulp.watch(['./src/**/*.js', './examples/src/**/*.js'], ['build-examples-script']);
-    gulp.watch(['./examples/src/scss/**/*.scss'], ['build-examples-style']);
-    gulp.watch(['./examples/src/**/*.html'], ['build-examples-html']).on('change', browserSync.reload);
-});
+    gulp.watch(['./src/**/*.js', './examples/src/**/*.js']).on('change', gulp.series('build-examples-script'));
+    gulp.watch(['./examples/src/scss/**/*.scss']).on('change', gulp.series('build-examples-style'));
+    gulp.watch(['./examples/src/**/*.html']).on('change', gulp.series('build-examples-html', browserSync.reload));
+}));
 
-gulp.task('default', ['build-min']);
+gulp.task('default', gulp.series('build-min'));
