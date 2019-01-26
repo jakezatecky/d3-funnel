@@ -1,3 +1,9 @@
+## [v1.2.2](https://github.com/jakezatecky/d3-funnel/compare/v1.2.1...v1.2.2) (2019-01-26)
+
+### Performance
+
+* [#97]: Significantly reduce package size to around 27% of its original size
+
 ## [v1.2.1](https://github.com/jakezatecky/d3-funnel/compare/v1.2.0...v1.2.1) (2018-10-13)
 
 ### Build Process
