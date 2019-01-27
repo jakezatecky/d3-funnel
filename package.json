@@ -18,8 +18,11 @@
   "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
   "main": "dist/d3-funnel.js",
   "scripts": {
-    "gh-deploy": "git subtree push --prefix examples/dist origin gh-pages",
-    "prepublishOnly": "gulp build"
+    "build": "gulp build",
+    "examples": "gulp examples",
+    "gh-deploy": "gulp build-gh-pages && bash ./gh-deploy.sh",
+    "prepublishOnly": "gulp build-script-min",
+    "test": "gulp test-script"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -39,6 +42,7 @@
     "eslint-plugin-import": "^2.7.0",
     "gulp": "^4.0.0",
     "gulp-autoprefixer": "^6.0.0",
+    "gulp-clean-css": "^4.0.0",
     "gulp-eslint": "^5.0.0",
     "gulp-header": "^2.0.1",
     "gulp-mocha-phantomjs": "^0.12.0",

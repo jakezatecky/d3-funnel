@@ -1,5 +1,5 @@
 module.exports = {
-    mode: 'none',
+    mode: 'production',
     output: {
         filename: 'd3-funnel.js',
         libraryTarget: 'umd',

@@ -1,21 +1,24 @@
-const gulp = require('gulp');
+const autoprefixer = require('gulp-autoprefixer');
+const browserSyncImport = require('browser-sync');
+const cleanCss = require('gulp-clean-css');
 const eslint = require('gulp-eslint');
+const gulp = require('gulp');
+const header = require('gulp-header');
 const mocha = require('gulp-mocha-phantomjs');
 const rename = require('gulp-rename');
-const header = require('gulp-header');
 const scsslint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
-const autoprefixer = require('gulp-autoprefixer');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
-const browserSync = require('browser-sync').create();
-const webpackConfig = require('./webpack.config.js');
-const testWebpackConfig = require('./webpack.test.config.js');
+
 const pkg = require('./package.json');
+const testWebpackConfig = require('./webpack.test.config.js');
+const webpackConfig = require('./webpack.config.js');
 
 const banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFullYear() %> */\n';
+const browserSync = browserSyncImport.create();
 
-gulp.task('test-format', () => (
+gulp.task('test-script-format', () => (
     gulp.src([
         './examples/src/**/*.js',
         './src/**/*.js',
@@ -27,26 +30,26 @@ gulp.task('test-format', () => (
         .pipe(eslint.failOnError())
 ));
 
-gulp.task('compile-test', () => (
+gulp.task('compile-test-script', () => (
     gulp.src(['./test/index.js'])
         .pipe(webpackStream(testWebpackConfig, webpack))
         .pipe(gulp.dest('./test/compiled/'))
 ));
 
-gulp.task('test-mocha', gulp.series('compile-test', () => (
+gulp.task('test-script-mocha', gulp.series('compile-test-script', () => (
     gulp.src(['test/test.html'])
         .pipe(mocha({ reporter: 'spec' }))
 )));
 
-gulp.task('test', gulp.series('test-format', 'test-mocha'));
+gulp.task('test-script', gulp.series('test-script-format', 'test-script-mocha'));
 
-gulp.task('build', gulp.series('test', () => (
+gulp.task('build-script', gulp.series('test-script', () => (
     gulp.src(['./src/index.js'])
         .pipe(webpackStream(webpackConfig, webpack))
         .pipe(gulp.dest('./dist/'))
 )));
 
-gulp.task('build-min', gulp.series('build', () => (
+gulp.task('build-script-min', gulp.series('build-script', () => (
     gulp.src(['./src/index.js'])
         .pipe(webpackStream({
             ...webpackConfig,
@@ -57,8 +60,16 @@ gulp.task('build-min', gulp.series('build', () => (
         .pipe(gulp.dest('./dist/'))
 )));
 
-gulp.task('build-examples-style', () => (
-    gulp.src('./examples/src/scss/**/*.scss')
+gulp.task('build', gulp.series('build-script-min'));
+
+function buildExamplesScript(mode = 'development') {
+    return gulp.src(['./examples/src/js/index.js'])
+        .pipe(webpackStream({ ...testWebpackConfig, mode }, webpack))
+        .pipe(gulp.dest('./examples/dist/'));
+}
+
+function buildExamplesStyle(minifyStyles = false) {
+    let stream = gulp.src('./examples/src/scss/**/*.scss')
         .pipe(scsslint())
         .pipe(scsslint.failReporter())
         .pipe(sass({
@@ -66,16 +77,29 @@ gulp.task('build-examples-style', () => (
         }).on('error', sass.logError))
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
-        }))
-        .pipe(gulp.dest('./examples/dist/css'))
-        .pipe(browserSync.stream())
-));
+        }));
+
+    if (minifyStyles) {
+        stream = stream.pipe(cleanCss());
+    }
+
+    return stream.pipe(gulp.dest('./examples/dist'));
+}
 
 gulp.task('build-examples-script', () => (
-    gulp.src(['./examples/src/js/index.js'])
-        .pipe(webpackStream(testWebpackConfig, webpack))
-        .pipe(gulp.dest('./examples/dist/js'))
-        .pipe(browserSync.stream())
+    buildExamplesScript().pipe(browserSync.stream())
+));
+
+gulp.task('build-examples-script-prod', () => (
+    buildExamplesScript('production')
+));
+
+gulp.task('build-examples-style', () => (
+    buildExamplesStyle().pipe(browserSync.stream())
+));
+
+gulp.task('build-examples-style-prod', () => (
+    buildExamplesStyle(true)
 ));
 
 gulp.task('build-examples-html', () => (
@@ -92,4 +116,5 @@ gulp.task('examples', gulp.series(gulp.parallel('build-examples-style', 'build-e
     gulp.watch(['./examples/src/**/*.html']).on('change', gulp.series('build-examples-html', browserSync.reload));
 }));
 
-gulp.task('default', gulp.series('build-min'));
+gulp.task('default', gulp.series('build'));
+gulp.task('build-gh-pages', gulp.parallel('build-examples-style-prod', 'build-examples-script-prod', 'build-examples-html'));
