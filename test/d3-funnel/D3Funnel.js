@@ -7,12 +7,11 @@ import {
     schemeCategory10,
 } from 'd3';
 import chai from 'chai';
-import spies from 'chai-spies';
+import sinon from 'sinon';
 
 import D3Funnel from '../../src/d3-funnel/D3Funnel';
 
 const { assert } = chai;
-chai.use(spies);
 
 function getFunnel() {
     return new D3Funnel('#funnel');
@@ -915,10 +914,7 @@ describe('D3Funnel', () => {
                     },
                 });
 
-                // Node.js does not have localization, so toLocaleString() will
-                // leave the value untouched
-                // https://github.com/joyent/node/issues/4689
-                assert.equal('Node 1000 1000', select('#funnel text').text());
+                assert.equal('Node 1000 1,000', select('#funnel text').text());
             });
 
             it('should create split multiple lines into multiple tspans', () => {
@@ -1020,13 +1016,13 @@ describe('D3Funnel', () => {
                 const event = document.createEvent('CustomEvent');
                 event.initCustomEvent('click', false, false, null);
 
-                const spy = chai.spy();
+                const proxy = sinon.fake();
 
                 getFunnel().draw(getBasicData(), {
                     events: {
                         click: {
                             block: (d, i) => {
-                                spy({
+                                proxy({
                                     index: d.index,
                                     node: d.node,
                                     label: d.label.raw,
@@ -1039,12 +1035,12 @@ describe('D3Funnel', () => {
 
                 select('#funnel path').node().dispatchEvent(event);
 
-                chai.expect(spy).to.have.been.called.once.with({
+                assert.isTrue(proxy.calledWith({
                     index: 0,
                     node: select('#funnel path').node(),
                     label: 'Node',
                     value: 1000,
-                }, 0);
+                }, 0));
             });
 
             it('should not trigger errors when null', () => {

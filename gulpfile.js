@@ -2,9 +2,9 @@ const autoprefixer = require('gulp-autoprefixer');
 const browserSyncImport = require('browser-sync');
 const cleanCss = require('gulp-clean-css');
 const eslint = require('gulp-eslint');
+const exec = require('gulp-exec');
 const gulp = require('gulp');
 const header = require('gulp-header');
-const mocha = require('gulp-mocha-phantomjs');
 const rename = require('gulp-rename');
 const scsslint = require('gulp-scss-lint');
 const sass = require('gulp-sass');
@@ -36,10 +36,11 @@ gulp.task('compile-test-script', () => (
         .pipe(gulp.dest('./test/compiled/'))
 ));
 
-gulp.task('test-script-mocha', gulp.series('compile-test-script', () => (
-    gulp.src(['test/test.html'])
-        .pipe(mocha({ reporter: 'spec' }))
-)));
+gulp.task('test-script-mocha', () => (
+    gulp.src('./gulpfile.js')
+        .pipe(exec('npm run mocha'))
+        .pipe(exec.reporter())
+));
 
 gulp.task('test-script', gulp.series('test-script-format', 'test-script-mocha'));
 
