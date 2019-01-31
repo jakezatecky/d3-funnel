@@ -36,11 +36,11 @@ gulp.task('compile-test-script', () => (
         .pipe(gulp.dest('./test/compiled/'))
 ));
 
-gulp.task('test-script-mocha', () => (
+gulp.task('test-script-mocha', gulp.series('compile-test-script', () => (
     gulp.src('./gulpfile.js')
         .pipe(exec('npm run mocha'))
         .pipe(exec.reporter())
-));
+)));
 
 gulp.task('test-script', gulp.series('test-script-format', 'test-script-mocha'));
 
