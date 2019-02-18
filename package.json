@@ -51,7 +51,7 @@
     "gulp-scss-lint": "^1.0.0",
     "jsdom": "^13.2.0",
     "lodash": "^4.17.10",
-    "mocha": "^5.0.0",
+    "mocha": "^6.0.0",
     "mocha-chrome": "^2.0.0",
     "sinon": "^7.2.3",
     "webpack": "^4.12.1",
