@@ -41,7 +41,7 @@
     "eslint-import-resolver-webpack": "^0.11.0",
     "eslint-plugin-import": "^2.7.0",
     "gulp": "^4.0.0",
-    "gulp-autoprefixer": "^6.0.0",
+    "gulp-autoprefixer": "^7.0.0",
     "gulp-clean-css": "^4.0.0",
     "gulp-eslint": "^5.0.0",
     "gulp-exec": "^4.0.0",
