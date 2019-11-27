@@ -1,8 +1,7 @@
 {
 	"extends": "takiyon",
 	"env": {
-		"browser": true,
-		"mocha": true
+		"browser": true
 	},
 	"settings": {
 		"import/resolver": {
