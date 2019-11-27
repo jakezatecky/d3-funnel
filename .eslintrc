@@ -1,13 +1,13 @@
 {
-	"extends": "takiyon",
-	"env": {
-		"browser": true
-	},
-	"settings": {
-		"import/resolver": {
-			"webpack": {
-				"config": "webpack.test.config.js"
-			}
-		}
-	}
+  "extends": "takiyon",
+  "env": {
+    "browser": true
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.test.config.js"
+      }
+    }
+  }
 }
