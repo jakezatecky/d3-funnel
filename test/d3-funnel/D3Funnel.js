@@ -497,7 +497,7 @@ describe('D3Funnel', () => {
                 });
 
                 const paths = selectAll('#funnel path').nodes();
-                const quadraticPaths = paths.filter(path => select(path).attr('d').indexOf('Q') > -1);
+                const quadraticPaths = paths.filter((path) => select(path).attr('d').indexOf('Q') > -1);
 
                 assert.equal(paths.length, quadraticPaths.length);
             });
