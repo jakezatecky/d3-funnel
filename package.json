@@ -35,7 +35,7 @@
     "babel-loader": "^8.0.0",
     "browser-sync": "^2.26.3",
     "chai": "^4.0.1",
-    "d3": "^5.5.0",
+    "d3": "^6.2.0",
     "eslint": "^6.0.0",
     "eslint-config-takiyon": "^0.4.0",
     "eslint-import-resolver-webpack": "^0.12.0",
