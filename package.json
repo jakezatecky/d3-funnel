@@ -56,7 +56,7 @@
     "sinon": "^9.0.0",
     "webpack": "^4.12.1",
     "webpack-cli": "^4.1.0",
-    "webpack-stream": "^5.1.1"
+    "webpack-stream": "^6.1.0"
   },
   "dependencies": {
     "d3-array": "^2.0.3",
