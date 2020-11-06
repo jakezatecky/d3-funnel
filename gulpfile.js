@@ -22,6 +22,7 @@ gulp.task('test-script-format', () => (
     gulp.src([
         './examples/src/**/*.js',
         './src/**/*.js',
+        './test/*.js',
         './test/d3-funnel/**/*.js',
         './*.js',
     ])
