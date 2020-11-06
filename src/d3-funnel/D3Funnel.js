@@ -1,10 +1,10 @@
-import shortid from 'shortid';
 import { linear as easeLinear } from 'd3-ease/src/linear';
 import range from 'd3-array/src/range';
 import scaleOrdinal from 'd3-scale/src/ordinal';
 import schemeCategory10 from 'd3-scale-chromatic/src/categorical/category10';
 import { select } from 'd3-selection';
 import 'd3-selection-multi';
+import { nanoid } from 'nanoid';
 
 import Colorizer from './Colorizer';
 import Formatter from './Formatter';
@@ -127,7 +127,7 @@ class D3Funnel {
 
         const settings = this.getSettings(options);
 
-        this.id = `d3-funnel-${shortid.generate()}`;
+        this.id = `d3-funnel-${nanoid()}`;
 
         // Set labels
         this.labelFormatter = this.formatter.getFormatter(settings.label.format);
