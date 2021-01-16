@@ -1,3 +1,9 @@
+## v2.0.0 (TBA)
+
+### Dependencies
+
+* **Breaking**: Upgrade to using D3 v6 (changes `events.click.block(d)` to `events.click.block(event, d)`)
+
 ## [v1.2.2](https://github.com/jakezatecky/d3-funnel/compare/v1.2.1...v1.2.2) (2019-01-26)
 
 ### Performance
