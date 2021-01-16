@@ -3,6 +3,7 @@ import range from 'd3-array/src/range';
 import scaleOrdinal from 'd3-scale/src/ordinal';
 import schemeCategory10 from 'd3-scale-chromatic/src/categorical/category10';
 import { select } from 'd3-selection';
+import 'd3-transition';
 import { nanoid } from 'nanoid';
 
 import Colorizer from './Colorizer';
