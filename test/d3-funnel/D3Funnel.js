@@ -1021,13 +1021,13 @@ describe('D3Funnel', () => {
                 getFunnel().draw(getBasicData(), {
                     events: {
                         click: {
-                            block: (d, i) => {
+                            block: (e, d) => {
                                 proxy({
                                     index: d.index,
                                     node: d.node,
                                     label: d.label.raw,
                                     value: d.value,
-                                }, i);
+                                });
                             },
                         },
                     },
@@ -1040,7 +1040,7 @@ describe('D3Funnel', () => {
                     node: select('#funnel path').node(),
                     label: 'Node',
                     value: 1000,
-                }, 0));
+                }));
             });
 
             it('should not trigger errors when null', () => {
