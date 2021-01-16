@@ -6,8 +6,8 @@ const exec = require('gulp-exec');
 const gulp = require('gulp');
 const header = require('gulp-header');
 const rename = require('gulp-rename');
-const scsslint = require('gulp-scss-lint');
-const sass = require('gulp-sass');
+const styleLint = require('gulp-stylelint');
+const sass = require('gulp-dart-sass');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 
@@ -43,7 +43,7 @@ gulp.task('test-script-mocha', gulp.series('compile-test-script', () => (
         .pipe(exec.reporter())
 )));
 
-gulp.task('test-script', gulp.series('test-script-format', 'test-script-mocha'));
+gulp.task('test-script', gulp.series(gulp.parallel('test-script-format', 'test-script-mocha')));
 
 gulp.task('build-script', gulp.series('test-script', () => (
     gulp.src(['./src/index.js'])
@@ -72,8 +72,11 @@ function buildExamplesScript(mode = 'development') {
 
 function buildExamplesStyle(minifyStyles = false) {
     let stream = gulp.src('./examples/src/scss/**/*.scss')
-        .pipe(scsslint())
-        .pipe(scsslint.failReporter())
+        .pipe(styleLint({
+            reporters: [
+                { formatter: 'string', console: true },
+            ],
+        }))
         .pipe(sass({
             outputStyle: 'expanded',
         }).on('error', sass.logError))
