@@ -3,7 +3,6 @@ import range from 'd3-array/src/range';
 import scaleOrdinal from 'd3-scale/src/ordinal';
 import schemeCategory10 from 'd3-scale-chromatic/src/categorical/category10';
 import { select } from 'd3-selection';
-import 'd3-selection-multi';
 import { nanoid } from 'nanoid';
 
 import Colorizer from './Colorizer';
@@ -665,10 +664,9 @@ class D3Funnel {
 
             // Add the gradient stops
             stops.forEach((stop) => {
-                gradient.append('stop').attrs({
-                    offset: `${stop[0]}%`,
-                    style: `stop-color: ${stop[1]}`,
-                });
+                gradient.append('stop')
+                    .attr('offset', `${stop[0]}%`)
+                    .attr('style', `stop-color: ${stop[1]}`);
             });
         });
     }
@@ -1046,15 +1044,13 @@ class D3Funnel {
         const y = this.getTextY(paths);
 
         const text = group.append('text')
-            .attrs({
-                x,
-                y,
-                fill,
-                'font-size': this.settings.label.fontSize,
-                'text-anchor': 'middle',
-                'dominant-baseline': 'middle',
-                'pointer-events': 'none',
-            });
+            .attr('x', x)
+            .attr('y', y)
+            .attr('fill', fill)
+            .attr('font-size', this.settings.label.fontSize)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('pointer-events', 'none');
 
         // Add font-family, if exists
         if (this.settings.label.fontFamily !== null) {
@@ -1085,7 +1081,7 @@ class D3Funnel {
         lines.forEach((line, i) => {
             const dy = i === 0 ? initialDy : lineHeight;
 
-            text.append('tspan').attrs({ x, dy }).text(line);
+            text.append('tspan').attr('x', x).attr('dy', dy).text(line);
         });
     }
 
