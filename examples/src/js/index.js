@@ -39,7 +39,7 @@ const settings = {
     click: {
         events: {
             click: {
-                block(d) {
+                block(event, d) {
                     alert(d.label.raw);
                 },
             },

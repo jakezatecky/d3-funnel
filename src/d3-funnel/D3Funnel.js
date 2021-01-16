@@ -979,17 +979,16 @@ class D3Funnel {
     }
 
     /**
+     * @param {Object} event
      * @param {Object} data
-     * @param {Number} groupIndex
-     * @param {Array} nodes
      *
      * @return {void}
      */
-    onMouseOver(data, groupIndex, nodes) {
-        const children = nodes[0].parentElement.childNodes;
+    onMouseOver(event, data) {
+        const children = event.target.parentElement.childNodes;
 
         // Highlight all paths within one block
-        [].slice.call(children).forEach((node) => {
+        [...children].forEach((node) => {
             if (node.nodeName.toLowerCase() === 'path') {
                 const type = node.getAttribute('pathType') || '';
 
@@ -1003,17 +1002,16 @@ class D3Funnel {
     }
 
     /**
+     * @param {Object} event
      * @param {Object} data
-     * @param {Number} groupIndex
-     * @param {Array} nodes
      *
      * @return {void}
      */
-    onMouseOut(data, groupIndex, nodes) {
-        const children = nodes[0].parentElement.childNodes;
+    onMouseOut(event, data) {
+        const children = event.target.parentElement.childNodes;
 
         // Restore original color for all paths of a block
-        [].slice.call(children).forEach((node) => {
+        [...children].forEach((node) => {
             if (node.nodeName.toLowerCase() === 'path') {
                 const type = node.getAttribute('pathType') || '';
 
