@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@babel/eslint-parser": "^7.13.14",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
@@ -37,7 +38,7 @@
     "chai": "^4.0.1",
     "d3": "^6.2.0",
     "eslint": "^7.12.1",
-    "eslint-config-takiyon": "^0.4.0",
+    "eslint-config-takiyon": "^1.0.0",
     "eslint-import-resolver-webpack": "^0.13.0",
     "eslint-plugin-import": "^2.7.0",
     "gulp": "^4.0.0",
