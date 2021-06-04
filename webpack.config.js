@@ -2,8 +2,10 @@ module.exports = {
     mode: 'production',
     output: {
         filename: 'd3-funnel.js',
-        libraryTarget: 'umd',
-        library: 'D3Funnel',
+        library: {
+            name: 'D3Funnel',
+            type: 'umd',
+        },
     },
     externals: {
         // Do not compile d3 with the output
