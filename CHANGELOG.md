@@ -1,5 +1,9 @@
 ## v2.0.0 (TBA)
 
+### Bug Fixes
+
+* [#138]: Fix an issue with tooltip alignment in newer versions of Chrome
+
 ### Dependencies
 
 * **Breaking**: Upgrade to using D3 v6 (changes `events.click.block(d)` to `events.click.block(event, d)`)

@@ -823,13 +823,13 @@ class D3Funnel {
                     const rect = this.container.getBoundingClientRect();
                     const heightOffset = height + 5;
                     const containerY = rect.y + window.scrollY;
-                    const isAbove = e.layerY - heightOffset < containerY;
-                    const top = isAbove ? e.layerY + 5 : e.layerY - heightOffset;
+                    const isAbove = e.pageY - heightOffset < containerY;
+                    const top = isAbove ? e.pageY + 5 : e.pageY - heightOffset;
 
                     const styles = [
                         'display: inline-block',
                         'position: absolute',
-                        `left: ${e.layerX - (width / 2)}px`,
+                        `left: ${e.pageX - (width / 2)}px`,
                         `top: ${top}px`,
                         `border: 1px solid ${block.fill.raw}`,
                         'background: rgb(255,255,255,0.75)',
