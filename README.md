@@ -13,7 +13,7 @@ to get a showcasing of the several possible options.
 
 # Installation
 
-To install this library, simply include both [D3.js v4.x][d3] and D3Funnel:
+To install this library, simply include both [D3.js][d3] and D3Funnel:
 
 ``` html
 <script src="/path/to/d3.v4.js"></script>
