@@ -16,7 +16,7 @@ to get a showcasing of the several possible options.
 To install this library, simply include both [D3.js][d3] and D3Funnel:
 
 ``` html
-<script src="/path/to/d3.v4.js"></script>
+<script src="/path/to/d3.js"></script>
 <script src="/path/to/dist/d3-funnel.js"></script>
 ```
 
