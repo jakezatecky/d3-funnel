@@ -4,8 +4,10 @@ module.exports = {
     mode: 'development',
     output: {
         filename: 'index.js',
-        libraryTarget: 'umd',
-        library: 'D3Funnel',
+        library: {
+            name: 'D3Funnel',
+            type: 'umd',
+        },
     },
     resolve: {
         alias: {
