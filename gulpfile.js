@@ -12,8 +12,8 @@ const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 
 const pkg = require('./package.json');
-const testWebpackConfig = require('./webpack.test.config.js');
-const webpackConfig = require('./webpack.config.js');
+const testWebpackConfig = require('./webpack.test.config');
+const webpackConfig = require('./webpack.config');
 
 const banner = '/*! <%= pkg.name %> - v<%= pkg.version %> | <%= new Date().getFullYear() %> */\n';
 const browserSync = browserSyncImport.create();
