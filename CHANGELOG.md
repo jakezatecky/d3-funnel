@@ -1,4 +1,4 @@
-## v2.0.0 (TBA)
+## [v2.0.0](https://github.com/jakezatecky/d3-funnel/compare/v1.2.2...v2.0.0) (2021-06-04)
 
 ### Bug Fixes
 
