@@ -1,7 +1,7 @@
-import { linear as easeLinear } from 'd3-ease/src/linear';
-import range from 'd3-array/src/range';
-import scaleOrdinal from 'd3-scale/src/ordinal';
-import schemeCategory10 from 'd3-scale-chromatic/src/categorical/category10';
+import { easeLinear } from 'd3-ease';
+import { range } from 'd3-array';
+import { scaleOrdinal } from 'd3-scale';
+import { schemeCategory10 } from 'd3-scale-chromatic';
 import { select } from 'd3-selection';
 import 'd3-transition';
 import { nanoid } from 'nanoid';
