@@ -7,4 +7,5 @@ node_js:
   - '14'
   - '16'
 script:
+  - npx playwright install
   - npm run build
