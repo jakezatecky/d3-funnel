@@ -1,5 +1,5 @@
 const path = require('path');
-// Use Firefox because Webkit results in less human-friendly console passthrough
+// Use Firefox because it has the most consumable console pass through
 const { firefox } = require('playwright');
 
 function outputStream(out, stream) {
@@ -36,6 +36,7 @@ const stream = [];
         process.exit(1);
     });
 
+    // Visit the page for any errors
     await page.goto(`file:${path.join(__dirname, 'index.html')}`, { waitUntil: 'networkidle' });
     await browser.close();
 

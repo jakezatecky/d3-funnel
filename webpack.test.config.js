@@ -1,4 +1,6 @@
 const path = require('path');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const webpack = require('webpack');
 
 module.exports = {
     mode: 'development',
@@ -13,6 +15,9 @@ module.exports = {
         alias: {
             'd3-funnel': path.resolve(__dirname, 'src/d3-funnel/D3Funnel'),
         },
+        fallback: {
+            util: require.resolve('util/'),
+        },
     },
     module: {
         rules: [
@@ -23,4 +28,9 @@ module.exports = {
             },
         ],
     },
+    plugins: [
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
+    ],
 };
