@@ -36,7 +36,7 @@
     "browser-sync": "^2.26.3",
     "chai": "^4.0.1",
     "d3": "^7.0.0",
-    "eslint": "^7.12.1",
+    "eslint": "^8.18.0",
     "eslint-config-takiyon": "^1.0.0",
     "eslint-import-resolver-webpack": "^0.13.0",
     "eslint-plugin-import": "^2.7.0",
