@@ -14,8 +14,9 @@ module.exports = {
         alias: {
             'd3-funnel': path.resolve(__dirname, 'src/d3-funnel/D3Funnel'),
         },
-        // Resolve dependency issues with Sinon and Webpack 5
+        // Resolve dependency issues with Sinon and Webpack
         fallback: {
+            'process/browser': require.resolve('process/browser'),
             util: require.resolve('util/'),
         },
     },
@@ -29,7 +30,7 @@ module.exports = {
         ],
     },
     plugins: [
-        // Resolve dependency issues with Sinon and Webpack 5
+        // Resolve dependency issues with Sinon and Webpack
         new webpack.ProvidePlugin({
             process: 'process/browser',
         }),
