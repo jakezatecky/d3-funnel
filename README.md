@@ -1,7 +1,7 @@
 # d3-funnel
 
 [![npm](https://img.shields.io/npm/v/d3-funnel.svg?style=flat-square)](https://www.npmjs.com/package/d3-funnel)
-[![Build Status](https://img.shields.io/travis/com/jakezatecky/d3-funnel/master.svg?style=flat-square)](https://www.travis-ci.com/jakezatecky/d3-funnel)
+[![Build Status](https://img.shields.io/github/workflow/status/jakezatecky/d3-funnel/Build?style=flat-square)](https://github.com/jakezatecky/d3-funnel/actions/workflows/main.yml)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/jakezatecky/d3-funnel/master/LICENSE.txt)
 
 **d3-funnel** is an extensible, open-source JavaScript library for rendering
