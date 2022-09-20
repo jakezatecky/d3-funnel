@@ -19,10 +19,7 @@ jobs:
         run: yarn install
       -
         name: Install Playwright
-        run: npx playwright install
-      -
-        name: Install Playwright browser
-        run: npx playwright install-deps
+        run: npx playwright install --with-deps firefox
       -
         name: Run tests
         run: npm run build
