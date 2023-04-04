@@ -1,4 +1,20 @@
+// Cayman overrides
+$body-text-color: #444;
+$code-text-color: #465e6a;
+$header-bg-color: #3498db;
+$header-bg-color-secondary: #2c3e50;
+$section-headings-color: #2079b5;
+$blockquote-text-color: #576266;
+
 @import "cayman";
+
+.main-content {
+  h1,
+  h2,
+  h3 {
+    font-weight: bold;
+  }
+}
 
 .demo {
   display: flex;
@@ -13,7 +29,7 @@
 }
 
 .demo-funnel {
-  margin-right: 50px;
   width: 320px;
   height: 400px;
+  margin-right: 50px;
 }
