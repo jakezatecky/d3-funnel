@@ -69,11 +69,19 @@ a {
 .btn {
   @include large {
     padding: 0.75rem 1rem;
+
+    + .btn {
+      margin-left: 1rem;
+    }
   }
 
   @include medium {
     padding: 0.6rem 0.9rem;
     font-size: 0.9rem;
+
+    + .btn {
+      margin-left: 1rem;
+    }
   }
 
   @include small {
@@ -103,10 +111,6 @@ a {
     text-decoration: none;
     background-color: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.3);
-  }
-
-  + .btn {
-    margin-left: 1rem;
   }
 }
 
