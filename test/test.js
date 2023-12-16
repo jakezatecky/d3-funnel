@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 // Use Firefox because it has the most consumable console pass through
 const { firefox } = require('playwright');
 
@@ -37,7 +37,7 @@ const stream = [];
     });
 
     // Visit the page for any errors
-    await page.goto(`file:${path.join(__dirname, 'index.html')}`, { waitUntil: 'networkidle' });
+    await page.goto(`file:${path.join(__dirname, 'compiled/index.html')}`, { waitUntil: 'networkidle' });
     await browser.close();
 
     // Output log stream;

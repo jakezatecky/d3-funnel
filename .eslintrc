@@ -11,7 +11,7 @@
       "node": {},
 
       "webpack": {
-        "config": "webpack.test.config.js"
+        "config": "webpack.config.test.js"
       }
     }
   }

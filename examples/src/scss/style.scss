@@ -22,9 +22,15 @@ $blockquote-text-color: #576266;
   justify-content: center;
   padding: 10px 30px;
 
-  form label {
-    display: block;
-    font-weight: normal;
+  form {
+    label {
+      display: flex;
+      font-weight: normal;
+    }
+
+    input {
+      margin-right: 0.5rem;
+    }
   }
 }
 

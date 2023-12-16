@@ -13,20 +13,13 @@ to get a showcasing of the several possible options.
 
 # Installation
 
-To install this library, simply include both [D3.js][d3] and D3Funnel:
-
-``` html
-<script src="/path/to/d3.js"></script>
-<script src="/path/to/dist/d3-funnel.js"></script>
-```
-
-Alternatively, if you are using Webpack or Browserify, you can install the npm
-package and `import` the module. This will include a compatible version of
-D3.js for you:
+Install this library via npm, yarn, pnpm, or your preferred package manager:
 
 ```
 npm install d3-funnel --save
 ```
+
+You can then load this library into your app using `import`:
 
 ``` javascript
 import D3Funnel from 'd3-funnel';
