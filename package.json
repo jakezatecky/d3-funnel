@@ -41,7 +41,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/register": "^7.0.0",
     "babel-loader": "^9.0.0",
-    "browser-sync": "^2.26.3",
+    "browser-sync": "^3.0.2",
     "chai": "^4.0.1",
     "css-loader": "^6.8.1",
     "d3": "^7.0.0",
