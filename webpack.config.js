@@ -1,7 +1,10 @@
-const path = require('node:path');
-const webpack = require('webpack');
-const pkg = require('./package.json');
+import path from 'node:path';
+import webpack from 'webpack';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 
+const json = await readFile(new URL('./package.json', import.meta.url));
+const pkg = JSON.parse(json.toString());
 const banner = `
 ${pkg.name} - v${pkg.version}
 Copyright (c) ${pkg.author}
@@ -11,6 +14,10 @@ const fileMap = {
     node: 'd3-funnel.js',
     web: 'd3-funnel.min.js',
 };
+
+/* eslint-disable no-underscore-dangle */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function makeConfig({ target }) {
     return {
@@ -52,4 +59,4 @@ function makeConfig({ target }) {
     };
 }
 
-module.exports = makeConfig;
+export default makeConfig;

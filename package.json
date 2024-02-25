@@ -18,6 +18,7 @@
   "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
   "main": "dist/d3-funnel.js",
   "browser": "dist/d3-funnel.min.js",
+  "type": "module",
   "scripts": {
     "build": "npm run build-node && npm run build-web",
     "build-examples": "webpack --config=webpack.config.examples.js --mode=production",
@@ -31,6 +32,7 @@
     "lint:script": "eslint src/**/*.js examples/src/**/*.js test/*.js ./test/d3-funnel/**/*.js *.js",
     "lint:style": "stylelint examples/src/scss/**/*.scss",
     "prepublishOnly": "npm run release",
+    "release": "npm run test && npm run build",
     "test": "npm run lint && npm run test:script && npm run test:style-format",
     "test:script": "npm run build-test && node test/test.js",
     "test:style-format": "prettier --check examples/src/scss/**/*.scss"
@@ -46,10 +48,11 @@
     "css-loader": "^6.8.1",
     "d3": "^7.0.0",
     "eslint": "^8.23.1",
-    "eslint-config-takiyon": "^2.0.0",
+    "eslint-config-takiyon": "^3.0.0",
     "eslint-import-resolver-webpack": "^0.13.0",
     "eslint-plugin-import": "^2.7.0",
     "global-jsdom": "^9.2.0",
+    "globals": "^14.0.0",
     "html-bundler-webpack-plugin": "^3.4.2",
     "jsdom": "^23.0.1",
     "lodash": "^4.17.21",

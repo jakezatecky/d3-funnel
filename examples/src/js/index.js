@@ -40,6 +40,7 @@ const settings = {
         events: {
             click: {
                 block(event, d) {
+                    // eslint-disable-next-line no-alert
                     alert(d.label.raw);
                 },
             },

@@ -1,6 +1,11 @@
-const path = require('node:path');
+import path from 'node:path';
 // Use Firefox because it has the most consumable console pass through
-const { firefox } = require('playwright');
+import { firefox } from 'playwright';
+import { fileURLToPath } from 'node:url';
+
+/* eslint-disable no-underscore-dangle */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function outputStream(out, stream) {
     stream.forEach((message) => {

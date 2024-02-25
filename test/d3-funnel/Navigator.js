@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import Navigator from '../../src/d3-funnel/Navigator';
+import Navigator from '../../src/d3-funnel/Navigator.js';
 
 const { assert } = chai;
 

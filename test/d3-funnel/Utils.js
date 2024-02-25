@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import Utils from '../../src/d3-funnel/Utils';
+import Utils from '../../src/d3-funnel/Utils.js';
 
 const { assert } = chai;
 

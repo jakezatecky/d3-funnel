@@ -1,6 +1,6 @@
 import chai from 'chai';
 
-import Colorizer from '../../src/d3-funnel/Colorizer';
+import Colorizer from '../../src/d3-funnel/Colorizer.js';
 
 const { assert } = chai;
 

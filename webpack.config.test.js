@@ -1,7 +1,12 @@
-const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
-const path = require('node:path');
+import HtmlBundlerPlugin from 'html-bundler-webpack-plugin';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-module.exports = {
+/* eslint-disable no-underscore-dangle */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
     mode: 'development',
     entry: {
         index: path.join(__dirname, 'test/index.js'),
