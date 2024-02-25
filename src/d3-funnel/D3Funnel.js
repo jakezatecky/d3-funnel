@@ -546,7 +546,7 @@ class D3Funnel {
                 } else {
                     // Revert velocity back to the initial if we are using
                     // static heights (prevents zero velocity if isInverted
-                    // and bottomPinch are non trivial and dynamicHeight is
+                    // and bottomPinch are non-trivial and dynamicHeight is
                     // false)
                     if (!this.settings.dynamicHeight) {
                         ({ dx } = this);
@@ -895,8 +895,8 @@ class D3Funnel {
     addBeforeTransition(path, index, isOverlay) {
         const paths = isOverlay ? this.overlayPaths[index] : this.blockPaths[index];
 
-        let beforePath = '';
-        let beforeFill = '';
+        let beforePath;
+        let beforeFill;
 
         // Construct the top of the trapezoid and leave the other elements
         // hovering around to expand downward on animation
@@ -919,11 +919,11 @@ class D3Funnel {
             ]);
         }
 
-        // Use previous fill color, if available
         if (this.settings.fillType === 'solid' && index > 0) {
+            // Use previous fill color, if available
             beforeFill = this.blocks[index - 1].fill.actual;
-            // Otherwise use current background
         } else {
+            // Otherwise use current background
             beforeFill = this.blocks[index].fill.actual;
         }
 

@@ -34,7 +34,7 @@ function makeConfig({ target }) {
             },
         },
         resolve: {
-            extensions: ['.js', '.jsx'],
+            extensions: ['.js'],
         },
         externals: [
             {
