@@ -52,7 +52,7 @@
     "eslint-import-resolver-webpack": "^0.13.0",
     "eslint-plugin-import": "^2.7.0",
     "global-jsdom": "^9.2.0",
-    "globals": "^14.0.0",
+    "globals": "^15.0.0",
     "html-bundler-webpack-plugin": "^3.4.2",
     "jsdom": "^23.0.1",
     "lodash": "^4.17.21",
