@@ -45,7 +45,7 @@
     "babel-loader": "^9.0.0",
     "browser-sync": "^2.26.3",
     "chai": "^4.0.1",
-    "css-loader": "^6.8.1",
+    "css-loader": "^7.0.0",
     "d3": "^7.0.0",
     "eslint": "^8.23.1",
     "eslint-config-takiyon": "^3.0.0",
