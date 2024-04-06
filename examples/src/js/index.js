@@ -74,23 +74,19 @@ const checkboxes = [...document.querySelectorAll('input')];
 const color = document.querySelector('[value="color"]');
 
 function onChange() {
-    let data = [];
-
-    if (color.checked === false) {
-        data = [
+    let data = !color.checked ?
+        [
             { label: 'Applicants', value: 12000 },
             { label: 'Pre-screened', value: 4000 },
             { label: 'Interviewed', value: 2500 },
             { label: 'Hired', value: 1500 },
-        ];
-    } else {
-        data = [
+        ] :
+        [
             { label: 'Teal', value: 12000, backgroundColor: '#008080' },
             { label: 'Byzantium', value: 4000, backgroundColor: '#702963' },
             { label: 'Persimmon', value: 2500, backgroundColor: '#ff634d' },
             { label: 'Azure', value: 1500, backgroundColor: '#007fff' },
         ];
-    }
 
     let options = {
         chart: {

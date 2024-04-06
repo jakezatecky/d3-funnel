@@ -1,7 +1,7 @@
 import path from 'node:path';
-import webpack from 'webpack';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import webpack from 'webpack';
 
 const json = await readFile(new URL('./package.json', import.meta.url));
 const pkg = JSON.parse(json.toString());

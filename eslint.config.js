@@ -13,7 +13,7 @@ export default [
         settings: {
             // Account for webpack.resolve.module imports
             'import/resolver': {
-                // "Fixes Node resolution issues in ESLint v6
+                // Fixes Node resolution issues in ESLint v6
                 // https://github.com/benmosher/eslint-plugin-import/issues/1396
                 node: {},
                 webpack: {
