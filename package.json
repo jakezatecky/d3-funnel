@@ -61,7 +61,7 @@
     "prettier": "^3.1.1",
     "process": "^0.11.10",
     "sass": "^1.69.5",
-    "sass-loader": "^14.0.0",
+    "sass-loader": "^16.0.0",
     "sinon": "^18.0.0",
     "stylelint": "^16.0.2",
     "stylelint-config-takiyon": "^4.0.0",
