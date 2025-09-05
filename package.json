@@ -64,7 +64,7 @@
     "sass-loader": "^14.0.0",
     "sinon": "^18.0.0",
     "stylelint": "^16.0.2",
-    "stylelint-config-takiyon": "^4.0.0",
+    "stylelint-config-takiyon": "^6.0.0",
     "util": "^0.12.4",
     "webpack": "^5.3.2",
     "webpack-cli": "^5.1.4",
