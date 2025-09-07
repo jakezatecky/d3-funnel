@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
 import webpack from 'webpack';
 
 const json = await readFile(new URL('./package.json', import.meta.url));
@@ -15,17 +14,15 @@ const fileMap = {
     web: 'd3-funnel.min.js',
 };
 
-/* eslint-disable no-underscore-dangle */
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { dirname } = import.meta;
 
 function makeConfig({ target }) {
     return {
         mode: 'none',
         target,
-        entry: path.join(__dirname, 'src/index.js'),
+        entry: path.join(dirname, 'src/index.js'),
         output: {
-            path: path.join(__dirname, '/dist'),
+            path: path.join(dirname, '/dist'),
             filename: fileMap[target],
             library: {
                 name: 'D3Funnel',

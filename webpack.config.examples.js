@@ -1,19 +1,16 @@
 import HtmlBundlerPlugin from 'html-bundler-webpack-plugin';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-/* eslint-disable no-underscore-dangle */
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { dirname } = import.meta;
 
 export default {
     mode: 'development',
     entry: {
-        index: path.join(__dirname, 'examples/src/index.js'),
-        style: path.join(__dirname, 'examples/src/scss/style.scss'),
+        index: path.join(dirname, 'examples/src/index.js'),
+        style: path.join(dirname, 'examples/src/scss/style.scss'),
     },
     output: {
-        path: path.join(__dirname, 'examples/dist'),
+        path: path.join(dirname, 'examples/dist'),
         library: {
             name: 'D3Funnel',
             type: 'umd',
@@ -22,7 +19,7 @@ export default {
     resolve: {
         extensions: ['.js'],
         alias: {
-            'd3-funnel': path.resolve(__dirname, 'src/index.js'),
+            'd3-funnel': path.resolve(dirname, 'src/index.js'),
         },
     },
     module: {
@@ -44,7 +41,7 @@ export default {
     devServer: {
         open: true,
         static: {
-            directory: path.join(__dirname, 'examples/dist'),
+            directory: path.join(dirname, 'examples/dist'),
         },
         watchFiles: ['src/**/*', 'examples/src/**/*'],
     },
