@@ -1,11 +1,8 @@
 import path from 'node:path';
 // Use Firefox because it has the most consumable console pass through
 import { firefox } from 'playwright';
-import { fileURLToPath } from 'node:url';
 
-/* eslint-disable no-underscore-dangle */
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { dirname } = import.meta;
 
 function outputStream(out, stream) {
     stream.forEach((message) => {
@@ -42,7 +39,7 @@ const stream = [];
     });
 
     // Visit the page for any errors
-    await page.goto(`file:${path.join(__dirname, 'compiled/index.html')}`, { waitUntil: 'networkidle' });
+    await page.goto(`file:${path.join(dirname, 'compiled/index.html')}`, { waitUntil: 'networkidle' });
     await browser.close();
 
     // Output log stream;
