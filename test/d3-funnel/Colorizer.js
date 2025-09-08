@@ -1,8 +1,6 @@
-import chai from 'chai';
+import { assert } from 'chai';
 
 import Colorizer from '../../src/d3-funnel/Colorizer.js';
-
-const { assert } = chai;
 
 describe('Colorizer', () => {
     describe('expandHex', () => {

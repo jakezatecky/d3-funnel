@@ -6,12 +6,10 @@ import {
     scaleOrdinal,
     schemeCategory10,
 } from 'd3';
-import chai from 'chai';
+import { assert } from 'chai';
 import sinon from 'sinon';
 
 import D3Funnel from '../../src/d3-funnel/D3Funnel.js';
-
-const { assert } = chai;
 
 function getFunnel() {
     return new D3Funnel('#funnel');

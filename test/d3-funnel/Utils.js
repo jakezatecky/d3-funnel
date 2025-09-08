@@ -1,8 +1,6 @@
-import chai from 'chai';
+import { assert } from 'chai';
 
 import Utils from '../../src/d3-funnel/Utils.js';
-
-const { assert } = chai;
 
 describe('Utils', () => {
     describe('extend', () => {
