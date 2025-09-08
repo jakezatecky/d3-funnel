@@ -7,7 +7,6 @@ export default {
     mode: 'development',
     entry: {
         index: path.join(dirname, 'test/index.js'),
-        style: path.join(dirname, 'test/style.scss'),
     },
     output: {
         path: path.join(dirname, 'test/compiled'),
