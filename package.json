@@ -62,7 +62,7 @@
     "process": "^0.11.10",
     "sass": "^1.69.5",
     "sass-loader": "^14.0.0",
-    "sinon": "^19.0.2",
+    "sinon": "^21.0.0",
     "stylelint": "^16.0.2",
     "stylelint-config-takiyon": "^6.0.0",
     "util": "^0.12.4",
