@@ -6,10 +6,10 @@ import { select } from 'd3-selection';
 import 'd3-transition';
 import { nanoid } from 'nanoid';
 
-import Colorizer from './Colorizer.js';
-import Formatter from './Formatter.js';
-import Navigator from './Navigator.js';
-import Utils from './Utils.js';
+import Colorizer from '#js/Colorizer.js';
+import Formatter from '#js/Formatter.js';
+import Navigator from '#js/Navigator.js';
+import Utils from '#js/Utils.js';
 
 class D3Funnel {
     static defaults = {
