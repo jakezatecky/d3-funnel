@@ -16,25 +16,37 @@
     "url": "https://github.com/jakezatecky/d3-funnel"
   },
   "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
-  "main": "dist/d3-funnel.js",
-  "browser": "dist/d3-funnel.min.js",
   "type": "module",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "imports": {
+    "#js/*": "./src/d3-funnel/*"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./*": "./*"
+  },
+  "browser": "dist/d3-funnel.min.js",
   "scripts": {
-    "build": "npm run build-node && npm run build-web",
-    "build-examples": "webpack --config=webpack.config.examples.js --mode=production",
-    "build-node": "webpack --env=target=node",
-    "build-test": "webpack --config=webpack.config.test.js",
-    "build-web": "webpack --env=target=web --mode=production",
+    "build": "npm run build:browser && npm run build:esm && npm run build:umd",
+    "build:browser": "webpack --env=target=browser",
+    "build:esm": "webpack --env=target=esm",
+    "build:umd": "webpack --env=target=umd",
+    "build:test": "webpack --config=webpack.config.test.js",
     "examples": "webpack serve --config=webpack.config.examples.js",
     "format:style": "prettier --write examples/src/scss/**/*.scss",
-    "gh-deploy": "npm run build-examples && bash ./gh-deploy.sh",
+    "gh-build": "webpack --config=webpack.config.examples.js --mode=production",
+    "gh-deploy": "npm run gh-build && bash ./gh-deploy.sh",
     "lint": "npm run lint:script && npm run lint:style",
     "lint:script": "eslint src/**/*.js examples/src/**/*.js test/*.js ./test/d3-funnel/**/*.js *.js",
     "lint:style": "stylelint examples/src/scss/**/*.scss",
     "prepublishOnly": "npm run release",
     "release": "npm run test && npm run build",
     "test": "npm run lint && npm run test:script && npm run test:style-format",
-    "test:script": "npm run build-test && node test/test.js",
+    "test:script": "npm run build:test && node test/test.js",
     "test:style-format": "prettier --check examples/src/scss/**/*.scss"
   },
   "devDependencies": {
