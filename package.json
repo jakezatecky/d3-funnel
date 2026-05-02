@@ -50,19 +50,18 @@
     "test:style-format": "prettier --check examples/src/scss/**/*.scss"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/eslint-parser": "^7.13.14",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/register": "^7.0.0",
+    "@babel/core": "^8.0.0-rc.4",
+    "@babel/eslint-parser": "^8.0.0-rc.4",
+    "@babel/preset-env": "^8.0.0-rc.4",
+    "@babel/register": "^8.0.0-rc.4",
     "babel-loader": "^10.0.0",
     "browser-sync": "^3.0.3",
     "chai": "^6.0.1",
     "css-loader": "^7.0.0",
     "d3": "^7.0.0",
     "eslint": "^10.1.0",
-    "eslint-config-takiyon": "^4.0.0",
+    "eslint-config-takiyon": "^5.0.0",
     "eslint-import-resolver-webpack": "^0.13.0",
-    "eslint-plugin-import": "^2.7.0",
     "global-jsdom": "^27.0.0",
     "globals": "^16.3.0",
     "html-bundler-webpack-plugin": "^4.21.1",
@@ -90,5 +89,10 @@
     "d3-selection": "^3.0.0",
     "d3-transition": "^3.0.0",
     "nanoid": "^5.0.2"
+  },
+  "overrides": {
+    "eslint-plugin-import": {
+      "eslint": "$eslint"
+    }
   }
 }
