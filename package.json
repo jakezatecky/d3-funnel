@@ -43,11 +43,11 @@
     "lint": "npm run lint:script && npm run lint:style",
     "lint:script": "eslint src/**/*.js examples/src/**/*.js test/*.js ./test/d3-funnel/**/*.js *.js",
     "lint:style": "stylelint examples/src/scss/**/*.scss",
-    "prepublishOnly": "npm run release",
-    "release": "npm run test && npm run build",
+    "prepublishOnly": "npm run test-and-build",
     "test": "npm run lint && npm run test:script && npm run test:style-format",
     "test:script": "npm run build:test && node test/test.js",
-    "test:style-format": "prettier --check examples/src/scss/**/*.scss"
+    "test:style-format": "prettier --check examples/src/scss/**/*.scss",
+    "test-and-build": "npm run test && npm run build"
   },
   "devDependencies": {
     "@babel/core": "^8.0.0-rc.4",

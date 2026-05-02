@@ -1,17 +1,29 @@
-name: Build
-on: push
+name: Build and Test
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       matrix:
         node: [20, 22, 24]
     steps:
       -
-        uses: actions/checkout@v3
+        name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       -
         name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
       -
@@ -22,4 +34,7 @@ jobs:
         run: npx playwright install --with-deps firefox
       -
         name: Run tests
-        run: npm run test && npm run build
+        run: yarn test
+      -
+        name: Build the library
+        run: yarn build
