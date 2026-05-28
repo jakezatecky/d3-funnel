@@ -17,15 +17,15 @@
   },
   "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
   "type": "module",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "imports": {
     "#js/*": "./src/d3-funnel/*"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./*": "./*"
   },

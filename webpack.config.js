@@ -43,7 +43,7 @@ const configMap = {
         mode: 'none',
         output: {
             path: path.join(dirname, '/dist'),
-            filename: 'index.esm.js',
+            filename: 'index.js',
             library: {
                 type: 'module',
             },
@@ -57,7 +57,7 @@ const configMap = {
         mode: 'none',
         output: {
             path: path.join(dirname, '/dist'),
-            filename: 'index.cjs.js',
+            filename: 'index.cjs',
             library: {
                 name: 'D3Funnel',
                 type: 'umd',

@@ -1,3 +1,9 @@
+## v2.1.4 (TBA)
+
+### Fixed
+
+* Fixed CommonJS exports
+
 ## [v2.1.3](https://github.com/jakezatecky/d3-funnel/compare/v2.1.2...v2.1.3) (2025-09-11)
 
 ### Bug Fixes
