@@ -79,7 +79,7 @@
     "util": "^0.12.4",
     "webpack": "^5.3.2",
     "webpack-cli": "^7.0.2",
-    "webpack-dev-server": "^5.0.0"
+    "webpack-dev-server": "^6.0.0"
   },
   "dependencies": {
     "d3-array": "^3.0.1",
