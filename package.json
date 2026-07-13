@@ -88,7 +88,7 @@
     "d3-scale-chromatic": "^3.0.0",
     "d3-selection": "^3.0.0",
     "d3-transition": "^3.0.0",
-    "nanoid": "^5.0.2"
+    "nanoid": "^6.0.0"
   },
   "overrides": {
     "eslint-plugin-import": {
