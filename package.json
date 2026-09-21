@@ -62,7 +62,7 @@
     "eslint": "^10.1.0",
     "eslint-config-takiyon": "^5.0.0",
     "eslint-import-resolver-webpack": "^0.13.0",
-    "global-jsdom": "^29.0.0",
+    "global-jsdom": "^30.0.0",
     "globals": "^17.6.0",
     "html-bundler-webpack-plugin": "^4.21.1",
     "jsdom": "^30.1.0",
