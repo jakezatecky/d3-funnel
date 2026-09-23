@@ -54,6 +54,12 @@ class D3Funnel {
             click: {
                 block: null,
             },
+            mouseover: {
+                block: null,
+            },
+            mouseout: {
+                block: null,
+            },
         },
     };
 
@@ -159,6 +165,8 @@ class D3Funnel {
             label: settings.label,
             tooltip: settings.tooltip,
             onBlockClick: settings.events.click.block,
+            onBlockMouseOver: settings.events.mouseover.block,
+            onBlockMouseOut: settings.events.mouseout.block,
         };
 
         this.setBlocks(data);
@@ -796,6 +804,20 @@ class D3Funnel {
                     .on('click', this.settings.onBlockClick);
             });
         }
+
+        // Add block hover events; namespaced so they do not replace the highlight handlers
+        [path, overlayPath].forEach((target) => {
+            if (!target) {
+                return;
+            }
+
+            if (this.settings.onBlockMouseOver !== null) {
+                target.on('mouseover.block', this.settings.onBlockMouseOver);
+            }
+            if (this.settings.onBlockMouseOut !== null) {
+                target.on('mouseout.block', this.settings.onBlockMouseOut);
+            }
+        });
 
         // Add tooltips
         if (this.settings.tooltip.enabled) {

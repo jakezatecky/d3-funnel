@@ -1,8 +1,9 @@
 ## v2.2.0 (TBA)
 
-### New Features
+### Added
 
 * Expose the original data entry as `data` in block event handlers (#270)
+* Add `events.mouseover.block` and `events.mouseout.block` callbacks (#240)
 
 ### Fixed
 

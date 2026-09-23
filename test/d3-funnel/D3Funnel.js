@@ -1105,5 +1105,74 @@ describe('D3Funnel', () => {
                 assert.equal('pointer', select('#funnel path').style('cursor'));
             });
         });
+
+        ['mouseover', 'mouseout'].forEach((type) => {
+            describe(`events.${type}.block`, () => {
+                it('should invoke the callback with the event and hovered block data', () => {
+                    const event = new MouseEvent(type);
+                    const data = [
+                        { label: 'One', value: 300 },
+                        { label: 'Two', value: 200 },
+                    ];
+                    const proxy = sinon.fake();
+
+                    getFunnel().draw(data, {
+                        events: {
+                            [type]: {
+                                block: proxy,
+                            },
+                        },
+                    });
+
+                    selectAll('#funnel path').nodes()[1].dispatchEvent(event);
+
+                    assert.isTrue(proxy.calledOnce);
+                    assert.strictEqual(proxy.firstCall.args[0], event);
+                    assert.equal(proxy.firstCall.args[1].index, 1);
+                    assert.strictEqual(proxy.firstCall.args[1].data, data[1]);
+                });
+
+                it('should not replace the block.highlight effect', () => {
+                    const proxy = sinon.fake();
+
+                    getFunnel().draw([
+                        { label: 'A', value: 1, backgroundColor: '#fff' },
+                    ], {
+                        block: {
+                            highlight: true,
+                        },
+                        events: {
+                            [type]: {
+                                block: proxy,
+                            },
+                        },
+                    });
+
+                    const path = select('#funnel path');
+                    const originalFill = path.attr('fill');
+
+                    path.node().dispatchEvent(new MouseEvent('mouseover'));
+                    assert.equal('#cccccc', path.attr('fill'));
+                    path.node().dispatchEvent(new MouseEvent('mouseout'));
+                    assert.equal(originalFill, path.attr('fill'));
+
+                    assert.isTrue(proxy.calledOnce);
+                });
+
+                it('should not trigger errors when null', () => {
+                    const event = new MouseEvent(type);
+
+                    getFunnel().draw(getBasicData(), {
+                        events: {
+                            [type]: {
+                                block: null,
+                            },
+                        },
+                    });
+
+                    select('#funnel path').node().dispatchEvent(event);
+                });
+            });
+        });
     });
 });
