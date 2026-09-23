@@ -80,7 +80,7 @@ parent container:
 | `label.format`         | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
 | `tooltip.enabled`      | Whether tooltips should be enabled on hover.                              | bool     | `false`                 |
 | `tooltip.format`       | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
-| `events.click.block`   | Callback `function(data)` for when a block is clicked.                    | function | `null`                  |
+| `events.click.block`   | Callback `function(event, data)` for when a block is clicked.             | function | `null`                  |
 
 ### Label/Tooltip Format
 
@@ -95,11 +95,13 @@ keys will be substituted by the string formatter:
 
 ### Event Data
 
-Block-based events are passed a `data` object containing the following elements:
+Block-based events are passed the DOM `event` and a `data` object containing
+the following elements:
 
 | Key             | Type   | Description                           |
 | --------------- | ------ | ------------------------------------- |
 | index           | number | The index of the block.               |
+| data            | mixed  | The block's original data entry.      |
 | node            | object | The DOM node of the block.            |
 | value           | number | The numerical value.                  |
 | fill            | string | The background color.                 |
@@ -112,6 +114,7 @@ Example:
 ``` javascript
 {
     index: 0,
+    data: { label: 'Visitors', value: 150 },
     node: { ... },
     value: 150,
     fill: '#c33',
@@ -121,6 +124,28 @@ Example:
         color: '#fff',
     },
 },
+```
+
+Because `data` holds the original entry, you can attach your own properties to
+each block and read them in event handlers. For example, to open a URL when a
+block is clicked:
+
+``` javascript
+const data = [
+    { label: 'Visitors', value: 5000, url: '/visitors' },
+    { label: 'Leads', value: 2500, url: '/leads' },
+];
+const options = {
+    events: {
+        click: {
+            block(event, d) {
+                window.location.href = d.data.url;
+            },
+        },
+    },
+};
+
+chart.draw(data, options);
 ```
 
 ### Overriding Defaults

@@ -1041,6 +1041,51 @@ describe('D3Funnel', () => {
                 }));
             });
 
+            it('should pass the DOM event as the first argument', () => {
+                const event = document.createEvent('CustomEvent');
+                event.initCustomEvent('click', false, false, null);
+
+                const proxy = sinon.fake();
+
+                getFunnel().draw(getBasicData(), {
+                    events: {
+                        click: {
+                            block: proxy,
+                        },
+                    },
+                });
+
+                select('#funnel path').node().dispatchEvent(event);
+
+                assert.strictEqual(proxy.firstCall.args[0], event);
+            });
+
+            it('should pass the original data entry of the clicked block', () => {
+                const event = document.createEvent('CustomEvent');
+                event.initCustomEvent('click', false, false, null);
+
+                const data = [
+                    { label: 'One', value: 300, url: '#one' },
+                    { label: 'Two', value: 200, url: '#two' },
+                    { label: 'Three', value: 100, url: '#three' },
+                ];
+                const proxy = sinon.fake();
+
+                getFunnel().draw(data, {
+                    events: {
+                        click: {
+                            block: (e, d) => proxy(d.data),
+                        },
+                    },
+                });
+
+                selectAll('#funnel path').nodes()[1].dispatchEvent(event);
+
+                assert.isTrue(proxy.calledOnce);
+                assert.strictEqual(proxy.firstCall.args[0], data[1]);
+                assert.equal(proxy.firstCall.args[0].url, '#two');
+            });
+
             it('should not trigger errors when null', () => {
                 const event = document.createEvent('CustomEvent');
                 event.initCustomEvent('click', false, false, null);

@@ -329,6 +329,7 @@ class D3Funnel {
 
             return {
                 index,
+                data: rawBlock,
                 ratio,
                 value: block.value,
                 height: this.settings.height * ratio,

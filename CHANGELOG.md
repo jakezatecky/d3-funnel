@@ -1,8 +1,13 @@
-## v2.1.4 (TBA)
+## v2.2.0 (TBA)
+
+### New Features
+
+* Expose the original data entry as `data` in block event handlers (#270)
 
 ### Fixed
 
 * Fixed CommonJS exports
+* Fixed README documentation of the `events.click.block` callback signature
 
 ## [v2.1.3](https://github.com/jakezatecky/d3-funnel/compare/v2.1.2...v2.1.3) (2025-09-11)
 
