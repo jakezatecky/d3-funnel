@@ -1,4 +1,4 @@
-## v2.2.0 (TBA)
+## [v2.2.0](https://github.com/jakezatecky/d3-funnel/compare/v2.1.3...v2.2.0) (2026-09-23-2026)
 
 ### Added
 
