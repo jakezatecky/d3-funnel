@@ -39,7 +39,7 @@ function getCommandPoint(command) {
 
     // Strip any letter in front of number
     if (isLetter(x[0])) {
-        x = x.substr(1);
+        x = x.slice(1);
     }
 
     return {
@@ -832,8 +832,7 @@ describe('D3Funnel', () => {
 
         describe('block.highlight', () => {
             it('should change block color on hover', () => {
-                const event = document.createEvent('CustomEvent');
-                event.initCustomEvent('mouseover', false, false, null);
+                const event = new MouseEvent('mouseover');
 
                 getFunnel().draw([
                     { label: 'A', value: 1, backgroundColor: '#fff' },
@@ -958,8 +957,7 @@ describe('D3Funnel', () => {
 
         describe('tooltip.enabled', () => {
             it('should render a simple tooltip box when hovering over a block', () => {
-                const event = document.createEvent('CustomEvent');
-                event.initCustomEvent('mousemove', false, false, null);
+                const event = new MouseEvent('mousemove');
 
                 getFunnel().draw(getBasicData(), {
                     tooltip: {
@@ -973,10 +971,8 @@ describe('D3Funnel', () => {
             });
 
             it('should hide the tooltip on mouseout', () => {
-                const mouseMove = document.createEvent('CustomEvent');
-                const mouseOut = document.createEvent('CustomEvent');
-                mouseMove.initCustomEvent('mousemove', false, false, null);
-                mouseOut.initCustomEvent('mouseout', false, false, null);
+                const mouseMove = new MouseEvent('mousemove');
+                const mouseOut = new MouseEvent('mouseout');
 
                 getFunnel().draw(getBasicData(), {
                     tooltip: {
@@ -993,8 +989,7 @@ describe('D3Funnel', () => {
 
         describe('tooltip.format', () => {
             it('should render tooltips according to the format provided', () => {
-                const event = document.createEvent('CustomEvent');
-                event.initCustomEvent('mousemove', false, false, null);
+                const event = new MouseEvent('mousemove');
 
                 getFunnel().draw(getBasicData(), {
                     tooltip: {
@@ -1011,8 +1006,7 @@ describe('D3Funnel', () => {
 
         describe('events.click.block', () => {
             it('should invoke the callback function with the correct data', () => {
-                const event = document.createEvent('CustomEvent');
-                event.initCustomEvent('click', false, false, null);
+                const event = new MouseEvent('click');
 
                 const proxy = sinon.fake();
 
@@ -1042,8 +1036,7 @@ describe('D3Funnel', () => {
             });
 
             it('should pass the DOM event as the first argument', () => {
-                const event = document.createEvent('CustomEvent');
-                event.initCustomEvent('click', false, false, null);
+                const event = new MouseEvent('click');
 
                 const proxy = sinon.fake();
 
@@ -1061,8 +1054,7 @@ describe('D3Funnel', () => {
             });
 
             it('should pass the original data entry of the clicked block', () => {
-                const event = document.createEvent('CustomEvent');
-                event.initCustomEvent('click', false, false, null);
+                const event = new MouseEvent('click');
 
                 const data = [
                     { label: 'One', value: 300, url: '#one' },
@@ -1087,8 +1079,7 @@ describe('D3Funnel', () => {
             });
 
             it('should not trigger errors when null', () => {
-                const event = document.createEvent('CustomEvent');
-                event.initCustomEvent('click', false, false, null);
+                const event = new MouseEvent('click');
 
                 getFunnel().draw(getBasicData(), {
                     events: {
