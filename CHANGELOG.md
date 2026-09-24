@@ -101,7 +101,7 @@ The old structure of an array-of-arrays has been deprecated and will be removed 
 ## [v1.0.0](https://github.com/jakezatecky/d3-funnel/compare/v0.8.0...v1.0.0) (2016-08-02)
 
 This release breaks major backwards compatibility by upgrading D3 3.x to
-D3 4.x. Refer to D3's [changes documentation](d3-changes) for more info.
+D3 4.x. Refer to D3's changes documentation for more info.
 
 ### Behavior Changes
 
