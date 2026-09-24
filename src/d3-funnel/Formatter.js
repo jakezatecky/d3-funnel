@@ -57,7 +57,7 @@ class Formatter {
             .split('{l}')
             .join(label)
             .split('{v}')
-            .join(value.toLocaleString())
+            .join(String(value))
             .split('{f}')
             .join(formatted);
     }
