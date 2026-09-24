@@ -955,6 +955,46 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('label.verticalAlign', () => {
+            function getLabelYs(verticalAlign, format = '{l}') {
+                getFunnel().draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 1 },
+                ], {
+                    chart: { height: 200 },
+                    label: { format, verticalAlign },
+                });
+
+                return selectAll('#funnel text').nodes().map((node) => (
+                    parseFloat(select(node).attr('y'))
+                ));
+            }
+
+            it('should vertically center labels by default', () => {
+                assert.deepEqual([50, 150], getLabelYs(undefined));
+            });
+
+            it('should align labels to the top of their blocks when set to "top"', () => {
+                // Top edge + 5px padding + half of a 20px line
+                assert.deepEqual([15, 115], getLabelYs('top'));
+            });
+
+            it('should align labels to the bottom of their blocks when set to "bottom"', () => {
+                // Bottom edge - 5px padding - half of a 20px line
+                assert.deepEqual([85, 185], getLabelYs('bottom'));
+            });
+
+            it('should account for the number of lines when aligning to the top', () => {
+                // Top edge + 5px padding + half of two 20px lines
+                assert.deepEqual([25, 125], getLabelYs('top', '{l}\n{v}'));
+            });
+
+            it('should account for the number of lines when aligning to the bottom', () => {
+                // Bottom edge - 5px padding - half of two 20px lines
+                assert.deepEqual([75, 175], getLabelYs('bottom', '{l}\n{v}'));
+            });
+        });
+
         describe('tooltip.enabled', () => {
             it('should render a simple tooltip box when hovering over a block', () => {
                 const event = new MouseEvent('mousemove');

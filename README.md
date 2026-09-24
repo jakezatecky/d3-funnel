@@ -78,6 +78,7 @@ parent container:
 | `label.fontSize`         | Any valid font size for the labels.                                       | string   | `'14px'`                |
 | `label.fill`             | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
 | `label.format`           | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
+| `label.verticalAlign`    | Where to place labels within their blocks: `top`, `middle`, or `bottom`.  | string   | `'middle'`              |
 | `tooltip.enabled`        | Whether tooltips should be enabled on hover.                              | bool     | `false`                 |
 | `tooltip.format`         | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
 | `events.click.block`     | Callback `function(event, data)` for when a block is clicked.             | function | `null`                  |

@@ -12,6 +12,10 @@ import Navigator from '#js/Navigator.js';
 import Utils from '#js/Utils.js';
 
 class D3Funnel {
+    static LABEL_LINE_HEIGHT = 20;
+
+    static LABEL_PADDING = 5;
+
     static defaults = {
         chart: {
             width: 350,
@@ -45,6 +49,7 @@ class D3Funnel {
             fontSize: '14px',
             fill: '#fff',
             format: '{l}: {f}',
+            verticalAlign: 'middle',
         },
         tooltip: {
             enabled: false,
@@ -1056,14 +1061,13 @@ class D3Funnel {
      * @return {void}
      */
     addBlockLabel(group, index) {
-        const paths = this.blockPaths[index];
-
         const formattedLabel = this.blocks[index].label.formatted;
         const fill = this.blocks[index].label.color;
+        const lines = formattedLabel.split('\n');
 
-        // Center the text
+        // Center the text horizontally and align it vertically as configured
         const x = this.settings.width / 2;
-        const y = this.getTextY(paths);
+        const y = this.getTextY(index, lines.length);
 
         const text = group.append('text')
             .attr('x', x)
@@ -1079,21 +1083,20 @@ class D3Funnel {
             text.attr('font-family', this.settings.label.fontFamily);
         }
 
-        this.addLabelLines(text, formattedLabel, x);
+        this.addLabelLines(text, lines, x);
     }
 
     /**
      * Add <tspan> elements for each line of the formatted label.
      *
      * @param {Object} text
-     * @param {String} formattedLabel
+     * @param {Array}  lines
      * @param {Number} x
      *
      * @return {void}
      */
-    addLabelLines(text, formattedLabel, x) {
-        const lines = formattedLabel.split('\n');
-        const lineHeight = 20;
+    addLabelLines(text, lines, x) {
+        const lineHeight = D3Funnel.LABEL_LINE_HEIGHT;
 
         // dy will signify the change from the initial height y
         // We need to initially start the first line at the very top, factoring
@@ -1108,21 +1111,46 @@ class D3Funnel {
     }
 
     /**
-     * Returns the y position of the given label's text. This is determined by
-     * taking the mean of the bases.
+     * Returns the y position of the vertical center of the given label's text,
+     * according to the `label.verticalAlign` setting.
      *
-     * @param {Array} paths
+     * @param {int}    index
+     * @param {Number} lineCount
      *
      * @return {Number}
      */
-    getTextY(paths) {
-        const { isCurved, curveHeight } = this.settings;
+    getTextY(index, lineCount) {
+        const { isCurved, curveHeight, label } = this.settings;
+        const paths = this.blockPaths[index];
+        const offset = D3Funnel.LABEL_PADDING + ((D3Funnel.LABEL_LINE_HEIGHT * lineCount) / 2);
+
+        // The top and bottom edges of the block at its horizontal center
+        let top = paths[0][1];
+        let bottom = paths[2][1];
+        let middle = (top + bottom) / 2;
 
         if (isCurved) {
-            return ((paths[2][1] + paths[3][1]) / 2) + ((1.5 * curveHeight) / this.blocks.length);
+            const nextPaths = this.blockPaths[index + 1];
+
+            // A quadratic curve peaks halfway between its endpoints and its
+            // control point; the bottom of a block is hidden behind the top
+            // of the next block, if one exists
+            top = (paths[0][1] + paths[1][1]) / 2;
+            bottom = nextPaths ?
+                (nextPaths[0][1] + nextPaths[1][1]) / 2 :
+                (paths[3][1] + paths[5][1]) / 2;
+            middle = ((paths[2][1] + paths[3][1]) / 2) + ((1.5 * curveHeight) / this.blocks.length);
         }
 
-        return (paths[1][1] + paths[2][1]) / 2;
+        if (label.verticalAlign === 'top') {
+            return top + offset;
+        }
+
+        if (label.verticalAlign === 'bottom') {
+            return bottom - offset;
+        }
+
+        return middle;
     }
 }
 

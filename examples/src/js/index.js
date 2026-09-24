@@ -61,10 +61,15 @@ const settings = {
             animate: 200,
         },
     },
-    label: {
+    styleLabels: {
         label: {
             fontFamily: '"Reem Kufi", sans-serif',
             fontSize: '16px',
+        },
+    },
+    alignLabelsTop: {
+        label: {
+            verticalAlign: 'top',
         },
     },
 };
