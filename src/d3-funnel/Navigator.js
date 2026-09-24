@@ -130,7 +130,7 @@ class Navigator {
      * @return {Object}
      */
     getQuadraticBezierCurve(p0, p1, p2, t = 1) {
-        // Quadratic Bezier curve syntax: M(P0) Q(P1) P2
+        // Quadratic Bézier curve syntax: M(P0) Q(P1) P2
         // Where P0, P2 are the curve endpoints and P1 is the control point
 
         // More generally, at 0 <= t <= 1, we have the following:
