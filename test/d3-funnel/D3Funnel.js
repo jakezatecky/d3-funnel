@@ -830,6 +830,72 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('block.gap', () => {
+            function getBlockPaths(options) {
+                getFunnel().draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 1 },
+                ], {
+                    chart: { width: 200, height: 200, bottomWidth: 1 / 2 },
+                    ...options,
+                });
+
+                return selectAll('#funnel g path').nodes().map((node) => select(node));
+            }
+
+            function getPoints(path) {
+                return path.attr('d').split(' ').map(getCommandPoint);
+            }
+
+            it('should leave the specified amount of space between blocks', () => {
+                const [first, second] = getBlockPaths({ block: { gap: 10 } }).map(getPoints);
+
+                assert.equal(95, first[2].y);
+                assert.equal(105, second[0].y);
+            });
+
+            it('should not move the outer edges of the funnel', () => {
+                const [first, second] = getBlockPaths({ block: { gap: 10 } }).map(getPoints);
+
+                assert.equal(0, first[0].y);
+                assert.equal(200, getPathTopWidth(select('#funnel g path')));
+                assert.equal(200, second[2].y);
+                assert.equal(100, second[2].x - second[3].x);
+            });
+
+            it('should keep the sides of separated blocks along the funnel outline', () => {
+                const [first, second] = getBlockPaths({ block: { gap: 10 } }).map(getPoints);
+
+                // The left side runs from (0, 0) to (50, 200)
+                assert.closeTo(95 / 4, first[3].x, 0.0001);
+                assert.closeTo(105 / 4, second[0].x, 0.0001);
+            });
+
+            it('should never shrink a block below zero height', () => {
+                getBlockPaths({ block: { gap: 1000 } }).forEach((path) => {
+                    assert.isAtLeast(getPathHeight(path), 0);
+                });
+            });
+
+            it('should draw a top oval for each block of a curved funnel', () => {
+                getBlockPaths({
+                    chart: { width: 200, height: 200, curve: { enabled: true } },
+                    block: { gap: 10 },
+                });
+
+                // One oval for each of the two blocks, plus the two blocks
+                assert.equal(4, selectAll('#funnel path').size());
+            });
+
+            it('should only draw a single top oval for a curved funnel without a gap', () => {
+                getBlockPaths({
+                    chart: { width: 200, height: 200, curve: { enabled: true } },
+                });
+
+                assert.equal(3, selectAll('#funnel path').size());
+            });
+        });
+
         describe('block.highlight', () => {
             it('should change block color on hover', () => {
                 const event = new MouseEvent('mouseover');

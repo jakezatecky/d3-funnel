@@ -3,6 +3,7 @@
 ### Added
 
 * Add `label.verticalAlign` option to align in-block labels to the `top`, `middle`, or `bottom` of their blocks (#96)
+* Add `block.gap` option to leave space between blocks (#88)
 
 ## [v2.2.0](https://github.com/jakezatecky/d3-funnel/compare/v2.1.3...v2.2.0) (2026-09-23)
 

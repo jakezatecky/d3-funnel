@@ -61,6 +61,11 @@ const settings = {
             animate: 200,
         },
     },
+    gap: {
+        block: {
+            gap: 8,
+        },
+    },
     styleLabels: {
         label: {
             fontFamily: '"Reem Kufi", sans-serif',

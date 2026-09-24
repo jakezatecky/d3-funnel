@@ -41,6 +41,7 @@ class D3Funnel {
                 type: 'solid',
             },
             minHeight: 0,
+            gap: 0,
             highlight: false,
         },
         label: {
@@ -167,6 +168,7 @@ class D3Funnel {
             dynamicHeight: settings.block.dynamicHeight,
             dynamicSlope: settings.block.dynamicSlope,
             minHeight: settings.block.minHeight,
+            blockGap: settings.block.gap,
             label: settings.label,
             tooltip: settings.tooltip,
             onBlockClick: settings.events.click.block,
@@ -387,7 +389,7 @@ class D3Funnel {
 
         // Add top oval if curved
         if (this.settings.isCurved) {
-            this.drawTopOval(this.svg, this.blockPaths);
+            this.drawTopOval(this.svg, 0);
         }
 
         // Add each block
@@ -585,12 +587,14 @@ class D3Funnel {
 
             const dimensions = {
                 centerX,
-                prevLeftX,
-                prevRightX,
-                prevHeight,
-                nextLeftX,
-                nextRightX,
-                nextHeight,
+                ...this.carveBlockGap({
+                    prevLeftX,
+                    prevRightX,
+                    prevHeight,
+                    nextLeftX,
+                    nextRightX,
+                    nextHeight,
+                }, i),
                 curveHeight: this.settings.curveHeight,
                 ratio: block.ratio,
             };
@@ -622,6 +626,54 @@ class D3Funnel {
         });
 
         return [paths, overlayPaths];
+    }
+
+    /**
+     * Shrink a block's edges to leave room for the gap between it and its
+     * neighbors. Each gap is split evenly between the two blocks it separates,
+     * and the corners slide along the block's own sides so that the overall
+     * funnel shape is preserved.
+     *
+     * @param {Object} edges
+     * @param {int}    index
+     *
+     * @return {Object}
+     */
+    carveBlockGap(edges, index) {
+        const {
+            prevLeftX,
+            prevRightX,
+            prevHeight,
+            nextLeftX,
+            nextRightX,
+            nextHeight,
+        } = edges;
+        const height = nextHeight - prevHeight;
+
+        let trimTop = index > 0 ? this.settings.blockGap / 2 : 0;
+        let trimBottom = index < this.blocks.length - 1 ? this.settings.blockGap / 2 : 0;
+
+        if (height <= 0 || trimTop + trimBottom === 0) {
+            return edges;
+        }
+
+        // Never trim a block past zero height
+        const scale = Math.min(1, height / (trimTop + trimBottom));
+        trimTop *= scale;
+        trimBottom *= scale;
+
+        const top = trimTop / height;
+        const bottom = 1 - (trimBottom / height);
+        const lerp = (a, b, t) => a + ((b - a) * t);
+
+        return {
+            prevLeftX: lerp(prevLeftX, nextLeftX, top),
+            prevRightX: lerp(prevRightX, nextRightX, top),
+            prevHeight: prevHeight + trimTop,
+            nextLeftX: lerp(prevLeftX, nextLeftX, bottom),
+            nextRightX: lerp(prevRightX, nextRightX, bottom),
+            nextHeight: nextHeight - trimBottom,
+        };
     }
 
     /**
@@ -687,32 +739,35 @@ class D3Funnel {
     }
 
     /**
-     * Draw the top oval of a curved funnel.
+     * Draw the top oval of a curved funnel block.
      *
      * @param {Object} svg
-     * @param {Array}  blockPaths
+     * @param {int}    index
      *
      * @return {void}
      */
-    drawTopOval(svg, blockPaths) {
+    drawTopOval(svg, index) {
         const centerX = this.settings.width / 2;
+        const { curveHeight } = this.settings;
 
-        // Create path from top-most block
-        const paths = blockPaths[0];
-        const topCurve = paths[1][1] + (this.settings.curveHeight / 2);
+        // Create path from the top of the block
+        const paths = this.blockPaths[index];
+        const topY = paths[0][1];
+        const topCurve = paths[1][1] + (curveHeight / 2);
 
         const path = this.navigator.plot([
-            ['M', paths[0][0], paths[0][1]],
+            ['M', paths[0][0], topY],
             ['Q', centerX, topCurve],
-            [' ', paths[2][0], paths[2][1]],
-            ['M', paths[2][0], this.settings.curveHeight / 2],
-            ['Q', centerX, 0],
-            [' ', paths[0][0], this.settings.curveHeight / 2],
+            [' ', paths[2][0], topY],
+            ['M', paths[2][0], topY],
+            ['Q', centerX, topY - (curveHeight / 2)],
+            [' ', paths[0][0], topY],
         ]);
 
-        // Draw top oval
-        svg.append('path')
-            .attr('fill', this.colorizer.shade(this.blocks[0].fill.raw, this.settings.curveShade))
+        // Draw top oval beneath any other element, so that the block above
+        // it (if any) overlaps its back edge
+        svg.insert('path', ':first-child')
+            .attr('fill', this.colorizer.shade(this.blocks[index].fill.raw, this.settings.curveShade))
             .attr('d', path);
     }
 
@@ -726,6 +781,11 @@ class D3Funnel {
     drawBlock(index) {
         if (index === this.blocks.length) {
             return;
+        }
+
+        // Separated blocks of a curved funnel each show their own top
+        if (this.settings.isCurved && this.settings.blockGap > 0 && index > 0) {
+            this.drawTopOval(this.svg, index);
         }
 
         // Create a group just for this block
@@ -1133,12 +1193,14 @@ class D3Funnel {
             const nextPaths = this.blockPaths[index + 1];
 
             // A quadratic curve peaks halfway between its endpoints and its
-            // control point; the bottom of a block is hidden behind the top
-            // of the next block, if one exists
+            // control point; the bottom of a block may be hidden behind the
+            // top of the next block, if one exists
             top = (paths[0][1] + paths[1][1]) / 2;
-            bottom = nextPaths ?
-                (nextPaths[0][1] + nextPaths[1][1]) / 2 :
-                (paths[3][1] + paths[5][1]) / 2;
+            bottom = (paths[3][1] + paths[5][1]) / 2;
+
+            if (nextPaths) {
+                bottom = Math.min(bottom, (nextPaths[0][1] + nextPaths[1][1]) / 2);
+            }
             middle = ((paths[2][1] + paths[3][1]) / 2) + ((1.5 * curveHeight) / this.blocks.length);
         }
 

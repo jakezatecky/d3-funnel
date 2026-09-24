@@ -72,6 +72,7 @@ parent container:
 | `block.fill.scale`       | The background color scale as an array or function.                       | mixed    | `d3.schemeCategory10`   |
 | `block.fill.type`        | Either `'solid'` or `'gradient'`.                                         | string   | `'solid'`               |
 | `block.minHeight`        | The minimum pixel height of a block.                                      | number   | `0`                     |
+| `block.gap`              | The pixel space between blocks. The funnel's outline is preserved.        | number   | `0`                     |
 | `block.highlight`        | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
 | `label.enabled`          | Whether the block labels should be displayed.                             | bool     | `true`                  |
 | `label.fontFamily`       | Any valid font family for the labels.                                     | string   | `null`                  |
