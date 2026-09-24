@@ -1061,6 +1061,67 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('label.overflow', () => {
+            const longLabel = 'A label that is much too long to fit within its block';
+
+            function drawLabel(label, options = {}) {
+                getFunnel().draw([{ label, value: 1 }], {
+                    chart: { width: 200, height: 100, bottomWidth: 1 / 2 },
+                    ...options,
+                    label: { format: '{l}', ...options.label },
+                });
+
+                return selectAll('#funnel text tspan').nodes();
+            }
+
+            it('should leave long labels intact by default', () => {
+                const [tspan] = drawLabel(longLabel);
+
+                assert.equal(longLabel, tspan.textContent);
+            });
+
+            it('should truncate long labels with an ellipsis when set to \'ellipsis\'', () => {
+                const [tspan] = drawLabel(longLabel, { label: { overflow: 'ellipsis' } });
+
+                assert.notEqual(longLabel, tspan.textContent);
+                assert.isTrue(tspan.textContent.endsWith('\u2026'));
+                assert.isTrue(longLabel.startsWith(tspan.textContent.slice(0, -1)));
+            });
+
+            it('should fit truncated labels within the narrowest part of their line', () => {
+                const [tspan] = drawLabel(longLabel, { label: { overflow: 'ellipsis' } });
+
+                // The block narrows from 200px to 100px over 100px of height;
+                // the line spans y = 40 to 60, where the block is 140px wide
+                // at its narrowest, minus 5px padding on each side
+                assert.isAtMost(tspan.getComputedTextLength(), 130);
+            });
+
+            it('should not truncate labels that already fit', () => {
+                const [tspan] = drawLabel('Short', { label: { overflow: 'ellipsis' } });
+
+                assert.equal('Short', tspan.textContent);
+            });
+
+            it('should truncate each line of a label separately', () => {
+                const [first, second] = drawLabel(longLabel, {
+                    label: { overflow: 'ellipsis', format: '{l}\nShort' },
+                });
+
+                assert.isTrue(first.textContent.endsWith('\u2026'));
+                assert.equal('Short', second.textContent);
+            });
+
+            it('should hide the label when not even the ellipsis fits', () => {
+                const [tspan] = drawLabel(longLabel, {
+                    chart: { width: 10, height: 100 },
+                    label: { overflow: 'ellipsis' },
+                });
+
+                assert.equal('', tspan.textContent);
+            });
+        });
+
         describe('tooltip.enabled', () => {
             it('should render a simple tooltip box when hovering over a block', () => {
                 const event = new MouseEvent('mousemove');

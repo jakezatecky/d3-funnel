@@ -51,6 +51,7 @@ class D3Funnel {
             fill: '#fff',
             format: '{l}: {f}',
             verticalAlign: 'middle',
+            overflow: 'visible',
         },
         tooltip: {
             enabled: false,
@@ -1144,6 +1145,10 @@ class D3Funnel {
         }
 
         this.addLabelLines(text, lines, x);
+
+        if (this.settings.label.overflow === 'ellipsis') {
+            this.truncateLabelLines(text, index, y);
+        }
     }
 
     /**
@@ -1168,6 +1173,105 @@ class D3Funnel {
 
             text.append('tspan').attr('x', x).attr('dy', dy).text(line);
         });
+    }
+
+    /**
+     * Shorten each line of a label with an ellipsis so that it fits within
+     * the width of its block.
+     *
+     * @param {Object} text
+     * @param {int}    index
+     * @param {Number} y
+     *
+     * @return {void}
+     */
+    truncateLabelLines(text, index, y) {
+        const lineHeight = D3Funnel.LABEL_LINE_HEIGHT;
+        const tspans = text.selectAll('tspan').nodes();
+        const firstLineY = y - ((lineHeight * (tspans.length - 1)) / 2);
+
+        tspans.forEach((tspan, i) => {
+            const lineY = firstLineY + (lineHeight * i);
+
+            // The block is narrowest at either the top or bottom of the line
+            const maxWidth = Math.min(
+                this.getBlockWidthAt(index, lineY - (lineHeight / 2)),
+                this.getBlockWidthAt(index, lineY + (lineHeight / 2)),
+            ) - (2 * D3Funnel.LABEL_PADDING);
+
+            this.truncateText(tspan, maxWidth);
+        });
+    }
+
+    /**
+     * Shorten the text of the given element with an ellipsis until it is no
+     * wider than the given width.
+     *
+     * @param {SVGTextContentElement} node
+     * @param {Number}                maxWidth
+     *
+     * @return {void}
+     */
+    /* eslint-disable no-param-reassign */
+    truncateText(node, maxWidth) {
+        if (node.getComputedTextLength() <= maxWidth) {
+            return;
+        }
+
+        // Split by code point to avoid breaking apart surrogate pairs
+        const chars = Array.from(node.textContent);
+        const truncate = (length) => `${chars.slice(0, length).join('').trimEnd()}\u2026`;
+
+        // Binary search for the longest prefix that fits
+        let low = 0;
+        let high = chars.length - 1;
+
+        while (low < high) {
+            const mid = Math.ceil((low + high) / 2);
+
+            node.textContent = truncate(mid);
+
+            if (node.getComputedTextLength() <= maxWidth) {
+                low = mid;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        node.textContent = truncate(low);
+
+        // Hide the text entirely if not even the ellipsis fits
+        if (node.getComputedTextLength() > maxWidth) {
+            node.textContent = '';
+        }
+    }
+    /* eslint-enable no-param-reassign */
+
+    /**
+     * Returns the width of the given block at the given y position, which is
+     * clamped to the block's top and bottom.
+     *
+     * @param {int}    index
+     * @param {Number} y
+     *
+     * @return {Number}
+     */
+    getBlockWidthAt(index, y) {
+        const paths = this.blockPaths[index];
+
+        // Straight blocks are a simple trapezoid; curved blocks have their
+        // side corners at different path points
+        const [topLeft, topRight, bottomRight, bottomLeft] = this.settings.isCurved ?
+            [paths[0], paths[2], paths[3], paths[6]] :
+            [paths[0], paths[1], paths[2], paths[3]];
+
+        const height = bottomLeft[1] - topLeft[1];
+        const t = height > 0 ? Math.min(Math.max((y - topLeft[1]) / height, 0), 1) : 0;
+
+        const left = topLeft[0] + ((bottomLeft[0] - topLeft[0]) * t);
+        const right = topRight[0] + ((bottomRight[0] - topRight[0]) * t);
+
+        return right - left;
     }
 
     /**

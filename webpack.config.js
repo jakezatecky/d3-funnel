@@ -1,4 +1,5 @@
 import path from 'node:path';
+import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
 import { readFile } from 'node:fs/promises';
 
@@ -68,6 +69,17 @@ const configMap = {
     browser: {
         ...commonConfig,
         mode: 'production',
+        optimization: {
+            minimizer: [
+                // Escape non-ASCII characters so that the bundle works on
+                // pages that do not declare a UTF-8 charset
+                new TerserPlugin({
+                    terserOptions: {
+                        format: { ascii_only: true },
+                    },
+                }),
+            ],
+        },
         output: {
             path: path.join(dirname, '/dist'),
             filename: 'd3-funnel.min.js',
