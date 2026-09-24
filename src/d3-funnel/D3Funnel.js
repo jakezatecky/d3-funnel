@@ -770,7 +770,7 @@ class D3Funnel {
         }
 
         // Add path overlay
-        if (this.settings.addValueOverlay) {
+        if (overlayPath !== null) {
             path.attr('stroke', this.blocks[index].fill.raw);
 
             if (this.settings.animation !== 0) {
