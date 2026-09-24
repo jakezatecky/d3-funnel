@@ -233,5 +233,5 @@ MIT license.
 
 [d3]: http://d3js.org/
 [examples]: http://jakezatecky.github.io/d3-funnel/
-[jQuery-extend]: https://api.jquery.com/jquery.extend/
+[jquery-extend]: https://api.jquery.com/jquery.extend/
 [lodash-merge]: https://lodash.com/docs#merge
