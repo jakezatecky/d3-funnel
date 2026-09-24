@@ -21,9 +21,34 @@ const settings = {
             },
         },
     },
+    dynamicHeight: {
+        block: {
+            dynamicHeight: true,
+        },
+    },
+    gap: {
+        chart: {
+            curve: {
+                height: 40,
+            },
+        },
+        block: {
+            gap: 4,
+        },
+    },
+    barOverlay: {
+        block: {
+            barOverlay: true,
+        },
+    },
     inverted: {
         chart: {
             inverted: true,
+        },
+    },
+    animation: {
+        chart: {
+            animate: 200,
         },
     },
     hover: {
@@ -44,26 +69,6 @@ const settings = {
                     alert(d.label.raw);
                 },
             },
-        },
-    },
-    dynamicHeight: {
-        block: {
-            dynamicHeight: true,
-        },
-    },
-    barOverlay: {
-        block: {
-            barOverlay: true,
-        },
-    },
-    animation: {
-        chart: {
-            animate: 200,
-        },
-    },
-    gap: {
-        block: {
-            gap: 8,
         },
     },
     styleLabels: {
