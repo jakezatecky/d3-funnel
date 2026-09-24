@@ -87,6 +87,30 @@ parent container:
 | `events.mouseover.block` | Callback `function(event, data)` for when the mouse enters a block.       | function | `null`                  |
 | `events.mouseout.block`  | Callback `function(event, data)` for when the mouse leaves a block.       | function | `null`                  |
 
+### Curved Funnels with Gaps
+
+When a curved funnel has a `block.gap`, each block shows its own top oval, with
+the block above floating over it. The blocks will look most three-dimensional
+when the curve is pronounced relative to the gap. For example, pair a larger
+`chart.curve.height` with a small `block.gap`:
+
+``` javascript
+chart.draw(data, {
+    chart: {
+        curve: {
+            enabled: true,
+            height: 40,
+        },
+    },
+    block: {
+        gap: 4,
+    },
+});
+```
+
+A small curve with a large gap will instead leave a wide band of empty space
+between the blocks.
+
 ### Label/Tooltip Format
 
 The option `label.format` can either be a function or a string. The following
