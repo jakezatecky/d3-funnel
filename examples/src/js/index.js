@@ -29,7 +29,7 @@ const settings = {
     gap: {
         chart: {
             curve: {
-                height: 40,
+                height: 60,
             },
         },
         block: {
