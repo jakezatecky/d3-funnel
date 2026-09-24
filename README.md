@@ -64,7 +64,7 @@ parent container:
 | `chart.inverted`         | Whether the funnel direction is inverted (like a pyramid).                | bool     | `false`                 |
 | `chart.animate`          | The load animation speed in milliseconds.                                 | number   | `0` (disabled)          |
 | `chart.curve.enabled`    | Whether the funnel is curved.                                             | bool     | `false`                 |
-| `chart.curve.height`     | The curvature amount.                                                     | number   | `20`                    |
+| `chart.curve.height`     | The curvature amount. Narrower edges curve proportionally less.           | number   | `20`                    |
 | `chart.totalCount`       | Override the total count used in ratio calculations.                      | number   | `null`                  |
 | `block.dynamicHeight`    | Whether the block heights are proportional to their weight.               | bool     | `false`                 |
 | `block.dynamicSlope`     | Whether the block widths are proportional to their value decrease.        | bool     | `false`                 |

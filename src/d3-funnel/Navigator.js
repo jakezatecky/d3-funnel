@@ -40,7 +40,8 @@ class Navigator {
      * @param {Number} nextLeftX
      * @param {Number} nextRightX
      * @param {Number} nextHeight
-     * @param {Number} curveHeight
+     * @param {Number} prevCurve  The control point offset of the top curve.
+     * @param {Number} nextCurve  The control point offset of the bottom curve.
      *
      * @return {Object}
      */
@@ -52,7 +53,8 @@ class Navigator {
         nextLeftX,
         nextRightX,
         nextHeight,
-        curveHeight,
+        prevCurve,
+        nextCurve,
     }) {
         return {
             p00: {
@@ -61,7 +63,7 @@ class Navigator {
             },
             p01: {
                 x: centerX,
-                y: prevHeight + (curveHeight / 2),
+                y: prevHeight + prevCurve,
             },
             p02: {
                 x: prevRightX,
@@ -74,7 +76,7 @@ class Navigator {
             },
             p11: {
                 x: centerX,
-                y: nextHeight + curveHeight,
+                y: nextHeight + nextCurve,
             },
             p12: {
                 x: nextRightX,

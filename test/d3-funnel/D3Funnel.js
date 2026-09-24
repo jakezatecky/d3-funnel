@@ -499,6 +499,80 @@ describe('D3Funnel', () => {
 
                 assert.equal(paths.length, quadraticPaths.length);
             });
+
+            function drawCurved(block = {}) {
+                getFunnel().draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 3 },
+                ], {
+                    chart: {
+                        width: 200,
+                        height: 200,
+                        bottomWidth: 1 / 4,
+                        curve: { enabled: true, height: 20 },
+                    },
+                    block,
+                });
+
+                return selectAll('#funnel path').nodes().map((node) => (
+                    select(node).attr('d').split(' ').map(getCommandPoint)
+                ));
+            }
+
+            it('should curve each edge in proportion to its width', () => {
+                const [, first, second] = drawCurved();
+
+                // A full-width edge dips a quarter of the curve height, so its
+                // control point is offset by half of the curve height
+                assert.closeTo(10, first[1].y - first[0].y, 0.0001);
+
+                // The 50px bottom edge is a quarter of the width
+                assert.closeTo(2.5, second[5].y - second[3].y, 0.0001);
+            });
+
+            it('should extend the bottom of a block beneath the next block', () => {
+                const [, first, second] = drawCurved();
+
+                // Sharing the exact same edge would leave an anti-aliased seam
+                assert.isAbove(first[5].y, second[1].y);
+            });
+
+            it('should curve separated blocks such that they would stack without the gap', () => {
+                drawCurved({ gap: 10 });
+
+                const [first, second] = selectAll('#funnel g path').nodes().map((node) => (
+                    select(node).attr('d').split(' ').map(getCommandPoint)
+                ));
+
+                // The bottom of the first block is not extended beneath the
+                // second; both have the same depth relative to their widths
+                const bottomRatio = (first[5].y - first[3].y) / (first[3].x - first[6].x);
+                const topRatio = (second[1].y - second[0].y) / (second[2].x - second[0].x);
+
+                assert.closeTo(bottomRatio, topRatio, 0.0001);
+            });
+
+            it('should extend the front of the top oval beneath the first block', () => {
+                const [oval, first] = drawCurved();
+
+                assert.isAbove(oval[1].y, first[1].y);
+            });
+
+            it('should fill the height of the chart exactly', () => {
+                const [oval, , second] = drawCurved();
+
+                // The back of the top oval peaks at the top of the chart
+                assert.closeTo(0, (oval[3].y + oval[4].y) / 2, 0.0001);
+
+                // The bottom edge dips to the bottom of the chart
+                assert.closeTo(200, (second[3].y + second[5].y) / 2, 0.0001);
+            });
+
+            it('should maintain chart.bottomWidth when combined with block.dynamicHeight', () => {
+                const [, , second] = drawCurved({ dynamicHeight: true });
+
+                assert.closeTo(50, second[3].x - second[6].x, 0.0001);
+            });
         });
 
         describe('block.dynamicHeight', () => {

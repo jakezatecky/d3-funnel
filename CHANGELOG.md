@@ -6,6 +6,12 @@
 * Add `label.verticalAlign` option to align in-block labels to the `top`, `middle`, or `bottom` of their blocks (#96)
 * Add `block.gap` option to leave space between blocks (#88)
 
+### Fixed
+
+* Fixed curved funnels curving narrower edges disproportionately; edges now curve in proportion to their width (#69)
+* Fixed curved funnels leaving empty space above the top oval
+* Fixed `chart.bottomWidth` not being maintained for curved funnels using `block.dynamicHeight`
+
 ## [v2.2.0](https://github.com/jakezatecky/d3-funnel/compare/v2.1.3...v2.2.0) (2026-09-23)
 
 ### Added

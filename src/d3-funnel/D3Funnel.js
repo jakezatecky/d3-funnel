@@ -434,9 +434,9 @@ class D3Funnel {
         let nextRightX = 0;
         let nextHeight = 0;
 
-        // Move down if there is an initial curve
+        // Move down to make room for the back of the top oval
         if (this.settings.isCurved) {
-            prevHeight = this.settings.curveHeight / 2;
+            prevHeight = this.getCurveDepth(this.getTopEdgeWidth());
         }
 
         let totalHeight = this.settings.height;
@@ -448,66 +448,67 @@ class D3Funnel {
             totalHeight = this.settings.height - (this.settings.minHeight * this.blocks.length);
         }
 
-        let slopeHeight = this.settings.height;
+        // The top and bottom edges of the funnel's sides
+        const topY = prevHeight;
+        const bottomY = this.settings.isCurved ?
+            this.settings.height - this.getCurveDepth(this.getBottomEdgeWidth()) :
+            this.settings.height;
+
+        // Get the dynamic height of a block
+        const getBlockHeight = (block) => {
+            // Slice off the height proportional to this block
+            let height = totalHeight * block.ratio;
+
+            // Add greedy minimum height
+            if (this.settings.minHeight !== 0) {
+                height += this.settings.minHeight;
+            }
+
+            // Account for any curvature
+            if (this.settings.isCurved) {
+                height -= this.getCurveReserve() / this.blocks.length;
+            }
+
+            return height;
+        };
+
+        let pinchHeight = 0;
 
         // Correct slope height if there are blocks being pinched (and thus
         // requiring a sharper curve)
         if (this.settings.bottomPinch > 0) {
             this.blocks.forEach((block, i) => {
-                let height = (totalHeight * block.ratio);
+                const isPinched = this.settings.isInverted ?
+                    i < this.settings.bottomPinch :
+                    i >= this.blocks.length - this.settings.bottomPinch;
 
-                // Add greedy minimum height
-                if (this.settings.minHeight !== 0) {
-                    height += this.settings.minHeight;
-                }
-
-                // Account for any curvature
-                if (this.settings.isCurved) {
-                    height += this.settings.curveHeight / this.blocks.length;
-                }
-
-                if (this.settings.isInverted) {
-                    if (i < this.settings.bottomPinch) {
-                        slopeHeight -= height;
-                    }
-                } else if (i >= this.blocks.length - this.settings.bottomPinch) {
-                    slopeHeight -= height;
+                if (isPinched) {
+                    pinchHeight += getBlockHeight(block);
                 }
             });
         }
 
         // The slope will determine the x points on each block iteration
         // Given: slope = (y1 - y2) / (x1 - x2)
-        // (x1, y1) = (bottomLeftX, height)
-        // (x2, y2) = (0, 0)
-        const slope = slopeHeight / bottomLeftX;
+        // (x1, y1) = (bottomLeftX, the start of any pinch)
+        // (x2, y2) = (0, the far edge of the funnel)
+        const slope = (bottomY - topY - pinchHeight) / bottomLeftX;
 
         // Create the path definition for each funnel block
         // Remember to loop back to the beginning point for a closed path
         this.blocks.forEach((block, i) => {
             // Make heights proportional to block weight
             if (this.settings.dynamicHeight) {
-                // Slice off the height proportional to this block
-                dy = totalHeight * block.ratio;
-
-                // Add greedy minimum height
-                if (this.settings.minHeight !== 0) {
-                    dy += this.settings.minHeight;
-                }
-
-                // Account for any curvature
-                if (this.settings.isCurved) {
-                    dy -= this.settings.curveHeight / this.blocks.length;
-                }
+                dy = getBlockHeight(block);
 
                 // Given: y = mx + b
-                // Given: b = 0 (when funnel), b = this.settings.height (when pyramid)
-                // For funnel, x_i = y_i / slope
-                nextLeftX = (prevHeight + dy) / slope;
+                // Given: b = topY (when funnel), b = bottomY (when pyramid)
+                // For funnel, x_i = (y_i - topY) / slope
+                nextLeftX = ((prevHeight + dy) - topY) / slope;
 
-                // For pyramid, x_i = y_i - this.settings.height / -slope
+                // For pyramid, x_i = (y_i - bottomY) / -slope
                 if (this.settings.isInverted) {
-                    nextLeftX = ((prevHeight + dy) - this.settings.height) / (-1 * slope);
+                    nextLeftX = ((prevHeight + dy) - bottomY) / (-1 * slope);
                 }
 
                 // If bottomWidth is 0, adjust last x position (to circumvent
@@ -586,17 +587,27 @@ class D3Funnel {
                 nextRightX = prevRightX + dx;
             }
 
+            const edges = this.carveBlockGap({
+                prevLeftX,
+                prevRightX,
+                prevHeight,
+                nextLeftX,
+                nextRightX,
+                nextHeight,
+            }, i);
+
+            // Extend the bottom of a block beneath the next block when they
+            // touch; sharing the exact same edge would let the background
+            // bleed through the anti-aliasing along the seam
+            const isCovered = i < this.blocks.length - 1 && this.settings.blockGap === 0;
+            const nextCurveScale = isCovered ? 4 : 2;
+
+            // A quadratic curve dips halfway to its control point
             const dimensions = {
                 centerX,
-                ...this.carveBlockGap({
-                    prevLeftX,
-                    prevRightX,
-                    prevHeight,
-                    nextLeftX,
-                    nextRightX,
-                    nextHeight,
-                }, i),
-                curveHeight: this.settings.curveHeight,
+                ...edges,
+                prevCurve: 2 * this.getCurveDepth(edges.prevRightX - edges.prevLeftX),
+                nextCurve: nextCurveScale * this.getCurveDepth(edges.nextRightX - edges.nextLeftX),
                 ratio: block.ratio,
             };
 
@@ -697,10 +708,51 @@ class D3Funnel {
     getDy() {
         // Curved chart needs reserved pixels to account for curvature
         if (this.settings.isCurved) {
-            return (this.settings.height - this.settings.curveHeight) / this.blocks.length;
+            return (this.settings.height - this.getCurveReserve()) / this.blocks.length;
         }
 
         return this.settings.height / this.blocks.length;
+    }
+
+    /**
+     * Returns how far the curve of a horizontal edge of the given width dips
+     * below (or, for the back of an oval, rises above) its endpoints.
+     *
+     * Each edge is drawn as part of an ellipse viewed from a fixed angle, so
+     * its depth is proportional to its width. An edge spanning the full width
+     * of the chart has a depth of a quarter of the curve height.
+     *
+     * @param {Number} width
+     *
+     * @return {Number}
+     */
+    getCurveDepth(width) {
+        return (this.settings.curveHeight / 4) * (Math.max(width, 0) / this.settings.width);
+    }
+
+    /**
+     * @return {Number}
+     */
+    getTopEdgeWidth() {
+        return this.settings.isInverted ? this.settings.bottomWidth : this.settings.width;
+    }
+
+    /**
+     * @return {Number}
+     */
+    getBottomEdgeWidth() {
+        return this.settings.isInverted ? this.settings.width : this.settings.bottomWidth;
+    }
+
+    /**
+     * Returns the vertical space needed above and below the blocks of a curved
+     * funnel for the back of the top oval and the dip of the bottom edge.
+     *
+     * @return {Number}
+     */
+    getCurveReserve() {
+        return this.getCurveDepth(this.getTopEdgeWidth()) +
+            this.getCurveDepth(this.getBottomEdgeWidth());
     }
 
     /**
@@ -749,19 +801,20 @@ class D3Funnel {
      */
     drawTopOval(svg, index) {
         const centerX = this.settings.width / 2;
-        const { curveHeight } = this.settings;
 
-        // Create path from the top of the block
+        // Create path from the top of the block, mirroring the block's top
+        // curve to form the back of the oval; the front extends beneath the
+        // block to avoid a seam along their shared edge
         const paths = this.blockPaths[index];
         const topY = paths[0][1];
-        const topCurve = paths[1][1] + (curveHeight / 2);
+        const curve = paths[1][1] - topY;
 
         const path = this.navigator.plot([
             ['M', paths[0][0], topY],
-            ['Q', centerX, topCurve],
+            ['Q', centerX, topY + (2 * curve)],
             [' ', paths[2][0], topY],
             ['M', paths[2][0], topY],
-            ['Q', centerX, topY - (curveHeight / 2)],
+            ['Q', centerX, topY - curve],
             [' ', paths[0][0], topY],
         ]);
 
@@ -1284,7 +1337,7 @@ class D3Funnel {
      * @return {Number}
      */
     getTextY(index, lineCount) {
-        const { isCurved, curveHeight, label } = this.settings;
+        const { isCurved, label } = this.settings;
         const paths = this.blockPaths[index];
         const offset = D3Funnel.LABEL_PADDING + ((D3Funnel.LABEL_LINE_HEIGHT * lineCount) / 2);
 
@@ -1305,7 +1358,8 @@ class D3Funnel {
             if (nextPaths) {
                 bottom = Math.min(bottom, (nextPaths[0][1] + nextPaths[1][1]) / 2);
             }
-            middle = ((paths[2][1] + paths[3][1]) / 2) + ((1.5 * curveHeight) / this.blocks.length);
+
+            middle = (top + bottom) / 2;
         }
 
         if (label.verticalAlign === 'top') {
