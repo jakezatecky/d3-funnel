@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Changed
+
+* Replace the placeholder TypeScript declaration with full typings for the chart API, options, data, and event handlers
+
 ### Fixed
 
 * Fixed `require('d3-funnel')` throwing `self is not defined` outside of the browser

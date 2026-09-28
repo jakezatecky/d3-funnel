@@ -41,3 +41,6 @@ jobs:
       -
         name: Build the library
         run: yarn build
+      -
+        name: Check the package typings
+        run: yarn test:package

@@ -22,19 +22,27 @@
   "imports": {
     "#js/*": "./src/d3-funnel/*"
   },
+  "types": "./dist/index.d.cts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./src/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./*": "./*"
   },
   "browser": "dist/d3-funnel.min.js",
   "scripts": {
-    "build": "npm run build:browser && npm run build:esm && npm run build:umd",
+    "build": "npm run build:browser && npm run build:esm && npm run build:umd && npm run build:types",
     "build:browser": "webpack --env=target=browser",
     "build:esm": "webpack --env=target=esm",
     "build:umd": "webpack --env=target=umd",
+    "build:types": "node -e \"require('node:fs').copyFileSync('src/index.d.ts', 'dist/index.d.cts')\"",
     "build:test": "webpack --config=webpack.config.test.js",
     "examples": "webpack serve --config=webpack.config.examples.js",
     "format:style": "prettier --write examples/src/scss/**/*.scss",
@@ -47,9 +55,11 @@
     "test": "npm run lint && npm run test:script && npm run test:style-format",
     "test:script": "npm run build:test && node test/test.js",
     "test:style-format": "prettier --check examples/src/scss/**/*.scss",
-    "test-and-build": "npm run test && npm run build"
+    "test:package": "attw --pack . --ignore-rules false-export-default",
+    "test-and-build": "npm run test && npm run build && npm run test:package"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@babel/core": "^8.0.6",
     "@babel/eslint-parser": "^8.0.6",
     "@babel/preset-env": "^8.0.6",
