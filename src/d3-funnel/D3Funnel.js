@@ -23,7 +23,6 @@ class D3Funnel {
             bottomWidth: 1 / 3,
             bottomPinch: 0,
             inverted: false,
-            horizontal: false,
             animate: 0,
             curve: {
                 enabled: false,
