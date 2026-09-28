@@ -124,7 +124,7 @@ keys will be substituted by the string formatter:
 
 ### Event Data
 
-Block-based events are passed the DOM `event` and a `data` object containing
+Block-based events are passed a DOM `event` and a `data` object containing
 the following elements:
 
 | Key             | Type   | Description                           |
@@ -133,12 +133,13 @@ the following elements:
 | data            | mixed  | The block's original data entry.      |
 | node            | object | The DOM node of the block.            |
 | value           | number | The numerical value.                  |
-| fill            | string | The background color.                 |
+| fill.raw        | string | The original block color.             |
+| fill.actual     | string | The actual color (may be a gradient). |
 | label.raw       | string | The unformatted label.                |
 | label.formatted | string | The result of `options.label.format`. |
 | label.color     | string | The label color.                      |
 
-Example:
+An example `data` object is below:
 
 ``` javascript
 {
@@ -146,7 +147,7 @@ Example:
     data: { label: 'Visitors', value: 150 },
     node: { ... },
     value: 150,
-    fill: '#c33',
+    fill: { raw: "#ff7f0e", actual: "#ff7f0e" },
     label: {
         raw: 'Visitors',
         formatted: 'Visitors: 150',
