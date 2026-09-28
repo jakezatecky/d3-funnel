@@ -205,17 +205,16 @@ D3Funnel.defaults = _.merge(D3Funnel.defaults, {
 });
 ```
 
-## Advanced Data
+## Advanced Data Options
 
-In the examples above, both `label` and `value` were just to describe a block
-within the funnel. A complete listing of the available options is included
-below:
+In the examples above, `label` and `value` were required descriptions of a block
+within the funnel. Below is a complete list of all block-level options:
 
 | Option          | Type   | Description                                                     | Example       |
 | --------------- | ------ | --------------------------------------------------------------- | ------------- |
 | label           | mixed  | **Required.** The label to associate with the block.            | `'Students'`  |
 | value           | number | **Required.** The value (or count) to associate with the block. | `500`         |
-| backgroundColor | string | A row-level override for `block.fill.scale`. Hex only.          | `'#008080'`   |
+| backgroundColor | string | A row-level override for `block.fill.scale`. Hex only.          | `'#702963'`   |
 | formattedValue  | mixed  | A row-level override for `label.format`.                        | `'USD: $150'` |
 | hideLabel       | bool   | Whether to hide the formatted label for this block.             | `true`        |
 | labelColor      | string | A row-level override for `label.fill`. Hex only.                | `'#333'`      |
