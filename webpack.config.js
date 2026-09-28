@@ -64,6 +64,7 @@ const configMap = {
                 type: 'umd',
                 umdNamedDefine: true,
             },
+            globalObject: 'this',
         },
     },
     browser: {

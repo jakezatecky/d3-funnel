@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fixed
+
+* Fixed `require('d3-funnel')` throwing `self is not defined` outside of the browser
+
 ## [v2.3.0](https://github.com/jakezatecky/d3-funnel/compare/v2.2.0...v2.3.0) (2026-09-25)
 
 ### Added
