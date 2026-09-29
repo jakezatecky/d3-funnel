@@ -19,10 +19,10 @@
 
 ### Fixed
 
-* Fixed `require('d3-funnel')` throwing `self is not defined` outside of the browser
-* Fixed tooltips failing to appear, and throwing an error on mouseout, after redrawing a chart while a tooltip was visible
-* Fixed drawing a chart overwriting the `D3Funnel.defaults` width and height with its container's dimensions, which later charts in zero-sized containers would then inherit
-* Fixed `block.barOverlay` overlays falling short of their value on straight funnels for blocks not starting at the left edge of the chart
+* Fix `require('d3-funnel')` throwing `self is not defined` outside of the browser
+* Fix tooltips failing to appear, and throwing an error on mouseout, after redrawing a chart while a tooltip was visible
+* Fix drawing a chart overwriting the `D3Funnel.defaults` width and height with its container's dimensions, which later charts in zero-sized containers would then inherit
+* Fix `block.barOverlay` overlays falling short of their value on straight funnels for blocks not starting at the left edge of the chart
 
 ## [v2.3.0](https://github.com/jakezatecky/d3-funnel/compare/v2.2.0...v2.3.0) (2026-09-25)
 
@@ -34,9 +34,9 @@
 
 ### Fixed
 
-* Fixed curved funnels curving narrower edges disproportionately; edges now curve in proportion to their width (#69)
-* Fixed curved funnels leaving empty space above the top oval
-* Fixed `chart.bottomWidth` not being maintained for curved funnels using `block.dynamicHeight`
+* Fix curved funnels curving narrower edges disproportionately; edges now curve in proportion to their width (#69)
+* Fix curved funnels leaving empty space above the top oval
+* Fix `chart.bottomWidth` not being maintained for curved funnels using `block.dynamicHeight`
 
 ## [v2.2.0](https://github.com/jakezatecky/d3-funnel/compare/v2.1.3...v2.2.0) (2026-09-23)
 
@@ -47,8 +47,8 @@
 
 ### Fixed
 
-* Fixed CommonJS exports
-* Fixed README documentation of the `events.click.block` callback signature
+* Fix CommonJS exports
+* Fix README documentation of the `events.click.block` callback signature
 
 ## [v2.1.3](https://github.com/jakezatecky/d3-funnel/compare/v2.1.2...v2.1.3) (2025-09-11)
 
