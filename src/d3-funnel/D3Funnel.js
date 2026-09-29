@@ -988,9 +988,7 @@ class D3Funnel {
             });
         }
 
-        if (this.settings.label.enabled && block.label.enabled) {
-            this.addBlockLabel(group, index);
-        }
+        this.drawLabel(group, index);
     }
 
     /**
@@ -1169,13 +1167,24 @@ class D3Funnel {
     }
 
     /**
+     * Draw the label of the given block into its group, replacing any label
+     * already drawn there.
+     *
      * @param {Object} group
      * @param {int}    index
      *
      * @return {void}
      */
-    addBlockLabel(group, index) {
+    drawLabel(group, index) {
         const { label } = this.blocks[index];
+
+        // Remove any existing label
+        group.select('text').remove();
+
+        if (!this.settings.label.enabled || !label.enabled) {
+            return;
+        }
+
         const lines = label.formatted.split('\n');
 
         // Center the text horizontally
@@ -1185,97 +1194,42 @@ class D3Funnel {
             .attr('x', x)
             .attr('fill', label.color)
             .attr('font-size', label.fontSize)
+            .attr('font-family', label.fontFamily)
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', 'middle')
             .attr('pointer-events', 'none');
 
-        // Add font-family, if exists
-        if (label.fontFamily !== null) {
-            text.attr('font-family', label.fontFamily);
-        }
+        // Lines are spaced by the rendered font size, which is only known once
+        // the text exists; fall back to the configured size if the chart is not
+        // attached to the document
+        const fontSize = parseFloat(window.getComputedStyle(text.node()).fontSize) ||
+            parseFloat(label.fontSize);
+        const lineHeight = fontSize * this.settings.label.lineHeight;
 
-        // Align the text vertically as configured; this depends on the rendered
-        // font size, so it must happen after the font attributes are set
-        const lineHeight = this.getLabelLineHeight(text, label.fontSize);
+        // Position the text at the vertical center of all its lines
         const y = this.getTextY(index, lines.length, lineHeight);
+        const firstLineY = y - ((lineHeight * (lines.length - 1)) / 2);
 
         text.attr('y', y);
 
-        this.addLabelLines(text, lines, x, lineHeight);
-
-        if (this.settings.label.overflow === 'ellipsis') {
-            this.truncateLabelLines(text, index, y, lineHeight);
-        }
-    }
-
-    /**
-     * Returns the pixel height of each line of the given label, which is its
-     * rendered font size scaled by the `label.lineHeight` setting.
-     *
-     * @param {Object} text
-     * @param {string} fontSize
-     *
-     * @return {Number}
-     */
-    getLabelLineHeight(text, fontSize) {
-        const { lineHeight } = this.settings.label;
-
-        // Fall back to the configured font size if the chart is not attached
-        // to the document and so has no computed style
-        const renderedSize = parseFloat(window.getComputedStyle(text.node()).fontSize) ||
-            parseFloat(fontSize);
-
-        return renderedSize * lineHeight;
-    }
-
-    /**
-     * Add <tspan> elements for each line of the formatted label.
-     *
-     * @param {Object} text
-     * @param {Array}  lines
-     * @param {Number} x
-     * @param {Number} lineHeight
-     *
-     * @return {void}
-     */
-    addLabelLines(text, lines, x, lineHeight) {
-        // dy will signify the change from the initial height y
-        // We need to initially start the first line at the very top, factoring
-        // in the other number of lines
-        const initialDy = (-1 * lineHeight * (lines.length - 1)) / 2;
-
         lines.forEach((line, i) => {
-            const dy = i === 0 ? initialDy : lineHeight;
+            // Each line is offset from the one before it
+            const tspan = text.append('tspan')
+                .attr('x', x)
+                .attr('dy', i === 0 ? firstLineY - y : lineHeight)
+                .text(line);
 
-            text.append('tspan').attr('x', x).attr('dy', dy).text(line);
-        });
-    }
+            if (this.settings.label.overflow === 'ellipsis') {
+                const lineY = firstLineY + (lineHeight * i);
 
-    /**
-     * Shorten each line of a label with an ellipsis so that it fits within
-     * the width of its block.
-     *
-     * @param {Object} text
-     * @param {int}    index
-     * @param {Number} y
-     * @param {Number} lineHeight
-     *
-     * @return {void}
-     */
-    truncateLabelLines(text, index, y, lineHeight) {
-        const tspans = text.selectAll('tspan').nodes();
-        const firstLineY = y - ((lineHeight * (tspans.length - 1)) / 2);
+                // The block is narrowest at either the top or bottom of the line
+                const maxWidth = Math.min(
+                    this.getBlockWidthAt(index, lineY - (lineHeight / 2)),
+                    this.getBlockWidthAt(index, lineY + (lineHeight / 2)),
+                ) - (2 * D3Funnel.LABEL_PADDING);
 
-        tspans.forEach((tspan, i) => {
-            const lineY = firstLineY + (lineHeight * i);
-
-            // The block is narrowest at either the top or bottom of the line
-            const maxWidth = Math.min(
-                this.getBlockWidthAt(index, lineY - (lineHeight / 2)),
-                this.getBlockWidthAt(index, lineY + (lineHeight / 2)),
-            ) - (2 * D3Funnel.LABEL_PADDING);
-
-            this.truncateText(tspan, maxWidth);
+                this.truncateText(tspan.node(), maxWidth);
+            }
         });
     }
 
