@@ -132,20 +132,32 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         dynamicHeight: boolean;
         /** Whether the block widths are proportional to their value decrease. */
         dynamicSlope: boolean;
-        /** Whether the blocks have bar chart overlays proportional to their weight. */
-        barOverlay: boolean;
+        barOverlay: {
+            /** Whether the blocks have bar chart overlays proportional to their weight. */
+            enabled: boolean;
+            /** The shade adjustment of the block behind its overlay, from `-1` to `1`. */
+            shade: number;
+        };
         fill: {
             /** The background color scale. */
             scale: FunnelColorScale;
             /** The fill type of the blocks. */
             type: 'solid' | 'gradient';
+            /** The shade adjustment of the edges of gradient fills, from `-1` to `1`. */
+            gradientShade: number;
         };
         /** The minimum pixel height of a block. */
         minHeight: number;
         /** The pixel space between blocks. The funnel's outline is preserved. */
         gap: number;
-        /** Whether the blocks are highlighted on hover. */
-        highlight: boolean;
+        highlight: {
+            /** Whether the blocks are highlighted on hover. */
+            enabled: boolean;
+            /** The shade adjustment of a highlighted block, from `-1` to `1`. */
+            shade: number;
+            /** The shade adjustment of a highlighted overlay, from `-1` to `1`. */
+            overlayShade: number;
+        };
     };
     label: {
         /** Whether the block labels should be displayed. */
@@ -164,12 +176,21 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         verticalAlign: 'top' | 'middle' | 'bottom';
         /** Whether to truncate labels wider than their blocks with an ellipsis. */
         overflow: 'visible' | 'ellipsis';
+        /** The pixel padding between a label and the edges of its block. */
+        padding: number;
     };
     tooltip: {
         /** Whether tooltips should be enabled on hover. */
         enabled: boolean;
         /** The tooltip format. */
         format: FunnelFormat;
+        /** The pixel distance between the tooltip and the mouse. */
+        offset: number;
+        /**
+         * CSS properties applied to the tooltip, keyed by their CSS names. The
+         * border color defaults to the block's color.
+         */
+        style: Record<string, string | null>;
     };
     events: {
         click: {
@@ -198,9 +219,6 @@ type DeepPartial<T> = T extends (...args: never[]) => unknown ? T :
 export type FunnelOptions<TDatum extends FunnelDatum = FunnelDatum> = DeepPartial<FunnelSettings<TDatum>>;
 
 declare class D3Funnel {
-    /** The pixel padding between a label and the edges of its block. */
-    static LABEL_PADDING: number;
-
     /** The default settings used by every chart. */
     static defaults: FunnelSettings;
 

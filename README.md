@@ -55,38 +55,46 @@ parent container:
 
 ## Options
 
-| Option                   | Description                                                               | Type     | Default                 |
-| ------------------------ | ------------------------------------------------------------------------- | -------- | ----------------------- |
-| `chart.width`            | The width of the chart in pixels or a percentage.                         | mixed    | Container's width       |
-| `chart.height`           | The height of the chart in pixels or a percentage.                        | mixed    | Container's height      |
-| `chart.bottomWidth`      | The percent of total width the bottom should be.                          | number   | `1 / 3`                 |
-| `chart.bottomPinch`      | How many blocks to pinch on the bottom to create a funnel "neck".         | number   | `0`                     |
-| `chart.inverted`         | Whether the funnel direction is inverted (like a pyramid).                | bool     | `false`                 |
-| `chart.animate`          | The load animation speed in milliseconds.                                 | number   | `0` (disabled)          |
-| `chart.curve.enabled`    | Whether the funnel is curved.                                             | bool     | `false`                 |
-| `chart.curve.height`     | The curvature amount. Narrower edges curve proportionally less.           | number   | `20`                    |
-| `chart.totalCount`       | Override the total count used in ratio calculations.                      | number   | `null`                  |
-| `block.dynamicHeight`    | Whether the block heights are proportional to their weight.               | bool     | `false`                 |
-| `block.dynamicSlope`     | Whether the block widths are proportional to their value decrease.        | bool     | `false`                 |
-| `block.barOverlay`       | Whether the blocks have bar chart overlays proportional to its weight.    | bool     | `false`                 |
-| `block.fill.scale`       | The background color scale as an array or function.                       | mixed    | `d3.schemeCategory10`   |
-| `block.fill.type`        | Either `'solid'` or `'gradient'`.                                         | string   | `'solid'`               |
-| `block.minHeight`        | The minimum pixel height of a block.                                      | number   | `0`                     |
-| `block.gap`              | The pixel space between blocks. The funnel's outline is preserved.        | number   | `0`                     |
-| `block.highlight`        | Whether the blocks are highlighted on hover.                              | bool     | `false`                 |
-| `label.enabled`          | Whether the block labels should be displayed.                             | bool     | `true`                  |
-| `label.fontFamily`       | Any valid font family for the labels.                                     | string   | `null`                  |
-| `label.fontSize`         | Any valid font size for the labels.                                       | string   | `'14px'`                |
-| `label.lineHeight`       | The height of each line of a label, as a multiple of its font size.       | number   | `1.4`                   |
-| `label.fill`             | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
-| `label.format`           | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
-| `label.verticalAlign`    | Where to place labels within their blocks: `top`, `middle`, or `bottom`.  | string   | `'middle'`              |
-| `label.overflow`         | Either `'visible'` or `'ellipsis'` to truncate labels wider than blocks.  | string   | `'visible'`             |
-| `tooltip.enabled`        | Whether tooltips should be enabled on hover.                              | bool     | `false`                 |
-| `tooltip.format`         | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
-| `events.click.block`     | Callback `function(event, data)` for when a block is clicked.             | function | `null`                  |
-| `events.mouseover.block` | Callback `function(event, data)` for when the mouse enters a block.       | function | `null`                  |
-| `events.mouseout.block`  | Callback `function(event, data)` for when the mouse leaves a block.       | function | `null`                  |
+| Option                         | Description                                                              | Type     | Default               |
+| ------------------------------ | ------------------------------------------------------------------------ | -------- | --------------------- |
+| `chart.width`                  | The width of the chart in pixels or a percentage.                        | mixed    | Container's width     |
+| `chart.height`                 | The height of the chart in pixels or a percentage.                       | mixed    | Container's height    |
+| `chart.bottomWidth`            | The percent of total width the bottom should be.                         | number   | `1 / 3`               |
+| `chart.bottomPinch`            | How many blocks to pinch on the bottom to create a funnel "neck".        | number   | `0`                   |
+| `chart.inverted`               | Whether the funnel direction is inverted (like a pyramid).               | bool     | `false`               |
+| `chart.animate`                | The load animation speed in milliseconds.                                | number   | `0` (disabled)        |
+| `chart.curve.enabled`          | Whether the funnel is curved.                                            | bool     | `false`               |
+| `chart.curve.height`           | The curvature amount. Narrower edges curve proportionally less.          | number   | `20`                  |
+| `chart.curve.shade`            | The shade adjustment of the top oval, from `-1` to `1`.                  | number   | `-0.4`                |
+| `chart.totalCount`             | Override the total count used in ratio calculations.                     | number   | `null`                |
+| `block.dynamicHeight`          | Whether the block heights are proportional to their weight.              | bool     | `false`               |
+| `block.dynamicSlope`           | Whether the block widths are proportional to their value decrease.       | bool     | `false`               |
+| `block.barOverlay.enabled`     | Whether the blocks have bar chart overlays proportional to its weight.   | bool     | `false`               |
+| `block.barOverlay.shade`       | The shade adjustment of the block behind its overlay, from `-1` to `1`.  | number   | `0.3`                 |
+| `block.fill.scale`             | The background color scale as an array or function.                      | mixed    | `d3.schemeCategory10` |
+| `block.fill.type`              | Either `'solid'` or `'gradient'`.                                        | string   | `'solid'`             |
+| `block.fill.gradientShade`     | The shade adjustment of the edges of gradient fills, from `-1` to `1`.   | number   | `-0.2`                |
+| `block.minHeight`              | The minimum pixel height of a block.                                     | number   | `0`                   |
+| `block.gap`                    | The pixel space between blocks. The funnel's outline is preserved.       | number   | `0`                   |
+| `block.highlight.enabled`      | Whether the blocks are highlighted on hover.                             | bool     | `false`               |
+| `block.highlight.shade`        | The shade adjustment of a highlighted block, from `-1` to `1`.           | number   | `-0.2`                |
+| `block.highlight.overlayShade` | The shade adjustment of a highlighted overlay, from `-1` to `1`.         | number   | `-0.5`                |
+| `label.enabled`                | Whether the block labels should be displayed.                            | bool     | `true`                |
+| `label.fontFamily`             | Any valid font family for the labels.                                    | string   | `null`                |
+| `label.fontSize`               | Any valid font size for the labels.                                      | string   | `'14px'`              |
+| `label.lineHeight`             | The height of each line of a label, as a multiple of its font size.      | number   | `1.4`                 |
+| `label.fill`                   | Any valid hex color for the label color.                                 | string   | `'#fff'`              |
+| `label.format`                 | Either `function(label, value)` or a format string. See below.           | mixed    | `'{l}: {f}'`          |
+| `label.verticalAlign`          | Where to place labels within their blocks: `top`, `middle`, or `bottom`. | string   | `'middle'`            |
+| `label.overflow`               | Either `'visible'` or `'ellipsis'` to truncate labels wider than blocks. | string   | `'visible'`           |
+| `label.padding`                | The pixel padding between a label and the edges of its block.            | number   | `5`                   |
+| `tooltip.enabled`              | Whether tooltips should be enabled on hover.                             | bool     | `false`               |
+| `tooltip.format`               | Either `function(label, value)` or a format string. See below.           | mixed    | `'{l}: {f}'`          |
+| `tooltip.offset`               | The pixel distance between the tooltip and the mouse.                    | number   | `5`                   |
+| `tooltip.style`                | CSS properties for the tooltip, keyed by CSS name. See below.            | object   | See below             |
+| `events.click.block`           | Callback `function(event, data)` for when a block is clicked.            | function | `null`                |
+| `events.mouseover.block`       | Callback `function(event, data)` for when the mouse enters a block.      | function | `null`                |
+| `events.mouseout.block`        | Callback `function(event, data)` for when the mouse leaves a block.      | function | `null`                |
 
 ### Curved Funnels with Gaps
 
@@ -111,6 +119,41 @@ chart.draw(data, {
 
 A small curve with a large gap will instead leave a wide band of empty space
 between the blocks.
+
+### Tooltip Styles
+
+The option `tooltip.style` holds the CSS properties applied to the tooltip,
+keyed by their CSS names. Your properties are merged into the defaults below,
+and setting a property to `null` removes it. The tooltip's border is drawn in
+the block's color unless you set `border` or `border-color`.
+
+``` javascript
+{
+    background: 'rgb(255,255,255,0.75)',
+    'border-style': 'solid',
+    'border-width': '1px',
+    color: '#000',
+    'font-size': '14px',
+    'font-weight': 'bold',
+    padding: '5px 15px',
+    'text-align': 'center',
+}
+```
+
+For example, to use a dark tooltip without bold text:
+
+``` javascript
+chart.draw(data, {
+    tooltip: {
+        enabled: true,
+        style: {
+            background: '#222',
+            color: '#fff',
+            'font-weight': null,
+        },
+    },
+});
+```
 
 ### Label/Tooltip Format
 

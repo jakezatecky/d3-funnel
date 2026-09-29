@@ -12,8 +12,6 @@ import Navigator from '#js/Navigator.js';
 import Utils from '#js/Utils.js';
 
 class D3Funnel {
-    static LABEL_PADDING = 5;
-
     static defaults = {
         chart: {
             width: 350,
@@ -32,14 +30,22 @@ class D3Funnel {
         block: {
             dynamicHeight: false,
             dynamicSlope: false,
-            barOverlay: false,
+            barOverlay: {
+                enabled: false,
+                shade: 0.3,
+            },
             fill: {
                 scale: scaleOrdinal(schemeCategory10).domain(range(0, 10)),
                 type: 'solid',
+                gradientShade: -0.2,
             },
             minHeight: 0,
             gap: 0,
-            highlight: false,
+            highlight: {
+                enabled: false,
+                shade: -0.2,
+                overlayShade: -0.5,
+            },
         },
         label: {
             enabled: true,
@@ -50,10 +56,22 @@ class D3Funnel {
             format: '{l}: {f}',
             verticalAlign: 'middle',
             overflow: 'visible',
+            padding: 5,
         },
         tooltip: {
             enabled: false,
             format: '{l}: {f}',
+            offset: 5,
+            style: {
+                background: 'rgb(255,255,255,0.75)',
+                'border-style': 'solid',
+                'border-width': '1px',
+                color: '#000',
+                'font-size': '14px',
+                'font-weight': 'bold',
+                padding: '5px 15px',
+                'text-align': 'center',
+            },
         },
         events: {
             click: {
@@ -153,11 +171,12 @@ class D3Funnel {
             isCurved: settings.chart.curve.enabled,
             curveHeight: settings.chart.curve.height,
             curveShade: settings.chart.curve.shade,
-            addValueOverlay: settings.block.barOverlay,
+            barOverlay: settings.block.barOverlay,
             animation: settings.chart.animate,
             totalCount: settings.chart.totalCount,
             fillType: settings.block.fill.type,
-            hoverEffects: settings.block.highlight,
+            gradientShade: settings.block.fill.gradientShade,
+            highlight: settings.block.highlight,
             dynamicHeight: settings.block.dynamicHeight,
             dynamicSlope: settings.block.dynamicSlope,
             minHeight: settings.block.minHeight,
@@ -548,7 +567,7 @@ class D3Funnel {
 
             paths.push(makeBlockPaths(dimensions, false));
 
-            if (this.settings.addValueOverlay) {
+            if (this.settings.barOverlay.enabled) {
                 overlayPaths.push(makeBlockPaths(dimensions, true));
             }
 
@@ -685,7 +704,7 @@ class D3Funnel {
         // Create a gradient for each block
         this.blocks.forEach((block, index) => {
             const color = block.fill.raw;
-            const shade = this.colorizer.shade(color, -0.2);
+            const shade = this.colorizer.shade(color, this.settings.gradientShade);
 
             // Create linear gradient
             const gradient = defs.append('linearGradient')
@@ -773,7 +792,7 @@ class D3Funnel {
 
         let pathColor = block.fill.actual;
 
-        if (this.settings.addValueOverlay) {
+        if (this.settings.barOverlay.enabled) {
             const overlayPath = this.appendPath(group, index, true);
             this.attachData(overlayPath, block);
 
@@ -804,7 +823,7 @@ class D3Funnel {
         const paths = group.selectAll('path');
 
         // Add the hover events
-        if (this.settings.hoverEffects) {
+        if (this.settings.highlight.enabled) {
             paths
                 .on('mouseover', this.onMouseOver)
                 .on('mouseout', this.onMouseOut);
@@ -874,25 +893,27 @@ class D3Funnel {
         const width = this.tooltip.offsetWidth;
         const height = this.tooltip.offsetHeight;
         const rect = this.container.getBoundingClientRect();
-        const heightOffset = height + 5;
+        const { offset, style } = this.settings.tooltip;
+        const heightOffset = height + offset;
         const containerY = rect.y + window.scrollY;
         const isAbove = event.pageY - heightOffset < containerY;
-        const top = isAbove ? event.pageY + 5 : event.pageY - heightOffset;
+        const top = isAbove ? event.pageY + offset : event.pageY - heightOffset;
 
         const styles = [
+            // Position the tooltip without letting it catch the mouse
             'display: inline-block',
             'position: absolute',
             `left: ${event.pageX - (width / 2)}px`,
             `top: ${top}px`,
-            `border: 1px solid ${block.fill.raw}`,
-            'background: rgb(255,255,255,0.75)',
-            'padding: 5px 15px',
-            'color: #000',
-            'font-size: 14px',
-            'font-weight: bold',
-            'text-align: center',
-            'cursor: default',
             'pointer-events: none',
+
+            // Outline the tooltip in the block's color, unless styled otherwise
+            `border-color: ${block.fill.raw}`,
+
+            // Apply the configured styles, skipping any removed with `null`
+            ...Object.entries(style)
+                .filter(([, value]) => value !== null)
+                .map(([property, value]) => `${property}: ${value}`),
         ];
         this.tooltip.setAttribute('style', styles.join(';'));
     }
@@ -1022,11 +1043,13 @@ class D3Funnel {
      * @return {void}
      */
     onMouseOver(event, data) {
-        // Highlight all paths within one block, darkening any overlay the most
+        const { shade, overlayShade } = this.settings.highlight;
+
+        // Highlight all paths within one block, shading any overlay separately
         this.blockGroups[data.index].selectAll('path').nodes().forEach((node) => {
             const isOverlay = node.dataset.pathType === 'foreground';
 
-            select(node).attr('fill', this.colorizer.shade(data.fill.raw, isOverlay ? -0.5 : -0.2));
+            select(node).attr('fill', this.colorizer.shade(data.fill.raw, isOverlay ? overlayShade : shade));
         });
     }
 
@@ -1054,7 +1077,7 @@ class D3Funnel {
      * @return {string}
      */
     getBackgroundFill(block) {
-        return this.colorizer.shade(block.fill.raw, 0.3);
+        return this.colorizer.shade(block.fill.raw, this.settings.barOverlay.shade);
     }
 
     /**
@@ -1125,7 +1148,7 @@ class D3Funnel {
                 const maxWidth = Math.min(
                     this.getBlockWidthAt(index, lineY - (lineHeight / 2)),
                     this.getBlockWidthAt(index, lineY + (lineHeight / 2)),
-                ) - (2 * D3Funnel.LABEL_PADDING);
+                ) - (2 * this.settings.label.padding);
 
                 this.truncateText(tspan.node(), maxWidth);
             }
@@ -1221,7 +1244,7 @@ class D3Funnel {
     getTextY(index, lineCount, lineHeight) {
         const { isCurved, label } = this.settings;
         const paths = this.blockPaths[index];
-        const offset = D3Funnel.LABEL_PADDING + ((lineHeight * lineCount) / 2);
+        const offset = this.settings.label.padding + ((lineHeight * lineCount) / 2);
 
         // The top and bottom edges of the block at its horizontal center; each
         // path command is [command, x, y]

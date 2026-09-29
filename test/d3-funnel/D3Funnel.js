@@ -949,7 +949,9 @@ describe('D3Funnel', () => {
                     { label: 'B', value: 20 },
                 ], {
                     block: {
-                        barOverlay: true,
+                        barOverlay: {
+                            enabled: true,
+                        },
                     },
                 });
 
@@ -960,7 +962,9 @@ describe('D3Funnel', () => {
             it('should mark the background and foreground paths with a data attribute', () => {
                 getFunnel().draw(getBasicData(), {
                     block: {
-                        barOverlay: true,
+                        barOverlay: {
+                            enabled: true,
+                        },
                     },
                 });
 
@@ -979,7 +983,9 @@ describe('D3Funnel', () => {
                         totalCount: 100,
                     },
                     block: {
-                        barOverlay: true,
+                        barOverlay: {
+                            enabled: true,
+                        },
                     },
                 });
 
@@ -1003,7 +1009,9 @@ describe('D3Funnel', () => {
                         width: 300,
                     },
                     block: {
-                        barOverlay: true,
+                        barOverlay: {
+                            enabled: true,
+                        },
                     },
                 });
 
@@ -1028,7 +1036,9 @@ describe('D3Funnel', () => {
                         totalCount: 10,
                     },
                     block: {
-                        barOverlay: true,
+                        barOverlay: {
+                            enabled: true,
+                        },
                     },
                 });
 
@@ -1038,6 +1048,22 @@ describe('D3Funnel', () => {
 
                 assert.equal(getPathTopWidth(fullPath), getPathTopWidth(overlayPath));
                 assert.equal(getPathBottomWidth(fullPath), getPathBottomWidth(overlayPath));
+            });
+
+            it('should lighten the block behind its overlay by `block.barOverlay.shade`', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                ], {
+                    block: {
+                        barOverlay: {
+                            enabled: true,
+                            shade: 0.5,
+                        },
+                    },
+                });
+
+                // #808080 * 1/2 => #c0c0c0
+                assert.equal('#c0c0c0', select('#funnel path').attr('fill'));
             });
         });
 
@@ -1104,6 +1130,25 @@ describe('D3Funnel', () => {
                 assert.equal(1, selectAll(`#funnel defs #${id}-gradient-0`).nodes().length);
 
                 assert.equal(`url(#${id}-gradient-0)`, select('#funnel path').attr('fill'));
+            });
+
+            it('should shade the edges of gradients by `block.fill.gradientShade`', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                ], {
+                    block: {
+                        fill: {
+                            type: 'gradient',
+                            gradientShade: -0.5,
+                        },
+                    },
+                });
+
+                const stops = selectAll(`#funnel defs #${getSvgId()}-gradient-0 stop`).nodes();
+
+                // #808080 * -1/2 => #404040
+                assert.equal('stop-color: #404040', stops[0].getAttribute('style'));
+                assert.equal('stop-color: #808080', stops[1].getAttribute('style'));
             });
 
             it('should use solid fill when not set to \'gradient\'', () => {
@@ -1231,7 +1276,9 @@ describe('D3Funnel', () => {
                     { label: 'A', value: 1, backgroundColor: '#fff' },
                 ], {
                     block: {
-                        highlight: true,
+                        highlight: {
+                            enabled: true,
+                        },
                     },
                 });
 
@@ -1246,8 +1293,12 @@ describe('D3Funnel', () => {
                     { label: 'A', value: 1, backgroundColor: '#808080' },
                 ], {
                     block: {
-                        barOverlay: true,
-                        highlight: true,
+                        barOverlay: {
+                            enabled: true,
+                        },
+                        highlight: {
+                            enabled: true,
+                        },
                     },
                 });
 
@@ -1264,6 +1315,31 @@ describe('D3Funnel', () => {
                 // #808080 * 3/10 => #a6a6a6
                 assert.equal('#a6a6a6', background.getAttribute('fill'));
                 assert.equal('#808080', overlay.getAttribute('fill'));
+            });
+
+            it('should shade highlighted paths by the configured amounts', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                ], {
+                    block: {
+                        barOverlay: {
+                            enabled: true,
+                        },
+                        highlight: {
+                            enabled: true,
+                            shade: -0.25,
+                            overlayShade: -0.75,
+                        },
+                    },
+                });
+
+                const [background, overlay] = selectAll('#funnel path').nodes();
+
+                overlay.dispatchEvent(new MouseEvent('mouseover'));
+
+                // #808080 * -1/4 => #606060; #808080 * -3/4 => #202020
+                assert.equal('#606060', background.getAttribute('fill'));
+                assert.equal('#202020', overlay.getAttribute('fill'));
             });
         });
 
@@ -1454,6 +1530,30 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('label.padding', () => {
+            it('should set the space between a label and the edge of its block', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 1 },
+                ], {
+                    chart: { height: 200 },
+                    label: {
+                        verticalAlign: 'top',
+                        fontSize: '20px',
+                        lineHeight: 1,
+                        padding: 10,
+                    },
+                });
+
+                const ys = selectAll('#funnel text').nodes().map((node) => (
+                    parseFloat(select(node).attr('y'))
+                ));
+
+                // Top edge + 10px padding + half of a 20px line
+                assert.deepEqual([20, 120], ys);
+            });
+        });
+
         describe('label.overflow', () => {
             const longLabel = 'A label that is much too long to fit within its block';
 
@@ -1584,6 +1684,66 @@ describe('D3Funnel', () => {
                 select('#funnel path').node().dispatchEvent(event);
 
                 assert.equal('Node - 1000', select('#funnel .d3-funnel-tooltip').text());
+            });
+        });
+
+        describe('tooltip.offset', () => {
+            it('should set the distance between the tooltip and the mouse', () => {
+                const getTooltipTop = (offset) => {
+                    getFunnel().draw(getBasicData(), {
+                        tooltip: {
+                            enabled: true,
+                            offset,
+                        },
+                    });
+                    select('#funnel path').node().dispatchEvent(new MouseEvent('mousemove', { clientY: 300 }));
+
+                    return parseFloat(select('#funnel .d3-funnel-tooltip').style('top'));
+                };
+
+                assert.equal(15, Math.abs(getTooltipTop(20) - getTooltipTop(5)));
+            });
+        });
+
+        describe('tooltip.style', () => {
+            function showTooltip(style = {}) {
+                getFunnel().draw([
+                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                ], {
+                    tooltip: {
+                        enabled: true,
+                        style,
+                    },
+                });
+                select('#funnel path').node().dispatchEvent(new MouseEvent('mousemove'));
+
+                return document.querySelector('#funnel .d3-funnel-tooltip');
+            }
+
+            it('should outline the tooltip in the color of its block by default', () => {
+                const tooltip = showTooltip();
+
+                assert.equal('rgb(128, 128, 128)', getComputedStyle(tooltip).borderTopColor);
+                assert.equal('1px', getComputedStyle(tooltip).borderTopWidth);
+            });
+
+            it('should merge the given styles into the defaults', () => {
+                const tooltip = showTooltip({
+                    background: 'rgb(0, 0, 255)',
+                    'border-color': 'rgb(255, 0, 0)',
+                });
+
+                assert.equal('rgb(0, 0, 255)', getComputedStyle(tooltip).backgroundColor);
+                assert.equal('rgb(255, 0, 0)', getComputedStyle(tooltip).borderTopColor);
+                assert.equal('bold', tooltip.style.fontWeight);
+            });
+
+            it('should remove default styles set to null', () => {
+                const tooltip = showTooltip({
+                    'font-weight': null,
+                });
+
+                assert.equal('', tooltip.style.fontWeight);
             });
         });
 
@@ -1722,7 +1882,9 @@ describe('D3Funnel', () => {
                         { label: 'A', value: 1, backgroundColor: '#fff' },
                     ], {
                         block: {
-                            highlight: true,
+                            highlight: {
+                                enabled: true,
+                            },
                         },
                         events: {
                             [type]: {

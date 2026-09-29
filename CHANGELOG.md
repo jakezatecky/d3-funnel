@@ -2,10 +2,18 @@
 
 ### Breaking Changes
 
-* Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
-* Remove the `D3Funnel.LABEL_LINE_HEIGHT` static property
-* Remove support for the legacy array-of-arrays data structure, deprecated since v1.1.0; data entries must now be objects (e.g., `{ label: 'Applicants', value: 12000 }`)
+#### API
+
+* Remove the `D3Funnel.LABEL_LINE_HEIGHT` static property in favor of the `labe.lineHeight` option
+* Remove the `D3Funnel.LABEL_PADDING` static property in favor of the `label.padding` option
 * Rename the `pathType` attribute on overlay paths to `data-path-type`
+* Replace the `block.barOverlay` boolean with an object; use `block.barOverlay.enabled` instead
+* Replace the `block.highlight` boolean with an object; use `block.highlight.enabled` instead
+* Remove support for the legacy array-of-arrays data structure, deprecated since v1.1.0; data entries must now be objects (e.g., `{ label: 'Applicants', value: 12000 }`)
+
+#### Runtime
+
+* Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
 
 ### Added
 
@@ -14,6 +22,10 @@
 * Expose `label.fontSize` and `label.fontFamily` in block event data
 * Add `drawLabel(index, overrides)` method to redraw a single block's label
 * Add example for `drawLabel` to enlarge labels on hover (#157)
+* Add `block.barOverlay.shade`, `block.highlight.shade`, `block.highlight.overlayShade`, and `block.fill.gradientShade` options to adjust the previously fixed shades
+* Add `label.padding` option to set the space between a label and the edges of its block
+* Add `tooltip.offset` option to set the distance between the tooltip and the mouse
+* Add `tooltip.style` option to customize the tooltip's CSS
 
 ### Changed
 

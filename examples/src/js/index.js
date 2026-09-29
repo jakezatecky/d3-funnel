@@ -39,7 +39,9 @@ const settings = {
     },
     barOverlay: {
         block: {
-            barOverlay: true,
+            barOverlay: {
+                enabled: true,
+            },
         },
     },
     inverted: {
@@ -54,7 +56,9 @@ const settings = {
     },
     hover: {
         block: {
-            highlight: true,
+            highlight: {
+                enabled: true,
+            },
         },
     },
     tooltip: {
