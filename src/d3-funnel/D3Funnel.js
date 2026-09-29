@@ -791,7 +791,7 @@ class D3Funnel {
             overlayPath.node().setAttribute('pathType', 'foreground');
 
             // Default path becomes an outlined background of lighter shade
-            pathColor = this.colorizer.shade(block.fill.raw, 0.3);
+            pathColor = this.getBackgroundFill(block);
             path.attr('stroke', block.fill.raw);
 
             this.animate(overlayPath)
@@ -1031,19 +1031,11 @@ class D3Funnel {
      * @return {void}
      */
     onMouseOver(event, data) {
-        const children = event.target.parentElement.childNodes;
+        // Highlight all paths within one block, darkening any overlay the most
+        this.blockGroups[data.index].selectAll('path').nodes().forEach((node) => {
+            const isOverlay = node.getAttribute('pathType') === 'foreground';
 
-        // Highlight all paths within one block
-        [...children].forEach((node) => {
-            if (node.nodeName.toLowerCase() === 'path') {
-                const type = node.getAttribute('pathType') || '';
-
-                if (type === 'foreground') {
-                    select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.5));
-                } else {
-                    select(node).attr('fill', this.colorizer.shade(data.fill.raw, -0.2));
-                }
-            }
+            select(node).attr('fill', this.colorizer.shade(data.fill.raw, isOverlay ? -0.5 : -0.2));
         });
     }
 
@@ -1054,21 +1046,24 @@ class D3Funnel {
      * @return {void}
      */
     onMouseOut(event, data) {
-        const children = event.target.parentElement.childNodes;
-
         // Restore original color for all paths of a block
-        [...children].forEach((node) => {
-            if (node.nodeName.toLowerCase() === 'path') {
-                const type = node.getAttribute('pathType') || '';
+        this.blockGroups[data.index].selectAll('path').nodes().forEach((node) => {
+            const isBackground = node.getAttribute('pathType') === 'background';
 
-                if (type === 'background') {
-                    const backgroundColor = this.colorizer.shade(data.fill.raw, 0.3);
-                    select(node).attr('fill', backgroundColor);
-                } else {
-                    select(node).attr('fill', data.fill.actual);
-                }
-            }
+            select(node).attr('fill', isBackground ? this.getBackgroundFill(data) : data.fill.actual);
         });
+    }
+
+    /**
+     * Return the lighter fill of a block's path when an overlay is drawn on
+     * top of it.
+     *
+     * @param {Object} block
+     *
+     * @return {string}
+     */
+    getBackgroundFill(block) {
+        return this.colorizer.shade(block.fill.raw, 0.3);
     }
 
     /**

@@ -1212,6 +1212,31 @@ describe('D3Funnel', () => {
                 // #fff * -1/5 => #cccccc
                 assert.equal('#cccccc', select('#funnel path').attr('fill'));
             });
+
+            it('should shade and restore both paths of a block with an overlay', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                ], {
+                    block: {
+                        barOverlay: true,
+                        highlight: true,
+                    },
+                });
+
+                const [background, overlay] = selectAll('#funnel path').nodes();
+
+                overlay.dispatchEvent(new MouseEvent('mouseover'));
+
+                // #808080 * -1/5 => #666666; #808080 * -1/2 => #404040
+                assert.equal('#666666', background.getAttribute('fill'));
+                assert.equal('#404040', overlay.getAttribute('fill'));
+
+                overlay.dispatchEvent(new MouseEvent('mouseout'));
+
+                // #808080 * 3/10 => #a6a6a6
+                assert.equal('#a6a6a6', background.getAttribute('fill'));
+                assert.equal('#808080', overlay.getAttribute('fill'));
+            });
         });
 
         describe('label.enabled', () => {
