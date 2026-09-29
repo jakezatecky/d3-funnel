@@ -190,7 +190,7 @@ class Navigator {
      * @param {Number}  ratio
      * @param {boolean} isValueOverlay
      *
-     * @return {Object}
+     * @return {Array}
      */
     makeStraightPaths({
         prevLeftX,
@@ -201,37 +201,26 @@ class Navigator {
         nextHeight,
         ratio,
     }, isValueOverlay = false) {
+        let rightSideTop = prevRightX;
+        let rightSideBtm = nextRightX;
+
         if (isValueOverlay) {
             const lengthTop = (prevRightX - prevLeftX);
             const lengthBtm = (nextRightX - nextLeftX);
-            let rightSideTop = (lengthTop * (ratio || 0)) + prevLeftX;
-            let rightSideBtm = (lengthBtm * (ratio || 0)) + nextLeftX;
 
-            // Overlay should not extend past the right side of the path
-            rightSideTop = Math.min(rightSideTop, prevRightX);
-            rightSideBtm = Math.min(rightSideBtm, nextRightX);
-
-            return [
-                // Start position
-                ['M', prevLeftX, prevHeight],
-                // Move to right
-                ['L', rightSideTop, prevHeight],
-                // Move down
-                ['L', rightSideBtm, nextHeight],
-                // Move to left
-                ['L', nextLeftX, nextHeight],
-                // Wrap back to top
-                ['L', prevLeftX, prevHeight],
-            ];
+            // Overlay covers its ratio of the path, but should not extend past
+            // the right side of the path
+            rightSideTop = Math.min((lengthTop * (ratio || 0)) + prevLeftX, prevRightX);
+            rightSideBtm = Math.min((lengthBtm * (ratio || 0)) + nextLeftX, nextRightX);
         }
 
         return [
             // Start position
             ['M', prevLeftX, prevHeight],
             // Move to right
-            ['L', prevRightX, prevHeight],
+            ['L', rightSideTop, prevHeight],
             // Move down
-            ['L', nextRightX, nextHeight],
+            ['L', rightSideBtm, nextHeight],
             // Move to left
             ['L', nextLeftX, nextHeight],
             // Wrap back to top
