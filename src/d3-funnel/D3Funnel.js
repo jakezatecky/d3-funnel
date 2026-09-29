@@ -103,6 +103,9 @@ class D3Funnel {
 
         // Remove inner text from container
         container.text('');
+
+        // Any tooltip was removed along with the other elements
+        this.tooltip = null;
     }
 
     /**
@@ -952,7 +955,7 @@ class D3Funnel {
 
                 target.node().addEventListener('mouseout', () => {
                     if (this.tooltip) {
-                        this.container.removeChild(this.tooltip);
+                        this.tooltip.remove();
                         this.tooltip = null;
                     }
                 });

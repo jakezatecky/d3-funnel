@@ -1423,6 +1423,29 @@ describe('D3Funnel', () => {
 
                 assert.equal(null, select('#funnel .d3-funnel-tooltip').node());
             });
+
+            it('should render a tooltip after the chart is redrawn mid-hover', () => {
+                const mouseMove = new MouseEvent('mousemove');
+                const mouseOut = new MouseEvent('mouseout');
+                const funnel = getFunnel();
+                const options = {
+                    tooltip: {
+                        enabled: true,
+                    },
+                };
+
+                funnel.draw(getBasicData(), options);
+                select('#funnel path').node().dispatchEvent(mouseMove);
+
+                funnel.draw(getBasicData(), options);
+                select('#funnel path').node().dispatchEvent(mouseMove);
+
+                assert.notEqual(null, select('#funnel .d3-funnel-tooltip').node());
+
+                select('#funnel path').node().dispatchEvent(mouseOut);
+
+                assert.equal(null, select('#funnel .d3-funnel-tooltip').node());
+            });
         });
 
         describe('tooltip.format', () => {
