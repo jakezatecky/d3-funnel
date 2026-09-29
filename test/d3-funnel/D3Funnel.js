@@ -1643,7 +1643,7 @@ describe('D3Funnel', () => {
                 select('#funnel path').node().dispatchEvent(mouseMove);
                 select('#funnel path').node().dispatchEvent(mouseOut);
 
-                assert.equal(null, select('#funnel .d3-funnel-tooltip').node());
+                assert.equal('none', select('#funnel .d3-funnel-tooltip').style('display'));
             });
 
             it('should render a tooltip after the chart is redrawn mid-hover', () => {
@@ -1662,11 +1662,79 @@ describe('D3Funnel', () => {
                 funnel.draw(getBasicData(), options);
                 select('#funnel path').node().dispatchEvent(mouseMove);
 
-                assert.notEqual(null, select('#funnel .d3-funnel-tooltip').node());
+                assert.equal(1, selectAll('#funnel .d3-funnel-tooltip').size());
+                assert.equal('inline-block', select('#funnel .d3-funnel-tooltip').style('display'));
 
                 select('#funnel path').node().dispatchEvent(mouseOut);
 
-                assert.equal(null, select('#funnel .d3-funnel-tooltip').node());
+                assert.equal('none', select('#funnel .d3-funnel-tooltip').style('display'));
+            });
+
+            describe('positioning', () => {
+                function moveMouse(path, clientX, clientY) {
+                    path.dispatchEvent(new MouseEvent('mousemove', { clientX, clientY }));
+
+                    return document.querySelector('#funnel .d3-funnel-tooltip').getBoundingClientRect();
+                }
+
+                function drawTooltipFunnel() {
+                    getFunnel().draw([
+                        { label: 'A', value: 1 },
+                        { label: 'B', value: 1 },
+                    ], {
+                        chart: {
+                            width: 300,
+                            height: 400,
+                        },
+                        tooltip: {
+                            enabled: true,
+                        },
+                    });
+
+                    return selectAll('#funnel path').nodes();
+                }
+
+                it('should center the tooltip above the mouse on the first move', () => {
+                    const [path] = drawTooltipFunnel();
+                    const rect = moveMouse(path, 150, 150);
+
+                    assert.closeTo(rect.left + (rect.width / 2), 150, 0.5);
+                    assert.closeTo(rect.bottom, 145, 0.5);
+                });
+
+                it('should place the tooltip below the mouse when there is no room above the chart', () => {
+                    const [path] = drawTooltipFunnel();
+                    const containerTop = document.querySelector('#funnel').getBoundingClientRect().top;
+                    const rect = moveMouse(path, 150, containerTop + 10);
+
+                    assert.closeTo(rect.top, containerTop + 15, 0.5);
+                });
+
+                it('should position the tooltip immediately when moving between blocks', () => {
+                    const [first, second] = drawTooltipFunnel();
+
+                    moveMouse(first, 150, 150);
+                    first.dispatchEvent(new MouseEvent('mouseout'));
+
+                    const rect = moveMouse(second, 150, 300);
+
+                    assert.equal(1, selectAll('#funnel .d3-funnel-tooltip').size());
+                    assert.closeTo(rect.left + (rect.width / 2), 150, 0.5);
+                    assert.closeTo(rect.bottom, 295, 0.5);
+                });
+
+                it('should position the tooltip correctly within a positioned container', () => {
+                    select('#funnel')
+                        .style('position', 'relative')
+                        .style('margin-left', '40px')
+                        .style('padding-top', '30px');
+
+                    const [path] = drawTooltipFunnel();
+                    const rect = moveMouse(path, 150, 150);
+
+                    assert.closeTo(rect.left + (rect.width / 2), 150, 0.5);
+                    assert.closeTo(rect.bottom, 145, 0.5);
+                });
             });
         });
 

@@ -882,51 +882,84 @@ class D3Funnel {
      * @return {void}
      */
     showTooltip(event, block) {
+        // Reuse a single tooltip across blocks, so that moving between them
+        // only updates it
         if (!this.tooltip) {
             this.tooltip = document.createElement('div');
             this.tooltip.setAttribute('class', 'd3-funnel-tooltip');
             this.container.appendChild(this.tooltip);
         }
 
+        // Style the tooltip before measuring it, as its styles determine its size
         this.tooltip.innerText = block.tooltip.formatted;
+        this.tooltip.setAttribute('style', this.getTooltipStyle(block));
 
-        const width = this.tooltip.offsetWidth;
-        const height = this.tooltip.offsetHeight;
-        const rect = this.container.getBoundingClientRect();
-        const { offset, style } = this.settings.tooltip;
-        const heightOffset = height + offset;
-        const containerY = rect.y + window.scrollY;
-        const isAbove = event.pageY - heightOffset < containerY;
-        const top = isAbove ? event.pageY + offset : event.pageY - heightOffset;
+        this.positionTooltip(event);
+    }
 
+    /**
+     * Return the inline style of the tooltip for the given block, placing the
+     * tooltip at `left: 0; top: 0` until positioned.
+     *
+     * @param {Object} block
+     *
+     * @return {string}
+     */
+    getTooltipStyle(block) {
         const styles = [
             // Position the tooltip without letting it catch the mouse
             'display: inline-block',
             'position: absolute',
-            `left: ${event.pageX - (width / 2)}px`,
-            `top: ${top}px`,
+            'left: 0',
+            'top: 0',
             'pointer-events: none',
 
             // Outline the tooltip in the block's color, unless styled otherwise
             `border-color: ${block.fill.raw}`,
 
             // Apply the configured styles, skipping any removed with `null`
-            ...Object.entries(style)
+            ...Object.entries(this.settings.tooltip.style)
                 .filter(([, value]) => value !== null)
                 .map(([property, value]) => `${property}: ${value}`),
         ];
-        this.tooltip.setAttribute('style', styles.join(';'));
+
+        return styles.join(';');
     }
 
     /**
-     * Remove the tooltip, if shown.
+     * Center the tooltip above the mouse, or below it if there is no room
+     * above the chart.
+     *
+     * @param {MouseEvent} event
+     *
+     * @return {void}
+     */
+    positionTooltip(event) {
+        const { offset } = this.settings.tooltip;
+        const containerTop = this.container.getBoundingClientRect().top;
+
+        // While at `left: 0; top: 0`, the tooltip sits at the origin of
+        // whichever element it is positioned relative to, such as a positioned
+        // ancestor or the page itself
+        const origin = this.tooltip.getBoundingClientRect();
+
+        // The desired top-left corner of the tooltip, relative to the viewport
+        const fitsAbove = event.clientY - origin.height - offset >= containerTop;
+        const x = event.clientX - (origin.width / 2);
+        const y = fitsAbove ? event.clientY - origin.height - offset : event.clientY + offset;
+
+        this.tooltip.style.left = `${x - origin.left}px`;
+        this.tooltip.style.top = `${y - origin.top}px`;
+    }
+
+    /**
+     * Hide the tooltip, if shown.
      *
      * @return {void}
      */
     hideTooltip() {
         if (this.tooltip) {
-            this.tooltip.remove();
-            this.tooltip = null;
+            this.tooltip.style.display = 'none';
         }
     }
 

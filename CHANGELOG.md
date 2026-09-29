@@ -37,6 +37,8 @@
 * Fix tooltips failing to appear, and throwing an error on mouseout, after redrawing a chart while a tooltip was visible
 * Fix drawing a chart overwriting the `D3Funnel.defaults` width and height with its container's dimensions, which later charts in zero-sized containers would then inherit
 * Fix `block.barOverlay` overlays falling short of their value on straight funnels for blocks not starting at the left edge of the chart
+* Fix tooltips jumping out of place when first shown, such as when moving the mouse between blocks or between an overlay and its block
+* Fix tooltips appearing out of place when the chart is inside a positioned element
 
 ## [v2.3.0](https://github.com/jakezatecky/d3-funnel/compare/v2.2.0...v2.3.0) (2026-09-25)
 
