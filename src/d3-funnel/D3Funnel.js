@@ -556,7 +556,7 @@ class D3Funnel {
 
             // Extend the bottom of a block beneath the next block when they
             // touch; sharing the exact same edge would let the background
-            // bleed through the anti-aliasing along the seam
+            // bleed through the antialiasing along the seam
             const isCovered = i < this.blocks.length - 1 && this.settings.blockGap === 0;
             const nextCurveScale = isCovered ? 4 : 2;
 
