@@ -410,45 +410,24 @@ class D3Funnel {
         const bottomLeftX = (this.settings.width - this.settings.bottomWidth) / 2;
         const centerX = this.settings.width / 2;
 
-        let paths = [];
-        let overlayPaths = [];
+        const paths = [];
+        const overlayPaths = [];
 
-        // Calculate change in x, y direction
-        this.dx = this.getDx(bottomLeftX);
-        this.dy = this.getDy();
-
-        // Initialize velocity
-        let { dx, dy } = this;
-
-        // Initialize starting positions
-        let prevLeftX = 0;
-        let prevRightX = this.settings.width;
-        let prevHeight = 0;
+        // The change in x, y direction of each block, unless adjusted below
+        const initialDx = this.getDx(bottomLeftX);
+        const initialDy = this.getDy();
 
         // Start from the bottom for inverted
-        if (this.settings.isInverted) {
-            prevLeftX = bottomLeftX;
-            prevRightX = this.settings.width - bottomLeftX;
-        }
-
-        // Initialize next positions
-        let nextLeftX = 0;
-        let nextRightX = 0;
-        let nextHeight = 0;
+        let prevLeftX = this.settings.isInverted ? bottomLeftX : 0;
+        let prevRightX = this.settings.width - prevLeftX;
 
         // Move down to make room for the back of the top oval
-        if (this.settings.isCurved) {
-            prevHeight = this.getCurveDepth(this.getTopEdgeWidth());
-        }
-
-        let totalHeight = this.settings.height;
+        let prevHeight = this.settings.isCurved ? this.getCurveDepth(this.getTopEdgeWidth()) : 0;
 
         // This is greedy in that the block will have a guaranteed height
         // and the remaining is shared among the ratio, instead of being
         // shared according to the remaining minus the guaranteed
-        if (this.settings.minHeight !== 0) {
-            totalHeight = this.settings.height - (this.settings.minHeight * this.blocks.length);
-        }
+        const totalHeight = this.settings.height - (this.settings.minHeight * this.blocks.length);
 
         // The top and bottom edges of the funnel's sides
         const topY = prevHeight;
@@ -458,13 +437,9 @@ class D3Funnel {
 
         // Get the dynamic height of a block
         const getBlockHeight = (block) => {
-            // Slice off the height proportional to this block
-            let height = totalHeight * block.ratio;
-
-            // Add greedy minimum height
-            if (this.settings.minHeight !== 0) {
-                height += this.settings.minHeight;
-            }
+            // Slice off the height proportional to this block and add the
+            // greedy minimum height
+            let height = (totalHeight * block.ratio) + this.settings.minHeight;
 
             // Account for any curvature
             if (this.settings.isCurved) {
@@ -474,21 +449,22 @@ class D3Funnel {
             return height;
         };
 
-        let pinchHeight = 0;
+        // Pinched blocks sit at the narrow end of the funnel and keep its width
+        const isPinched = (i) => (
+            this.settings.isInverted ?
+                i < this.settings.bottomPinch :
+                i >= this.blocks.length - this.settings.bottomPinch
+        );
 
         // Correct slope height if there are blocks being pinched (and thus
         // requiring a sharper curve)
-        if (this.settings.bottomPinch > 0) {
-            this.blocks.forEach((block, i) => {
-                const isPinched = this.settings.isInverted ?
-                    i < this.settings.bottomPinch :
-                    i >= this.blocks.length - this.settings.bottomPinch;
+        const pinchHeight = this.blocks
+            .filter((block, i) => isPinched(i))
+            .reduce((total, block) => total + getBlockHeight(block), 0);
 
-                if (isPinched) {
-                    pinchHeight += getBlockHeight(block);
-                }
-            });
-        }
+        const makeBlockPaths = this.settings.isCurved ?
+            (dimensions, isOverlay) => this.navigator.makeCurvedPaths(dimensions, isOverlay) :
+            (dimensions, isOverlay) => this.navigator.makeStraightPaths(dimensions, isOverlay);
 
         // The slope will determine the x points on each block iteration
         // Given: slope = (y1 - y2) / (x1 - x2)
@@ -499,6 +475,9 @@ class D3Funnel {
         // Create the path definition for each funnel block
         // Remember to loop back to the beginning point for a closed path
         this.blocks.forEach((block, i) => {
+            let dx = initialDx;
+            let dy = initialDy;
+
             // Make heights proportional to block weight
             if (this.settings.dynamicHeight) {
                 dy = getBlockHeight(block);
@@ -506,40 +485,40 @@ class D3Funnel {
                 // Given: y = mx + b
                 // Given: b = topY (when funnel), b = bottomY (when pyramid)
                 // For funnel, x_i = (y_i - topY) / slope
-                nextLeftX = ((prevHeight + dy) - topY) / slope;
+                let targetLeftX = ((prevHeight + dy) - topY) / slope;
 
                 // For pyramid, x_i = (y_i - bottomY) / -slope
                 if (this.settings.isInverted) {
-                    nextLeftX = ((prevHeight + dy) - bottomY) / (-1 * slope);
+                    targetLeftX = ((prevHeight + dy) - bottomY) / (-1 * slope);
                 }
 
                 // If bottomWidth is 0, adjust last x position (to circumvent
                 // errors associated with rounding)
                 if (this.settings.bottomWidth === 0 && i === this.blocks.length - 1) {
                     // For funnel, last position is the center
-                    nextLeftX = this.settings.width / 2;
+                    targetLeftX = this.settings.width / 2;
 
                     // For pyramid, last position is the origin
                     if (this.settings.isInverted) {
-                        nextLeftX = 0;
+                        targetLeftX = 0;
                     }
                 }
 
                 // If bottomWidth is same as width, stop x velocity
                 if (this.settings.bottomWidth === this.settings.width) {
-                    nextLeftX = prevLeftX;
+                    targetLeftX = prevLeftX;
                 }
 
                 // Prevent NaN or Infinite values (caused by zero heights)
-                if (Number.isNaN(nextLeftX) || !Number.isFinite(nextLeftX)) {
-                    nextLeftX = 0;
+                if (!Number.isFinite(targetLeftX)) {
+                    targetLeftX = 0;
                 }
 
                 // Calculate the shift necessary for both x points
-                dx = nextLeftX - prevLeftX;
+                dx = targetLeftX - prevLeftX;
 
                 if (this.settings.isInverted) {
-                    dx = prevLeftX - nextLeftX;
+                    dx = prevLeftX - targetLeftX;
                 }
             }
 
@@ -554,40 +533,17 @@ class D3Funnel {
             }
 
             // Stop velocity for pinched blocks
-            if (this.settings.bottomPinch > 0) {
-                // Check if we've reached the bottom of the pinch
-                // If so, stop changing on x
-                if (!this.settings.isInverted) {
-                    if (i >= this.blocks.length - this.settings.bottomPinch) {
-                        dx = 0;
-                    }
-                    // Pinch at the first blocks relating to the bottom pinch
-                    // Revert back to normal velocity after pinch
-                } else {
-                    // Revert velocity back to the initial if we are using
-                    // static heights (prevents zero velocity if isInverted
-                    // and bottomPinch are non-trivial and dynamicHeight is
-                    // false)
-                    if (!this.settings.dynamicHeight) {
-                        ({ dx } = this);
-                    }
-
-                    dx = i < this.settings.bottomPinch ? 0 : dx;
-                }
+            if (isPinched(i)) {
+                dx = 0;
             }
 
-            // Calculate the position of next block
-            nextLeftX = prevLeftX + dx;
-            nextRightX = prevRightX - dx;
-            nextHeight = prevHeight + dy;
+            // Calculate the position of next block, expanding outward if
+            // inverted
+            const nextLeftX = this.settings.isInverted ? prevLeftX - dx : prevLeftX + dx;
+            const nextRightX = this.settings.isInverted ? prevRightX + dx : prevRightX - dx;
+            const nextHeight = prevHeight + dy;
 
             this.blocks[i].height = dy;
-
-            // Expand outward if inverted
-            if (this.settings.isInverted) {
-                nextLeftX = prevLeftX - dx;
-                nextRightX = prevRightX + dx;
-            }
 
             const edges = this.carveBlockGap({
                 prevLeftX,
@@ -613,24 +569,10 @@ class D3Funnel {
                 ratio: block.ratio,
             };
 
-            if (this.settings.isCurved) {
-                paths = [...paths, this.navigator.makeCurvedPaths(dimensions)];
+            paths.push(makeBlockPaths(dimensions, false));
 
-                if (this.settings.addValueOverlay) {
-                    overlayPaths = [
-                        ...overlayPaths,
-                        this.navigator.makeCurvedPaths(dimensions, true),
-                    ];
-                }
-            } else {
-                paths = [...paths, this.navigator.makeStraightPaths(dimensions)];
-
-                if (this.settings.addValueOverlay) {
-                    overlayPaths = [
-                        ...overlayPaths,
-                        this.navigator.makeStraightPaths(dimensions, true),
-                    ];
-                }
+            if (this.settings.addValueOverlay) {
+                overlayPaths.push(makeBlockPaths(dimensions, true));
             }
 
             // Set the next block's previous position
@@ -696,12 +638,8 @@ class D3Funnel {
      * @return {Number}
      */
     getDx(bottomLeftX) {
-        // Will be sharper if there is a pinch
-        if (this.settings.bottomPinch > 0) {
-            return bottomLeftX / (this.blocks.length - this.settings.bottomPinch);
-        }
-
-        return bottomLeftX / this.blocks.length;
+        // Only unpinched blocks narrow, so a pinch makes them sharper
+        return bottomLeftX / (this.blocks.length - this.settings.bottomPinch);
     }
 
     /**
