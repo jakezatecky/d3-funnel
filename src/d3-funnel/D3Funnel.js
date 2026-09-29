@@ -390,8 +390,13 @@ class D3Funnel {
             this.drawTopOval(this.svg, 0);
         }
 
-        // Add each block
-        this.drawBlock(0);
+        // Add each block; animated blocks draw each other in turn, once the
+        // block before them finishes
+        if (this.settings.animation !== 0) {
+            this.drawBlock(0);
+        } else {
+            this.blocks.forEach((block, index) => this.drawBlock(index));
+        }
     }
 
     /**
@@ -826,17 +831,14 @@ class D3Funnel {
     }
 
     /**
-     * Draw the next block in the iteration.
+     * Draw the block at the given index. When animated, the next block is
+     * drawn once this one finishes.
      *
      * @param {int} index
      *
      * @return {void}
      */
     drawBlock(index) {
-        if (index === this.blocks.length) {
-            return;
-        }
-
         // Separated blocks of a curved funnel each show their own top
         if (this.settings.isCurved && this.settings.blockGap > 0 && index > 0) {
             this.drawTopOval(this.svg, index);
@@ -854,143 +856,142 @@ class D3Funnel {
         // Attach data to the element
         this.attachData(path, block);
 
-        let overlayPath = null;
         let pathColor = block.fill.actual;
 
         if (this.settings.addValueOverlay) {
-            overlayPath = this.appendPath(group, index, true);
+            const overlayPath = this.appendPath(group, index, true);
             this.attachData(overlayPath, block);
 
             // Add data attribute to distinguish between paths
             path.node().setAttribute('pathType', 'background');
             overlayPath.node().setAttribute('pathType', 'foreground');
 
-            // Default path becomes background of lighter shade
+            // Default path becomes an outlined background of lighter shade
             pathColor = this.colorizer.shade(block.fill.raw, 0.3);
+            path.attr('stroke', block.fill.raw);
+
+            this.animate(overlayPath)
+                .attr('fill', block.fill.actual)
+                .attr('d', this.getPathDefinition(index, true));
         }
 
-        // Add animation components
-        if (this.settings.animation !== 0) {
-            path.transition()
-                .duration(this.settings.animation)
-                .ease(easeLinear)
-                .attr('fill', pathColor)
-                .attr('d', this.getPathDefinition(index, false))
-                .on('end', () => {
-                    this.drawBlock(index + 1);
-                });
-        } else {
-            path.attr('fill', pathColor)
-                .attr('d', this.getPathDefinition(index, false));
-            this.drawBlock(index + 1);
+        const pathDrawing = this.animate(path)
+            .attr('fill', pathColor)
+            .attr('d', this.getPathDefinition(index, false));
+
+        if (this.settings.animation !== 0 && index < this.blocks.length - 1) {
+            pathDrawing.on('end', () => {
+                this.drawBlock(index + 1);
+            });
         }
 
-        // Add path overlay
-        if (overlayPath !== null) {
-            path.attr('stroke', this.blocks[index].fill.raw);
-
-            if (this.settings.animation !== 0) {
-                overlayPath.transition()
-                    .duration(this.settings.animation)
-                    .ease(easeLinear)
-                    .attr('fill', block.fill.actual)
-                    .attr('d', this.getPathDefinition(index, true));
-            } else {
-                overlayPath.attr('fill', block.fill.actual)
-                    .attr('d', this.getPathDefinition(index, true));
-            }
-        }
+        // The block's path and any overlay share the same events
+        const paths = group.selectAll('path');
 
         // Add the hover events
         if (this.settings.hoverEffects) {
-            [path, overlayPath].forEach((target) => {
-                if (!target) {
-                    return;
-                }
-
-                target
-                    .on('mouseover', this.onMouseOver)
-                    .on('mouseout', this.onMouseOut);
-            });
+            paths
+                .on('mouseover', this.onMouseOver)
+                .on('mouseout', this.onMouseOut);
         }
 
         // Add block click event
         if (this.settings.onBlockClick !== null) {
-            [path, overlayPath].forEach((target) => {
-                if (!target) {
-                    return;
-                }
-
-                target.style('cursor', 'pointer')
-                    .on('click', this.settings.onBlockClick);
-            });
+            paths.style('cursor', 'pointer')
+                .on('click', this.settings.onBlockClick);
         }
 
         // Add block hover events; namespaced so they do not replace the highlight handlers
-        [path, overlayPath].forEach((target) => {
-            if (!target) {
-                return;
-            }
-
-            if (this.settings.onBlockMouseOver !== null) {
-                target.on('mouseover.block', this.settings.onBlockMouseOver);
-            }
-            if (this.settings.onBlockMouseOut !== null) {
-                target.on('mouseout.block', this.settings.onBlockMouseOut);
-            }
-        });
+        if (this.settings.onBlockMouseOver !== null) {
+            paths.on('mouseover.block', this.settings.onBlockMouseOver);
+        }
+        if (this.settings.onBlockMouseOut !== null) {
+            paths.on('mouseout.block', this.settings.onBlockMouseOut);
+        }
 
         // Add tooltips
         if (this.settings.tooltip.enabled) {
-            [path, overlayPath].forEach((target) => {
-                if (!target) {
-                    return;
-                }
-
-                target.node().addEventListener('mouseout', () => {
-                    if (this.tooltip) {
-                        this.tooltip.remove();
-                        this.tooltip = null;
-                    }
-                });
-                target.node().addEventListener('mousemove', (e) => {
-                    if (!this.tooltip) {
-                        this.tooltip = document.createElement('div');
-                        this.tooltip.setAttribute('class', 'd3-funnel-tooltip');
-                        this.container.appendChild(this.tooltip);
-                    }
-
-                    this.tooltip.innerText = block.tooltip.formatted;
-
-                    const width = this.tooltip.offsetWidth;
-                    const height = this.tooltip.offsetHeight;
-                    const rect = this.container.getBoundingClientRect();
-                    const heightOffset = height + 5;
-                    const containerY = rect.y + window.scrollY;
-                    const isAbove = e.pageY - heightOffset < containerY;
-                    const top = isAbove ? e.pageY + 5 : e.pageY - heightOffset;
-
-                    const styles = [
-                        'display: inline-block',
-                        'position: absolute',
-                        `left: ${e.pageX - (width / 2)}px`,
-                        `top: ${top}px`,
-                        `border: 1px solid ${block.fill.raw}`,
-                        'background: rgb(255,255,255,0.75)',
-                        'padding: 5px 15px',
-                        'color: #000',
-                        'font-size: 14px',
-                        'font-weight: bold',
-                        'text-align: center',
-                        'cursor: default',
-                        'pointer-events: none',
-                    ];
-                    this.tooltip.setAttribute('style', styles.join(';'));
-                });
-            });
+            paths
+                .on('mousemove.tooltip', (event) => this.showTooltip(event, block))
+                .on('mouseout.tooltip', () => this.hideTooltip());
         }
 
         this.drawLabel(index);
+    }
+
+    /**
+     * Return a transition of the given selection when the chart is animated,
+     * or the selection itself otherwise, so that attributes set on the result
+     * apply either way.
+     *
+     * @param {Object} selection
+     *
+     * @return {Object}
+     */
+    animate(selection) {
+        if (this.settings.animation === 0) {
+            return selection;
+        }
+
+        return selection.transition()
+            .duration(this.settings.animation)
+            .ease(easeLinear);
+    }
+
+    /**
+     * Show the tooltip of the given block beside the mouse, creating the
+     * tooltip if needed.
+     *
+     * @param {MouseEvent} event
+     * @param {Object}     block
+     *
+     * @return {void}
+     */
+    showTooltip(event, block) {
+        if (!this.tooltip) {
+            this.tooltip = document.createElement('div');
+            this.tooltip.setAttribute('class', 'd3-funnel-tooltip');
+            this.container.appendChild(this.tooltip);
+        }
+
+        this.tooltip.innerText = block.tooltip.formatted;
+
+        const width = this.tooltip.offsetWidth;
+        const height = this.tooltip.offsetHeight;
+        const rect = this.container.getBoundingClientRect();
+        const heightOffset = height + 5;
+        const containerY = rect.y + window.scrollY;
+        const isAbove = event.pageY - heightOffset < containerY;
+        const top = isAbove ? event.pageY + 5 : event.pageY - heightOffset;
+
+        const styles = [
+            'display: inline-block',
+            'position: absolute',
+            `left: ${event.pageX - (width / 2)}px`,
+            `top: ${top}px`,
+            `border: 1px solid ${block.fill.raw}`,
+            'background: rgb(255,255,255,0.75)',
+            'padding: 5px 15px',
+            'color: #000',
+            'font-size: 14px',
+            'font-weight: bold',
+            'text-align: center',
+            'cursor: default',
+            'pointer-events: none',
+        ];
+        this.tooltip.setAttribute('style', styles.join(';'));
+    }
+
+    /**
+     * Remove the tooltip, if shown.
+     *
+     * @return {void}
+     */
+    hideTooltip() {
+        if (this.tooltip) {
+            this.tooltip.remove();
+            this.tooltip = null;
+        }
     }
 
     /**
