@@ -2,18 +2,14 @@ class Navigator {
     /**
      * Given a list of path commands, returns the compiled description.
      *
-     * @param {Array} commands
+     * @param {Array} commands Each as [command, x, y].
      *
      * @return {string}
      */
     plot(commands) {
-        let path = '';
-
-        commands.forEach((command) => {
-            path += `${command[0]}${command[1]},${command[2]} `;
-        });
-
-        return path.replace(/ +/g, ' ').trim();
+        return commands
+            .map(([command, x, y]) => `${command}${x},${y}`)
+            .join(' ');
     }
 
     /**
@@ -108,18 +104,18 @@ class Navigator {
         const curve1 = this.getQuadraticBezierCurve(p10, p11, p12, ratio);
 
         return [
-            // Top Bezier curve
-            [curve0.p0.x, curve0.p0.y, 'M'],
-            [curve0.p1.x, curve0.p1.y, 'Q'],
-            [curve0.p2.x, curve0.p2.y, ''],
+            // Top Bézier curve
+            ['M', curve0.p0.x, curve0.p0.y],
+            ['Q', curve0.p1.x, curve0.p1.y],
+            ['', curve0.p2.x, curve0.p2.y],
             // Right line
-            [curve1.p2.x, curve1.p2.y, 'L'],
-            // Bottom Bezier curve
-            [curve1.p2.x, curve1.p2.y, 'M'],
-            [curve1.p1.x, curve1.p1.y, 'Q'],
-            [curve1.p0.x, curve1.p0.y, ''],
+            ['L', curve1.p2.x, curve1.p2.y],
+            // Bottom Bézier curve
+            ['M', curve1.p2.x, curve1.p2.y],
+            ['Q', curve1.p1.x, curve1.p1.y],
+            ['', curve1.p0.x, curve1.p0.y],
             // Left line
-            [curve0.p0.x, curve0.p0.y, 'L'],
+            ['L', curve0.p0.x, curve0.p0.y],
         ];
     }
 
@@ -217,29 +213,29 @@ class Navigator {
 
             return [
                 // Start position
-                [prevLeftX, prevHeight, 'M'],
+                ['M', prevLeftX, prevHeight],
                 // Move to right
-                [rightSideTop, prevHeight, 'L'],
+                ['L', rightSideTop, prevHeight],
                 // Move down
-                [rightSideBtm, nextHeight, 'L'],
+                ['L', rightSideBtm, nextHeight],
                 // Move to left
-                [nextLeftX, nextHeight, 'L'],
+                ['L', nextLeftX, nextHeight],
                 // Wrap back to top
-                [prevLeftX, prevHeight, 'L'],
+                ['L', prevLeftX, prevHeight],
             ];
         }
 
         return [
             // Start position
-            [prevLeftX, prevHeight, 'M'],
+            ['M', prevLeftX, prevHeight],
             // Move to right
-            [prevRightX, prevHeight, 'L'],
+            ['L', prevRightX, prevHeight],
             // Move down
-            [nextRightX, nextHeight, 'L'],
+            ['L', nextRightX, nextHeight],
             // Move to left
-            [nextLeftX, nextHeight, 'L'],
+            ['L', nextLeftX, nextHeight],
             // Wrap back to top
-            [prevLeftX, prevHeight, 'L'],
+            ['L', prevLeftX, prevHeight],
         ];
     }
 }

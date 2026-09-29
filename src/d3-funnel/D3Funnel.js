@@ -802,17 +802,20 @@ class D3Funnel {
         // Create path from the top of the block, mirroring the block's top
         // curve to form the back of the oval; the front extends beneath the
         // block to avoid a seam along their shared edge
-        const paths = this.blockPaths[index];
-        const topY = paths[0][1];
-        const curve = paths[1][1] - topY;
+        const [
+            [, leftX, topY],
+            [, , controlY],
+            [, rightX],
+        ] = this.blockPaths[index];
+        const curve = controlY - topY;
 
         const path = this.navigator.plot([
-            ['M', paths[0][0], topY],
+            ['M', leftX, topY],
             ['Q', centerX, topY + (2 * curve)],
-            [' ', paths[2][0], topY],
-            ['M', paths[2][0], topY],
+            ['', rightX, topY],
+            ['M', rightX, topY],
             ['Q', centerX, topY - curve],
-            [' ', paths[0][0], topY],
+            ['', leftX, topY],
         ]);
 
         // Draw top oval beneath any other element, so that the block above
@@ -846,7 +849,7 @@ class D3Funnel {
         this.blockGroups[index] = group;
 
         // Fetch path element
-        const path = this.getBlockPath(group, index);
+        const path = this.appendPath(group, index, false);
 
         // Attach data to the element
         this.attachData(path, block);
@@ -855,7 +858,7 @@ class D3Funnel {
         let pathColor = block.fill.actual;
 
         if (this.settings.addValueOverlay) {
-            overlayPath = this.getOverlayPath(group, index);
+            overlayPath = this.appendPath(group, index, true);
             this.attachData(overlayPath, block);
 
             // Add data attribute to distinguish between paths
@@ -872,13 +875,13 @@ class D3Funnel {
                 .duration(this.settings.animation)
                 .ease(easeLinear)
                 .attr('fill', pathColor)
-                .attr('d', this.getPathDefinition(index))
+                .attr('d', this.getPathDefinition(index, false))
                 .on('end', () => {
                     this.drawBlock(index + 1);
                 });
         } else {
             path.attr('fill', pathColor)
-                .attr('d', this.getPathDefinition(index));
+                .attr('d', this.getPathDefinition(index, false));
             this.drawBlock(index + 1);
         }
 
@@ -891,10 +894,10 @@ class D3Funnel {
                     .duration(this.settings.animation)
                     .ease(easeLinear)
                     .attr('fill', block.fill.actual)
-                    .attr('d', this.getOverlayPathDefinition(index));
+                    .attr('d', this.getPathDefinition(index, true));
             } else {
                 overlayPath.attr('fill', block.fill.actual)
-                    .attr('d', this.getOverlayPathDefinition(index));
+                    .attr('d', this.getPathDefinition(index, true));
             }
         }
 
@@ -991,32 +994,19 @@ class D3Funnel {
     }
 
     /**
-     * @param {Object} group
-     * @param {int}    index
+     * Append a block or overlay path element to the given group.
+     *
+     * @param {Object}  group
+     * @param {int}     index
+     * @param {boolean} isOverlay
      *
      * @return {Object}
      */
-    getBlockPath(group, index) {
+    appendPath(group, index, isOverlay) {
         const path = group.append('path');
 
         if (this.settings.animation !== 0) {
-            this.addBeforeTransition(path, index, false);
-        }
-
-        return path;
-    }
-
-    /**
-     * @param {Object} group
-     * @param {int}    index
-     *
-     * @return {Object}
-     */
-    getOverlayPath(group, index) {
-        const path = group.append('path');
-
-        if (this.settings.animation !== 0) {
-            this.addBeforeTransition(path, index, true);
+            this.addBeforeTransition(path, index, isOverlay);
         }
 
         return path;
@@ -1040,21 +1030,32 @@ class D3Funnel {
         // Construct the top of the trapezoid and leave the other elements
         // hovering around to expand downward on animation
         if (!this.settings.isCurved) {
+            const [
+                [, leftX, leftY],
+                [, rightX, rightY],
+            ] = paths;
+
             beforePath = this.navigator.plot([
-                ['M', paths[0][0], paths[0][1]],
-                ['L', paths[1][0], paths[1][1]],
-                ['L', paths[1][0], paths[1][1]],
-                ['L', paths[0][0], paths[0][1]],
+                ['M', leftX, leftY],
+                ['L', rightX, rightY],
+                ['L', rightX, rightY],
+                ['L', leftX, leftY],
             ]);
         } else {
+            const [
+                [, leftX, leftY],
+                [, controlX, controlY],
+                [, rightX, rightY],
+            ] = paths;
+
             beforePath = this.navigator.plot([
-                ['M', paths[0][0], paths[0][1]],
-                ['Q', paths[1][0], paths[1][1]],
-                [' ', paths[2][0], paths[2][1]],
-                ['L', paths[2][0], paths[2][1]],
-                ['M', paths[2][0], paths[2][1]],
-                ['Q', paths[1][0], paths[1][1]],
-                [' ', paths[0][0], paths[0][1]],
+                ['M', leftX, leftY],
+                ['Q', controlX, controlY],
+                ['', rightX, rightY],
+                ['L', rightX, rightY],
+                ['M', rightX, rightY],
+                ['Q', controlX, controlY],
+                ['', leftX, leftY],
             ]);
         }
 
@@ -1089,33 +1090,13 @@ class D3Funnel {
     }
 
     /**
-     * @param {int} index
+     * @param {int}     index
+     * @param {boolean} isOverlay
      *
      * @return {string}
      */
-    getPathDefinition(index) {
-        const commands = [];
-
-        this.blockPaths[index].forEach((command) => {
-            commands.push([command[2], command[0], command[1]]);
-        });
-
-        return this.navigator.plot(commands);
-    }
-
-    /**
-     * @param {int} index
-     *
-     * @return {string}
-     */
-    getOverlayPathDefinition(index) {
-        const commands = [];
-
-        this.overlayPaths[index].forEach((command) => {
-            commands.push([command[2], command[0], command[1]]);
-        });
-
-        return this.navigator.plot(commands);
+    getPathDefinition(index, isOverlay) {
+        return this.navigator.plot(isOverlay ? this.overlayPaths[index] : this.blockPaths[index]);
     }
 
     /**
@@ -1298,15 +1279,20 @@ class D3Funnel {
 
         // Straight blocks are a simple trapezoid; curved blocks have their
         // side corners at different path points
-        const [topLeft, topRight, bottomRight, bottomLeft] = this.settings.isCurved ?
+        const [
+            [, topLeftX, topY],
+            [, topRightX],
+            [, bottomRightX],
+            [, bottomLeftX, bottomY],
+        ] = this.settings.isCurved ?
             [paths[0], paths[2], paths[3], paths[6]] :
             [paths[0], paths[1], paths[2], paths[3]];
 
-        const height = bottomLeft[1] - topLeft[1];
-        const t = height > 0 ? Math.min(Math.max((y - topLeft[1]) / height, 0), 1) : 0;
+        const height = bottomY - topY;
+        const t = height > 0 ? Math.min(Math.max((y - topY) / height, 0), 1) : 0;
 
-        const left = topLeft[0] + ((bottomLeft[0] - topLeft[0]) * t);
-        const right = topRight[0] + ((bottomRight[0] - topRight[0]) * t);
+        const left = topLeftX + ((bottomLeftX - topLeftX) * t);
+        const right = topRightX + ((bottomRightX - topRightX) * t);
 
         return right - left;
     }
@@ -1326,9 +1312,10 @@ class D3Funnel {
         const paths = this.blockPaths[index];
         const offset = D3Funnel.LABEL_PADDING + ((lineHeight * lineCount) / 2);
 
-        // The top and bottom edges of the block at its horizontal center
-        let top = paths[0][1];
-        let bottom = paths[2][1];
+        // The top and bottom edges of the block at its horizontal center; each
+        // path command is [command, x, y]
+        let top = paths[0][2];
+        let bottom = paths[2][2];
         let middle = (top + bottom) / 2;
 
         if (isCurved) {
@@ -1337,11 +1324,11 @@ class D3Funnel {
             // A quadratic curve peaks halfway between its endpoints and its
             // control point; the bottom of a block may be hidden behind the
             // top of the next block, if one exists
-            top = (paths[0][1] + paths[1][1]) / 2;
-            bottom = (paths[3][1] + paths[5][1]) / 2;
+            top = (paths[0][2] + paths[1][2]) / 2;
+            bottom = (paths[3][2] + paths[5][2]) / 2;
 
             if (nextPaths) {
-                bottom = Math.min(bottom, (nextPaths[0][1] + nextPaths[1][1]) / 2);
+                bottom = Math.min(bottom, (nextPaths[0][2] + nextPaths[1][2]) / 2);
             }
 
             middle = (top + bottom) / 2;
