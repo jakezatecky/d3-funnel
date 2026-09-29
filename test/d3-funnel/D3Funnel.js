@@ -449,6 +449,21 @@ describe('D3Funnel', () => {
                 assert.equal(400, getSvg().node().getBBox().height);
             });
 
+            it('should not carry a previous container\'s dimensions into the library defaults', () => {
+                select('#funnel').style('width', '250px').style('height', '250px');
+
+                getFunnel().draw(getBasicData());
+
+                select('#funnel').style('width', '0px').style('height', '0px');
+
+                getFunnel().draw(getBasicData());
+
+                assert.equal(350, D3Funnel.defaults.chart.width);
+                assert.equal(400, D3Funnel.defaults.chart.height);
+                assert.equal(350, getSvg().node().getBBox().width);
+                assert.equal(400, getSvg().node().getBBox().height);
+            });
+
             it('should set the funnel\'s width/height to the specified amount', () => {
                 ['width', 'height'].forEach((direction) => {
                     getFunnel().draw(getBasicData(), {

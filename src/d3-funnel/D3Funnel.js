@@ -218,11 +218,8 @@ class D3Funnel {
         const containerDimensions = this.getContainerDimensions();
         const defaults = this.getDefaultSettings(containerDimensions);
 
-        // Prepare the configuration settings based on the defaults
-        let settings = Utils.extend({}, defaults);
-
         // Override default settings with user options
-        settings = Utils.extend(settings, options);
+        const settings = Utils.extend(defaults, options);
 
         // Account for any percentage-based dimensions
         settings.chart = {
@@ -241,15 +238,9 @@ class D3Funnel {
      * @return {Object}
      */
     getDefaultSettings(containerDimensions) {
-        const settings = D3Funnel.defaults;
-
-        // Set the default width and height based on the container
-        settings.chart = {
-            ...settings.chart,
-            ...containerDimensions,
-        };
-
-        return settings;
+        // Set the default width and height based on the container, leaving
+        // the static defaults untouched for future charts
+        return Utils.extend(D3Funnel.defaults, { chart: containerDimensions });
     }
 
     /**
