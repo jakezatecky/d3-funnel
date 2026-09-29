@@ -357,6 +357,8 @@ class D3Funnel {
                     raw: block.label,
                     formatted: this.formatter.format(block, this.labelFormatter),
                     color: this.colorizer.getLabelColor(block.labelColor),
+                    fontSize: block.labelFontSize ?? this.settings.label.fontSize,
+                    fontFamily: block.labelFontFamily ?? this.settings.label.fontFamily,
                 },
                 tooltip: {
                     enabled: block.enabled,
@@ -1173,29 +1175,28 @@ class D3Funnel {
      * @return {void}
      */
     addBlockLabel(group, index) {
-        const formattedLabel = this.blocks[index].label.formatted;
-        const fill = this.blocks[index].label.color;
-        const lines = formattedLabel.split('\n');
+        const { label } = this.blocks[index];
+        const lines = label.formatted.split('\n');
 
         // Center the text horizontally
         const x = this.settings.width / 2;
 
         const text = group.append('text')
             .attr('x', x)
-            .attr('fill', fill)
-            .attr('font-size', this.settings.label.fontSize)
+            .attr('fill', label.color)
+            .attr('font-size', label.fontSize)
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', 'middle')
             .attr('pointer-events', 'none');
 
         // Add font-family, if exists
-        if (this.settings.label.fontFamily !== null) {
-            text.attr('font-family', this.settings.label.fontFamily);
+        if (label.fontFamily !== null) {
+            text.attr('font-family', label.fontFamily);
         }
 
         // Align the text vertically as configured; this depends on the rendered
         // font size, so it must happen after the font attributes are set
-        const lineHeight = this.getLabelLineHeight(text);
+        const lineHeight = this.getLabelLineHeight(text, label.fontSize);
         const y = this.getTextY(index, lines.length, lineHeight);
 
         text.attr('y', y);
@@ -1212,11 +1213,12 @@ class D3Funnel {
      * rendered font size scaled by the `label.lineHeight` setting.
      *
      * @param {Object} text
+     * @param {string} fontSize
      *
      * @return {Number}
      */
-    getLabelLineHeight(text) {
-        const { fontSize, lineHeight } = this.settings.label;
+    getLabelLineHeight(text, fontSize) {
+        const { lineHeight } = this.settings.label;
 
         // Fall back to the configured font size if the chart is not attached
         // to the document and so has no computed style

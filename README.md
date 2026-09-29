@@ -219,6 +219,8 @@ within the funnel. Below is a complete list of all block-level options:
 | formattedValue  | mixed  | A row-level override for `label.format`.                        | `'USD: $150'` |
 | hideLabel       | bool   | Whether to hide the formatted label for this block.             | `true`        |
 | labelColor      | string | A row-level override for `label.fill`. Hex only.                | `'#333'`      |
+| labelFontSize   | string | A row-level override for `label.fontSize`.                      | `'18px'`      |
+| labelFontFamily | string | A row-level override for `label.fontFamily`.                    | `'Georgia'`   |
 
 ## API
 

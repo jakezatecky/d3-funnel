@@ -209,6 +209,47 @@ describe('D3Funnel', () => {
                 assert.equal('#444', select(texts[3]).attr('fill'));
             });
 
+            it('should use label font sizes assigned to a data element', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, labelFontSize: '10px' },
+                    { label: 'B', value: 2 },
+                ]);
+
+                const texts = getSvg().selectAll('text').nodes();
+
+                assert.equal('10px', select(texts[0]).attr('font-size'));
+                assert.equal('14px', select(texts[1]).attr('font-size'));
+            });
+
+            it('should use label font families assigned to a data element', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, labelFontFamily: 'serif' },
+                    { label: 'B', value: 2 },
+                ], {
+                    label: { fontFamily: 'monospace' },
+                });
+
+                const texts = getSvg().selectAll('text').nodes();
+
+                assert.equal('serif', select(texts[0]).attr('font-family'));
+                assert.equal('monospace', select(texts[1]).attr('font-family'));
+            });
+
+            it('should scale line spacing with label font sizes assigned to a data element', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, labelFontSize: '30px' },
+                    { label: 'B', value: 2 },
+                ], {
+                    label: { format: '{l}\n{v}', fontSize: '20px', lineHeight: 1 },
+                });
+
+                const dys = getSvg().selectAll('tspan').nodes().map((node) => (
+                    parseFloat(select(node).attr('dy'))
+                ));
+
+                assert.deepEqual([-15, 30, -10, 20], dys);
+            });
+
             it('should remove other elements from container', () => {
                 const container = select('#funnel');
                 const funnel = getFunnel();

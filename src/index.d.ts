@@ -42,6 +42,10 @@ export interface FunnelDatumObject {
     hideLabel?: boolean;
     /** A block-level override for `label.fill`. Hex only. */
     labelColor?: string;
+    /** A block-level override for `label.fontSize`. */
+    labelFontSize?: string;
+    /** A block-level override for `label.fontFamily`. */
+    labelFontFamily?: string;
 }
 
 /**
