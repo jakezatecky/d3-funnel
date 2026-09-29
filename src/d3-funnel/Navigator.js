@@ -207,9 +207,9 @@ class Navigator {
             let rightSideTop = (lengthTop * (ratio || 0)) + prevLeftX;
             let rightSideBtm = (lengthBtm * (ratio || 0)) + nextLeftX;
 
-            // Overlay should not be longer than the max length of the path
-            rightSideTop = Math.min(rightSideTop, lengthTop);
-            rightSideBtm = Math.min(rightSideBtm, lengthBtm);
+            // Overlay should not extend past the right side of the path
+            rightSideTop = Math.min(rightSideTop, prevRightX);
+            rightSideBtm = Math.min(rightSideBtm, nextRightX);
 
             return [
                 // Start position

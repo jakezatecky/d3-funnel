@@ -957,6 +957,52 @@ describe('D3Funnel', () => {
                 assert.equal(10, Math.round((APathOverlayWidth / APathFullWidth) * 100));
                 assert.equal(20, Math.round((BPathOverlayWidth / BPathFullWidth) * 100));
             });
+
+            it('should size the overlay of an indented block by its ratio', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 10 },
+                    { label: 'B', value: 90 },
+                ], {
+                    chart: {
+                        width: 300,
+                    },
+                    block: {
+                        barOverlay: true,
+                    },
+                });
+
+                const paths = selectAll('path').nodes();
+                const fullPath = select(paths[2]);
+                const overlayPath = select(paths[3]);
+
+                const topRatio = getPathTopWidth(overlayPath) / getPathTopWidth(fullPath);
+                const bottomRatio = getPathBottomWidth(overlayPath) / getPathBottomWidth(fullPath);
+
+                assert.equal(90, Math.round(topRatio * 100));
+                assert.equal(90, Math.round(bottomRatio * 100));
+            });
+
+            it('should not extend the overlay past its block', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 10 },
+                    { label: 'B', value: 20 },
+                ], {
+                    chart: {
+                        width: 300,
+                        totalCount: 10,
+                    },
+                    block: {
+                        barOverlay: true,
+                    },
+                });
+
+                const paths = selectAll('path').nodes();
+                const fullPath = select(paths[2]);
+                const overlayPath = select(paths[3]);
+
+                assert.equal(getPathTopWidth(fullPath), getPathTopWidth(overlayPath));
+                assert.equal(getPathBottomWidth(fullPath), getPathBottomWidth(overlayPath));
+            });
         });
 
         describe('block.fill.scale', () => {
