@@ -942,6 +942,19 @@ describe('D3Funnel', () => {
                 assert.equal(4, selectAll('#funnel path').nodes().length);
             });
 
+            it('should mark the background and foreground paths with a data attribute', () => {
+                getFunnel().draw(getBasicData(), {
+                    block: {
+                        barOverlay: true,
+                    },
+                });
+
+                const [background, overlay] = selectAll('#funnel path').nodes();
+
+                assert.equal('background', background.getAttribute('data-path-type'));
+                assert.equal('foreground', overlay.getAttribute('data-path-type'));
+            });
+
             it('should draw value overlay with overridden total count', () => {
                 getFunnel().draw([
                     { label: 'A', value: 10 },

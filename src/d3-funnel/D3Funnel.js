@@ -787,8 +787,8 @@ class D3Funnel {
             this.attachData(overlayPath, block);
 
             // Add data attribute to distinguish between paths
-            path.node().setAttribute('pathType', 'background');
-            overlayPath.node().setAttribute('pathType', 'foreground');
+            path.attr('data-path-type', 'background');
+            overlayPath.attr('data-path-type', 'foreground');
 
             // Default path becomes an outlined background of lighter shade
             pathColor = this.getBackgroundFill(block);
@@ -1033,7 +1033,7 @@ class D3Funnel {
     onMouseOver(event, data) {
         // Highlight all paths within one block, darkening any overlay the most
         this.blockGroups[data.index].selectAll('path').nodes().forEach((node) => {
-            const isOverlay = node.getAttribute('pathType') === 'foreground';
+            const isOverlay = node.dataset.pathType === 'foreground';
 
             select(node).attr('fill', this.colorizer.shade(data.fill.raw, isOverlay ? -0.5 : -0.2));
         });
@@ -1048,7 +1048,7 @@ class D3Funnel {
     onMouseOut(event, data) {
         // Restore original color for all paths of a block
         this.blockGroups[data.index].selectAll('path').nodes().forEach((node) => {
-            const isBackground = node.getAttribute('pathType') === 'background';
+            const isBackground = node.dataset.pathType === 'background';
 
             select(node).attr('fill', isBackground ? this.getBackgroundFill(data) : data.fill.actual);
         });
