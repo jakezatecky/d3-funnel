@@ -1031,6 +1031,40 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('label.lineHeight', () => {
+            function getLineDys(label) {
+                getFunnel().draw(getBasicData(), {
+                    chart: { height: 200 },
+                    label: { format: '{l}\n{v}', ...label },
+                });
+
+                return selectAll('#funnel text tspan').nodes().map((node) => (
+                    parseFloat(select(node).attr('dy'))
+                ));
+            }
+
+            it('should space lines at 1.4 times the font size by default', () => {
+                const [first, second] = getLineDys({ fontSize: '20px' });
+
+                assert.closeTo(first, -14, 0.001);
+                assert.closeTo(second, 28, 0.001);
+            });
+
+            it('should space lines at the specified multiple of the font size', () => {
+                assert.deepEqual([-15, 30], getLineDys({ fontSize: '20px', lineHeight: 1.5 }));
+            });
+
+            it('should scale line spacing with the font size', () => {
+                assert.deepEqual([-15, 30], getLineDys({ fontSize: '30px', lineHeight: 1 }));
+            });
+
+            it('should resolve relative font sizes', () => {
+                select('#funnel').style('font-size', '10px');
+
+                assert.deepEqual([-10, 20], getLineDys({ fontSize: '2em', lineHeight: 1 }));
+            });
+        });
+
         describe('label.fill', () => {
             it('should set the label\'s fill color to the specified color', () => {
                 getFunnel().draw(getBasicData(), {
@@ -1074,6 +1108,8 @@ describe('D3Funnel', () => {
                     },
                     label: {
                         format: '{l}\n{v}\n{f}',
+                        fontSize: '20px',
+                        lineHeight: 1,
                     },
                 });
 
@@ -1102,7 +1138,12 @@ describe('D3Funnel', () => {
                     { label: 'B', value: 1 },
                 ], {
                     chart: { height: 200 },
-                    label: { format, verticalAlign },
+                    label: {
+                        format,
+                        verticalAlign,
+                        fontSize: '20px',
+                        lineHeight: 1,
+                    },
                 });
 
                 return selectAll('#funnel text').nodes().map((node) => (

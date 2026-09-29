@@ -12,8 +12,6 @@ import Navigator from '#js/Navigator.js';
 import Utils from '#js/Utils.js';
 
 class D3Funnel {
-    static LABEL_LINE_HEIGHT = 20;
-
     static LABEL_PADDING = 5;
 
     static defaults = {
@@ -47,6 +45,7 @@ class D3Funnel {
             enabled: true,
             fontFamily: null,
             fontSize: '14px',
+            lineHeight: 1.4,
             fill: '#fff',
             format: '{l}: {f}',
             verticalAlign: 'middle',
@@ -1178,13 +1177,11 @@ class D3Funnel {
         const fill = this.blocks[index].label.color;
         const lines = formattedLabel.split('\n');
 
-        // Center the text horizontally and align it vertically as configured
+        // Center the text horizontally
         const x = this.settings.width / 2;
-        const y = this.getTextY(index, lines.length);
 
         const text = group.append('text')
             .attr('x', x)
-            .attr('y', y)
             .attr('fill', fill)
             .attr('font-size', this.settings.label.fontSize)
             .attr('text-anchor', 'middle')
@@ -1196,11 +1193,37 @@ class D3Funnel {
             text.attr('font-family', this.settings.label.fontFamily);
         }
 
-        this.addLabelLines(text, lines, x);
+        // Align the text vertically as configured; this depends on the rendered
+        // font size, so it must happen after the font attributes are set
+        const lineHeight = this.getLabelLineHeight(text);
+        const y = this.getTextY(index, lines.length, lineHeight);
+
+        text.attr('y', y);
+
+        this.addLabelLines(text, lines, x, lineHeight);
 
         if (this.settings.label.overflow === 'ellipsis') {
-            this.truncateLabelLines(text, index, y);
+            this.truncateLabelLines(text, index, y, lineHeight);
         }
+    }
+
+    /**
+     * Returns the pixel height of each line of the given label, which is its
+     * rendered font size scaled by the `label.lineHeight` setting.
+     *
+     * @param {Object} text
+     *
+     * @return {Number}
+     */
+    getLabelLineHeight(text) {
+        const { fontSize, lineHeight } = this.settings.label;
+
+        // Fall back to the configured font size if the chart is not attached
+        // to the document and so has no computed style
+        const renderedSize = parseFloat(window.getComputedStyle(text.node()).fontSize) ||
+            parseFloat(fontSize);
+
+        return renderedSize * lineHeight;
     }
 
     /**
@@ -1209,12 +1232,11 @@ class D3Funnel {
      * @param {Object} text
      * @param {Array}  lines
      * @param {Number} x
+     * @param {Number} lineHeight
      *
      * @return {void}
      */
-    addLabelLines(text, lines, x) {
-        const lineHeight = D3Funnel.LABEL_LINE_HEIGHT;
-
+    addLabelLines(text, lines, x, lineHeight) {
         // dy will signify the change from the initial height y
         // We need to initially start the first line at the very top, factoring
         // in the other number of lines
@@ -1234,11 +1256,11 @@ class D3Funnel {
      * @param {Object} text
      * @param {int}    index
      * @param {Number} y
+     * @param {Number} lineHeight
      *
      * @return {void}
      */
-    truncateLabelLines(text, index, y) {
-        const lineHeight = D3Funnel.LABEL_LINE_HEIGHT;
+    truncateLabelLines(text, index, y, lineHeight) {
         const tspans = text.selectAll('tspan').nodes();
         const firstLineY = y - ((lineHeight * (tspans.length - 1)) / 2);
 
@@ -1332,13 +1354,14 @@ class D3Funnel {
      *
      * @param {int}    index
      * @param {Number} lineCount
+     * @param {Number} lineHeight
      *
      * @return {Number}
      */
-    getTextY(index, lineCount) {
+    getTextY(index, lineCount, lineHeight) {
         const { isCurved, label } = this.settings;
         const paths = this.blockPaths[index];
-        const offset = D3Funnel.LABEL_PADDING + ((D3Funnel.LABEL_LINE_HEIGHT * lineCount) / 2);
+        const offset = D3Funnel.LABEL_PADDING + ((lineHeight * lineCount) / 2);
 
         // The top and bottom edges of the block at its horizontal center
         let top = paths[0][1];

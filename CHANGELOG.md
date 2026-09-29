@@ -1,5 +1,14 @@
 ## Unreleased
 
+### Breaking Changes
+
+* Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
+* Remove the `D3Funnel.LABEL_LINE_HEIGHT` static property
+
+### Added
+
+* Add `label.lineHeight` option to set the height of each line of a label as a multiple of its font size
+
 ### Changed
 
 * Replace the placeholder TypeScript declaration with full typings for the chart API, options, data, and event handlers

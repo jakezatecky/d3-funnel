@@ -77,6 +77,7 @@ parent container:
 | `label.enabled`          | Whether the block labels should be displayed.                             | bool     | `true`                  |
 | `label.fontFamily`       | Any valid font family for the labels.                                     | string   | `null`                  |
 | `label.fontSize`         | Any valid font size for the labels.                                       | string   | `'14px'`                |
+| `label.lineHeight`       | The height of each line of a label, as a multiple of its font size.       | number   | `1.4`                   |
 | `label.fill`             | Any valid hex color for the label color.                                  | string   | `'#fff'`                |
 | `label.format`           | Either `function(label, value)` or a format string. See below.            | mixed    | `'{l}: {f}'`            |
 | `label.verticalAlign`    | Where to place labels within their blocks: `top`, `middle`, or `bottom`.  | string   | `'middle'`              |

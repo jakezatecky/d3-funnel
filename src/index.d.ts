@@ -159,6 +159,8 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         fontFamily: string | null;
         /** Any valid font size for the labels. */
         fontSize: string;
+        /** The height of each line of a label, as a multiple of its font size. */
+        lineHeight: number;
         /** Any valid hex color for the label color. */
         fill: string;
         /** The label format. */
@@ -201,9 +203,6 @@ type DeepPartial<T> = T extends (...args: never[]) => unknown ? T :
 export type FunnelOptions<TDatum extends FunnelDatum = FunnelDatum> = DeepPartial<FunnelSettings<TDatum>>;
 
 declare class D3Funnel {
-    /** The pixel height of each line of a label. */
-    static LABEL_LINE_HEIGHT: number;
-
     /** The pixel padding between a label and the edges of its block. */
     static LABEL_PADDING: number;
 
