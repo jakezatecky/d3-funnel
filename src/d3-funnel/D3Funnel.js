@@ -93,18 +93,9 @@ class D3Funnel {
      * @return {void}
      */
     destroy() {
-        const container = select(this.container);
-
-        // D3's remove method appears to be sufficient for removing the events
-        container.selectAll('svg').remove();
-
-        // Remove other elements from container
-        container.selectAll('*').remove();
-
-        // Remove inner text from container
-        container.text('');
-
-        // Any tooltip was removed along with the other elements
+        // Remove everything from the container, including any tooltip; event
+        // listeners go along with the elements they are attached to
+        this.container.replaceChildren();
         this.tooltip = null;
     }
 

@@ -422,6 +422,21 @@ describe('D3Funnel', () => {
 
                 assert.equal(0, getSvg().nodes().length);
             });
+
+            it('should remove the tooltip and any other content of the container', () => {
+                const funnel = getFunnel();
+
+                funnel.draw(getBasicData(), {
+                    tooltip: {
+                        enabled: true,
+                    },
+                });
+                select('#funnel path').node().dispatchEvent(new MouseEvent('mousemove'));
+                select('#funnel').append('span').text('Other content');
+                funnel.destroy();
+
+                assert.equal(0, document.querySelector('#funnel').childNodes.length);
+            });
         });
     });
 
