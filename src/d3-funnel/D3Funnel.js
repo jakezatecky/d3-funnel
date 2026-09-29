@@ -383,6 +383,9 @@ class D3Funnel {
 
         [this.blockPaths, this.overlayPaths] = this.makePaths();
 
+        // The <g> element of each block, filled in as the blocks are drawn
+        this.blockGroups = [];
+
         // Define color gradients
         if (this.settings.fillType === 'gradient') {
             this.defineColorGradients(this.svg);
@@ -846,6 +849,8 @@ class D3Funnel {
         const group = this.svg.append('g');
         const block = this.blocks[index];
 
+        this.blockGroups[index] = group;
+
         // Fetch path element
         const path = this.getBlockPath(group, index);
 
@@ -988,7 +993,7 @@ class D3Funnel {
             });
         }
 
-        this.drawLabel(group, index);
+        this.drawLabel(index);
     }
 
     /**
@@ -1167,16 +1172,24 @@ class D3Funnel {
     }
 
     /**
-     * Draw the label of the given block into its group, replacing any label
-     * already drawn there.
+     * Draw the label of the given block, replacing any label already drawn
+     * there. The overrides apply only to this drawing, so calling this again
+     * without them restores the block's original label.
      *
-     * @param {Object} group
      * @param {int}    index
+     * @param {Object} overrides Any of `color`, `fontSize`, and `fontFamily`.
      *
      * @return {void}
      */
-    drawLabel(group, index) {
-        const { label } = this.blocks[index];
+    drawLabel(index, overrides = {}) {
+        const group = this.blockGroups[index];
+        const label = { ...this.blocks[index].label, ...overrides };
+
+        // Blocks not yet drawn, such as during the load animation, will draw
+        // their own label once they appear
+        if (!group) {
+            return;
+        }
 
         // Remove any existing label
         group.select('text').remove();

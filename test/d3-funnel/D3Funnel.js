@@ -290,6 +290,121 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('drawLabel', () => {
+            function getTwoBlockFunnel(options = {}) {
+                const funnel = getFunnel();
+
+                funnel.draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 2 },
+                ], options);
+
+                return funnel;
+            }
+
+            function getTexts() {
+                return getSvg().selectAll('text').nodes().map((node) => select(node));
+            }
+
+            it('should replace the existing label rather than add another', () => {
+                getTwoBlockFunnel().drawLabel(0);
+
+                assert.equal(2, getTexts().length);
+            });
+
+            it('should apply overrides to only the given block', () => {
+                getTwoBlockFunnel().drawLabel(1, {
+                    color: '#111',
+                    fontSize: '20px',
+                    fontFamily: 'serif',
+                });
+
+                const [first, second] = getTexts();
+
+                assert.equal('#fff', first.attr('fill'));
+                assert.equal('14px', first.attr('font-size'));
+                assert.equal(null, first.attr('font-family'));
+                assert.equal('#111', second.attr('fill'));
+                assert.equal('20px', second.attr('font-size'));
+                assert.equal('serif', second.attr('font-family'));
+            });
+
+            it('should restore the original label when called without overrides', () => {
+                const funnel = getTwoBlockFunnel();
+
+                funnel.drawLabel(0, { fontSize: '20px' });
+                funnel.drawLabel(0);
+
+                assert.equal('14px', getTexts()[0].attr('font-size'));
+            });
+
+            it('should space lines according to the overridden font size', () => {
+                getTwoBlockFunnel({
+                    label: { format: '{l}\n{v}', lineHeight: 1 },
+                }).drawLabel(0, { fontSize: '30px' });
+
+                const dys = getTexts()[0].selectAll('tspan').nodes().map((node) => (
+                    parseFloat(select(node).attr('dy'))
+                ));
+
+                assert.deepEqual([-15, 30], dys);
+            });
+
+            it('should not change the shape of any block', () => {
+                const funnel = getTwoBlockFunnel();
+                const getShapes = () => getSvg().selectAll('path').nodes().map((node) => (
+                    select(node).attr('d')
+                ));
+                const before = getShapes();
+
+                funnel.drawLabel(0, { fontSize: '40px' });
+
+                assert.deepEqual(before, getShapes());
+            });
+
+            it('should not draw labels that are hidden', () => {
+                const funnel = getFunnel();
+
+                funnel.draw([
+                    { label: 'A', value: 1, hideLabel: true },
+                    { label: 'B', value: 2 },
+                ]);
+                funnel.drawLabel(0, { fontSize: '20px' });
+
+                assert.equal(1, getTexts().length);
+                assert.equal('B: 2', getTexts()[0].text());
+            });
+
+            it('should do nothing for a block that has not been drawn yet', () => {
+                getTwoBlockFunnel({ chart: { animate: 1000 } }).drawLabel(1);
+
+                assert.equal(1, getTexts().length);
+            });
+
+            it('should be usable to enlarge a label while the mouse is over its block', () => {
+                const funnel = getFunnel();
+
+                funnel.draw(getBasicData(), {
+                    events: {
+                        mouseover: {
+                            block: (event, d) => funnel.drawLabel(d.index, { fontSize: '20px' }),
+                        },
+                        mouseout: {
+                            block: (event, d) => funnel.drawLabel(d.index),
+                        },
+                    },
+                });
+
+                const path = select('#funnel path').node();
+
+                path.dispatchEvent(new MouseEvent('mouseover'));
+                assert.equal('20px', getTexts()[0].attr('font-size'));
+
+                path.dispatchEvent(new MouseEvent('mouseout'));
+                assert.equal('14px', getTexts()[0].attr('font-size'));
+            });
+        });
+
         describe('destroy', () => {
             it('should remove a drawn SVG element', () => {
                 const funnel = getFunnel();

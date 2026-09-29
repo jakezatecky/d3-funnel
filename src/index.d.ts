@@ -91,6 +91,10 @@ export interface FunnelBlock<TDatum extends FunnelDatum = FunnelDatum> {
         formatted: string;
         /** The label color. */
         color: string;
+        /** The label font size. */
+        fontSize: string;
+        /** The label font family. */
+        fontFamily: string | null;
     };
     tooltip: {
         enabled: boolean | undefined;
@@ -227,6 +231,16 @@ declare class D3Funnel {
      * @param options An optional configuration object to override defaults.
      */
     draw<TDatum extends FunnelDatum>(data: readonly TDatum[], options?: FunnelOptions<TDatum>): void;
+
+    /**
+     * Redraw the label of a single block, replacing its current label. The
+     * overrides apply only to this drawing, so calling this again without them
+     * restores the block's original label.
+     *
+     * @param index     The index of the block.
+     * @param overrides Label properties to use in place of the block's own.
+     */
+    drawLabel(index: number, overrides?: Partial<Pick<FunnelBlock['label'], 'color' | 'fontSize' | 'fontFamily'>>): void;
 
     /**
      * Remove the funnel and its events from the DOM.

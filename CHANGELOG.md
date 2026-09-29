@@ -9,6 +9,9 @@
 
 * Add `label.lineHeight` option to set the height of each line of a label as a multiple of its font size
 * Add `labelFontSize` and `labelFontFamily` data options to override the label font of individual blocks
+* Expose `label.fontSize` and `label.fontFamily` in block event data
+* Add `drawLabel(index, overrides)` method to redraw a single block's label
+* Add example for `drawLabel` to enlarge labels on hover (#157)
 
 ### Changed
 

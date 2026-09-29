@@ -128,17 +128,19 @@ keys will be substituted by the string formatter:
 Block-based events are passed a DOM `event` and a `data` object containing
 the following elements:
 
-| Key             | Type   | Description                           |
-| --------------- | ------ | ------------------------------------- |
-| index           | number | The index of the block.               |
-| data            | mixed  | The block's original data entry.      |
-| node            | object | The DOM node of the block.            |
-| value           | number | The numerical value.                  |
-| fill.raw        | string | The original block color.             |
-| fill.actual     | string | The actual color (may be a gradient). |
-| label.raw       | string | The unformatted label.                |
-| label.formatted | string | The result of `options.label.format`. |
-| label.color     | string | The label color.                      |
+| Key              | Type   | Description                           |
+| ---------------- | ------ | ------------------------------------- |
+| index            | number | The index of the block.               |
+| data             | mixed  | The block's original data entry.      |
+| node             | object | The DOM node of the block.            |
+| value            | number | The numerical value.                  |
+| fill.raw         | string | The original block color.             |
+| fill.actual      | string | The actual color (may be a gradient). |
+| label.raw        | string | The unformatted label.                |
+| label.formatted  | string | The result of `options.label.format`. |
+| label.color      | string | The label color.                      |
+| label.fontSize   | string | The label font size.                  |
+| label.fontFamily | string | The label font family, if any.        |
 
 An example `data` object is below:
 
@@ -153,6 +155,8 @@ An example `data` object is below:
         raw: 'Visitors',
         formatted: 'Visitors: 150',
         color: '#fff',
+        fontSize: '14px',
+        fontFamily: null,
     },
 },
 ```
@@ -226,9 +230,33 @@ within the funnel. Below is a complete list of all block-level options:
 
 Additional methods beyond `draw()` are accessible after instantiating the chart:
 
-| Method      | Description                                     |
-| ----------- | ----------------------------------------------- |
-| `destroy()` | Removes the funnel and its events from the DOM. |
+### `drawLabel(index, overrides?)`
+
+Redraws the label of the block at `index`, optionally with a different `color`,
+`fontSize`, or `fontFamily`. Overrides apply only to that drawing, so calling
+`drawLabel(index)` again restores the block's original label. For example, to
+enlarge a block's label while the mouse is over it:
+
+``` javascript
+const options = {
+    events: {
+        mouseover: {
+            block(event, d) {
+                chart.drawLabel(d.index, { fontSize: '18px' });
+            },
+        },
+        mouseout: {
+            block(event, d) {
+                chart.drawLabel(d.index);
+            },
+        },
+    },
+};
+```
+
+### `destroy()`
+
+Removes the funnel and its events from the DOM.
 
 # License
 
