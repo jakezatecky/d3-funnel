@@ -1,6 +1,7 @@
 import { merge } from 'lodash';
 import D3Funnel from 'd3-funnel';
 
+const chart = new D3Funnel('#funnel');
 const settings = {
     curved: {
         chart: {
@@ -84,7 +85,6 @@ const settings = {
     },
 };
 
-const chart = new D3Funnel('#funnel');
 const checkboxes = [...document.querySelectorAll('input')];
 const color = document.querySelector('[value="color"]');
 
