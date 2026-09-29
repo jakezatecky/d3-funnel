@@ -16,7 +16,7 @@ export type FunnelColorScale = readonly string[] | ((index: number) => string);
 export type FunnelFormatFunction = (
     label: string,
     value: number,
-    formattedValue: FunnelDatumObject['formattedValue'] | null,
+    formattedValue: FunnelDatum['formattedValue'] | null,
 ) => string;
 
 /**
@@ -29,7 +29,7 @@ export type FunnelFormat = string | FunnelFormatFunction;
  * A data entry for a single block of the funnel. Additional properties may be
  * attached and are accessible in event handlers through `data`.
  */
-export interface FunnelDatumObject {
+export interface FunnelDatum {
     /** The label to associate with the block. */
     label: string;
     /** The value (or count) to associate with the block. */
@@ -47,19 +47,6 @@ export interface FunnelDatumObject {
     /** A block-level override for `label.fontFamily`. */
     labelFontFamily?: string;
 }
-
-/**
- * The legacy array format of a data entry:
- * `[label, value | [value, formattedValue], backgroundColor?, labelColor?]`.
- */
-export type FunnelDatumArray = readonly [
-    label: string,
-    value: number | readonly [value: number, formattedValue: string | number],
-    backgroundColor?: string,
-    labelColor?: string,
-];
-
-export type FunnelDatum = FunnelDatumObject | FunnelDatumArray;
 
 /**
  * The block information passed to event handlers.

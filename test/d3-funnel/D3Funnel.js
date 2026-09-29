@@ -130,6 +130,14 @@ describe('D3Funnel', () => {
                 }, Error, 'Data array elements must be an object.');
             });
 
+            it('should throw an error when given the legacy array format', () => {
+                const funnel = getFunnel();
+
+                assert.throws(() => {
+                    funnel.draw([['Label', 100]]);
+                }, Error, 'the legacy array format was removed in v3');
+            });
+
             it('should throw an error when the first data array element does not have a value', () => {
                 const funnel = getFunnel();
 

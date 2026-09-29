@@ -4,6 +4,7 @@
 
 * Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
 * Remove the `D3Funnel.LABEL_LINE_HEIGHT` static property
+* Remove support for the legacy array-of-arrays data structure, deprecated since v1.1.0; data entries must now be objects (e.g., `{ label: 'Applicants', value: 12000 }`)
 
 ### Added
 

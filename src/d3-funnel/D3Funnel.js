@@ -178,7 +178,7 @@ class D3Funnel {
             onBlockMouseOut: settings.events.mouseout.block,
         };
 
-        this.setBlocks(data);
+        this.blocks = this.standardizeData(data);
     }
 
     /**
@@ -199,12 +199,11 @@ class D3Funnel {
             throw new Error('Data array elements must be an object.');
         }
 
-        if (
-            (Array.isArray(data[0]) && data[0].length < 2) ||
-            (Array.isArray(data[0]) === false && (
-                data[0].label === undefined || data[0].value === undefined
-            ))
-        ) {
+        if (Array.isArray(data[0])) {
+            throw new Error('Data array elements must be objects; the legacy array format was removed in v3.');
+        }
+
+        if (data[0].label === undefined || data[0].value === undefined) {
             throw new Error('Data array elements must contain a label and value.');
         }
     }
@@ -294,50 +293,37 @@ class D3Funnel {
     }
 
     /**
-     * Register the raw data into a standard block format and pre-calculate
-     * some values.
-     *
-     * @param {Array} data
-     *
-     * @return void
-     */
-    setBlocks(data) {
-        const totalCount = this.getTotalCount(data);
-
-        this.blocks = this.standardizeData(data, totalCount);
-    }
-
-    /**
      * Return the total count of all blocks.
      *
-     * @param {Array} data
+     * @param {Array} blocks
      *
      * @return {Number}
      */
-    getTotalCount(data) {
+    getTotalCount(blocks) {
         if (this.settings.totalCount !== null) {
             return this.settings.totalCount || 0;
         }
 
-        return data.reduce((a, b) => a + Utils.getRawBlockCount(b), 0);
+        return blocks.reduce((total, block) => total + block.value, 0);
     }
 
     /**
-     * Convert the raw data into a standardized format.
+     * Convert the raw data into a standardized format and pre-calculate some
+     * values.
      *
-     * @param {Array}  data
-     * @param {Number} totalCount
+     * @param {Array} data
      *
      * @return {Array}
      */
-    standardizeData(data, totalCount) {
-        return data.map((rawBlock, index) => {
-            const block = Array.isArray(rawBlock) ? Utils.convertLegacyBlock(rawBlock) : rawBlock;
+    standardizeData(data) {
+        const totalCount = this.getTotalCount(data);
+
+        return data.map((block, index) => {
             const ratio = totalCount > 0 ? (block.value / totalCount || 0) : 1 / data.length;
 
             return {
                 index,
-                data: rawBlock,
+                data: block,
                 ratio,
                 value: block.value,
                 height: this.settings.height * ratio,
