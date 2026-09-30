@@ -5,10 +5,10 @@
 export type FunnelDimension = number | `${number}%`;
 
 /**
- * A color scale, given either as a list of colors indexed by block or as a
+ * The block colors, given either as a list of colors indexed by block or as a
  * function that receives the block index (such as a D3 ordinal scale).
  */
-export type FunnelColorScale = readonly string[] | ((index: number) => string);
+export type FunnelColors = readonly string[] | ((index: number) => string);
 
 /**
  * A custom label or tooltip formatter.
@@ -34,13 +34,13 @@ export interface FunnelDatum {
     label: string;
     /** The value (or count) to associate with the block. */
     value: number;
-    /** A block-level override for `block.fill.scale`. Hex only. */
-    backgroundColor?: string;
+    /** A block-level override for `block.fill.colors`. Hex only. */
+    fillColor?: string;
     /** A block-level override of the `{f}` formatted value. */
     formattedValue?: string | number;
     /** Whether to hide the formatted label for this block. */
     hideLabel?: boolean;
-    /** A block-level override for `label.fill`. Hex only. */
+    /** A block-level override for `label.color`. Hex only. */
     labelColor?: string;
     /** A block-level override for `label.fontSize`. */
     labelFontSize?: string;
@@ -58,7 +58,7 @@ export interface FunnelBlock<TDatum extends FunnelDatum = FunnelDatum> {
     data: TDatum;
     /** The DOM node of the block. */
     node: SVGPathElement;
-    /** The ratio of the block's value to the total count. */
+    /** The ratio of the block's value to the total value. */
     ratio: number;
     /** The numerical value. */
     value: number;
@@ -107,30 +107,32 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         width: FunnelDimension;
         /** The height of the chart in pixels or a percentage. */
         height: FunnelDimension;
-        /** The percent of total width the bottom should be. */
-        bottomWidth: number;
-        /** How many blocks to pinch on the bottom to create a funnel "neck". */
-        bottomPinch: number;
+        /** The width of the funnel's neck (its narrow end, at the top when inverted), as a fraction of the chart's width. */
+        neckWidth: number;
+        /** How many blocks at the neck keep its width. */
+        pinchedBlocks: number;
         /** Whether the funnel direction is inverted (like a pyramid). */
         inverted: boolean;
-        /** The load animation speed in milliseconds; `0` disables it. */
-        animate: number;
+        animation: {
+            /** The duration of each block's load animation in milliseconds; `0` disables it. */
+            duration: number;
+        };
         curve: {
             /** Whether the funnel is curved. */
             enabled: boolean;
             /** The curvature amount. Narrower edges curve proportionally less. */
-            height: number;
+            depth: number;
             /** The shade adjustment of the top oval, from `-1` to `1`. */
             shade: number;
         };
-        /** Override the total count used in ratio calculations. */
-        totalCount: number | null;
+        /** Override the total value used in ratio calculations. */
+        totalValue: number | null;
     };
     block: {
-        /** Whether the block heights are proportional to their weight. */
-        dynamicHeight: boolean;
-        /** Whether the block widths are proportional to their value decrease. */
-        dynamicSlope: boolean;
+        /** Whether the block heights are proportional to their value. */
+        proportionalHeight: boolean;
+        /** Whether the block widths narrow in proportion to their value decrease. */
+        proportionalWidth: boolean;
         barOverlay: {
             /** Whether the blocks have bar chart overlays proportional to their weight. */
             enabled: boolean;
@@ -138,8 +140,8 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
             shade: number;
         };
         fill: {
-            /** The background color scale. */
-            scale: FunnelColorScale;
+            /** The block colors. */
+            colors: FunnelColors;
             /** The fill type of the blocks. */
             type: 'solid' | 'gradient';
             /** The shade adjustment of the edges of gradient fills, from `-1` to `1`. */
@@ -167,8 +169,8 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         fontSize: string;
         /** The height of each line of a label, as a multiple of its font size. */
         lineHeight: number;
-        /** Any valid hex color for the label color. */
-        fill: string;
+        /** Any valid hex color for the labels. */
+        color: string;
         /** The label format. */
         format: FunnelFormat;
         /** Where to place labels within their blocks. */

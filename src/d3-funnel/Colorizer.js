@@ -5,8 +5,8 @@ class Colorizer {
     constructor() {
         this.hexExpression = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
         this.instanceId = null;
-        this.labelFill = null;
-        this.scale = null;
+        this.labelColor = null;
+        this.colors = null;
     }
 
     /**
@@ -19,21 +19,21 @@ class Colorizer {
     }
 
     /**
-     * @param {string} fill
+     * @param {string} color
      *
      * @return {void}
      */
-    setLabelFill(fill) {
-        this.labelFill = fill;
+    setLabelColor(color) {
+        this.labelColor = color;
     }
 
     /**
-     * @param {function|Array} scale
+     * @param {function|Array} colors
      *
      * @return {void}
      */
-    setScale(scale) {
-        this.scale = scale;
+    setColors(colors) {
+        this.colors = colors;
     }
 
     /**
@@ -68,13 +68,13 @@ class Colorizer {
             return fill;
         }
 
-        // Otherwise, attempt to use the array scale
-        if (Array.isArray(this.scale)) {
-            return this.scale[index];
+        // Otherwise, attempt to use the array of colors
+        if (Array.isArray(this.colors)) {
+            return this.colors[index];
         }
 
-        // Finally, use a functional scale
-        return this.scale(index);
+        // Finally, use a color function or scale
+        return this.colors(index);
     }
 
     /**
@@ -108,12 +108,12 @@ class Colorizer {
     /**
      * Given a raw data block, return an appropriate label color.
      *
-     * @param {string} labelFill
+     * @param {string} labelColor
      *
      * @return {string}
      */
-    getLabelColor(labelFill) {
-        return this.hexExpression.test(labelFill) ? labelFill : this.labelFill;
+    getLabelColor(labelColor) {
+        return this.hexExpression.test(labelColor) ? labelColor : this.labelColor;
     }
 
     /**

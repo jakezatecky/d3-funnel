@@ -186,10 +186,10 @@ describe('D3Funnel', () => {
 
             it('should use colors assigned to a data element', () => {
                 getFunnel().draw([
-                    { label: 'Node A', value: 1, backgroundColor: '#111' },
-                    { label: 'Node B', value: 2, backgroundColor: '#222' },
+                    { label: 'Node A', value: 1, fillColor: '#111' },
+                    { label: 'Node B', value: 2, fillColor: '#222' },
                     { label: 'Node C', value: 3 },
-                    { label: 'Node D', value: 4, backgroundColor: '#444' },
+                    { label: 'Node D', value: 4, fillColor: '#444' },
                 ]);
 
                 const paths = getSvg().selectAll('path').nodes();
@@ -384,7 +384,7 @@ describe('D3Funnel', () => {
             });
 
             it('should do nothing for a block that has not been drawn yet', () => {
-                getTwoBlockFunnel({ chart: { animate: 1000 } }).drawLabel(1);
+                getTwoBlockFunnel({ chart: { animation: { duration: 1000 } } }).drawLabel(1);
 
                 assert.equal(1, getTexts().length);
             });
@@ -442,7 +442,7 @@ describe('D3Funnel', () => {
 
     describe('defaults', () => {
         it('should affect all default options', () => {
-            D3Funnel.defaults.label.fill = '#777';
+            D3Funnel.defaults.label.color = '#777';
 
             getFunnel().draw(getBasicData());
 
@@ -546,12 +546,12 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('chart.bottomWidth', () => {
+        describe('chart.neckWidth', () => {
             it('should set the bottom tip width to the specified percentage', () => {
                 getFunnel().draw(getBasicData(), {
                     chart: {
                         width: 200,
-                        bottomWidth: 1 / 2,
+                        neckWidth: 1 / 2,
                     },
                 });
 
@@ -559,8 +559,8 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('chart.bottomPinch', () => {
-            it('should set the last n number of blocks to have the width of chart.bottomWidth', () => {
+        describe('chart.pinchedBlocks', () => {
+            it('should set the last n number of blocks to have the width of chart.neckWidth', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
@@ -568,8 +568,8 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         width: 450,
-                        bottomWidth: 1 / 3,
-                        bottomPinch: 2,
+                        neckWidth: 1 / 3,
+                        pinchedBlocks: 2,
                     },
                 });
 
@@ -579,7 +579,7 @@ describe('D3Funnel', () => {
                 assert.equal(150, paths[2].getBBox().width);
             });
 
-            it('should maintain chart.bottomWidth when combined with block.minHeight', () => {
+            it('should maintain chart.neckWidth when combined with block.minHeight', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
@@ -588,11 +588,11 @@ describe('D3Funnel', () => {
                     chart: {
                         width: 450,
                         height: 100,
-                        bottomWidth: 1 / 3,
-                        bottomPinch: 1,
+                        neckWidth: 1 / 3,
+                        pinchedBlocks: 1,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                         minHeight: 20,
                     },
                 });
@@ -602,7 +602,7 @@ describe('D3Funnel', () => {
                 assert.equal(150, paths[2].getBBox().width);
             });
 
-            it('should maintain chart.bottomWidth when combined with block.dynamicHeight and curve.enabled', () => {
+            it('should maintain chart.neckWidth when combined with block.proportionalHeight and curve.enabled', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
@@ -612,14 +612,14 @@ describe('D3Funnel', () => {
                     chart: {
                         width: 320,
                         height: 400,
-                        bottomWidth: 3 / 8,
-                        bottomPinch: 1,
+                        neckWidth: 3 / 8,
+                        pinchedBlocks: 1,
                         curve: {
                             enabled: true,
                         },
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                     },
                 });
 
@@ -637,7 +637,7 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         width: 200,
-                        bottomWidth: 1 / 2,
+                        neckWidth: 1 / 2,
                     },
                 });
 
@@ -654,7 +654,7 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         width: 200,
-                        bottomWidth: 1 / 2,
+                        neckWidth: 1 / 2,
                         inverted: true,
                     },
                 });
@@ -702,8 +702,8 @@ describe('D3Funnel', () => {
                     chart: {
                         width: 200,
                         height: 200,
-                        bottomWidth: 1 / 4,
-                        curve: { enabled: true, height: 20 },
+                        neckWidth: 1 / 4,
+                        curve: { enabled: true, depth: 20 },
                     },
                     block,
                 });
@@ -716,8 +716,8 @@ describe('D3Funnel', () => {
             it('should curve each edge in proportion to its width', () => {
                 const [, first, second] = drawCurved();
 
-                // A full-width edge dips a quarter of the curve height, so its
-                // control point is offset by half of the curve height
+                // A full-width edge dips a quarter of the curve depth, so its
+                // control point is offset by half of the curve depth
                 assert.closeTo(10, first[1].y - first[0].y, 0.0001);
 
                 // The 50px bottom edge is a quarter of the width
@@ -762,14 +762,14 @@ describe('D3Funnel', () => {
                 assert.closeTo(200, (second[3].y + second[5].y) / 2, 0.0001);
             });
 
-            it('should maintain chart.bottomWidth when combined with block.dynamicHeight', () => {
-                const [, , second] = drawCurved({ dynamicHeight: true });
+            it('should maintain chart.neckWidth when combined with block.proportionalHeight', () => {
+                const [, , second] = drawCurved({ proportionalHeight: true });
 
                 assert.closeTo(50, second[3].x - second[6].x, 0.0001);
             });
         });
 
-        describe('block.dynamicHeight', () => {
+        describe('block.proportionalHeight', () => {
             it('should use equal heights when false', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
@@ -795,7 +795,7 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                     },
                 });
 
@@ -805,7 +805,7 @@ describe('D3Funnel', () => {
                 assert.equal(200, parseInt(getPathHeight(select(paths[1])), 10));
             });
 
-            it('should not have NaN in the last path when bottomWidth is equal to 0%', () => {
+            it('should not have NaN in the last path when neckWidth is equal to 0%', () => {
                 // A very specific cooked-up example that could trigger NaN
                 getFunnel().draw([
                     { label: 'A', value: 120 },
@@ -815,10 +815,10 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         height: 300,
-                        bottomWidth: 0,
+                        neckWidth: 0,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                     },
                 });
 
@@ -827,17 +827,17 @@ describe('D3Funnel', () => {
                 assert.equal(-1, select(paths[3]).attr('d').indexOf('NaN'));
             });
 
-            it('should not error when bottomWidth is equal to 100%', () => {
+            it('should not error when neckWidth is equal to 100%', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
                 ], {
                     chart: {
                         height: 300,
-                        bottomWidth: 1,
+                        neckWidth: 1,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                     },
                 });
             });
@@ -848,7 +848,7 @@ describe('D3Funnel', () => {
                         height: 0,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                     },
                 });
 
@@ -868,7 +868,7 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                     },
                 });
 
@@ -879,7 +879,7 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('block.dynamicSlope', () => {
+        describe('block.proportionalWidth', () => {
             it('should give each block top width relative to its value', () => {
                 getFunnel().draw([
                     { label: 'A', value: 100 },
@@ -891,7 +891,7 @@ describe('D3Funnel', () => {
                         width: 100,
                     },
                     block: {
-                        dynamicSlope: true,
+                        proportionalWidth: true,
                     },
                 });
 
@@ -914,7 +914,7 @@ describe('D3Funnel', () => {
                         width: 100,
                     },
                     block: {
-                        dynamicSlope: true,
+                        proportionalWidth: true,
                     },
                 });
 
@@ -924,14 +924,14 @@ describe('D3Funnel', () => {
                 assert.equal(parseFloat(getPathBottomWidth(select(paths[3]))), 74);
             });
 
-            it('should use bottomWidth value when false', () => {
+            it('should use neckWidth value when false', () => {
                 getFunnel().draw([
                     { label: 'A', value: 100 },
                     { label: 'B', value: 90 },
                 ], {
                     chart: {
                         width: 100,
-                        bottomWidth: 0.4,
+                        neckWidth: 0.4,
                     },
                 });
 
@@ -974,13 +974,13 @@ describe('D3Funnel', () => {
                 assert.equal('foreground', overlay.getAttribute('data-path-type'));
             });
 
-            it('should draw value overlay with overridden total count', () => {
+            it('should draw value overlay with overridden total value', () => {
                 getFunnel().draw([
                     { label: 'A', value: 10 },
                     { label: 'B', value: 20 },
                 ], {
                     chart: {
-                        totalCount: 100,
+                        totalValue: 100,
                     },
                     block: {
                         barOverlay: {
@@ -1033,7 +1033,7 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         width: 300,
-                        totalCount: 10,
+                        totalValue: 10,
                     },
                     block: {
                         barOverlay: {
@@ -1052,7 +1052,7 @@ describe('D3Funnel', () => {
 
             it('should lighten the block behind its overlay by `block.barOverlay.shade`', () => {
                 getFunnel().draw([
-                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                    { label: 'A', value: 1, fillColor: '#808080' },
                 ], {
                     block: {
                         barOverlay: {
@@ -1067,7 +1067,7 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('block.fill.scale', () => {
+        describe('block.fill.colors', () => {
             it('should use a function\'s return value', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
@@ -1075,7 +1075,7 @@ describe('D3Funnel', () => {
                 ], {
                     block: {
                         fill: {
-                            scale: (index) => {
+                            colors: (index) => {
                                 if (index === 0) {
                                     return '#111';
                                 }
@@ -1099,7 +1099,7 @@ describe('D3Funnel', () => {
                 ], {
                     block: {
                         fill: {
-                            scale: ['#111', '#222'],
+                            colors: ['#111', '#222'],
                         },
                     },
                 });
@@ -1134,7 +1134,7 @@ describe('D3Funnel', () => {
 
             it('should shade the edges of gradients by `block.fill.gradientShade`', () => {
                 getFunnel().draw([
-                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                    { label: 'A', value: 1, fillColor: '#808080' },
                 ], {
                     block: {
                         fill: {
@@ -1171,7 +1171,7 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                         minHeight: 10,
                     },
                 });
@@ -1191,7 +1191,7 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        dynamicHeight: true,
+                        proportionalHeight: true,
                         minHeight: 10,
                     },
                 });
@@ -1208,7 +1208,7 @@ describe('D3Funnel', () => {
                     { label: 'A', value: 1 },
                     { label: 'B', value: 1 },
                 ], {
-                    chart: { width: 200, height: 200, bottomWidth: 1 / 2 },
+                    chart: { width: 200, height: 200, neckWidth: 1 / 2 },
                     ...options,
                 });
 
@@ -1273,7 +1273,7 @@ describe('D3Funnel', () => {
                 const event = new MouseEvent('mouseover');
 
                 getFunnel().draw([
-                    { label: 'A', value: 1, backgroundColor: '#fff' },
+                    { label: 'A', value: 1, fillColor: '#fff' },
                 ], {
                     block: {
                         highlight: {
@@ -1290,7 +1290,7 @@ describe('D3Funnel', () => {
 
             it('should shade and restore both paths of a block with an overlay', () => {
                 getFunnel().draw([
-                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                    { label: 'A', value: 1, fillColor: '#808080' },
                 ], {
                     block: {
                         barOverlay: {
@@ -1319,7 +1319,7 @@ describe('D3Funnel', () => {
 
             it('should shade highlighted paths by the configured amounts', () => {
                 getFunnel().draw([
-                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                    { label: 'A', value: 1, fillColor: '#808080' },
                 ], {
                     block: {
                         barOverlay: {
@@ -1419,11 +1419,11 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('label.fill', () => {
+        describe('label.color', () => {
             it('should set the label\'s fill color to the specified color', () => {
                 getFunnel().draw(getBasicData(), {
                     label: {
-                        fill: '#777',
+                        color: '#777',
                     },
                 });
 
@@ -1559,7 +1559,7 @@ describe('D3Funnel', () => {
 
             function drawLabel(label, options = {}) {
                 getFunnel().draw([{ label, value: 1 }], {
-                    chart: { width: 200, height: 100, bottomWidth: 1 / 2 },
+                    chart: { width: 200, height: 100, neckWidth: 1 / 2 },
                     ...options,
                     label: { format: '{l}', ...options.label },
                 });
@@ -1718,7 +1718,7 @@ describe('D3Funnel', () => {
         describe('tooltip.style', () => {
             function showTooltip(style = {}) {
                 getFunnel().draw([
-                    { label: 'A', value: 1, backgroundColor: '#808080' },
+                    { label: 'A', value: 1, fillColor: '#808080' },
                 ], {
                     tooltip: {
                         enabled: true,
@@ -1881,7 +1881,7 @@ describe('D3Funnel', () => {
                     const proxy = sinon.fake();
 
                     getFunnel().draw([
-                        { label: 'A', value: 1, backgroundColor: '#fff' },
+                        { label: 'A', value: 1, fillColor: '#fff' },
                     ], {
                         block: {
                             highlight: {

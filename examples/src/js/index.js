@@ -12,7 +12,7 @@ const settings = {
     },
     pinched: {
         chart: {
-            bottomPinch: 1,
+            pinchedBlocks: 1,
         },
     },
     gradient: {
@@ -22,15 +22,15 @@ const settings = {
             },
         },
     },
-    dynamicHeight: {
+    proportionalHeight: {
         block: {
-            dynamicHeight: true,
+            proportionalHeight: true,
         },
     },
     gap: {
         chart: {
             curve: {
-                height: 60,
+                depth: 60,
             },
         },
         block: {
@@ -51,7 +51,9 @@ const settings = {
     },
     animation: {
         chart: {
-            animate: 200,
+            animation: {
+                duration: 200,
+            },
         },
     },
     hover: {
@@ -101,15 +103,15 @@ function onChange() {
             { label: 'Hired', value: 1500 },
         ] :
         [
-            { label: 'Teal', value: 12000, backgroundColor: '#008080' },
-            { label: 'Byzantium', value: 4000, backgroundColor: '#702963' },
-            { label: 'Persimmon', value: 2500, backgroundColor: '#ff634d' },
-            { label: 'Azure', value: 1500, backgroundColor: '#007fff' },
+            { label: 'Teal', value: 12000, fillColor: '#008080' },
+            { label: 'Byzantium', value: 4000, fillColor: '#702963' },
+            { label: 'Persimmon', value: 2500, fillColor: '#ff634d' },
+            { label: 'Azure', value: 1500, fillColor: '#007fff' },
         ];
 
     let options = {
         chart: {
-            bottomWidth: 3 / 8,
+            neckWidth: 3 / 8,
         },
         block: {
             minHeight: 25,
@@ -127,7 +129,7 @@ function onChange() {
 
     // Reverse data for inversion
     if (options.chart.inverted) {
-        options.chart.bottomWidth = 1 / 3;
+        options.chart.neckWidth = 1 / 3;
         data = data.reverse();
     }
 

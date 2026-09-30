@@ -17,26 +17,28 @@ class D3Funnel {
         chart: {
             width: 350,
             height: 400,
-            bottomWidth: 1 / 3,
-            bottomPinch: 0,
+            neckWidth: 1 / 3,
+            pinchedBlocks: 0,
             inverted: false,
-            animate: 0,
+            animation: {
+                duration: 0,
+            },
             curve: {
                 enabled: false,
-                height: 20,
+                depth: 20,
                 shade: -0.4,
             },
-            totalCount: null,
+            totalValue: null,
         },
         block: {
-            dynamicHeight: false,
-            dynamicSlope: false,
+            proportionalHeight: false,
+            proportionalWidth: false,
             barOverlay: {
                 enabled: false,
                 shade: 0.3,
             },
             fill: {
-                scale: scaleOrdinal(schemeCategory10).domain(range(0, 10)),
+                colors: scaleOrdinal(schemeCategory10).domain(range(0, 10)),
                 type: 'solid',
                 gradientShade: -0.2,
             },
@@ -53,7 +55,7 @@ class D3Funnel {
             fontFamily: null,
             fontSize: '14px',
             lineHeight: 1.4,
-            fill: '#fff',
+            color: '#fff',
             format: '{l}: {f}',
             verticalAlign: 'middle',
             overflow: 'visible',
@@ -156,14 +158,14 @@ class D3Funnel {
 
         this.width = width;
         this.height = height;
-        this.bottomWidth = width * this.options.chart.bottomWidth;
+        this.neckWidth = width * this.options.chart.neckWidth;
 
         this.id = `d3-funnel-${nanoid()}`;
 
         // Set color scales
         this.colorizer.setInstanceId(this.id);
-        this.colorizer.setLabelFill(this.options.label.fill);
-        this.colorizer.setScale(this.options.block.fill.scale);
+        this.colorizer.setLabelColor(this.options.label.color);
+        this.colorizer.setColors(this.options.block.fill.colors);
 
         this.blocks = this.standardizeData(data);
     }
@@ -272,17 +274,17 @@ class D3Funnel {
     }
 
     /**
-     * Return the total count of all blocks.
+     * Return the total value of all blocks.
      *
      * @param {Array} blocks
      *
      * @return {Number}
      */
-    getTotalCount(blocks) {
-        const { totalCount } = this.options.chart;
+    getTotalValue(blocks) {
+        const { totalValue } = this.options.chart;
 
-        if (totalCount !== null) {
-            return totalCount || 0;
+        if (totalValue !== null) {
+            return totalValue || 0;
         }
 
         return blocks.reduce((total, block) => total + block.value, 0);
@@ -298,10 +300,10 @@ class D3Funnel {
      */
     standardizeData(data) {
         const { label, tooltip } = this.options;
-        const totalCount = this.getTotalCount(data);
+        const totalValue = this.getTotalValue(data);
 
         return data.map((block, index) => {
-            const ratio = totalCount > 0 ? (block.value / totalCount || 0) : 1 / data.length;
+            const ratio = totalValue > 0 ? (block.value / totalValue || 0) : 1 / data.length;
 
             return {
                 index,
@@ -309,7 +311,7 @@ class D3Funnel {
                 ratio,
                 value: block.value,
                 fill: this.colorizer.getBlockFill(
-                    block.backgroundColor,
+                    block.fillColor,
                     index,
                     this.options.block.fill.type,
                 ),
@@ -364,7 +366,7 @@ class D3Funnel {
 
         // Add each block; animated blocks draw each other in turn, once the
         // block before them finishes
-        if (chart.animate !== 0) {
+        if (chart.animation.duration !== 0) {
             this.drawBlock(0);
         } else {
             this.blocks.forEach((data, index) => this.drawBlock(index));
@@ -378,28 +380,28 @@ class D3Funnel {
      * @return {Array, Array}
      */
     makePaths() {
-        const { inverted, bottomPinch, curve } = this.options.chart;
+        const { inverted, pinchedBlocks, curve } = this.options.chart;
         const {
             minHeight,
-            dynamicHeight,
-            dynamicSlope,
+            proportionalHeight,
+            proportionalWidth,
             gap,
             barOverlay,
         } = this.options.block;
 
         // Calculate the important fixed positions
-        const bottomLeftX = (this.width - this.bottomWidth) / 2;
+        const neckLeftX = (this.width - this.neckWidth) / 2;
         const centerX = this.width / 2;
 
         const paths = [];
         const overlayPaths = [];
 
         // The change in x, y direction of each block, unless adjusted below
-        const initialDx = this.getDx(bottomLeftX);
+        const initialDx = this.getDx(neckLeftX);
         const initialDy = this.getDy();
 
         // Start from the bottom for inverted
-        let prevLeftX = inverted ? bottomLeftX : 0;
+        let prevLeftX = inverted ? neckLeftX : 0;
         let prevRightX = this.width - prevLeftX;
 
         // Move down to make room for the back of the top oval
@@ -416,7 +418,7 @@ class D3Funnel {
             this.height - this.getCurveDepth(this.getBottomEdgeWidth()) :
             this.height;
 
-        // Get the dynamic height of a block
+        // Get the proportional height of a block
         const getBlockHeight = (block) => {
             // Slice off the height proportional to this block and add the
             // greedy minimum height
@@ -433,8 +435,8 @@ class D3Funnel {
         // Pinched blocks sit at the narrow end of the funnel and keep its width
         const isPinched = (i) => (
             inverted ?
-                i < bottomPinch :
-                i >= this.blocks.length - bottomPinch
+                i < pinchedBlocks :
+                i >= this.blocks.length - pinchedBlocks
         );
 
         // Correct slope height if there are blocks being pinched (and thus
@@ -449,9 +451,9 @@ class D3Funnel {
 
         // The slope will determine the x points on each block iteration
         // Given: slope = (y1 - y2) / (x1 - x2)
-        // (x1, y1) = (bottomLeftX, the start of any pinch)
+        // (x1, y1) = (neckLeftX, the start of any pinch)
         // (x2, y2) = (0, the far edge of the funnel)
-        const slope = (bottomY - topY - pinchHeight) / bottomLeftX;
+        const slope = (bottomY - topY - pinchHeight) / neckLeftX;
 
         // Create the path definition for each funnel block
         // Remember to loop back to the beginning point for a closed path
@@ -460,7 +462,7 @@ class D3Funnel {
             let dy = initialDy;
 
             // Make heights proportional to block weight
-            if (dynamicHeight) {
+            if (proportionalHeight) {
                 dy = getBlockHeight(block);
 
                 // Given: y = mx + b
@@ -473,9 +475,9 @@ class D3Funnel {
                     targetLeftX = ((prevHeight + dy) - bottomY) / (-1 * slope);
                 }
 
-                // If bottomWidth is 0, adjust last x position (to circumvent
+                // If neckWidth is 0, adjust last x position (to circumvent
                 // errors associated with rounding)
-                if (this.bottomWidth === 0 && i === this.blocks.length - 1) {
+                if (this.neckWidth === 0 && i === this.blocks.length - 1) {
                     // For funnel, last position is the center
                     targetLeftX = this.width / 2;
 
@@ -485,8 +487,8 @@ class D3Funnel {
                     }
                 }
 
-                // If bottomWidth is same as width, stop x velocity
-                if (this.bottomWidth === this.width) {
+                // If neckWidth is same as width, stop x velocity
+                if (this.neckWidth === this.width) {
                     targetLeftX = prevLeftX;
                 }
 
@@ -504,7 +506,7 @@ class D3Funnel {
             }
 
             // Make slope width proportional to change in block value
-            if (dynamicSlope && !inverted) {
+            if (proportionalWidth && !inverted) {
                 const nextBlockValue = this.blocks[i + 1] ?
                     this.blocks[i + 1].value :
                     block.value;
@@ -615,13 +617,13 @@ class D3Funnel {
     }
 
     /**
-     * @param {Number} bottomLeftX
+     * @param {Number} neckLeftX
      *
      * @return {Number}
      */
-    getDx(bottomLeftX) {
+    getDx(neckLeftX) {
         // Only unpinched blocks narrow, so a pinch makes them sharper
-        return bottomLeftX / (this.blocks.length - this.options.chart.bottomPinch);
+        return neckLeftX / (this.blocks.length - this.options.chart.pinchedBlocks);
     }
 
     /**
@@ -642,28 +644,28 @@ class D3Funnel {
      *
      * Each edge is drawn as part of an ellipse viewed from a fixed angle, so
      * its depth is proportional to its width. An edge spanning the full width
-     * of the chart has a depth of a quarter of the curve height.
+     * of the chart has a depth of a quarter of `curve.depth`.
      *
      * @param {Number} width
      *
      * @return {Number}
      */
     getCurveDepth(width) {
-        return (this.options.chart.curve.height / 4) * (Math.max(width, 0) / this.width);
+        return (this.options.chart.curve.depth / 4) * (Math.max(width, 0) / this.width);
     }
 
     /**
      * @return {Number}
      */
     getTopEdgeWidth() {
-        return this.options.chart.inverted ? this.bottomWidth : this.width;
+        return this.options.chart.inverted ? this.neckWidth : this.width;
     }
 
     /**
      * @return {Number}
      */
     getBottomEdgeWidth() {
-        return this.options.chart.inverted ? this.width : this.bottomWidth;
+        return this.options.chart.inverted ? this.width : this.neckWidth;
     }
 
     /**
@@ -804,7 +806,7 @@ class D3Funnel {
             .attr('fill', pathColor)
             .attr('d', this.getPathDefinition(index, false));
 
-        if (chart.animate !== 0 && index < this.blocks.length - 1) {
+        if (chart.animation.duration !== 0 && index < this.blocks.length - 1) {
             pathDrawing.on('end', () => {
                 this.drawBlock(index + 1);
             });
@@ -856,14 +858,14 @@ class D3Funnel {
      * @return {Object}
      */
     animate(selection) {
-        const { animate } = this.options.chart;
+        const { duration } = this.options.chart.animation;
 
-        if (animate === 0) {
+        if (duration === 0) {
             return selection;
         }
 
         return selection.transition()
-            .duration(animate)
+            .duration(duration)
             .ease(easeLinear);
     }
 
@@ -879,7 +881,7 @@ class D3Funnel {
     appendPath(group, index, isOverlay) {
         const path = group.append('path');
 
-        if (this.options.chart.animate !== 0) {
+        if (this.options.chart.animation.duration !== 0) {
             this.addBeforeTransition(path, index, isOverlay);
         }
 

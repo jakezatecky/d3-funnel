@@ -7,14 +7,49 @@
 * Remove the `D3Funnel.LABEL_LINE_HEIGHT` static property in favor of the `label.lineHeight` option
 * Remove the `D3Funnel.LABEL_PADDING` static property in favor of the `label.padding` option
 * Rename the `pathType` attribute on overlay paths to `data-path-type`
-* Replace the `block.barOverlay` boolean with an object; use `block.barOverlay.enabled` instead
-* Replace the `block.highlight` boolean with an object; use `block.highlight.enabled` instead
+* Rename and restructure several options to better reflect what they do and reduce ambiguity; see [Migrating to v3](#migrating-to-v3)
 * Remove support for the legacy array-of-arrays data structure, deprecated since v1.1.0; data entries must now be objects (e.g., `{ label: 'Applicants', value: 12000 }`)
 
 #### Runtime
 
 * Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
 * The tooltip element now remains in the container, hidden with `display: none`, after the mouse leaves a block instead of being removed.
+
+### Migrating to v3
+
+Several options, data options, and types were renamed or restructured to better reflect what they do and reduce ambiguity. Their behavior is unchanged.
+
+#### Chart Options
+
+| v2                    | v3                         |
+| --------------------- | -------------------------- |
+| `block.barOverlay`    | `block.barOverlay.enabled` |
+| `block.dynamicHeight` | `block.proportionalHeight` |
+| `block.dynamicSlope`  | `block.proportionalWidth`  |
+| `block.fill.scale`    | `block.fill.colors`        |
+| `block.highlight:`    | `block.highlight.enabled`  |
+| `chart.animate`       | `chart.animation.duration` |
+| `chart.bottomPinch`   | `chart.pinchedBlocks`      |
+| `chart.bottomWidth`   | `chart.neckWidth`          |
+| `chart.curve.height`  | `chart.curve.depth`        |
+| `chart.totalCount`    | `chart.totalValue`         |
+| `label.fill`          | `label.color`              |
+
+#### Data Options
+
+These changes affect the entries of the data array passed to `draw()`, which event handlers also receive as `data`.
+
+| v2                | v3          |
+| ----------------- | ----------- |
+| `backgroundColor` | `fillColor` |
+
+#### Types
+
+These changes affect the TypeScript types.
+
+| v2                 | v3             |
+| ------------------ | -------------- |
+| `FunnelColorScale` | `FunnelColors` |
 
 ### Added
 

@@ -43,7 +43,7 @@ parent container:
     ];
     const options = {
         block: {
-            dynamicHeight: true,
+            proportionalHeight: true,
             minHeight: 15,
         },
     };
@@ -59,19 +59,19 @@ parent container:
 | ------------------------------ | ------------------------------------------------------------------------ | -------- | --------------------- |
 | `chart.width`                  | The width of the chart in pixels or a percentage.                        | mixed    | Container's width     |
 | `chart.height`                 | The height of the chart in pixels or a percentage.                       | mixed    | Container's height    |
-| `chart.bottomWidth`            | The percent of total width the bottom should be.                         | number   | `1 / 3`               |
-| `chart.bottomPinch`            | How many blocks to pinch on the bottom to create a funnel "neck".        | number   | `0`                   |
+| `chart.neckWidth`              | The width of the narrow end (top when inverted) as a fraction of width.  | number   | `1 / 3`               |
+| `chart.pinchedBlocks`          | How many blocks at the neck keep its width.                              | number   | `0`                   |
 | `chart.inverted`               | Whether the funnel direction is inverted (like a pyramid).               | bool     | `false`               |
-| `chart.animate`                | The load animation speed in milliseconds.                                | number   | `0` (disabled)        |
+| `chart.animation.duration`     | The duration of each block's load animation in milliseconds.             | number   | `0` (disabled)        |
 | `chart.curve.enabled`          | Whether the funnel is curved.                                            | bool     | `false`               |
-| `chart.curve.height`           | The curvature amount. Narrower edges curve proportionally less.          | number   | `20`                  |
+| `chart.curve.depth`            | The curvature amount. Narrower edges curve proportionally less.          | number   | `20`                  |
 | `chart.curve.shade`            | The shade adjustment of the top oval, from `-1` to `1`.                  | number   | `-0.4`                |
-| `chart.totalCount`             | Override the total count used in ratio calculations.                     | number   | `null`                |
-| `block.dynamicHeight`          | Whether the block heights are proportional to their weight.              | bool     | `false`               |
-| `block.dynamicSlope`           | Whether the block widths are proportional to their value decrease.       | bool     | `false`               |
+| `chart.totalValue`             | Override the total value used in ratio calculations.                     | number   | `null`                |
+| `block.proportionalHeight`     | Whether the block heights are proportional to their value.               | bool     | `false`               |
+| `block.proportionalWidth`      | Whether the block widths narrow in proportion to their value decrease.   | bool     | `false`               |
 | `block.barOverlay.enabled`     | Whether the blocks have bar chart overlays proportional to its weight.   | bool     | `false`               |
 | `block.barOverlay.shade`       | The shade adjustment of the block behind its overlay, from `-1` to `1`.  | number   | `0.3`                 |
-| `block.fill.scale`             | The background color scale as an array or function.                      | mixed    | `d3.schemeCategory10` |
+| `block.fill.colors`            | The block colors as an array or a function of the block index.           | mixed    | `d3.schemeCategory10` |
 | `block.fill.type`              | Either `'solid'` or `'gradient'`.                                        | string   | `'solid'`             |
 | `block.fill.gradientShade`     | The shade adjustment of the edges of gradient fills, from `-1` to `1`.   | number   | `-0.2`                |
 | `block.minHeight`              | The minimum pixel height of a block.                                     | number   | `0`                   |
@@ -83,7 +83,7 @@ parent container:
 | `label.fontFamily`             | Any valid font family for the labels.                                    | string   | `null`                |
 | `label.fontSize`               | Any valid font size for the labels.                                      | string   | `'14px'`              |
 | `label.lineHeight`             | The height of each line of a label, as a multiple of its font size.      | number   | `1.4`                 |
-| `label.fill`                   | Any valid hex color for the label color.                                 | string   | `'#fff'`              |
+| `label.color`                  | Any valid hex color for the labels.                                      | string   | `'#fff'`              |
 | `label.format`                 | Either `function(label, value)` or a format string. See below.           | mixed    | `'{l}: {f}'`          |
 | `label.verticalAlign`          | Where to place labels within their blocks: `top`, `middle`, or `bottom`. | string   | `'middle'`            |
 | `label.overflow`               | Either `'visible'` or `'ellipsis'` to truncate labels wider than blocks. | string   | `'visible'`           |
@@ -101,14 +101,14 @@ parent container:
 When a curved funnel has a `block.gap`, each block shows its own top oval, with
 the block above floating over it. The blocks will look most three-dimensional
 when the curve is pronounced relative to the gap. For example, pair a larger
-`chart.curve.height` with a small `block.gap`:
+`chart.curve.depth` with a small `block.gap`:
 
 ``` javascript
 chart.draw(data, {
     chart: {
         curve: {
             enabled: true,
-            height: 40,
+            depth: 40,
         },
     },
     block: {
@@ -233,7 +233,7 @@ for every funnel to have proportional heights. To do this, simply modify the
 `D3Funnel.defaults` property:
 
 ``` javascript
-D3Funnel.defaults.block.dynamicHeight = true;
+D3Funnel.defaults.block.proportionalHeight = true;
 ```
 
 Should you wish to override multiple properties at a time, you may consider
@@ -242,7 +242,7 @@ using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`
 ``` javascript
 D3Funnel.defaults = _.merge(D3Funnel.defaults, {
     block: {
-        dynamicHeight: true,
+        proportionalHeight: true,
         fill: {
             type: 'gradient',
         },
@@ -262,10 +262,10 @@ within the funnel. Below is a complete list of all block-level options:
 | --------------- | ------ | --------------------------------------------------------------- | ------------- |
 | label           | mixed  | **Required.** The label to associate with the block.            | `'Students'`  |
 | value           | number | **Required.** The value (or count) to associate with the block. | `500`         |
-| backgroundColor | string | A row-level override for `block.fill.scale`. Hex only.          | `'#702963'`   |
+| fillColor       | string | A row-level override for `block.fill.colors`. Hex only.         | `'#702963'`   |
 | formattedValue  | mixed  | A row-level override for `label.format`.                        | `'USD: $150'` |
 | hideLabel       | bool   | Whether to hide the formatted label for this block.             | `true`        |
-| labelColor      | string | A row-level override for `label.fill`. Hex only.                | `'#333'`      |
+| labelColor      | string | A row-level override for `label.color`. Hex only.               | `'#333'`      |
 | labelFontSize   | string | A row-level override for `label.fontSize`.                      | `'18px'`      |
 | labelFontFamily | string | A row-level override for `label.fontFamily`.                    | `'Georgia'`   |
 
