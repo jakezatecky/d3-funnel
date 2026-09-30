@@ -18,23 +18,23 @@
 
 ### Migrating to v3
 
-Several options, data options, and types were renamed or restructured to better reflect what they do and reduce ambiguity. Their behavior is unchanged.
+Several options, data options, and types were renamed or restructured to better reflect what they do and reduce ambiguity. Unless a remark says otherwise, their behavior is unchanged.
 
 #### Chart Options
 
-| v2                    | v3                         |
-| --------------------- | -------------------------- |
-| `block.barOverlay`    | `block.barOverlay.enabled` |
-| `block.dynamicHeight` | `block.proportionalHeight` |
-| `block.dynamicSlope`  | `block.proportionalWidth`  |
-| `block.fill.scale`    | `block.fill.colors`        |
-| `block.highlight`     | `block.highlight.enabled`  |
-| `chart.animate`       | `chart.animation.duration` |
-| `chart.bottomPinch`   | `chart.pinchedBlocks`      |
-| `chart.bottomWidth`   | `chart.neckWidth`          |
-| `chart.curve.height`  | `chart.curve.depth`        |
-| `chart.totalCount`    | `chart.totalValue`         |
-| `label.fill`          | `label.color`              |
+| v2                    | v3                         | Remarks                                                                                        |
+| --------------------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
+| `block.barOverlay`    | `block.barOverlay.enabled` |                                                                                                |
+| `block.dynamicHeight` | `block.proportionalHeight` |                                                                                                |
+| `block.dynamicSlope`  | `block.proportionalWidth`  |                                                                                                |
+| `block.fill.scale`    | `block.fill.colors`        |                                                                                                |
+| `block.highlight`     | `block.highlight.enabled`  |                                                                                                |
+| `chart.animate`       | `chart.animation.duration` |                                                                                                |
+| `chart.bottomPinch`   | `chart.pinchedBlocks`      |                                                                                                |
+| `chart.bottomWidth`   | `chart.neckWidth`          |                                                                                                |
+| `chart.curve.height`  | `chart.curve.depth`        | Divide by 4. The value is now the pixel depth of a full-width edge's curve (default: 20 → 5).  |
+| `chart.totalCount`    | `chart.totalValue`         |                                                                                                |
+| `label.fill`          | `label.color`              |                                                                                                |
 
 #### Data Options
 

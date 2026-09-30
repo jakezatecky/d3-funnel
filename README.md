@@ -64,7 +64,7 @@ parent container:
 | `chart.inverted`               | Whether the funnel direction is inverted (like a pyramid).               | bool     | `false`               |
 | `chart.animation.duration`     | The duration of each block's load animation in milliseconds.             | number   | `0` (disabled)        |
 | `chart.curve.enabled`          | Whether the funnel is curved.                                            | bool     | `false`               |
-| `chart.curve.depth`            | The curvature amount. Narrower edges curve proportionally less.          | number   | `20`                  |
+| `chart.curve.depth`            | The pixel depth of a full-width edge's curve; narrower edges curve less. | number   | `5`                   |
 | `chart.curve.shade`            | The shade adjustment of the top oval, from `-1` to `1`.                  | number   | `-0.4`                |
 | `chart.totalValue`             | Override the total value used in ratio calculations.                     | number   | `null`                |
 | `block.proportionalHeight`     | Whether the block heights are proportional to their value.               | bool     | `false`               |
@@ -98,16 +98,17 @@ parent container:
 ### Curved Funnels with Gaps
 
 When a curved funnel has a `block.gap`, each block shows its own top oval, with
-the block above floating over it. The blocks will look most three-dimensional
-when the curve is pronounced relative to the gap. For example, pair a larger
-`chart.curve.depth` with a small `block.gap`:
+the block above floating over it. Both options are in pixels, so they are easy
+to compare: the blocks will look most three-dimensional when `block.gap` is
+smaller than `chart.curve.depth`. For example, pair a deeper curve with a small
+gap:
 
 ``` javascript
 chart.draw(data, {
     chart: {
         curve: {
             enabled: true,
-            depth: 40,
+            depth: 15,
         },
     },
     block: {
@@ -116,8 +117,9 @@ chart.draw(data, {
 });
 ```
 
-A small curve with a large gap will instead leave a wide band of empty space
-between the blocks.
+A shallow curve with a large gap will instead leave a wide band of empty space
+between the blocks. Remember that narrower edges curve less, so the lower
+blocks of a funnel have shallower ovals than the top block.
 
 ### Tooltip Styles
 

@@ -120,7 +120,7 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         curve: {
             /** Whether the funnel is curved. */
             enabled: boolean;
-            /** The curvature amount. Narrower edges curve proportionally less. */
+            /** The pixel depth of a full-width edge's curve. Narrower edges curve proportionally less. */
             depth: number;
             /** The shade adjustment of the top oval, from `-1` to `1`. */
             shade: number;

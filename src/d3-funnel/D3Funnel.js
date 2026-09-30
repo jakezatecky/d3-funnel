@@ -25,7 +25,7 @@ class D3Funnel {
             },
             curve: {
                 enabled: false,
-                depth: 20,
+                depth: 5,
                 shade: -0.4,
             },
             totalValue: null,
@@ -643,14 +643,14 @@ class D3Funnel {
      *
      * Each edge is drawn as part of an ellipse viewed from a fixed angle, so
      * its depth is proportional to its width. An edge spanning the full width
-     * of the chart has a depth of a quarter of `curve.depth`.
+     * of the chart has a depth of exactly `curve.depth`.
      *
      * @param {Number} width
      *
      * @return {Number}
      */
     getCurveDepth(width) {
-        return (this.options.chart.curve.depth / 4) * (Math.max(width, 0) / this.width);
+        return this.options.chart.curve.depth * (Math.max(width, 0) / this.width);
     }
 
     /**

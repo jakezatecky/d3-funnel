@@ -30,7 +30,7 @@ const settings = {
     gap: {
         chart: {
             curve: {
-                depth: 60,
+                depth: 15,
             },
         },
         block: {

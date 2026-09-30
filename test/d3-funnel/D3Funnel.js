@@ -703,7 +703,7 @@ describe('D3Funnel', () => {
                         width: 200,
                         height: 200,
                         neckWidth: 1 / 4,
-                        curve: { enabled: true, depth: 20 },
+                        curve: { enabled: true, depth: 5 },
                     },
                     block,
                 });
@@ -716,8 +716,8 @@ describe('D3Funnel', () => {
             it('should curve each edge in proportion to its width', () => {
                 const [, first, second] = drawCurved();
 
-                // A full-width edge dips a quarter of the curve depth, so its
-                // control point is offset by half of the curve depth
+                // A full-width edge dips by the curve depth, so its control
+                // point is offset by twice the curve depth
                 assert.closeTo(10, first[1].y - first[0].y, 0.0001);
 
                 // The 50px bottom edge is a quarter of the width
