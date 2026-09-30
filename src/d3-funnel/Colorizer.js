@@ -151,15 +151,12 @@ class Colorizer {
             hex = this.expandHex(hex);
         }
 
-        const f = parseInt(hex, 16);
-
-        /* eslint-disable no-bitwise */
-        const R = f >> 16;
-        const G = (f >> 8) & 0x00FF;
-        const B = f & 0x0000FF;
-        /* eslint-enable */
-
-        return { R, G, B };
+        // Each channel is a pair of hex digits: #RRGGBB
+        return {
+            R: parseInt(hex.slice(0, 2), 16),
+            G: parseInt(hex.slice(2, 4), 16),
+            B: parseInt(hex.slice(4, 6), 16),
+        };
     }
 
     /**

@@ -31,7 +31,7 @@ describe('Colorizer', () => {
         });
     });
 
-    describe('hexToRg', () => {
+    describe('hexToRgb', () => {
         it('should convert a hex value to its RGB value', () => {
             const color = '#007fff';
 
