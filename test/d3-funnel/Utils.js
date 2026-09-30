@@ -47,5 +47,38 @@ describe('Utils', () => {
 
             assert.deepEqual(merged, Utils.extend(a, b));
         });
+
+        it('should merge nested objects', () => {
+            const a = {
+                label: { fill: '#fff', fontSize: '14px' },
+            };
+
+            const b = {
+                label: { fontSize: '18px' },
+            };
+
+            assert.deepEqual({ label: { fill: '#fff', fontSize: '18px' } }, Utils.extend(a, b));
+        });
+
+        it('should copy nested objects rather than share them', () => {
+            const a = {
+                label: { fill: '#fff' },
+            };
+            const b = {
+                tooltip: { enabled: true },
+            };
+
+            const merged = Utils.extend(a, b);
+
+            merged.label.fill = '#000';
+            merged.tooltip.enabled = false;
+
+            assert.equal('#fff', a.label.fill);
+            assert.isTrue(b.tooltip.enabled);
+        });
+
+        it('should handle empty objects', () => {
+            assert.deepEqual({}, Utils.extend({}, {}));
+        });
     });
 });

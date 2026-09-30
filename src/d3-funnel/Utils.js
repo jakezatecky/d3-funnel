@@ -19,24 +19,20 @@ class Utils {
      * @return {Object}
      */
     static extend(a, b) {
-        let result = {};
+        const result = {};
 
-        // If a is non-trivial, extend the result with it
-        if (Object.keys(a).length > 0) {
-            result = Utils.extend({}, a);
-        }
+        // Deep copy the properties of `a`, then those of `b` over them, so
+        // that neither object is modified
+        [a, b].forEach((source) => {
+            Object.keys(source).forEach((prop) => {
+                if (Utils.isExtendableObject(source[prop])) {
+                    const base = Utils.isExtendableObject(result[prop]) ? result[prop] : {};
 
-        // Copy over the properties in b into a
-        Object.keys(b).forEach((prop) => {
-            if (Utils.isExtendableObject(b[prop])) {
-                if (Utils.isExtendableObject(a[prop])) {
-                    result[prop] = Utils.extend(a[prop], b[prop]);
+                    result[prop] = Utils.extend(base, source[prop]);
                 } else {
-                    result[prop] = Utils.extend({}, b[prop]);
+                    result[prop] = source[prop];
                 }
-            } else {
-                result[prop] = b[prop];
-            }
+            });
         });
 
         return result;
