@@ -119,22 +119,34 @@ class Colorizer {
     /**
      * Shade a color to the given percentage.
      *
+     * A positive shade lightens the color by moving each channel that far
+     * toward white; a negative shade darkens it by moving each channel that
+     * far toward black. For example, `0.5` is halfway to white.
+     *
      * @param {string} color A hex color.
-     * @param {number} shade The shade adjustment. Can be positive or negative.
+     * @param {number} shade The shade adjustment, from `-1` to `1`.
      *
      * @return {string}
      */
     shade(color, shade) {
         const { R, G, B } = this.hexToRgb(color);
-        const t = shade < 0 ? 0 : 255;
-        const p = shade < 0 ? shade * -1 : shade;
+        const target = shade < 0 ? 0 : 255;
+        const amount = Math.abs(shade);
 
-        const converted = 0x1000000 +
-            ((Math.round((t - R) * p) + R) * 0x10000) +
-            ((Math.round((t - G) * p) + G) * 0x100) +
-            (Math.round((t - B) * p) + B);
+        /**
+         * Move the channel toward the target and write it as a pair of hex digits.
+         *
+         * @param {number} channel
+         *
+         * @return {string}
+         */
+        const shadeChannel = (channel) => {
+            const shaded = channel + Math.round((target - channel) * amount);
 
-        return `#${converted.toString(16).slice(1)}`;
+            return shaded.toString(16).padStart(2, '0');
+        };
+
+        return `#${shadeChannel(R)}${shadeChannel(G)}${shadeChannel(B)}`;
     }
 
     /**
