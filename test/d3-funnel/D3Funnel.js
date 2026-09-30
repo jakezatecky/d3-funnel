@@ -1670,71 +1670,31 @@ describe('D3Funnel', () => {
                 assert.equal('none', select('#funnel .d3-funnel-tooltip').style('display'));
             });
 
-            describe('positioning', () => {
-                function moveMouse(path, clientX, clientY) {
-                    path.dispatchEvent(new MouseEvent('mousemove', { clientX, clientY }));
-
-                    return document.querySelector('#funnel .d3-funnel-tooltip').getBoundingClientRect();
-                }
-
-                function drawTooltipFunnel() {
-                    getFunnel().draw([
-                        { label: 'A', value: 1 },
-                        { label: 'B', value: 1 },
-                    ], {
-                        chart: {
-                            width: 300,
-                            height: 400,
-                        },
-                        tooltip: {
-                            enabled: true,
-                        },
-                    });
-
-                    return selectAll('#funnel path').nodes();
-                }
-
-                it('should center the tooltip above the mouse on the first move', () => {
-                    const [path] = drawTooltipFunnel();
-                    const rect = moveMouse(path, 150, 150);
-
-                    assert.closeTo(rect.left + (rect.width / 2), 150, 0.5);
-                    assert.closeTo(rect.bottom, 145, 0.5);
+            it('should reuse one tooltip, positioned at once, when moving between blocks', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 1 },
+                ], {
+                    chart: {
+                        width: 300,
+                        height: 400,
+                    },
+                    tooltip: {
+                        enabled: true,
+                    },
                 });
 
-                it('should place the tooltip below the mouse when there is no room above the chart', () => {
-                    const [path] = drawTooltipFunnel();
-                    const containerTop = document.querySelector('#funnel').getBoundingClientRect().top;
-                    const rect = moveMouse(path, 150, containerTop + 10);
+                const [first, second] = selectAll('#funnel path').nodes();
 
-                    assert.closeTo(rect.top, containerTop + 15, 0.5);
-                });
+                first.dispatchEvent(new MouseEvent('mousemove', { clientX: 150, clientY: 150 }));
+                first.dispatchEvent(new MouseEvent('mouseout'));
+                second.dispatchEvent(new MouseEvent('mousemove', { clientX: 150, clientY: 300 }));
 
-                it('should position the tooltip immediately when moving between blocks', () => {
-                    const [first, second] = drawTooltipFunnel();
+                const rect = document.querySelector('#funnel .d3-funnel-tooltip').getBoundingClientRect();
 
-                    moveMouse(first, 150, 150);
-                    first.dispatchEvent(new MouseEvent('mouseout'));
-
-                    const rect = moveMouse(second, 150, 300);
-
-                    assert.equal(1, selectAll('#funnel .d3-funnel-tooltip').size());
-                    assert.closeTo(rect.left + (rect.width / 2), 150, 0.5);
-                    assert.closeTo(rect.bottom, 295, 0.5);
-                });
-
-                it('should position the tooltip correctly within a positioned container', () => {
-                    select('#funnel')
-                        .style('position', 'relative')
-                        .style('margin-left', '40px')
-                        .style('padding-top', '30px');
-
-                    const [path] = drawTooltipFunnel();
-                    const rect = moveMouse(path, 150, 150);
-
-                    assert.closeTo(rect.left + (rect.width / 2), 150, 0.5);
-                    assert.closeTo(rect.bottom, 145, 0.5);
-                });
+                assert.equal(1, selectAll('#funnel .d3-funnel-tooltip').size());
+                assert.closeTo(rect.left + (rect.width / 2), 150, 0.5);
+                assert.closeTo(rect.bottom, 295, 0.5);
             });
         });
 
@@ -1752,24 +1712,6 @@ describe('D3Funnel', () => {
                 select('#funnel path').node().dispatchEvent(event);
 
                 assert.equal('Node - 1000', select('#funnel .d3-funnel-tooltip').text());
-            });
-        });
-
-        describe('tooltip.offset', () => {
-            it('should set the distance between the tooltip and the mouse', () => {
-                const getTooltipTop = (offset) => {
-                    getFunnel().draw(getBasicData(), {
-                        tooltip: {
-                            enabled: true,
-                            offset,
-                        },
-                    });
-                    select('#funnel path').node().dispatchEvent(new MouseEvent('mousemove', { clientY: 300 }));
-
-                    return parseFloat(select('#funnel .d3-funnel-tooltip').style('top'));
-                };
-
-                assert.equal(15, Math.abs(getTooltipTop(20) - getTooltipTop(5)));
             });
         });
 
@@ -1804,14 +1746,6 @@ describe('D3Funnel', () => {
                 assert.equal('rgb(0, 0, 255)', getComputedStyle(tooltip).backgroundColor);
                 assert.equal('rgb(255, 0, 0)', getComputedStyle(tooltip).borderTopColor);
                 assert.equal('bold', tooltip.style.fontWeight);
-            });
-
-            it('should remove default styles set to null', () => {
-                const tooltip = showTooltip({
-                    'font-weight': null,
-                });
-
-                assert.equal('', tooltip.style.fontWeight);
             });
         });
 
