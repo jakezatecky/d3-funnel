@@ -336,7 +336,6 @@ class D3Funnel {
                 data: block,
                 ratio,
                 value: block.value,
-                height: this.settings.height * ratio,
                 fill: this.colorizer.getBlockFill(
                     block.backgroundColor,
                     index,
@@ -351,7 +350,6 @@ class D3Funnel {
                     fontFamily: block.labelFontFamily ?? this.settings.label.fontFamily,
                 },
                 tooltip: {
-                    enabled: block.enabled,
                     formatted: this.formatter.format(block, this.tooltipFormatter),
                 },
             };

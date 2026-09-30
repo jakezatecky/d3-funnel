@@ -84,7 +84,6 @@ export interface FunnelBlock<TDatum extends FunnelDatum = FunnelDatum> {
         fontFamily: string | null;
     };
     tooltip: {
-        enabled: boolean | undefined;
         /** The result of `tooltip.format`. */
         formatted: string;
     };
