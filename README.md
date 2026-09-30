@@ -78,7 +78,6 @@ parent container:
 | `block.gap`                    | The pixel space between blocks. The funnel's outline is preserved.       | number   | `0`                   |
 | `block.highlight.enabled`      | Whether the blocks are highlighted on hover.                             | bool     | `false`               |
 | `block.highlight.shade`        | The shade adjustment of a highlighted block, from `-1` to `1`.           | number   | `-0.2`                |
-| `block.highlight.overlayShade` | The shade adjustment of a highlighted overlay, from `-1` to `1`.         | number   | `-0.5`                |
 | `label.enabled`                | Whether the block labels should be displayed.                            | bool     | `true`                |
 | `label.fontFamily`             | Any valid font family for the labels.                                    | string   | `null`                |
 | `label.fontSize`               | Any valid font size for the labels.                                      | string   | `'14px'`              |

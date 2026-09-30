@@ -154,10 +154,8 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         highlight: {
             /** Whether the blocks are highlighted on hover. */
             enabled: boolean;
-            /** The shade adjustment of a highlighted block, from `-1` to `1`. */
+            /** The shade adjustment of each path of a highlighted block, from `-1` to `1`. */
             shade: number;
-            /** The shade adjustment of a highlighted overlay, from `-1` to `1`. */
-            overlayShade: number;
         };
     };
     label: {

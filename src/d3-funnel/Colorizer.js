@@ -91,18 +91,33 @@ class Colorizer {
             return raw;
         }
 
-        return `url(#${this.getGradientId(index)})`;
+        return this.getGradientFill(index);
+    }
+
+    /**
+     * Return the fill that references the gradient for the given index.
+     *
+     * @param {Number}  index
+     * @param {boolean} isHighlighted Whether to use the block's highlighted gradient.
+     *
+     * @return {string}
+     */
+    getGradientFill(index, isHighlighted = false) {
+        return `url(#${this.getGradientId(index, isHighlighted)})`;
     }
 
     /**
      * Return the gradient ID for the given index.
      *
-     * @param {Number} index
+     * @param {Number}  index
+     * @param {boolean} isHighlighted Whether to use the block's highlighted gradient.
      *
      * @return {string}
      */
-    getGradientId(index) {
-        return `${this.instanceId}-gradient-${index}`;
+    getGradientId(index, isHighlighted = false) {
+        const id = `${this.instanceId}-gradient-${index}`;
+
+        return isHighlighted ? `${id}-highlight` : id;
     }
 
     /**

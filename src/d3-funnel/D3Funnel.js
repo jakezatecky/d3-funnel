@@ -47,7 +47,6 @@ class D3Funnel {
             highlight: {
                 enabled: false,
                 shade: -0.2,
-                overlayShade: -0.5,
             },
         },
         label: {
@@ -687,32 +686,57 @@ class D3Funnel {
      * @return {void}
      */
     defineColorGradients(svg) {
-        const { gradientShade } = this.options.block.fill;
+        const { fill, highlight } = this.options.block;
         const defs = svg.append('defs');
 
         // Create a gradient for each block
         this.blocks.forEach((block, index) => {
             const color = block.fill.raw;
-            const shade = this.colorizer.shade(color, gradientShade);
+            const shadedEdge = this.colorizer.shade(color, fill.gradientShade);
 
-            // Create linear gradient
-            const gradient = defs.append('linearGradient')
-                .attr('id', this.colorizer.getGradientId(index));
+            this.defineColorGradient(defs, this.colorizer.getGradientId(index), color, shadedEdge);
 
-            // Define the gradient stops
-            const stops = [
-                [0, shade],
-                [40, color],
-                [60, color],
-                [100, shade],
-            ];
+            // Highlighting shades every stop of the gradient, rather than
+            // replacing it with a solid color
+            if (highlight.enabled) {
+                this.defineColorGradient(
+                    defs,
+                    this.colorizer.getGradientId(index, true),
+                    this.colorizer.shade(color, highlight.shade),
+                    this.colorizer.shade(shadedEdge, highlight.shade),
+                );
+            }
+        });
+    }
 
-            // Add the gradient stops
-            stops.forEach((stop) => {
-                gradient.append('stop')
-                    .attr('offset', `${stop[0]}%`)
-                    .attr('style', `stop-color: ${stop[1]}`);
-            });
+    /**
+     * Define a linear gradient that runs from its shaded edge color to its
+     * center color and back.
+     *
+     * @param {Object} defs
+     * @param {string} id
+     * @param {string} color
+     * @param {string} shadedEdge
+     *
+     * @return {void}
+     */
+    defineColorGradient(defs, id, color, shadedEdge) {
+        const gradient = defs.append('linearGradient')
+            .attr('id', id);
+
+        // Define the gradient stops
+        const stops = [
+            [0, shadedEdge],
+            [40, color],
+            [60, color],
+            [100, shadedEdge],
+        ];
+
+        // Add the gradient stops
+        stops.forEach((stop) => {
+            gradient.append('stop')
+                .attr('offset', `${stop[0]}%`)
+                .attr('style', `stop-color: ${stop[1]}`);
         });
     }
 
@@ -982,13 +1006,12 @@ class D3Funnel {
      * @return {void}
      */
     onMouseOver(event, data) {
-        const { shade, overlayShade } = this.options.block.highlight;
-
-        // Highlight all paths within one block, shading any overlay separately
+        // Highlight all paths within one block, shading each from its own
+        // resting color so that every path changes by the same amount
         this.blockGroups[data.index].selectAll('path').nodes().forEach((node) => {
-            const isOverlay = node.dataset.pathType === 'foreground';
+            const isBackground = node.dataset.pathType === 'background';
 
-            select(node).attr('fill', this.colorizer.shade(data.fill.raw, isOverlay ? overlayShade : shade));
+            select(node).attr('fill', this.getHighlightFill(data, isBackground));
         });
     }
 
@@ -1017,6 +1040,28 @@ class D3Funnel {
      */
     getBackgroundFill(block) {
         return this.colorizer.shade(block.fill.raw, this.options.block.barOverlay.shade);
+    }
+
+    /**
+     * Return the fill of a block's path while the block is highlighted.
+     *
+     * @param {Object}  block
+     * @param {boolean} isBackground Whether the path is the background behind an overlay.
+     *
+     * @return {string}
+     */
+    getHighlightFill(block, isBackground) {
+        const { shade } = this.options.block.highlight;
+
+        if (isBackground) {
+            return this.colorizer.shade(this.getBackgroundFill(block), shade);
+        }
+
+        if (this.options.block.fill.type === 'gradient') {
+            return this.colorizer.getGradientFill(block.index, true);
+        }
+
+        return this.colorizer.shade(block.fill.raw, shade);
     }
 
     /**

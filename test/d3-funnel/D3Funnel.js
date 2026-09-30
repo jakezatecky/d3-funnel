@@ -1306,9 +1306,10 @@ describe('D3Funnel', () => {
 
                 overlay.dispatchEvent(new MouseEvent('mouseover'));
 
-                // #808080 * -1/5 => #666666; #808080 * -1/2 => #404040
-                assert.equal('#666666', background.getAttribute('fill'));
-                assert.equal('#404040', overlay.getAttribute('fill'));
+                // Each path is shaded from its resting color:
+                // #a6a6a6 * -1/5 => #858585; #808080 * -1/5 => #666666
+                assert.equal('#858585', background.getAttribute('fill'));
+                assert.equal('#666666', overlay.getAttribute('fill'));
 
                 overlay.dispatchEvent(new MouseEvent('mouseout'));
 
@@ -1317,7 +1318,7 @@ describe('D3Funnel', () => {
                 assert.equal('#808080', overlay.getAttribute('fill'));
             });
 
-            it('should shade highlighted paths by the configured amounts', () => {
+            it('should shade highlighted paths by the configured amount', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1, fillColor: '#808080' },
                 ], {
@@ -1328,7 +1329,6 @@ describe('D3Funnel', () => {
                         highlight: {
                             enabled: true,
                             shade: -0.25,
-                            overlayShade: -0.75,
                         },
                     },
                 });
@@ -1337,9 +1337,52 @@ describe('D3Funnel', () => {
 
                 overlay.dispatchEvent(new MouseEvent('mouseover'));
 
-                // #808080 * -1/4 => #606060; #808080 * -3/4 => #202020
-                assert.equal('#606060', background.getAttribute('fill'));
-                assert.equal('#202020', overlay.getAttribute('fill'));
+                // #a6a6a6 * -1/4 => #7d7d7d; #808080 * -1/4 => #606060
+                assert.equal('#7d7d7d', background.getAttribute('fill'));
+                assert.equal('#606060', overlay.getAttribute('fill'));
+            });
+
+            it('should shade and restore gradients rather than replace them', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1, fillColor: '#808080' },
+                ], {
+                    block: {
+                        fill: {
+                            type: 'gradient',
+                        },
+                        highlight: {
+                            enabled: true,
+                        },
+                    },
+                });
+
+                const id = getSvgId();
+                const path = select('#funnel path').node();
+
+                path.dispatchEvent(new MouseEvent('mouseover'));
+
+                assert.equal(`url(#${id}-gradient-0-highlight)`, path.getAttribute('fill'));
+
+                // Edge: #666666 * -1/5 => #525252; center: #808080 * -1/5 => #666666
+                const stops = selectAll(`#funnel defs #${id}-gradient-0-highlight stop`).nodes();
+                assert.equal('stop-color: #525252', stops[0].getAttribute('style'));
+                assert.equal('stop-color: #666666', stops[1].getAttribute('style'));
+
+                path.dispatchEvent(new MouseEvent('mouseout'));
+
+                assert.equal(`url(#${id}-gradient-0)`, path.getAttribute('fill'));
+            });
+
+            it('should not define highlighted gradients when highlighting is disabled', () => {
+                getFunnel().draw(getBasicData(), {
+                    block: {
+                        fill: {
+                            type: 'gradient',
+                        },
+                    },
+                });
+
+                assert.equal(0, selectAll(`#funnel defs #${getSvgId()}-gradient-0-highlight`).size());
             });
         });
 

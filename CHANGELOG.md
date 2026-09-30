@@ -14,6 +14,7 @@
 
 * Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
 * The tooltip element now remains in the container, hidden with `display: none`, after the mouse leaves a block instead of being removed.
+* Highlighted blocks now shade each path from its resting color, so blocks with bar overlays darken by the same amount as other blocks instead of noticeably more
 
 ### Migrating to v3
 
@@ -27,7 +28,7 @@ Several options, data options, and types were renamed or restructured to better 
 | `block.dynamicHeight` | `block.proportionalHeight` |
 | `block.dynamicSlope`  | `block.proportionalWidth`  |
 | `block.fill.scale`    | `block.fill.colors`        |
-| `block.highlight:`    | `block.highlight.enabled`  |
+| `block.highlight`     | `block.highlight.enabled`  |
 | `chart.animate`       | `chart.animation.duration` |
 | `chart.bottomPinch`   | `chart.pinchedBlocks`      |
 | `chart.bottomWidth`   | `chart.neckWidth`          |
@@ -58,7 +59,7 @@ These changes affect the TypeScript types.
 * Expose `label.fontSize` and `label.fontFamily` in block event data
 * Add `drawLabel(index, overrides)` method to redraw a single block's label
 * Add example for `drawLabel` to enlarge labels on hover (#157)
-* Add `block.barOverlay.shade`, `block.highlight.shade`, `block.highlight.overlayShade`, and `block.fill.gradientShade` options to adjust the previously fixed shades
+* Add `block.barOverlay.shade`, `block.highlight.shade`, and `block.fill.gradientShade` options to adjust the previously fixed shades
 * Add `label.padding` option to set the space between a label and the edges of its block
 * Add `tooltip.offset` option to set the distance between the tooltip and the mouse
 * Add `tooltip.style` option to customize the tooltip's CSS
@@ -75,6 +76,7 @@ These changes affect the TypeScript types.
 * Fix `block.barOverlay` overlays falling short of their value on straight funnels for blocks not starting at the left edge of the chart
 * Fix tooltips jumping out of place when first shown, such as when moving the mouse between blocks or between an overlay and its block
 * Fix tooltips appearing out of place when the chart is inside a positioned element
+* Fix highlighted blocks with gradient fills losing their gradient; highlighting now shades the gradient instead of replacing it with a solid color
 
 ## [v2.3.0](https://github.com/jakezatecky/d3-funnel/compare/v2.2.0...v2.3.0) (2026-09-25)
 
