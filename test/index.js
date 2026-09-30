@@ -3,5 +3,6 @@
 
 import './d3-funnel/Colorizer.js';
 import './d3-funnel/D3Funnel.js';
+import './d3-funnel/Formatter.js';
 import './d3-funnel/Navigator.js';
 import './d3-funnel/Utils.js';
