@@ -95,7 +95,6 @@ class D3Funnel {
         this.container = select(selector).node();
 
         this.colorizer = new Colorizer();
-        this.formatter = new Formatter();
         this.navigator = new Navigator();
 
         this.id = null;
@@ -151,10 +150,6 @@ class D3Funnel {
         const settings = this.getSettings(options);
 
         this.id = `d3-funnel-${nanoid()}`;
-
-        // Set labels
-        this.labelFormatter = this.formatter.getFormatter(settings.label.format);
-        this.tooltipFormatter = this.formatter.getFormatter(settings.tooltip.format);
 
         // Set color scales
         this.colorizer.setInstanceId(this.id);
@@ -344,13 +339,13 @@ class D3Funnel {
                 label: {
                     enabled: !block.hideLabel,
                     raw: block.label,
-                    formatted: this.formatter.format(block, this.labelFormatter),
+                    formatted: Formatter.format(block, this.settings.label.format),
                     color: this.colorizer.getLabelColor(block.labelColor),
                     fontSize: block.labelFontSize ?? this.settings.label.fontSize,
                     fontFamily: block.labelFontFamily ?? this.settings.label.fontFamily,
                 },
                 tooltip: {
-                    formatted: this.formatter.format(block, this.tooltipFormatter),
+                    formatted: Formatter.format(block, this.settings.tooltip.format),
                 },
             };
         });

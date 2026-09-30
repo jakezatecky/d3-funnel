@@ -1,74 +1,33 @@
 class Formatter {
     /**
-     * Register the format function.
-     *
-     * @param {string|function} format
-     *
-     * @return {function}
-     */
-    getFormatter(format) {
-        if (typeof format === 'function') {
-            return format;
-        }
-
-        return (label, value, formattedValue) => (
-            this.stringFormatter(label, value, formattedValue, format)
-        );
-    }
-
-    /**
-     * Format the given value according to the data point or the format.
-     *
-     * @param {string}   label
-     * @param {number}   value
-     * @param {*}        formattedValue
-     * @param {function} formatter
-     *
-     * @return string
-     */
-    format({ label, value, formattedValue = null }, formatter) {
-        return formatter(label, value, formattedValue);
-    }
-
-    /**
-     * Format the string according to a simple expression.
+     * Format the given block according to a format function or a string
+     * expression, in which the following keys are substituted:
      *
      * {l}: label
      * {v}: raw value
      * {f}: formatted value
      *
-     * @param {string} label
-     * @param {number} value
-     * @param {*}      formattedValue
-     * @param {string} expression
+     * @param {Object}          block
+     * @param {string|function} format
      *
      * @return {string}
      */
-    stringFormatter(label, value, formattedValue, expression) {
-        let formatted = formattedValue;
-
-        // Attempt to use supplied formatted value
-        // Otherwise, use the default
-        if (formattedValue === null) {
-            formatted = this.getDefaultFormattedValue(value);
+    static format({ label, value, formattedValue = null }, format) {
+        if (typeof format === 'function') {
+            return format(label, value, formattedValue);
         }
 
-        return expression
+        // Use the supplied formatted value, if any
+        const formatted = formattedValue ?? value.toLocaleString();
+
+        // Replace each key literally
+        return format
             .split('{l}')
             .join(label)
             .split('{v}')
             .join(String(value))
             .split('{f}')
             .join(formatted);
-    }
-
-    /**
-     * @param {number} value
-     *
-     * @return {string}
-     */
-    getDefaultFormattedValue(value) {
-        return value.toLocaleString();
     }
 }
 
