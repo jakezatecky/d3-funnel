@@ -1,0 +1,55 @@
+name: Deploy Examples
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+# Allow only one deployment at a time, but let an in-progress deployment finish
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v6
+      -
+        name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      -
+        name: Install dependencies
+        run: npm install
+      -
+        name: Build the examples
+        run: npm run build:examples
+      -
+        name: Upload the examples
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: examples/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      -
+        name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

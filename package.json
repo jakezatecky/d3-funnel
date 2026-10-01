@@ -36,11 +36,10 @@
   "jsdelivr": "./dist/d3-funnel.min.js",
   "scripts": {
     "build": "webpack",
+    "build:examples": "webpack --config=webpack.config.examples.js --mode=production",
     "build:test": "webpack --config=webpack.config.test.js",
     "examples": "webpack serve --config=webpack.config.examples.js",
     "format:style": "prettier --write \"examples/src/scss/**/*.scss\"",
-    "gh-build": "webpack --config=webpack.config.examples.js --mode=production",
-    "gh-deploy": "npm run gh-build && bash ./gh-deploy.sh",
     "lint": "npm run lint:script && npm run lint:style && npm run lint:browser",
     "lint:browser": "es-check checkBrowser \"src/**/*.js\" --module --checkFeatures",
     "lint:script": "eslint .",
