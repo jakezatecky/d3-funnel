@@ -2,6 +2,7 @@ import { merge } from 'lodash';
 import D3Funnel from 'd3-funnel';
 
 const chart = new D3Funnel('#funnel');
+const clickStatus = document.querySelector('#click-status');
 const settings = {
     curved: {
         chart: {
@@ -72,8 +73,15 @@ const settings = {
         events: {
             click: {
                 block(event, d) {
-                    // eslint-disable-next-line no-alert
-                    alert(d.label.raw);
+                    clickStatus.textContent = `Clicked: ${d.label.raw}`;
+
+                    // Flash the status so that repeated clicks on the same block are noticeable.
+                    // Unlike toggling a CSS class, `animate()` restarts the flash on rapid repeat
+                    // clicks.
+                    clickStatus.animate(
+                        [{ backgroundColor: '#fff3b0' }, { backgroundColor: 'transparent' }],
+                        { duration: 600 },
+                    );
                 },
             },
         },
@@ -93,6 +101,7 @@ const settings = {
 
 const checkboxes = [...document.querySelectorAll('input')];
 const color = document.querySelector('[value="color"]');
+const click = document.querySelector('[value="click"]');
 
 function onChange() {
     let data = !color.checked ?
@@ -133,6 +142,7 @@ function onChange() {
         data = data.reverse();
     }
 
+    clickStatus.hidden = !click.checked;
     chart.draw(data, options);
 }
 
@@ -140,6 +150,5 @@ function onChange() {
 checkboxes.forEach((checkbox) => {
     checkbox.addEventListener('change', onChange);
 });
-
 // Trigger change event for initial render
 checkboxes[0].dispatchEvent(new CustomEvent('change'));
