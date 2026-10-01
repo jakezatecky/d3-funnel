@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const { dirname } = import.meta;
 
-export default {
+export default (env, argv) => ({
     mode: 'development',
     entry: {
         index: path.join(dirname, 'examples/src/index.js'),
@@ -50,6 +50,10 @@ export default {
             entry: {
                 index: 'examples/src/index.html',
             },
+            data: {
+                // Only track visits to the published site, not local development
+                enableAnalytics: argv.mode === 'production',
+            },
             js: {
                 filename: '[name].[contenthash:8].js',
             },
@@ -58,4 +62,4 @@ export default {
             },
         }),
     ],
-};
+});
