@@ -71,7 +71,7 @@ parent container:
 | `block.proportionalWidth`      | Whether the block widths narrow in proportion to their value decrease.   | bool     | `false`               |
 | `block.barOverlay.enabled`     | Whether the blocks have bar chart overlays proportional to its weight.   | bool     | `false`               |
 | `block.barOverlay.shade`       | The shade adjustment of the block behind its overlay, from `-1` to `1`.  | number   | `0.3`                 |
-| `block.fill.colors`            | The block colors as an array or a function of the block index.           | mixed    | `d3.schemeCategory10` |
+| `block.fill.colors`            | The block colors as a repeating array or a function of the block index.  | mixed    | `d3.schemeCategory10` |
 | `block.fill.type`              | Either `'solid'` or `'gradient'`.                                        | string   | `'solid'`             |
 | `block.fill.gradientShade`     | The shade adjustment of the edges of gradient fills, from `-1` to `1`.   | number   | `-0.2`                |
 | `block.minHeight`              | The minimum pixel height of a block.                                     | number   | `0`                   |

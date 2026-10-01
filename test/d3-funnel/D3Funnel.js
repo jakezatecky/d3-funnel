@@ -1109,6 +1109,24 @@ describe('D3Funnel', () => {
                 assert.equal('#111', select(paths[0]).attr('fill'));
                 assert.equal('#222', select(paths[1]).attr('fill'));
             });
+
+            it('should cycle through an array with fewer colors than blocks', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 2 },
+                    { label: 'C', value: 3 },
+                ], {
+                    block: {
+                        fill: {
+                            colors: ['#111', '#222'],
+                        },
+                    },
+                });
+
+                const paths = getSvg().selectAll('path').nodes();
+
+                assert.equal('#111', select(paths[2]).attr('fill'));
+            });
         });
 
         describe('block.fill.type', () => {

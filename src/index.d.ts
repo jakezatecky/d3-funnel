@@ -5,7 +5,8 @@
 export type FunnelDimension = number | `${number}%`;
 
 /**
- * The block colors, given either as a list of colors indexed by block or as a
+ * The block colors, given either as a list of colors indexed by block (repeating
+ * from the start when there are more blocks than colors) or as a
  * function that receives the block index (such as a D3 ordinal scale).
  */
 export type FunnelColors = readonly string[] | ((index: number) => string);

@@ -77,6 +77,7 @@ These changes affect the TypeScript types.
 * Fix tooltips jumping out of place when first shown, such as when moving the mouse between blocks or between an overlay and its block
 * Fix tooltips appearing out of place when the chart is inside a positioned element
 * Fix highlighted blocks with gradient fills losing their gradient; highlighting now shades the gradient instead of replacing it with a solid color
+* Fix `block.fill.colors` arrays leaving blocks without a color when there are more blocks than colors; arrays now repeat from the start
 
 ## [v2.3.0](https://github.com/jakezatecky/d3-funnel/compare/v2.2.0...v2.3.0) (2026-09-25)
 

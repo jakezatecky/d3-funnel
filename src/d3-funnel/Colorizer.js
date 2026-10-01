@@ -68,9 +68,10 @@ class Colorizer {
             return fill;
         }
 
-        // Otherwise, attempt to use the array of colors
+        // Otherwise, use the array of colors, cycling through it when there
+        // are more blocks than colors
         if (Array.isArray(this.colors)) {
-            return this.colors[index];
+            return this.colors[index % this.colors.length];
         }
 
         // Finally, use a color function or scale
