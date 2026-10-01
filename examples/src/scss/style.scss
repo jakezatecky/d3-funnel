@@ -17,9 +17,11 @@
 
 .demo {
   display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 50px;
   align-items: center;
   justify-content: center;
-  padding: 10px 30px;
+  padding: 10px 0;
 
   form {
     label {
@@ -31,10 +33,6 @@
       margin-right: 0.5rem;
     }
   }
-}
-
-.demo-chart {
-  margin-right: 50px;
 }
 
 .demo-funnel {
