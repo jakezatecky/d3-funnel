@@ -1645,10 +1645,10 @@ describe('D3Funnel', () => {
             it('should fit truncated labels within the narrowest part of their line', () => {
                 const [tspan] = drawLabel(longLabel, { label: { overflow: 'ellipsis' } });
 
-                // The block narrows from 200px to 100px over 100px of height. The line spans y = 40
-                // to 60, where the block is 140px wide at its narrowest, minus 5px padding on each
-                // side
-                assert.isAtMost(tspan.getComputedTextLength(), 130);
+                // The block narrows from 200px to 100px over 100px of height. The line is 19.6px
+                // tall (a 14px font at 1.4 line height) and spans y = 40.2 to 59.8, where the block
+                // is 140.2px wide at its narrowest, minus 5px padding on each side
+                assert.isAtMost(tspan.getComputedTextLength(), 130.2);
             });
 
             it('should not truncate labels that already fit', () => {
