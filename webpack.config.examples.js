@@ -5,16 +5,8 @@ const { dirname } = import.meta;
 
 export default (env, argv) => ({
     mode: 'development',
-    entry: {
-        index: path.join(dirname, 'examples/src/index.js'),
-        style: path.join(dirname, 'examples/src/scss/style.scss'),
-    },
     output: {
         path: path.join(dirname, 'examples/dist'),
-        library: {
-            name: 'D3Funnel',
-            type: 'umd',
-        },
     },
     resolve: {
         extensions: ['.js'],
