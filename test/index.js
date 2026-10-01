@@ -1,4 +1,4 @@
-// Because JSDom does not support SVGs properly this must run in a browser
+// Because JSDom does not support SVGs, so this must run in a browser
 // https://github.com/jsdom/jsdom/issues/918
 
 import './d3-funnel/Colorizer.js';
