@@ -50,6 +50,15 @@ By default, the chart will assume the width and height of the parent container:
 </script>
 ```
 
+## Using a CDN
+
+Without a bundler, load D3 and then the browser bundle, which provides the global `D3Funnel` class used above:
+
+``` html
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-funnel@3"></script>
+```
+
 ## Options
 
 | Option                         | Description                                                              | Type     | Default               |

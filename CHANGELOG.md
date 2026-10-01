@@ -16,6 +16,14 @@
 * The tooltip element now remains in the container, hidden with `display: none`, after the mouse leaves a block instead of being removed.
 * Highlighted blocks now shade each path from its resting color, so blocks with bar overlays darken by the same amount as other blocks instead of noticeably more
 
+#### Packaging
+
+* Require Node.js 22.12 or later, the first version that can `require()` ES modules without a flag
+* Publish the package as ES modules only, removing the `dist/index.cjs` and `dist/index.js` builds
+  CommonJS code can still load the package with `require('d3-funnel')`.
+* Restrict imports to the package root, so deep imports such as `d3-funnel/dist/index.js` or `d3-funnel/src/d3-funnel/D3Funnel.js` now fail
+* The browser bundle (`dist/d3-funnel.min.js`) no longer includes D3 and instead uses the global `d3`, so load D3 before it (e.g., from `https://cdn.jsdelivr.net/npm/d3@7`)
+
 ### Migrating to v3
 
 Several options, data options, and types were renamed or restructured to better reflect what they do and reduce ambiguity.
@@ -68,6 +76,9 @@ These changes affect the TypeScript types.
 ### Changed
 
 * Replace the placeholder TypeScript declaration with full typings for the chart API, options, data, and event handlers
+* Point the package entry at the source in `src`, which is no longer transpiled, so an app's own bundler decides which browsers to target
+* Stop bundling the D3 modules and nanoid into the package entry, so apps share them with their own D3 installation instead of loading a second copy
+* Replace the `browser` package field with `unpkg` and `jsdelivr` fields, which CDNs use to serve the browser bundle
 
 ### Fixed
 

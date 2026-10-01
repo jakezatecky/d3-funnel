@@ -9,7 +9,7 @@ import {
 import { assert } from 'chai';
 import sinon from 'sinon';
 
-import D3Funnel from '../../src/d3-funnel/D3Funnel.js';
+import D3Funnel from '#js/D3Funnel.js';
 
 function getFunnel() {
     return new D3Funnel('#funnel');

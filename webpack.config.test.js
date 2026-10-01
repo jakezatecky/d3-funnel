@@ -5,37 +5,14 @@ const { dirname } = import.meta;
 
 export default {
     mode: 'development',
-    entry: {
-        index: path.join(dirname, 'test/index.js'),
-    },
     output: {
         path: path.join(dirname, 'test/compiled'),
-        library: {
-            name: 'D3Funnel',
-            type: 'umd',
-        },
+        clean: true,
     },
-    resolve: {
-        extensions: ['.js'],
-        alias: {
-            'd3-funnel': path.resolve(dirname, 'src/index.js'),
-        },
-    },
-    module: {
-        rules: [
-            {
-                test: /\.jsx?$/,
-                exclude: /(node_modules)/,
-                loader: 'babel-loader',
-            },
-            {
-                test: /\.s[ac]ss$/i,
-                use: [
-                    'css-loader',
-                    'sass-loader',
-                ],
-            },
-        ],
+    optimization: {
+        // The package declares `"sideEffects": false` for its consumers, but the test entry imports
+        // each spec file purely for its side effects, so they must not be pruned
+        sideEffects: false,
     },
     plugins: [
         new HtmlBundlerPlugin({

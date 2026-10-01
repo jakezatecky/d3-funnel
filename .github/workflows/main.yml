@@ -32,16 +32,16 @@ jobs:
           node-version: ${{ matrix.node }}
       -
         name: Install dependencies
-        run: yarn install
+        run: npm install
       -
         name: Install Playwright
         run: npx playwright install --with-deps firefox
       -
         name: Run tests
-        run: yarn test
+        run: npm test
       -
         name: Build the library
-        run: yarn build
+        run: npm run build
       -
-        name: Check the package typings
-        run: yarn test:package
+        name: Check the package
+        run: npm run test:package

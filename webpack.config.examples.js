@@ -8,20 +8,10 @@ export default (env, argv) => ({
     mode: 'development',
     output: {
         path: path.join(dirname, 'examples/dist'),
-    },
-    resolve: {
-        extensions: ['.js'],
-        alias: {
-            'd3-funnel': path.resolve(dirname, 'src/index.js'),
-        },
+        clean: true,
     },
     module: {
         rules: [
-            {
-                test: /\.jsx?$/,
-                exclude: /(node_modules)/,
-                loader: 'babel-loader',
-            },
             {
                 test: /\.css$/i,
                 use: 'css-loader',

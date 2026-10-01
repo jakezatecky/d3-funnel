@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import Tooltip from '../../src/d3-funnel/Tooltip.js';
+import Tooltip from '#js/Tooltip.js';
 
 describe('Tooltip', () => {
     let container;

@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import Formatter from '../../src/d3-funnel/Formatter.js';
+import Formatter from '#js/Formatter.js';
 
 describe('Formatter', () => {
     describe('format', () => {

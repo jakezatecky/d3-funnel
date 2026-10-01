@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import Navigator from '../../src/d3-funnel/Navigator.js';
+import Navigator from '#js/Navigator.js';
 
 describe('Navigator', () => {
     describe('plot', () => {

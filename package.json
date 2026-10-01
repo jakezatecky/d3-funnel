@@ -13,85 +13,71 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jakezatecky/d3-funnel"
+    "url": "git+https://github.com/jakezatecky/d3-funnel.git"
   },
+  "homepage": "https://jakezatecky.github.io/d3-funnel/",
   "bugs": "https://github.com/jakezatecky/d3-funnel/issues",
+  "files": [
+    "dist",
+    "src",
+    "CHANGELOG.md"
+  ],
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
   "imports": {
     "#js/*": "./src/d3-funnel/*"
   },
-  "types": "./dist/index.d.cts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./src/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
-    },
-    "./*": "./*"
-  },
-  "browser": "dist/d3-funnel.min.js",
+  "exports": "./src/index.js",
+  "main": "./src/index.js",
+  "unpkg": "./dist/d3-funnel.min.js",
+  "jsdelivr": "./dist/d3-funnel.min.js",
   "scripts": {
-    "build": "npm run build:browser && npm run build:esm && npm run build:umd && npm run build:types",
-    "build:browser": "webpack --env=target=browser",
-    "build:esm": "webpack --env=target=esm",
-    "build:umd": "webpack --env=target=umd",
-    "build:types": "node -e \"require('node:fs').copyFileSync('src/index.d.ts', 'dist/index.d.cts')\"",
+    "build": "webpack",
     "build:test": "webpack --config=webpack.config.test.js",
     "examples": "webpack serve --config=webpack.config.examples.js",
-    "format:style": "prettier --write examples/src/scss/**/*.scss",
+    "format:style": "prettier --write \"examples/src/scss/**/*.scss\"",
     "gh-build": "webpack --config=webpack.config.examples.js --mode=production",
     "gh-deploy": "npm run gh-build && bash ./gh-deploy.sh",
-    "lint": "npm run lint:script && npm run lint:style",
-    "lint:script": "eslint src/**/*.js examples/src/**/*.js test/*.js ./test/d3-funnel/**/*.js *.js",
-    "lint:style": "stylelint examples/src/scss/**/*.scss",
+    "lint": "npm run lint:script && npm run lint:style && npm run lint:browser",
+    "lint:browser": "es-check checkBrowser \"src/**/*.js\" --module --checkFeatures",
+    "lint:script": "eslint .",
+    "lint:style": "stylelint \"examples/src/scss/**/*.scss\"",
     "prepublishOnly": "npm run test-and-build",
     "test": "npm run lint && npm run test:script && npm run test:style-format",
     "test:script": "npm run build:test && node test/test.js",
-    "test:style-format": "prettier --check examples/src/scss/**/*.scss",
-    "test:package": "attw --pack . --ignore-rules false-export-default",
+    "test:style-format": "prettier --check \"examples/src/scss/**/*.scss\"",
+    "test:package": "es-check checkBrowser dist/d3-funnel.min.js --checkFeatures && publint --strict && attw --pack . --profile esm-only",
     "test-and-build": "npm run test && npm run build && npm run test:package"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@babel/core": "^8.0.6",
-    "@babel/eslint-parser": "^8.0.6",
-    "@babel/preset-env": "^8.0.6",
-    "@babel/register": "^8.0.6",
     "@fontsource/open-sans": "^5.3.0",
     "@fontsource/reem-kufi": "^5.3.0",
-    "babel-loader": "^10.0.0",
-    "browser-sync": "^3.0.3",
     "chai": "^6.0.1",
     "css-loader": "^7.0.0",
     "d3": "^7.0.0",
+    "es-check": "^9.8.1",
     "eslint": "^10.1.0",
     "eslint-config-takiyon": "^5.0.0",
     "eslint-plugin-import-x": "^4.16.2",
-    "global-jsdom": "^30.0.0",
     "globals": "^17.6.0",
     "html-bundler-webpack-plugin": "^4.21.1",
-    "jsdom": "^30.1.0",
     "lodash": "^4.17.21",
     "mocha": "^12.0.1",
     "normalize.css": "^8.0.1",
     "playwright": "^1.5.2",
     "prettier": "^3.1.1",
-    "process": "^0.11.10",
+    "publint": "^0.3.24",
     "sass": "^1.69.5",
     "sass-loader": "^17.0.0",
     "sinon": "^22.0.0",
     "stylelint": "^17.9.1",
     "stylelint-config-takiyon": "^7.0.0",
     "terser-webpack-plugin": "^5.6.1",
-    "util": "^0.12.4",
-    "webpack": "^5.3.2",
+    "webpack": "^5.20.0",
     "webpack-cli": "^7.0.2",
     "webpack-dev-server": "^6.0.0"
   },

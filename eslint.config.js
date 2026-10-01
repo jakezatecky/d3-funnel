@@ -1,25 +1,21 @@
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import takiyonConfig from 'eslint-config-takiyon';
 import { createNodeResolver } from 'eslint-plugin-import-x';
 import globals from 'globals';
 
-import webpackConfig from './webpack.config.test.js';
-
 export default defineConfig([
+    // Build output
+    globalIgnores([
+        'dist/',
+        'examples/dist/',
+        'test/compiled/',
+    ]),
     takiyonConfig,
     {
         files: ['**/*.{js,jsx}'],
         settings: {
-            // Account for webpack.resolve.alias imports
             'import-x/resolver-next': [
-                createNodeResolver({
-                    alias: Object.fromEntries(
-                        Object.entries(webpackConfig.resolve.alias).map(([name, target]) => [
-                            name,
-                            [target],
-                        ]),
-                    ),
-                }),
+                createNodeResolver(),
             ],
         },
     },
