@@ -100,10 +100,5 @@
     "d3-selection": "^3.0.0",
     "d3-transition": "^3.0.0",
     "nanoid": "^6.0.1"
-  },
-  "overrides": {
-    "eslint-plugin-import": {
-      "eslint": "$eslint"
-    }
   }
 }
