@@ -112,20 +112,18 @@ class D3Funnel {
      * @return {void}
      */
     destroy() {
-        // Remove everything from the container, including any tooltip; event
-        // listeners go along with the elements they are attached to
+        // Remove everything from the container, including any tooltip. Event listeners go along
+        // with the elements they are attached to
         this.container.replaceChildren();
     }
 
     /**
-     * Draw the chart inside the container with the data and configuration
-     * specified. This will remove any previous SVG elements in the container
-     * and draw a new funnel chart on top of it.
+     * Draw the chart inside the container with the data and configuration specified. This will
+     * remove any previous SVG elements in the container and draw a new funnel chart on top of it.
      *
-     * @param {Array}  data    A list of rows containing a category, a count,
-     *                         and optionally a color (in hex).
-     * @param {Object} options An optional configuration object to override
-     *                         defaults. See the docs.
+     * @param {Array}  data    A list of rows containing a category, a count, and optionally a
+     *                         color (in hex).
+     * @param {Object} options An optional configuration object to override defaults. See the docs.
      *
      * @return {void}
      */
@@ -216,8 +214,8 @@ class D3Funnel {
      * @return {Object}
      */
     getDefaultOptions(containerDimensions) {
-        // Set the default width and height based on the container, leaving
-        // the static defaults untouched for future charts
+        // Set the default width and height based on the container, leaving the static defaults
+        // untouched for future charts
         return Utils.extend(D3Funnel.defaults, { chart: containerDimensions });
     }
 
@@ -290,8 +288,7 @@ class D3Funnel {
     }
 
     /**
-     * Convert the raw data into a standardized format and pre-calculate some
-     * values.
+     * Convert the raw data into a standardized format and pre-calculate some values.
      *
      * @param {Array} data
      *
@@ -349,8 +346,8 @@ class D3Funnel {
         // The <g> element of each block, filled in as the blocks are drawn
         this.blockGroups = [];
 
-        // A fresh tooltip for each drawing, as the previous one is removed
-        // along with the rest of the chart
+        // A fresh tooltip for each drawing, as the previous one is removed along with the rest of
+        // the chart
         this.tooltip = new Tooltip(this.container, this.options.tooltip);
 
         // Define color gradients
@@ -363,8 +360,8 @@ class D3Funnel {
             this.drawTopOval(this.svg, 0);
         }
 
-        // Add each block; animated blocks draw each other in turn, once the
-        // block before them finishes
+        // Add each block. Animated blocks draw each other in turn, once the block before them
+        // finishes
         if (chart.animation.duration !== 0) {
             this.drawBlock(0);
         } else {
@@ -373,8 +370,8 @@ class D3Funnel {
     }
 
     /**
-     * Create the paths to be used to define the discrete funnel blocks and
-     * returns the results in an array.
+     * Create the paths to be used to define the discrete funnel blocks and returns the results in
+     * an array.
      *
      * @return {Array, Array}
      */
@@ -406,9 +403,9 @@ class D3Funnel {
         // Move down to make room for the back of the top oval
         let prevHeight = curve.enabled ? this.getCurveDepth(this.getTopEdgeWidth()) : 0;
 
-        // This is greedy in that the block will have a guaranteed height
-        // and the remaining is shared among the ratio, instead of being
-        // shared according to the remaining minus the guaranteed
+        // This is greedy in that the block will have a guaranteed height and the remaining is
+        // shared among the ratio, instead of being shared according to the remaining minus the
+        // guaranteed
         const totalHeight = this.height - (minHeight * this.blocks.length);
 
         // The top and bottom edges of the funnel's sides
@@ -419,8 +416,7 @@ class D3Funnel {
 
         // Get the proportional height of a block
         const getBlockHeight = (block) => {
-            // Slice off the height proportional to this block and add the
-            // greedy minimum height
+            // Slice off the height proportional to this block and add the greedy minimum height
             let height = (totalHeight * block.ratio) + minHeight;
 
             // Account for any curvature
@@ -438,8 +434,8 @@ class D3Funnel {
                 i >= this.blocks.length - pinchedBlocks
         );
 
-        // Correct slope height if there are blocks being pinched (and thus
-        // requiring a sharper curve)
+        // Correct slope height if there are blocks being pinched (and thus requiring a sharper
+        // curve)
         const pinchHeight = this.blocks
             .filter((block, i) => isPinched(i))
             .reduce((total, block) => total + getBlockHeight(block), 0);
@@ -474,8 +470,8 @@ class D3Funnel {
                     targetLeftX = ((prevHeight + dy) - bottomY) / (-1 * slope);
                 }
 
-                // If neckWidth is 0, adjust last x position (to circumvent
-                // errors associated with rounding)
+                // If neckWidth is 0, adjust last x position (to circumvent errors associated with
+                // rounding)
                 if (this.neckWidth === 0 && i === this.blocks.length - 1) {
                     // For funnel, last position is the center
                     targetLeftX = this.width / 2;
@@ -519,8 +515,7 @@ class D3Funnel {
                 dx = 0;
             }
 
-            // Calculate the position of next block, expanding outward if
-            // inverted
+            // Calculate the position of next block, expanding outward if inverted
             const nextLeftX = inverted ? prevLeftX - dx : prevLeftX + dx;
             const nextRightX = inverted ? prevRightX + dx : prevRightX - dx;
             const nextHeight = prevHeight + dy;
@@ -536,9 +531,9 @@ class D3Funnel {
                 nextHeight,
             }, i);
 
-            // Extend the bottom of a block beneath the next block when they
-            // touch; sharing the exact same edge would let the background
-            // bleed through the antialiasing along the seam
+            // Extend the bottom of a block beneath the next block when they touch. Sharing the
+            // exact same edge would let the background bleed through the antialiasing along the
+            // seam
             const isCovered = i < this.blocks.length - 1 && gap === 0;
             const nextCurveScale = isCovered ? 4 : 2;
 
@@ -567,10 +562,9 @@ class D3Funnel {
     }
 
     /**
-     * Shrink a block's edges to leave room for the gap between it and its
-     * neighbors. Each gap is split evenly between the two blocks it separates,
-     * and the corners slide along the block's own sides so that the overall
-     * funnel shape is preserved.
+     * Shrink a block's edges to leave room for the gap between it and its neighbors. Each gap is
+     * split evenly between the two blocks it separates, and the corners slide along the block's own
+     * sides so that the overall funnel shape is preserved.
      *
      * @param {Object} edges
      * @param {int}    index
@@ -638,12 +632,12 @@ class D3Funnel {
     }
 
     /**
-     * Returns how far the curve of a horizontal edge of the given width dips
-     * below (or, for the back of an oval, rises above) its endpoints.
+     * Returns how far the curve of a horizontal edge of the given width dips below (or, for the
+     * back of an oval, rises above) its endpoints.
      *
-     * Each edge is drawn as part of an ellipse viewed from a fixed angle, so
-     * its depth is proportional to its width. An edge spanning the full width
-     * of the chart has a depth of exactly `curve.depth`.
+     * Each edge is drawn as part of an ellipse viewed from a fixed angle, so its depth is
+     * proportional to its width. An edge spanning the full width of the chart has a depth of
+     * exactly `curve.depth`.
      *
      * @param {Number} width
      *
@@ -668,8 +662,8 @@ class D3Funnel {
     }
 
     /**
-     * Returns the vertical space needed above and below the blocks of a curved
-     * funnel for the back of the top oval and the dip of the bottom edge.
+     * Returns the vertical space needed above and below the blocks of a curved funnel for the back
+     * of the top oval and the dip of the bottom edge.
      *
      * @return {Number}
      */
@@ -696,8 +690,8 @@ class D3Funnel {
 
             this.defineColorGradient(defs, this.colorizer.getGradientId(index), color, shadedEdge);
 
-            // Highlighting shades every stop of the gradient, rather than
-            // replacing it with a solid color
+            // Highlighting shades every stop of the gradient, rather than replacing it with a solid
+            // color
             if (highlight.enabled) {
                 this.defineColorGradient(
                     defs,
@@ -710,8 +704,7 @@ class D3Funnel {
     }
 
     /**
-     * Define a linear gradient that runs from its shaded edge color to its
-     * center color and back.
+     * Define a linear gradient that runs from its shaded edge color to its center color and back.
      *
      * @param {Object} defs
      * @param {string} id
@@ -752,9 +745,8 @@ class D3Funnel {
         const { shade } = this.options.chart.curve;
         const centerX = this.width / 2;
 
-        // Create path from the top of the block, mirroring the block's top
-        // curve to form the back of the oval; the front extends beneath the
-        // block to avoid a seam along their shared edge
+        // Create path from the top of the block, mirroring the block's top curve to form the back
+        // of the oval. The front extends beneath the block to avoid a seam along their shared edge
         const [
             [, leftX, topY],
             [, , controlY],
@@ -771,16 +763,16 @@ class D3Funnel {
             ['', leftX, topY],
         ]);
 
-        // Draw top oval beneath any other element, so that the block above
-        // it (if any) overlaps its back edge
+        // Draw top oval beneath any other element, so that the block above it (if any) overlaps its
+        // back edge
         svg.insert('path', ':first-child')
             .attr('fill', this.colorizer.shade(this.blocks[index].fill.raw, shade))
             .attr('d', path);
     }
 
     /**
-     * Draw the block at the given index. When animated, the next block is
-     * drawn once this one finishes.
+     * Draw the block at the given index. When animated, the next block is drawn once this one
+     * finishes.
      *
      * @param {int} index
      *
@@ -852,7 +844,7 @@ class D3Funnel {
                 .on('click', events.click.block);
         }
 
-        // Add block hover events; namespaced so they do not replace the highlight handlers
+        // Add block hover events, namespaced so they do not replace the highlight handlers
         if (events.mouseover.block !== null) {
             paths.on('mouseover.block', events.mouseover.block);
         }
@@ -873,9 +865,8 @@ class D3Funnel {
     }
 
     /**
-     * Return a transition of the given selection when the chart is animated,
-     * or the selection itself otherwise, so that attributes set on the result
-     * apply either way.
+     * Return a transition of the given selection when the chart is animated, or the selection
+     * itself otherwise, so that attributes set on the result apply either way.
      *
      * @param {Object} selection
      *
@@ -927,8 +918,8 @@ class D3Funnel {
         let beforePath;
         let beforeFill;
 
-        // Construct the top of the trapezoid and leave the other elements
-        // hovering around to expand downward on animation
+        // Construct the top of the trapezoid and leave the other elements hovering around to expand
+        // downward on animation
         if (!this.options.chart.curve.enabled) {
             const [
                 [, leftX, leftY],
@@ -972,8 +963,7 @@ class D3Funnel {
     }
 
     /**
-     * Attach data to the target element. Also attach the current node to the
-     * data object.
+     * Attach data to the target element. Also attach the current node to the data object.
      *
      * @param {Object} element
      * @param {Object} data
@@ -1006,8 +996,8 @@ class D3Funnel {
      * @return {void}
      */
     onMouseOver(event, data) {
-        // Highlight all paths within one block, shading each from its own
-        // resting color so that every path changes by the same amount
+        // Highlight all paths within one block, shading each from its own resting color so that
+        // every path changes by the same amount
         this.blockGroups[data.index].selectAll('path').nodes().forEach((node) => {
             const isBackground = node.dataset.pathType === 'background';
 
@@ -1031,8 +1021,7 @@ class D3Funnel {
     }
 
     /**
-     * Return the lighter fill of a block's path when an overlay is drawn on
-     * top of it.
+     * Return the lighter fill of a block's path when an overlay is drawn on top of it.
      *
      * @param {Object} block
      *
@@ -1065,9 +1054,9 @@ class D3Funnel {
     }
 
     /**
-     * Draw the label of the given block, replacing any label already drawn
-     * there. The overrides apply only to this drawing, so calling this again
-     * without them restores the block's original label.
+     * Draw the label of the given block, replacing any label already drawn there. The overrides
+     * apply only to this drawing, so calling this again without them restores the block's original
+     * label.
      *
      * @param {int}    index
      * @param {Object} overrides Any of `color`, `fontSize`, and `fontFamily`.
@@ -1079,8 +1068,8 @@ class D3Funnel {
         const label = { ...this.blocks[index].label, ...overrides };
         const labelOptions = this.options.label;
 
-        // Blocks not yet drawn, such as during the load animation, will draw
-        // their own label once they appear
+        // Blocks not yet drawn, such as during the load animation, will draw their own label once
+        // they appear
         if (!group) {
             return;
         }
@@ -1106,9 +1095,8 @@ class D3Funnel {
             .attr('dominant-baseline', 'middle')
             .attr('pointer-events', 'none');
 
-        // Lines are spaced by the rendered font size, which is only known once
-        // the text exists; fall back to the configured size if the chart is not
-        // attached to the document
+        // Lines are spaced by the rendered font size, which is only known once the text exists.
+        // Fall back to the configured size if the chart is not attached to the document
         const fontSize = parseFloat(window.getComputedStyle(text.node()).fontSize) ||
             parseFloat(label.fontSize);
         const lineHeight = fontSize * labelOptions.lineHeight;
@@ -1141,8 +1129,8 @@ class D3Funnel {
     }
 
     /**
-     * Shorten the text of the given element with an ellipsis until it is no
-     * wider than the given width.
+     * Shorten the text of the given element with an ellipsis until it is no wider than the given
+     * width.
      *
      * @param {SVGTextContentElement} node
      * @param {Number}                maxWidth
@@ -1185,8 +1173,8 @@ class D3Funnel {
     /* eslint-enable no-param-reassign */
 
     /**
-     * Returns the width of the given block at the given y position, which is
-     * clamped to the block's top and bottom.
+     * Returns the width of the given block at the given y position, which is clamped to the block's
+     * top and bottom.
      *
      * @param {int}    index
      * @param {Number} y
@@ -1196,8 +1184,8 @@ class D3Funnel {
     getBlockWidthAt(index, y) {
         const paths = this.blockPaths[index];
 
-        // Straight blocks are a simple trapezoid; curved blocks have their
-        // side corners at different path points
+        // Straight blocks are a simple trapezoid. Curved blocks have their side corners at
+        // different path points
         const [
             [, topLeftX, topY],
             [, topRightX],
@@ -1217,8 +1205,8 @@ class D3Funnel {
     }
 
     /**
-     * Returns the y position of the vertical center of the given label's text,
-     * according to the `label.verticalAlign` setting.
+     * Returns the y position of the vertical center of the given label's text, according to the
+     * `label.verticalAlign` setting.
      *
      * @param {int}    index
      * @param {Number} lineCount
@@ -1231,8 +1219,8 @@ class D3Funnel {
         const paths = this.blockPaths[index];
         const offset = label.padding + ((lineHeight * lineCount) / 2);
 
-        // The top and bottom edges of the block at its horizontal center; each
-        // path command is [command, x, y]
+        // The top and bottom edges of the block at its horizontal center; each path command is
+        // [command, x, y]
         let top = paths[0][2];
         let bottom = paths[2][2];
         let middle = (top + bottom) / 2;
@@ -1240,9 +1228,8 @@ class D3Funnel {
         if (chart.curve.enabled) {
             const nextPaths = this.blockPaths[index + 1];
 
-            // A quadratic curve peaks halfway between its endpoints and its
-            // control point; the bottom of a block may be hidden behind the
-            // top of the next block, if one exists
+            // A quadratic curve peaks halfway between its endpoints and its control point. The
+            // bottom of a block may be hidden behind the top of the next block, if one exists
             top = (paths[0][2] + paths[1][2]) / 2;
             bottom = (paths[3][2] + paths[5][2]) / 2;
 

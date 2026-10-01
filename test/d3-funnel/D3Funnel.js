@@ -716,8 +716,8 @@ describe('D3Funnel', () => {
             it('should curve each edge in proportion to its width', () => {
                 const [, first, second] = drawCurved();
 
-                // A full-width edge dips by the curve depth, so its control
-                // point is offset by twice the curve depth
+                // A full-width edge dips by the curve depth, so its control point is offset by
+                // twice the curve depth
                 assert.closeTo(10, first[1].y - first[0].y, 0.0001);
 
                 // The 50px bottom edge is a quarter of the width
@@ -738,8 +738,8 @@ describe('D3Funnel', () => {
                     select(node).attr('d').split(' ').map(getCommandPoint)
                 ));
 
-                // The bottom of the first block is not extended beneath the
-                // second; both have the same depth relative to their widths
+                // The bottom of the first block is not extended beneath the second. Both have the
+                // same depth relative to their widths
                 const bottomRatio = (first[5].y - first[3].y) / (first[3].x - first[6].x);
                 const topRatio = (second[1].y - second[0].y) / (second[2].x - second[0].x);
 
@@ -1141,9 +1141,9 @@ describe('D3Funnel', () => {
 
                 const id = getSvgId();
 
-                // Cannot try to re-select the camelCased linearGradient element
-                // due to a Webkit bug in the current PhantomJS; workaround is
-                // to select the known ID of the linearGradient element
+                // Cannot try to re-select the camelCased linearGradient element due to a Webkit bug
+                // in the current PhantomJS. The workaround is to select the known ID of the
+                // linearGradient element.
                 // https://bugs.webkit.org/show_bug.cgi?id=83438
                 assert.equal(1, selectAll(`#funnel defs #${id}-gradient-0`).nodes().length);
 
@@ -1645,9 +1645,9 @@ describe('D3Funnel', () => {
             it('should fit truncated labels within the narrowest part of their line', () => {
                 const [tspan] = drawLabel(longLabel, { label: { overflow: 'ellipsis' } });
 
-                // The block narrows from 200px to 100px over 100px of height;
-                // the line spans y = 40 to 60, where the block is 140px wide
-                // at its narrowest, minus 5px padding on each side
+                // The block narrows from 200px to 100px over 100px of height. The line spans y = 40
+                // to 60, where the block is 140px wide at its narrowest, minus 5px padding on each
+                // side
                 assert.isAtMost(tspan.getComputedTextLength(), 130);
             });
 

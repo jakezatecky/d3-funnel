@@ -1,6 +1,5 @@
 /**
- * A chart dimension, given either in pixels or as a percentage of the
- * container (e.g., `'50%'`).
+ * A chart dimension, given either in pixels or as a percentage of the container (e.g., `'50%'`).
  */
 export type FunnelDimension = number | `${number}%`;
 
@@ -21,14 +20,14 @@ export type FunnelFormatFunction = (
 ) => string;
 
 /**
- * Either a format function or a format string, in which `{l}` is replaced
- * with the label, `{v}` with the raw value, and `{f}` with the formatted value.
+ * Either a format function or a format string, in which `{l}` is replaced with the label, `{v}`
+ * with the raw value, and `{f}` with the formatted value.
  */
 export type FunnelFormat = string | FunnelFormatFunction;
 
 /**
- * A data entry for a single block of the funnel. Additional properties may be
- * attached and are accessible in event handlers through `data`.
+ * A data entry for a single block of the funnel. Additional properties may be attached and are
+ * accessible in event handlers through `data`.
  */
 export interface FunnelDatum {
     /** The label to associate with the block. */
@@ -108,7 +107,10 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         width: FunnelDimension;
         /** The height of the chart in pixels or a percentage. */
         height: FunnelDimension;
-        /** The width of the funnel's neck (its narrow end, at the top when inverted), as a fraction of the chart's width. */
+        /**
+         * The width of the funnel's neck (its narrow end, at the top when inverted), as a fraction
+         * of the chart's width.
+         */
         neckWidth: number;
         /** How many blocks at the neck keep its width. */
         pinchedBlocks: number;
@@ -121,7 +123,10 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         curve: {
             /** Whether the funnel is curved. */
             enabled: boolean;
-            /** The pixel depth of a full-width edge's curve. Narrower edges curve proportionally less. */
+            /**
+             * The pixel depth of a full-width edge's curve. Narrower edges curve proportionally
+             * less.
+             */
             depth: number;
             /** The shade adjustment of the top oval, from `-1` to `1`. */
             shade: number;
@@ -187,8 +192,8 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         /** The pixel distance between the tooltip and the mouse. */
         offset: number;
         /**
-         * CSS properties applied to the tooltip, keyed by their CSS names. The
-         * border color defaults to the block's color.
+         * CSS properties applied to the tooltip, keyed by their CSS names. The border color
+         * defaults to the block's color.
          */
         style: Record<string, string | null>;
     };
@@ -228,9 +233,8 @@ declare class D3Funnel {
     constructor(selector: string | Element);
 
     /**
-     * Draw the chart inside the container with the data and configuration
-     * specified. This will remove any previous SVG elements in the container
-     * and draw a new funnel chart on top of it.
+     * Draw the chart inside the container with the data and configuration specified. This will
+     * remove any previous SVG elements in the container and draw a new funnel chart on top of it.
      *
      * @param data    A list of blocks, each containing a label and a value.
      * @param options An optional configuration object to override defaults.
@@ -238,9 +242,8 @@ declare class D3Funnel {
     draw<TDatum extends FunnelDatum>(data: readonly TDatum[], options?: FunnelOptions<TDatum>): void;
 
     /**
-     * Redraw the label of a single block, replacing its current label. The
-     * overrides apply only to this drawing, so calling this again without them
-     * restores the block's original label.
+     * Redraw the label of a single block, replacing its current label. The overrides apply only to
+     * this drawing, so calling this again without them restores the block's original label.
      *
      * @param index     The index of the block.
      * @param overrides Label properties to use in place of the block's own.

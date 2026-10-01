@@ -9,8 +9,7 @@ class Tooltip {
         this.container = container;
         this.options = options;
 
-        // Created when first shown, then reused, so that moving between
-        // blocks only updates it
+        // Created when first shown, then reused, so that moving between blocks only updates it
         this.element = null;
     }
 
@@ -49,8 +48,7 @@ class Tooltip {
     }
 
     /**
-     * Return the inline style of the tooltip, placing it at `left: 0; top: 0`
-     * until positioned.
+     * Return the inline style of the tooltip, placing it at `left: 0; top: 0` until positioned.
      *
      * @param {string} borderColor
      *
@@ -78,8 +76,7 @@ class Tooltip {
     }
 
     /**
-     * Center the tooltip above the mouse, or below it if there is no room
-     * above the container.
+     * Center the tooltip above the mouse, or below it if there is no room above the container.
      *
      * @param {MouseEvent} event
      *
@@ -89,9 +86,8 @@ class Tooltip {
         const { offset } = this.options;
         const containerTop = this.container.getBoundingClientRect().top;
 
-        // While at `left: 0; top: 0`, the tooltip sits at the origin of
-        // whichever element it is positioned relative to, such as a positioned
-        // ancestor or the page itself
+        // While at `left: 0; top: 0`, the tooltip sits at the origin of whichever element it is
+        // positioned relative to, such as a positioned ancestor or the page itself
         const origin = this.element.getBoundingClientRect();
 
         // The desired top-left corner of the tooltip, relative to the viewport

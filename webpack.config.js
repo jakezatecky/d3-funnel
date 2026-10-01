@@ -72,8 +72,8 @@ const configMap = {
         mode: 'production',
         optimization: {
             minimizer: [
-                // Escape non-ASCII characters so that the bundle works on
-                // pages that do not declare a UTF-8 charset
+                // Escape non-ASCII characters so that the bundle works on pages that do not declare
+                // a UTF-8 charset
                 new TerserPlugin({
                     terserOptions: {
                         format: { ascii_only: true },

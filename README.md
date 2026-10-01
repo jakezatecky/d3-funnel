@@ -4,12 +4,10 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/jakezatecky/d3-funnel/main.yml?branch=master&style=flat-square)](https://github.com/jakezatecky/d3-funnel/actions/workflows/main.yml)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/jakezatecky/d3-funnel/master/LICENSE.txt)
 
-**d3-funnel** is an extensible, open-source JavaScript library for rendering
-funnel charts using the [D3.js][d3] library.
+**d3-funnel** is an extensible, open-source JavaScript library for rendering funnel charts using the [D3.js][d3] library.
 
-d3-funnel is focused on providing practical and visually appealing funnels
-through a variety of customization options. Check out the [examples page][examples]
-to get a showcasing of the several possible options.
+d3-funnel is focused on providing practical and visually appealing funnels through a variety of customization options.
+Check out the [examples page][examples] to get a showcasing of the several possible options.
 
 # Installation
 
@@ -27,9 +25,8 @@ import D3Funnel from 'd3-funnel';
 
 # Usage
 
-To use this library, you must create a container element and instantiate a new
-funnel chart. By default, the chart will assume the width and height of the
-parent container:
+To use this library, you must create a container element and instantiate a new funnel chart.
+By default, the chart will assume the width and height of the parent container:
 
 ``` html
 <div id="funnel"></div>
@@ -97,11 +94,9 @@ parent container:
 
 ### Curved Funnels with Gaps
 
-When a curved funnel has a `block.gap`, each block shows its own top oval, with
-the block above floating over it. Both options are in pixels, so they are easy
-to compare: the blocks will look most three-dimensional when `block.gap` is
-smaller than `chart.curve.depth`. For example, pair a deeper curve with a small
-gap:
+When a curved funnel has a `block.gap`, each block shows its own top oval, with the block above floating over it.
+Both options are in pixels, so they are easy to compare: the blocks will look most three-dimensional when `block.gap` is smaller than `chart.curve.depth`.
+For example, pair a deeper curve with a small gap:
 
 ``` javascript
 chart.draw(data, {
@@ -117,16 +112,14 @@ chart.draw(data, {
 });
 ```
 
-A shallow curve with a large gap will instead leave a wide band of empty space
-between the blocks. Remember that narrower edges curve less, so the lower
-blocks of a funnel have shallower ovals than the top block.
+A shallow curve with a large gap will instead leave a wide band of empty space between the blocks.
+Remember that narrower edges curve less, so the lower blocks of a funnel have shallower ovals than the top block.
 
 ### Tooltip Styles
 
-The option `tooltip.style` holds the CSS properties applied to the tooltip,
-keyed by their CSS names. Your properties are merged into the defaults below,
-and setting a property to `null` removes it. The tooltip's border is drawn in
-the block's color unless you set `border` or `border-color`.
+The option `tooltip.style` holds the CSS properties applied to the tooltip, keyed by their CSS names.
+Your properties are merged into the defaults below, and setting a property to `null` removes it.
+The tooltip's border is drawn in the block's color unless you set `border` or `border-color`.
 
 ``` javascript
 {
@@ -158,8 +151,8 @@ chart.draw(data, {
 
 ### Label/Tooltip Format
 
-The option `label.format` can either be a function or a string. The following
-keys will be substituted by the string formatter:
+The option `label.format` can either be a function or a string.
+The following keys will be substituted by the string formatter:
 
 | Key     | Description                  |
 | ------- | ---------------------------- |
@@ -169,8 +162,7 @@ keys will be substituted by the string formatter:
 
 ### Event Data
 
-Block-based events are passed a DOM `event` and a `data` object containing
-the following elements:
+Block-based events are passed a DOM `event` and a `data` object containing the following elements:
 
 | Key              | Type   | Description                           |
 | ---------------- | ------ | ------------------------------------- |
@@ -205,9 +197,8 @@ An example `data` object is below:
 },
 ```
 
-Because `data` holds the original entry, you can attach your own properties to
-each block and read them in event handlers. For example, to open a URL when a
-block is clicked:
+Because `data` holds the original entry, you can attach your own properties to each block and read them in event handlers.
+For example, to open a URL when a block is clicked:
 
 ``` javascript
 const data = [
@@ -229,16 +220,15 @@ chart.draw(data, options);
 
 ### Overriding Defaults
 
-You may wish to override the default chart options. For example, you may wish
-for every funnel to have proportional heights. To do this, simply modify the
-`D3Funnel.defaults` property:
+You may wish to override the default chart options.
+For example, you may wish for every funnel to have proportional heights.
+To do this, simply modify the `D3Funnel.defaults` property:
 
 ``` javascript
 D3Funnel.defaults.block.proportionalHeight = true;
 ```
 
-Should you wish to override multiple properties at a time, you may consider
-using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`:
+Should you wish to override multiple properties at a time, you may consider using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`:
 
 ``` javascript
 D3Funnel.defaults = _.merge(D3Funnel.defaults, {
@@ -256,8 +246,8 @@ D3Funnel.defaults = _.merge(D3Funnel.defaults, {
 
 ## Advanced Data Options
 
-In the examples above, `label` and `value` were required descriptions of a block
-within the funnel. Below is a complete list of all block-level options:
+In the examples above, `label` and `value` were required descriptions of a block within the funnel.
+Below is a complete list of all block-level options:
 
 | Option          | Type   | Description                                                     | Example       |
 | --------------- | ------ | --------------------------------------------------------------- | ------------- |
@@ -276,10 +266,9 @@ Additional methods beyond `draw()` are accessible after instantiating the chart:
 
 ### `drawLabel(index, overrides?)`
 
-Redraws the label of the block at `index`, optionally with a different `color`,
-`fontSize`, or `fontFamily`. Overrides apply only to that drawing, so calling
-`drawLabel(index)` again restores the block's original label. For example, to
-enlarge a block's label while the mouse is over it:
+Redraws the label of the block at `index`, optionally with a different `color`, `fontSize`, or `fontFamily`.
+Overrides apply only to that drawing, so calling `drawLabel(index)` again restores the block's original label.
+For example, to enlarge a block's label while the mouse is over it:
 
 ``` javascript
 const options = {

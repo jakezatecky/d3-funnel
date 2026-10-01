@@ -1,7 +1,7 @@
 class Formatter {
     /**
-     * Format the given block according to a format function or a string
-     * expression, in which the following keys are substituted:
+     * Format the given block according to a format function or a string expression, in which the
+     * following keys are substituted:
      *
      * {l}: label
      * {v}: raw value

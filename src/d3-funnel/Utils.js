@@ -21,8 +21,8 @@ class Utils {
     static extend(a, b) {
         const result = {};
 
-        // Deep copy the properties of `a`, then those of `b` over them, so
-        // that neither object is modified
+        // Deep copy the properties of `a`, then those of `b` over them, so that neither object is
+        // modified
         [a, b].forEach((source) => {
             Object.keys(source).forEach((prop) => {
                 if (Utils.isExtendableObject(source[prop])) {

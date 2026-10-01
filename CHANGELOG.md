@@ -18,7 +18,8 @@
 
 ### Migrating to v3
 
-Several options, data options, and types were renamed or restructured to better reflect what they do and reduce ambiguity. Unless a remark says otherwise, their behavior is unchanged.
+Several options, data options, and types were renamed or restructured to better reflect what they do and reduce ambiguity.
+Unless a remark says otherwise, their behavior is unchanged.
 
 #### Chart Options
 
@@ -169,7 +170,9 @@ funnel.draw([{
 }]);
 ```
 
-The old structure of an array-of-arrays has been deprecated and will be removed in the **v2.0** release. Please update to the newest data structure as soon as possible. Refer to the README for the list of available options, which includes all of the capabilities previously held in the data array.
+The old structure of an array-of-arrays has been deprecated and will be removed in the **v2.0** release.
+Please update to the newest data structure as soon as possible.
+Refer to the README for the list of available options, which includes all of the capabilities previously held in the data array.
 
 ### Deprecations
 
@@ -195,8 +198,8 @@ The old structure of an array-of-arrays has been deprecated and will be removed 
 
 ## [v1.0.0](https://github.com/jakezatecky/d3-funnel/compare/v0.8.0...v1.0.0) (2016-08-02)
 
-This release breaks major backwards compatibility by upgrading D3 3.x to
-D3 4.x. Refer to D3's changes documentation for more info.
+This release breaks major backwards compatibility by upgrading D3 3.x to D3 4.x.
+Refer to D3's changes documentation for more info.
 
 ### Behavior Changes
 
@@ -273,12 +276,9 @@ D3Funnel v0.7.3 is an NPM-only hotfix that adds in missing compiled files.
 
 ## [v0.7.0](https://github.com/jakezatecky/d3-funnel/compare/v0.6.13...v0.7.0) (2015-10-04)
 
-D3Funnel v0.7 is a **backwards-incompatible** release that resolves some
-outstanding bugs, standardizes several option names and formats, and introduces
-a few new features.
+D3Funnel v0.7 is a **backwards-incompatible** release that resolves some outstanding bugs, standardizes several option names and formats, and introduces a few new features.
 
-No new features will be added to the v0.6 series, but minor patches will be
-available for a few months.
+No new features will be added to the v0.6 series, but minor patches will be available for a few months.
 
 ### Behavior Changes
 
@@ -298,8 +298,8 @@ available for a few months.
 
 ### Upgrading from v0.6.x
 
-Several options have been renamed for standardization. Please refer to the table
-below for the new equivalent option:
+Several options have been renamed for standardization.
+Please refer to the table below for the new equivalent option:
 
 | Old option     | New option            | Notes           |
 | -------------- | --------------------- | --------------- |

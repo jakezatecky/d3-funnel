@@ -42,7 +42,7 @@ const stream = [];
     await page.goto(`file:${path.join(dirname, 'compiled/index.html')}`, { waitUntil: 'networkidle' });
     await browser.close();
 
-    // Output log stream;
+    // Output the log stream
     // If the exit is non-zero, all output must go to stderr to be seen in Gulp
     if (hasError) {
         outputStream(process.stderr, stream);

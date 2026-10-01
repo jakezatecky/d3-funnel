@@ -135,9 +135,9 @@ class Colorizer {
     /**
      * Shade a color to the given percentage.
      *
-     * A positive shade lightens the color by moving each channel that far
-     * toward white; a negative shade darkens it by moving each channel that
-     * far toward black. For example, `0.5` is halfway to white.
+     * A positive shade lightens the color by moving each channel that far toward white. A negative
+     * shade darkens it by moving each channel that far toward black. For example, `0.5` is halfway
+     * to white.
      *
      * @param {string} color A hex color.
      * @param {number} shade The shade adjustment, from `-1` to `1`.

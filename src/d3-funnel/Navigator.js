@@ -208,8 +208,8 @@ class Navigator {
             const lengthTop = (prevRightX - prevLeftX);
             const lengthBtm = (nextRightX - nextLeftX);
 
-            // Overlay covers its ratio of the path, but should not extend past
-            // the right side of the path
+            // Overlay covers its ratio of the path, but should not extend past the right side of
+            // the path
             rightSideTop = Math.min((lengthTop * (ratio || 0)) + prevLeftX, prevRightX);
             rightSideBtm = Math.min((lengthBtm * (ratio || 0)) + nextLeftX, nextRightX);
         }
