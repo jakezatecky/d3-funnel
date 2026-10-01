@@ -2,6 +2,7 @@ import HtmlBundlerPlugin from 'html-bundler-webpack-plugin';
 import path from 'node:path';
 
 const { dirname } = import.meta;
+const siteUrl = 'https://jakezatecky.github.io/d3-funnel/';
 
 export default (env, argv) => ({
     mode: 'development',
@@ -39,6 +40,13 @@ export default (env, argv) => ({
                     filename: 'fonts/[name][ext]',
                 },
             },
+            {
+                test: /\.(jpg|svg)$/i,
+                type: 'asset/resource',
+                generator: {
+                    filename: '[name][ext]',
+                },
+            },
         ],
     },
     devServer: {
@@ -53,10 +61,23 @@ export default (env, argv) => ({
             entry: {
                 index: 'examples/src/index.html',
             },
+            sources: [
+                {
+                    tag: 'meta',
+                    attributes: ['content'],
+                    filter: ({ attributes }) => attributes.property === 'og:image',
+                },
+            ],
             data: {
+                siteUrl,
                 // Only track visits to the published site, not local development
                 enableAnalytics: argv.mode === 'production',
             },
+            // Link previews require an absolute URL for the Open Graph image
+            beforeEmit: (content) => content.replace(
+                '<meta property="og:image" content="',
+                `<meta property="og:image" content="${siteUrl}`,
+            ),
             js: {
                 filename: '[name].[contenthash:8].js',
             },
