@@ -39,17 +39,15 @@
     "build:examples": "webpack --config=webpack.config.examples.js --mode=production",
     "build:test": "webpack --config=webpack.config.test.js",
     "examples": "webpack serve --config=webpack.config.examples.js",
-    "format:style": "prettier --write \"examples/src/scss/**/*.scss\"",
+    "format": "prettier --write \"examples/src/scss/**/*.scss\"",
     "lint": "npm run lint:script && npm run lint:style && npm run lint:browser",
     "lint:browser": "es-check checkBrowser \"src/**/*.js\" --module --checkFeatures",
     "lint:script": "eslint .",
-    "lint:style": "stylelint \"examples/src/scss/**/*.scss\"",
-    "prepublishOnly": "npm run test-and-build",
-    "test": "npm run lint && npm run test:script && npm run test:style-format",
+    "lint:style": "stylelint \"examples/src/scss/**/*.scss\" && prettier --check \"examples/src/scss/**/*.scss\"",
+    "prepublishOnly": "npm test && npm run build && npm run validate:package",
+    "test": "npm run lint && npm run test:script",
     "test:script": "npm run build:test && node test/test.js",
-    "test:style-format": "prettier --check \"examples/src/scss/**/*.scss\"",
-    "test:package": "es-check checkBrowser dist/d3-funnel.min.js --checkFeatures && publint --strict && attw --pack . --profile esm-only",
-    "test-and-build": "npm run test && npm run build && npm run test:package"
+    "validate:package": "es-check checkBrowser dist/d3-funnel.min.js --checkFeatures && publint --strict && attw --pack . --profile esm-only"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

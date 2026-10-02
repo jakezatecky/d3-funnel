@@ -44,4 +44,4 @@ jobs:
         run: npm run build
       -
         name: Check the package
-        run: npm run test:package
+        run: npm run validate:package
