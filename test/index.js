@@ -1,9 +1,9 @@
 // Because JSDom does not support SVGs, so this must run in a browser
 // https://github.com/jsdom/jsdom/issues/918
 
-import './d3-funnel/Colorizer.js';
-import './d3-funnel/D3Funnel.js';
-import './d3-funnel/Formatter.js';
-import './d3-funnel/Navigator.js';
-import './d3-funnel/Tooltip.js';
-import './d3-funnel/Utils.js';
+import './js/Colorizer.js';
+import './js/D3Funnel.js';
+import './js/Formatter.js';
+import './js/Navigator.js';
+import './js/Tooltip.js';
+import './js/Utils.js';
