@@ -3,7 +3,7 @@
 
 import './js/Colorizer.js';
 import './js/D3Funnel.js';
-import './js/Formatter.js';
+import './js/LabelFormatter.js';
 import './js/Labeler.js';
 import './js/Navigator.js';
 import './js/Tooltip.js';

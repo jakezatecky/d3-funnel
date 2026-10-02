@@ -7,7 +7,7 @@ import 'd3-transition';
 import { nanoid } from 'nanoid';
 
 import Colorizer from '#js/Colorizer.js';
-import Formatter from '#js/Formatter.js';
+import LabelFormatter from '#js/LabelFormatter.js';
 import Labeler from '#js/Labeler.js';
 import Navigator from '#js/Navigator.js';
 import Tooltip from '#js/Tooltip.js';
@@ -315,13 +315,13 @@ class D3Funnel {
                 label: {
                     enabled: !block.hideLabel,
                     raw: block.label,
-                    formatted: Formatter.format(block, label.format),
+                    formatted: LabelFormatter.format(block, label.format),
                     color: this.colorizer.getLabelColor(block.labelColor),
                     fontSize: block.labelFontSize ?? label.fontSize,
                     fontFamily: block.labelFontFamily ?? label.fontFamily,
                 },
                 tooltip: {
-                    formatted: Formatter.format(block, tooltip.format),
+                    formatted: LabelFormatter.format(block, tooltip.format),
                 },
             };
         });
