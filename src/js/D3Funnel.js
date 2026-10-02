@@ -8,6 +8,7 @@ import { nanoid } from 'nanoid';
 
 import Colorizer from '#js/Colorizer.js';
 import Formatter from '#js/Formatter.js';
+import Labeler from '#js/Labeler.js';
 import Navigator from '#js/Navigator.js';
 import Tooltip from '#js/Tooltip.js';
 import Utils from '#js/Utils.js';
@@ -350,6 +351,7 @@ class D3Funnel {
         // A fresh tooltip for each drawing, as the previous one is removed along with the rest of
         // the chart
         this.tooltip = new Tooltip(this.container, this.options.tooltip);
+        this.labeler = new Labeler(this.options.label);
 
         // Define color gradients
         if (block.fill.type === 'gradient') {
@@ -1081,8 +1083,6 @@ class D3Funnel {
      */
     drawLabel(index, overrides = {}) {
         const group = this.blockGroups[index];
-        const label = { ...this.blocks[index].label, ...overrides };
-        const labelOptions = this.options.label;
 
         // Blocks not yet drawn, such as during the load animation, will draw their own label once
         // they appear
@@ -1090,103 +1090,41 @@ class D3Funnel {
             return;
         }
 
-        // Remove any existing label
-        group.select('text').remove();
-
-        if (!labelOptions.enabled || !label.enabled) {
-            return;
-        }
-
-        const lines = label.formatted.split('\n');
-
-        // Center the text horizontally
-        const x = this.width / 2;
-
-        const text = group.append('text')
-            .attr('x', x)
-            .attr('fill', label.color)
-            .attr('font-size', label.fontSize)
-            .attr('font-family', label.fontFamily)
-            .attr('text-anchor', 'middle')
-            .attr('dominant-baseline', 'middle')
-            .attr('pointer-events', 'none');
-
-        // Lines are spaced by the rendered font size, which is only known once the text exists.
-        // Fall back to the configured size if the chart is not attached to the document
-        const fontSize = parseFloat(window.getComputedStyle(text.node()).fontSize) ||
-            parseFloat(label.fontSize);
-        const lineHeight = fontSize * labelOptions.lineHeight;
-
-        // Position the text at the vertical center of all its lines
-        const y = this.getTextY(index, lines.length, lineHeight);
-        const firstLineY = y - ((lineHeight * (lines.length - 1)) / 2);
-
-        text.attr('y', y);
-
-        lines.forEach((line, i) => {
-            // Each line is offset from the one before it
-            const tspan = text.append('tspan')
-                .attr('x', x)
-                .attr('dy', i === 0 ? firstLineY - y : lineHeight)
-                .text(line);
-
-            if (labelOptions.overflow === 'ellipsis') {
-                const lineY = firstLineY + (lineHeight * i);
-
-                // The block is narrowest at either the top or bottom of the line
-                const maxWidth = Math.min(
-                    this.getBlockWidthAt(index, lineY - (lineHeight / 2)),
-                    this.getBlockWidthAt(index, lineY + (lineHeight / 2)),
-                ) - (2 * labelOptions.padding);
-
-                this.truncateText(tspan.node(), maxWidth);
-            }
-        });
+        this.labeler.draw(
+            group,
+            { ...this.blocks[index].label, ...overrides },
+            this.getBlockBounds(index),
+        );
     }
 
     /**
-     * Shorten the text of the given element with an ellipsis until it is no wider than the given
-     * width.
+     * Returns the part of the given block that its label can occupy.
      *
-     * @param {SVGTextContentElement} node
-     * @param {Number}                maxWidth
+     * @param {int} index
      *
-     * @return {void}
+     * @return {{centerX: Number, top: Number, bottom: Number, getWidthAt: Function}}
      */
-    /* eslint-disable no-param-reassign */
-    truncateText(node, maxWidth) {
-        if (node.getComputedTextLength() <= maxWidth) {
-            return;
+    getBlockBounds(index) {
+        const shape = this.blockShapes[index];
+        const nextShape = this.blockShapes[index + 1];
+
+        // The visible top and bottom of the block at its horizontal center, where curved edges dip
+        // the deepest. The bottom of a block may be hidden behind the top of the next block, if one
+        // exists
+        const top = shape.top.y + shape.top.curveDepth;
+        let bottom = shape.bottom.y + shape.bottom.curveDepth;
+
+        if (nextShape) {
+            bottom = Math.min(bottom, nextShape.top.y + nextShape.top.curveDepth);
         }
 
-        // Split by code point to avoid breaking apart surrogate pairs
-        const chars = Array.from(node.textContent);
-        const truncate = (length) => `${chars.slice(0, length).join('').trimEnd()}\u2026`;
-
-        // Binary search for the longest prefix that fits
-        let low = 0;
-        let high = chars.length - 1;
-
-        while (low < high) {
-            const mid = Math.ceil((low + high) / 2);
-
-            node.textContent = truncate(mid);
-
-            if (node.getComputedTextLength() <= maxWidth) {
-                low = mid;
-            } else {
-                high = mid - 1;
-            }
-        }
-
-        node.textContent = truncate(low);
-
-        // Hide the text entirely if not even the ellipsis fits
-        if (node.getComputedTextLength() > maxWidth) {
-            node.textContent = '';
-        }
+        return {
+            centerX: shape.centerX,
+            top,
+            bottom,
+            getWidthAt: (y) => this.getBlockWidthAt(index, y),
+        };
     }
-    /* eslint-enable no-param-reassign */
 
     /**
      * Returns the width of the given block at the given y position, which is clamped to the block's
@@ -1207,45 +1145,6 @@ class D3Funnel {
         const right = top.rightX + ((bottom.rightX - top.rightX) * t);
 
         return right - left;
-    }
-
-    /**
-     * Returns the y position of the vertical center of the given label's text, according to the
-     * `label.verticalAlign` setting.
-     *
-     * @param {int}    index
-     * @param {Number} lineCount
-     * @param {Number} lineHeight
-     *
-     * @return {Number}
-     */
-    getTextY(index, lineCount, lineHeight) {
-        const { label } = this.options;
-        const shape = this.blockShapes[index];
-        const nextShape = this.blockShapes[index + 1];
-        const offset = label.padding + ((lineHeight * lineCount) / 2);
-
-        // The visible top and bottom of the block at its horizontal center, where curved edges dip
-        // the deepest. The bottom of a block may be hidden behind the top of the next block, if one
-        // exists
-        const top = shape.top.y + shape.top.curveDepth;
-        let bottom = shape.bottom.y + shape.bottom.curveDepth;
-
-        if (nextShape) {
-            bottom = Math.min(bottom, nextShape.top.y + nextShape.top.curveDepth);
-        }
-
-        const middle = (top + bottom) / 2;
-
-        if (label.verticalAlign === 'top') {
-            return top + offset;
-        }
-
-        if (label.verticalAlign === 'bottom') {
-            return bottom - offset;
-        }
-
-        return middle;
     }
 }
 
