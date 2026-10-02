@@ -13,70 +13,50 @@ class Navigator {
     }
 
     /**
-     * @param {Object}  dimensions
-     * @param {boolean} isValueOverlay
+     * @param {Object}      shape        A block shape, as described by `D3Funnel.makeBlockShapes`.
+     * @param {Number|null} overlayRatio When given, the path covers only this fraction of the
+     *                                   block's width, as a bar overlay.
      *
      * @return {Array}
      */
-    makeCurvedPaths(dimensions, isValueOverlay = false) {
-        const points = this.makeBezierPoints(dimensions);
-
-        if (isValueOverlay) {
-            return this.makeBezierPath(points, dimensions.ratio);
-        }
-
-        return this.makeBezierPath(points);
+    makeCurvedPaths(shape, overlayRatio = null) {
+        return this.makeBezierPath(this.makeBezierPoints(shape), overlayRatio ?? 1);
     }
 
     /**
      * @param {Number} centerX
-     * @param {Number} prevLeftX
-     * @param {Number} prevRightX
-     * @param {Number} prevHeight
-     * @param {Number} nextLeftX
-     * @param {Number} nextRightX
-     * @param {Number} nextHeight
-     * @param {Number} prevCurve  The control point offset of the top curve.
-     * @param {Number} nextCurve  The control point offset of the bottom curve.
+     * @param {Object} top
+     * @param {Object} bottom
      *
      * @return {Object}
      */
-    makeBezierPoints({
-        centerX,
-        prevLeftX,
-        prevRightX,
-        prevHeight,
-        nextLeftX,
-        nextRightX,
-        nextHeight,
-        prevCurve,
-        nextCurve,
-    }) {
+    makeBezierPoints({ centerX, top, bottom }) {
+        // A quadratic curve dips halfway to its control point
         return {
             p00: {
-                x: prevLeftX,
-                y: prevHeight,
+                x: top.leftX,
+                y: top.y,
             },
             p01: {
                 x: centerX,
-                y: prevHeight + prevCurve,
+                y: top.y + (2 * top.curveDepth),
             },
             p02: {
-                x: prevRightX,
-                y: prevHeight,
+                x: top.rightX,
+                y: top.y,
             },
 
             p10: {
-                x: nextLeftX,
-                y: nextHeight,
+                x: bottom.leftX,
+                y: bottom.y,
             },
             p11: {
                 x: centerX,
-                y: nextHeight + nextCurve,
+                y: bottom.y + (2 * bottom.curveDepth),
             },
             p12: {
-                x: nextRightX,
-                y: nextHeight,
+                x: bottom.rightX,
+                y: bottom.y,
             },
         };
     }
@@ -181,50 +161,38 @@ class Navigator {
     }
 
     /**
-     * @param {Number}  prevLeftX
-     * @param {Number}  prevRightX
-     * @param {Number}  prevHeight
-     * @param {Number}  nextLeftX
-     * @param {Number}  nextRightX
-     * @param {Number}  nextHeight
-     * @param {Number}  ratio
-     * @param {boolean} isValueOverlay
+     * @param {Object}      shape        A block shape, as described by `D3Funnel.makeBlockShapes`.
+     * @param {Number|null} overlayRatio When given, the path covers only this fraction of the
+     *                                   block's width, as a bar overlay.
      *
      * @return {Array}
      */
-    makeStraightPaths({
-        prevLeftX,
-        prevRightX,
-        prevHeight,
-        nextLeftX,
-        nextRightX,
-        nextHeight,
-        ratio,
-    }, isValueOverlay = false) {
-        let rightSideTop = prevRightX;
-        let rightSideBtm = nextRightX;
+    makeStraightPaths({ top, bottom }, overlayRatio = null) {
+        let rightSideTop = top.rightX;
+        let rightSideBottom = bottom.rightX;
 
-        if (isValueOverlay) {
-            const lengthTop = (prevRightX - prevLeftX);
-            const lengthBtm = (nextRightX - nextLeftX);
+        if (overlayRatio !== null) {
+            const ratio = overlayRatio || 0;
+            const lengthTop = (top.rightX - top.leftX);
+            const lengthBottom = (bottom.rightX - bottom.leftX);
 
             // Overlay covers its ratio of the path, but should not extend past the right side of
             // the path
-            rightSideTop = Math.min((lengthTop * (ratio || 0)) + prevLeftX, prevRightX);
-            rightSideBtm = Math.min((lengthBtm * (ratio || 0)) + nextLeftX, nextRightX);
+            rightSideTop = Math.min((lengthTop * ratio) + top.leftX, top.rightX);
+            rightSideBottom = Math.min((lengthBottom * ratio) + bottom.leftX, bottom.rightX);
         }
 
         return [
             // Start position
-            ['M', prevLeftX, prevHeight],
+            ['M', top.leftX, top.y],
             // Move to right
-            ['L', rightSideTop, prevHeight],
+            ['L', rightSideTop, top.y],
             // Move down
-            ['L', rightSideBtm, nextHeight],
+            ['L', rightSideBottom, bottom.y],
             // Move to left
-            ['L', nextLeftX, nextHeight],
+            ['L', bottom.leftX, bottom.y],
             // Wrap back to top
-            ['L', prevLeftX, prevHeight],
+            ['L', top.leftX, top.y],
         ];
     }
 }

@@ -341,6 +341,7 @@ class D3Funnel {
             .attr('width', this.width)
             .attr('height', this.height);
 
+        this.blockShapes = this.makeBlockShapes();
         [this.blockPaths, this.overlayPaths] = this.makePaths();
 
         // The <g> element of each block, filled in as the blocks are drawn
@@ -370,27 +371,51 @@ class D3Funnel {
     }
 
     /**
-     * Create the paths to be used to define the discrete funnel blocks and returns the results in
-     * an array.
+     * Create the paths of each block, and of each bar overlay if enabled, from the block shapes.
      *
      * @return {Array, Array}
      */
     makePaths() {
+        const makeBlockPaths = this.options.chart.curve.enabled ?
+            (shape, overlayRatio) => this.navigator.makeCurvedPaths(shape, overlayRatio) :
+            (shape, overlayRatio) => this.navigator.makeStraightPaths(shape, overlayRatio);
+
+        const paths = this.blockShapes.map((shape) => makeBlockPaths(shape));
+        const overlayPaths = this.options.block.barOverlay.enabled ?
+            this.blockShapes.map((shape, i) => makeBlockPaths(shape, this.blocks[i].ratio)) :
+            [];
+
+        return [paths, overlayPaths];
+    }
+
+    /**
+     * Calculate the shape of each funnel block. Each shape has the following form:
+     *
+     * {
+     *   centerX,
+     *   top: { leftX, rightX, y, curveDepth },
+     *   bottom: { leftX, rightX, y, curveDepth },
+     * }
+     *
+     * Each edge runs from its left corner to its right corner at `y`. Its `curveDepth` is how far
+     * the edge dips below its corners at `centerX`, which is zero for a straight funnel.
+     *
+     * @return {Array}
+     */
+    makeBlockShapes() {
         const { inverted, pinchedBlocks, curve } = this.options.chart;
         const {
             minHeight,
             proportionalHeight,
             proportionalWidth,
             gap,
-            barOverlay,
         } = this.options.block;
 
         // Calculate the important fixed positions
         const neckLeftX = (this.width - this.neckWidth) / 2;
         const centerX = this.width / 2;
 
-        const paths = [];
-        const overlayPaths = [];
+        const shapes = [];
 
         // The change in x, y direction of each block, unless adjusted below
         const initialDx = this.getDx(neckLeftX);
@@ -440,9 +465,10 @@ class D3Funnel {
             .filter((block, i) => isPinched(i))
             .reduce((total, block) => total + getBlockHeight(block), 0);
 
-        const makeBlockPaths = curve.enabled ?
-            (dimensions, isOverlay) => this.navigator.makeCurvedPaths(dimensions, isOverlay) :
-            (dimensions, isOverlay) => this.navigator.makeStraightPaths(dimensions, isOverlay);
+        // The depth of an edge's curve is proportional to its width
+        const getEdgeCurveDepth = (edge) => (
+            curve.enabled ? this.getCurveDepth(edge.rightX - edge.leftX) : 0
+        );
 
         // The slope will determine the x points on each block iteration
         // Given: slope = (y1 - y2) / (x1 - x2)
@@ -450,8 +476,7 @@ class D3Funnel {
         // (x2, y2) = (0, the far edge of the funnel)
         const slope = (bottomY - topY - pinchHeight) / neckLeftX;
 
-        // Create the path definition for each funnel block
-        // Remember to loop back to the beginning point for a closed path
+        // Create the shape of each funnel block
         this.blocks.forEach((block, i) => {
             let dx = initialDx;
             let dy = initialDy;
@@ -522,35 +547,36 @@ class D3Funnel {
 
             this.blocks[i].height = dy;
 
-            const edges = this.carveBlockGap({
-                prevLeftX,
-                prevRightX,
-                prevHeight,
-                nextLeftX,
-                nextRightX,
-                nextHeight,
+            const { top, bottom } = this.carveBlockGap({
+                top: {
+                    leftX: prevLeftX,
+                    rightX: prevRightX,
+                    y: prevHeight,
+                },
+                bottom: {
+                    leftX: nextLeftX,
+                    rightX: nextRightX,
+                    y: nextHeight,
+                },
             }, i);
 
             // Extend the bottom of a block beneath the next block when they touch. Sharing the
             // exact same edge would let the background bleed through the antialiasing along the
             // seam
             const isCovered = i < this.blocks.length - 1 && gap === 0;
-            const nextCurveScale = isCovered ? 4 : 2;
+            const bottomCurveScale = isCovered ? 2 : 1;
 
-            // A quadratic curve dips halfway to its control point
-            const dimensions = {
+            shapes.push({
                 centerX,
-                ...edges,
-                prevCurve: 2 * this.getCurveDepth(edges.prevRightX - edges.prevLeftX),
-                nextCurve: nextCurveScale * this.getCurveDepth(edges.nextRightX - edges.nextLeftX),
-                ratio: block.ratio,
-            };
-
-            paths.push(makeBlockPaths(dimensions, false));
-
-            if (barOverlay.enabled) {
-                overlayPaths.push(makeBlockPaths(dimensions, true));
-            }
+                top: {
+                    ...top,
+                    curveDepth: getEdgeCurveDepth(top),
+                },
+                bottom: {
+                    ...bottom,
+                    curveDepth: bottomCurveScale * getEdgeCurveDepth(bottom),
+                },
+            });
 
             // Set the next block's previous position
             prevLeftX = nextLeftX;
@@ -558,7 +584,7 @@ class D3Funnel {
             prevHeight = nextHeight;
         });
 
-        return [paths, overlayPaths];
+        return shapes;
     }
 
     /**
@@ -566,22 +592,16 @@ class D3Funnel {
      * split evenly between the two blocks it separates, and the corners slide along the block's own
      * sides so that the overall funnel shape is preserved.
      *
-     * @param {Object} edges
+     * @param {Object} edges The block's `top` and `bottom` edges, each with `leftX`, `rightX`,
+     *                       and `y`.
      * @param {int}    index
      *
      * @return {Object}
      */
     carveBlockGap(edges, index) {
-        const {
-            prevLeftX,
-            prevRightX,
-            prevHeight,
-            nextLeftX,
-            nextRightX,
-            nextHeight,
-        } = edges;
+        const { top, bottom } = edges;
         const { gap } = this.options.block;
-        const height = nextHeight - prevHeight;
+        const height = bottom.y - top.y;
 
         let trimTop = index > 0 ? gap / 2 : 0;
         let trimBottom = index < this.blocks.length - 1 ? gap / 2 : 0;
@@ -595,17 +615,17 @@ class D3Funnel {
         trimTop *= scale;
         trimBottom *= scale;
 
-        const top = trimTop / height;
-        const bottom = 1 - (trimBottom / height);
+        // Slide each corner along its side to the edge's new position
         const lerp = (a, b, t) => a + ((b - a) * t);
+        const makeEdge = (t, y) => ({
+            leftX: lerp(top.leftX, bottom.leftX, t),
+            rightX: lerp(top.rightX, bottom.rightX, t),
+            y,
+        });
 
         return {
-            prevLeftX: lerp(prevLeftX, nextLeftX, top),
-            prevRightX: lerp(prevRightX, nextRightX, top),
-            prevHeight: prevHeight + trimTop,
-            nextLeftX: lerp(prevLeftX, nextLeftX, bottom),
-            nextRightX: lerp(prevRightX, nextRightX, bottom),
-            nextHeight: nextHeight - trimBottom,
+            top: makeEdge(trimTop / height, top.y + trimTop),
+            bottom: makeEdge(1 - (trimBottom / height), bottom.y - trimBottom),
         };
     }
 
@@ -743,24 +763,20 @@ class D3Funnel {
      */
     drawTopOval(svg, index) {
         const { shade } = this.options.chart.curve;
-        const centerX = this.width / 2;
+        const { centerX, top } = this.blockShapes[index];
 
         // Create path from the top of the block, mirroring the block's top curve to form the back
-        // of the oval. The front extends beneath the block to avoid a seam along their shared edge
-        const [
-            [, leftX, topY],
-            [, , controlY],
-            [, rightX],
-        ] = this.blockPaths[index];
-        const curve = controlY - topY;
+        // of the oval. The front extends beneath the block to avoid a seam along their shared edge.
+        // A quadratic curve dips halfway to its control point
+        const curve = 2 * top.curveDepth;
 
         const path = this.navigator.plot([
-            ['M', leftX, topY],
-            ['Q', centerX, topY + (2 * curve)],
-            ['', rightX, topY],
-            ['M', rightX, topY],
-            ['Q', centerX, topY - curve],
-            ['', leftX, topY],
+            ['M', top.leftX, top.y],
+            ['Q', centerX, top.y + (2 * curve)],
+            ['', top.rightX, top.y],
+            ['M', top.rightX, top.y],
+            ['Q', centerX, top.y - curve],
+            ['', top.leftX, top.y],
         ]);
 
         // Draw top oval beneath any other element, so that the block above it (if any) overlaps its
@@ -1182,24 +1198,13 @@ class D3Funnel {
      * @return {Number}
      */
     getBlockWidthAt(index, y) {
-        const paths = this.blockPaths[index];
+        const { top, bottom } = this.blockShapes[index];
 
-        // Straight blocks are a simple trapezoid. Curved blocks have their side corners at
-        // different path points
-        const [
-            [, topLeftX, topY],
-            [, topRightX],
-            [, bottomRightX],
-            [, bottomLeftX, bottomY],
-        ] = this.options.chart.curve.enabled ?
-            [paths[0], paths[2], paths[3], paths[6]] :
-            [paths[0], paths[1], paths[2], paths[3]];
+        const height = bottom.y - top.y;
+        const t = height > 0 ? Math.min(Math.max((y - top.y) / height, 0), 1) : 0;
 
-        const height = bottomY - topY;
-        const t = height > 0 ? Math.min(Math.max((y - topY) / height, 0), 1) : 0;
-
-        const left = topLeftX + ((bottomLeftX - topLeftX) * t);
-        const right = topRightX + ((bottomRightX - topRightX) * t);
+        const left = top.leftX + ((bottom.leftX - top.leftX) * t);
+        const right = top.rightX + ((bottom.rightX - top.rightX) * t);
 
         return right - left;
     }
@@ -1215,30 +1220,22 @@ class D3Funnel {
      * @return {Number}
      */
     getTextY(index, lineCount, lineHeight) {
-        const { chart, label } = this.options;
-        const paths = this.blockPaths[index];
+        const { label } = this.options;
+        const shape = this.blockShapes[index];
+        const nextShape = this.blockShapes[index + 1];
         const offset = label.padding + ((lineHeight * lineCount) / 2);
 
-        // The top and bottom edges of the block at its horizontal center; each path command is
-        // [command, x, y]
-        let top = paths[0][2];
-        let bottom = paths[2][2];
-        let middle = (top + bottom) / 2;
+        // The visible top and bottom of the block at its horizontal center, where curved edges dip
+        // the deepest. The bottom of a block may be hidden behind the top of the next block, if one
+        // exists
+        const top = shape.top.y + shape.top.curveDepth;
+        let bottom = shape.bottom.y + shape.bottom.curveDepth;
 
-        if (chart.curve.enabled) {
-            const nextPaths = this.blockPaths[index + 1];
-
-            // A quadratic curve peaks halfway between its endpoints and its control point. The
-            // bottom of a block may be hidden behind the top of the next block, if one exists
-            top = (paths[0][2] + paths[1][2]) / 2;
-            bottom = (paths[3][2] + paths[5][2]) / 2;
-
-            if (nextPaths) {
-                bottom = Math.min(bottom, (nextPaths[0][2] + nextPaths[1][2]) / 2);
-            }
-
-            middle = (top + bottom) / 2;
+        if (nextShape) {
+            bottom = Math.min(bottom, nextShape.top.y + nextShape.top.curveDepth);
         }
+
+        const middle = (top + bottom) / 2;
 
         if (label.verticalAlign === 'top') {
             return top + offset;
