@@ -23,9 +23,9 @@ const settings = {
             },
         },
     },
-    proportionalHeight: {
+    proportionalLength: {
         block: {
-            proportionalHeight: true,
+            proportionalLength: true,
         },
     },
     gap: {
@@ -120,10 +120,10 @@ function onChange() {
 
     let options = {
         chart: {
-            neckWidth: 3 / 8,
+            neckRatio: 3 / 8,
         },
         block: {
-            minHeight: 25,
+            minLength: 25,
         },
         label: {
             format: '{l}\n{f}',
@@ -138,7 +138,7 @@ function onChange() {
 
     // Reverse data for inversion
     if (options.chart.inverted) {
-        options.chart.neckWidth = 1 / 3;
+        options.chart.neckRatio = 1 / 3;
         data = data.reverse();
     }
 

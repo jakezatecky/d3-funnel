@@ -40,8 +40,8 @@ By default, the chart will assume the width and height of the parent container:
     ];
     const options = {
         block: {
-            proportionalHeight: true,
-            minHeight: 15,
+            proportionalLength: true,
+            minLength: 15,
         },
     };
 
@@ -61,26 +61,29 @@ Without a bundler, load D3 and then the browser bundle, which provides the globa
 
 ## Options
 
+Some options refer to the funnel's main axis, the direction the funnel flows from its first block to its last.
+A block's _length_ is its size along the main axis, and its _breadth_ is its size across it.
+
 | Option                         | Description                                                              | Type     | Default               |
 | ------------------------------ | ------------------------------------------------------------------------ | -------- | --------------------- |
 | `chart.width`                  | The width of the chart in pixels or a percentage.                        | mixed    | Container's width     |
 | `chart.height`                 | The height of the chart in pixels or a percentage.                       | mixed    | Container's height    |
-| `chart.neckWidth`              | The width of the narrow end (top when inverted) as a fraction of width.  | number   | `1 / 3`               |
-| `chart.pinchedBlocks`          | How many blocks at the neck keep its width.                              | number   | `0`                   |
+| `chart.neckRatio`              | The narrow end's breadth (first when inverted) as a fraction of breadth. | number   | `1 / 3`               |
+| `chart.pinchedBlocks`          | How many blocks at the neck keep its breadth.                            | number   | `0`                   |
 | `chart.inverted`               | Whether the funnel direction is inverted (like a pyramid).               | bool     | `false`               |
 | `chart.animation.duration`     | The duration of each block's load animation in milliseconds.             | number   | `0` (disabled)        |
 | `chart.curve.enabled`          | Whether the funnel is curved.                                            | bool     | `false`               |
-| `chart.curve.depth`            | The pixel depth of a full-width edge's curve; narrower edges curve less. | number   | `5`                   |
+| `chart.curve.depth`            | The pixel curve depth of a full-breadth edge; narrower edges curve less. | number   | `5`                   |
 | `chart.curve.shade`            | The shade adjustment of the top oval, from `-1` to `1`.                  | number   | `-0.4`                |
 | `chart.totalValue`             | Override the total value used in ratio calculations.                     | number   | `null`                |
-| `block.proportionalHeight`     | Whether the block heights are proportional to their value.               | bool     | `false`               |
-| `block.proportionalWidth`      | Whether the block widths narrow in proportion to their value decrease.   | bool     | `false`               |
+| `block.proportionalLength`     | Whether the block lengths are proportional to their value.               | bool     | `false`               |
+| `block.proportionalBreadth`    | Whether the block breadths narrow in proportion to their value decrease. | bool     | `false`               |
 | `block.barOverlay.enabled`     | Whether the blocks have bar chart overlays proportional to its weight.   | bool     | `false`               |
 | `block.barOverlay.shade`       | The shade adjustment of the block behind its overlay, from `-1` to `1`.  | number   | `0.3`                 |
 | `block.fill.colors`            | The block colors as a repeating array or a function of the block index.  | mixed    | `d3.schemeCategory10` |
 | `block.fill.type`              | Either `'solid'` or `'gradient'`.                                        | string   | `'solid'`             |
 | `block.fill.gradientShade`     | The shade adjustment of the edges of gradient fills, from `-1` to `1`.   | number   | `-0.2`                |
-| `block.minHeight`              | The minimum pixel height of a block.                                     | number   | `0`                   |
+| `block.minLength`              | The minimum pixel length of a block.                                     | number   | `0`                   |
 | `block.gap`                    | The pixel space between blocks. The funnel's outline is preserved.       | number   | `0`                   |
 | `block.highlight.enabled`      | Whether the blocks are highlighted on hover.                             | bool     | `false`               |
 | `block.highlight.shade`        | The shade adjustment of a highlighted block, from `-1` to `1`.           | number   | `-0.2`                |
@@ -230,11 +233,11 @@ chart.draw(data, options);
 ### Overriding Defaults
 
 You may wish to override the default chart options.
-For example, you may wish for every funnel to have proportional heights.
+For example, you may wish for every funnel to have proportional lengths.
 To do this, simply modify the `D3Funnel.defaults` property:
 
 ``` javascript
-D3Funnel.defaults.block.proportionalHeight = true;
+D3Funnel.defaults.block.proportionalLength = true;
 ```
 
 Should you wish to override multiple properties at a time, you may consider using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`:
@@ -242,7 +245,7 @@ Should you wish to override multiple properties at a time, you may consider usin
 ``` javascript
 D3Funnel.defaults = _.merge(D3Funnel.defaults, {
     block: {
-        proportionalHeight: true,
+        proportionalLength: true,
         fill: {
             type: 'gradient',
         },

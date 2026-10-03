@@ -7,6 +7,7 @@
 * Remove the `D3Funnel.LABEL_LINE_HEIGHT` static property in favor of the `label.lineHeight` option
 * Remove the `D3Funnel.LABEL_PADDING` static property in favor of the `label.padding` option
 * Rename the `pathType` attribute on overlay paths to `data-path-type`
+* Remove the `height` property from the block data passed to event handlers
 * Rename and restructure several options to better reflect what they do and reduce ambiguity; see [Migrating to v3](#migrating-to-v3)
 * Remove support for the legacy array-of-arrays data structure, deprecated since v1.1.0; data entries must now be objects (e.g., `{ label: 'Applicants', value: 12000 }`)
 
@@ -31,19 +32,20 @@ Unless a remark says otherwise, their behavior is unchanged.
 
 #### Chart Options
 
-| v2                    | v3                         | Remarks                                                                                        |
-| --------------------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
-| `block.barOverlay`    | `block.barOverlay.enabled` |                                                                                                |
-| `block.dynamicHeight` | `block.proportionalHeight` |                                                                                                |
-| `block.dynamicSlope`  | `block.proportionalWidth`  |                                                                                                |
-| `block.fill.scale`    | `block.fill.colors`        |                                                                                                |
-| `block.highlight`     | `block.highlight.enabled`  |                                                                                                |
-| `chart.animate`       | `chart.animation.duration` |                                                                                                |
-| `chart.bottomPinch`   | `chart.pinchedBlocks`      |                                                                                                |
-| `chart.bottomWidth`   | `chart.neckWidth`          |                                                                                                |
-| `chart.curve.height`  | `chart.curve.depth`        | Divide by 4. The value is now the pixel depth of a full-width edge's curve (default: 20 → 5).  |
-| `chart.totalCount`    | `chart.totalValue`         |                                                                                                |
-| `label.fill`          | `label.color`              |                                                                                                |
+| v2                    | v3                          | Remarks                                                                                         |
+| --------------------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
+| `block.barOverlay`    | `block.barOverlay.enabled`  |                                                                                                 |
+| `block.dynamicHeight` | `block.proportionalLength`  |                                                                                                 |
+| `block.dynamicSlope`  | `block.proportionalBreadth` |                                                                                                 |
+| `block.fill.scale`    | `block.fill.colors`         |                                                                                                 |
+| `block.highlight`     | `block.highlight.enabled`   |                                                                                                 |
+| `block.minHeight`     | `block.minLength`           |                                                                                                 |
+| `chart.animate`       | `chart.animation.duration`  |                                                                                                 |
+| `chart.bottomPinch`   | `chart.pinchedBlocks`       |                                                                                                 |
+| `chart.bottomWidth`   | `chart.neckRatio`           |                                                                                                 |
+| `chart.curve.height`  | `chart.curve.depth`         | Divide by 4. The value is now the pixel depth of a full-breadth edge's curve (default: 20 → 5). |
+| `chart.totalCount`    | `chart.totalValue`          |                                                                                                 |
+| `label.fill`          | `label.color`               |                                                                                                 |
 
 #### Data Options
 

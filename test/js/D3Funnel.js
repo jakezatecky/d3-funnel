@@ -546,12 +546,12 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('chart.neckWidth', () => {
+        describe('chart.neckRatio', () => {
             it('should set the bottom tip width to the specified percentage', () => {
                 getFunnel().draw(getBasicData(), {
                     chart: {
                         width: 200,
-                        neckWidth: 1 / 2,
+                        neckRatio: 1 / 2,
                     },
                 });
 
@@ -560,7 +560,7 @@ describe('D3Funnel', () => {
         });
 
         describe('chart.pinchedBlocks', () => {
-            it('should set the last n number of blocks to have the width of chart.neckWidth', () => {
+            it('should set the last n number of blocks to have the width set by chart.neckRatio', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
@@ -568,7 +568,7 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         width: 450,
-                        neckWidth: 1 / 3,
+                        neckRatio: 1 / 3,
                         pinchedBlocks: 2,
                     },
                 });
@@ -579,7 +579,7 @@ describe('D3Funnel', () => {
                 assert.equal(150, paths[2].getBBox().width);
             });
 
-            it('should maintain chart.neckWidth when combined with block.minHeight', () => {
+            it('should maintain chart.neckRatio when combined with block.minLength', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
@@ -588,12 +588,12 @@ describe('D3Funnel', () => {
                     chart: {
                         width: 450,
                         height: 100,
-                        neckWidth: 1 / 3,
+                        neckRatio: 1 / 3,
                         pinchedBlocks: 1,
                     },
                     block: {
-                        proportionalHeight: true,
-                        minHeight: 20,
+                        proportionalLength: true,
+                        minLength: 20,
                     },
                 });
 
@@ -602,7 +602,7 @@ describe('D3Funnel', () => {
                 assert.equal(150, paths[2].getBBox().width);
             });
 
-            it('should maintain chart.neckWidth when combined with block.proportionalHeight and curve.enabled', () => {
+            it('should maintain chart.neckRatio when combined with block.proportionalLength and curve.enabled', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
@@ -612,14 +612,14 @@ describe('D3Funnel', () => {
                     chart: {
                         width: 320,
                         height: 400,
-                        neckWidth: 3 / 8,
+                        neckRatio: 3 / 8,
                         pinchedBlocks: 1,
                         curve: {
                             enabled: true,
                         },
                     },
                     block: {
-                        proportionalHeight: true,
+                        proportionalLength: true,
                     },
                 });
 
@@ -637,7 +637,7 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         width: 200,
-                        neckWidth: 1 / 2,
+                        neckRatio: 1 / 2,
                     },
                 });
 
@@ -654,7 +654,7 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         width: 200,
-                        neckWidth: 1 / 2,
+                        neckRatio: 1 / 2,
                         inverted: true,
                     },
                 });
@@ -702,7 +702,7 @@ describe('D3Funnel', () => {
                     chart: {
                         width: 200,
                         height: 200,
-                        neckWidth: 1 / 4,
+                        neckRatio: 1 / 4,
                         curve: { enabled: true, depth: 5 },
                     },
                     block,
@@ -762,14 +762,14 @@ describe('D3Funnel', () => {
                 assert.closeTo(200, (second[3].y + second[5].y) / 2, 0.0001);
             });
 
-            it('should maintain chart.neckWidth when combined with block.proportionalHeight', () => {
-                const [, , second] = drawCurved({ proportionalHeight: true });
+            it('should maintain chart.neckRatio when combined with block.proportionalLength', () => {
+                const [, , second] = drawCurved({ proportionalLength: true });
 
                 assert.closeTo(50, second[3].x - second[6].x, 0.0001);
             });
         });
 
-        describe('block.proportionalHeight', () => {
+        describe('block.proportionalLength', () => {
             it('should use equal heights when false', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
@@ -795,7 +795,7 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        proportionalHeight: true,
+                        proportionalLength: true,
                     },
                 });
 
@@ -805,7 +805,7 @@ describe('D3Funnel', () => {
                 assert.equal(200, parseInt(getPathHeight(select(paths[1])), 10));
             });
 
-            it('should not have NaN in the last path when neckWidth is equal to 0%', () => {
+            it('should not have NaN in the last path when neckRatio is 0', () => {
                 // A very specific cooked-up example that could trigger NaN
                 getFunnel().draw([
                     { label: 'A', value: 120 },
@@ -815,10 +815,10 @@ describe('D3Funnel', () => {
                 ], {
                     chart: {
                         height: 300,
-                        neckWidth: 0,
+                        neckRatio: 0,
                     },
                     block: {
-                        proportionalHeight: true,
+                        proportionalLength: true,
                     },
                 });
 
@@ -827,17 +827,17 @@ describe('D3Funnel', () => {
                 assert.equal(-1, select(paths[3]).attr('d').indexOf('NaN'));
             });
 
-            it('should not error when neckWidth is equal to 100%', () => {
+            it('should not error when neckRatio is 1', () => {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 2 },
                 ], {
                     chart: {
                         height: 300,
-                        neckWidth: 1,
+                        neckRatio: 1,
                     },
                     block: {
-                        proportionalHeight: true,
+                        proportionalLength: true,
                     },
                 });
             });
@@ -848,7 +848,7 @@ describe('D3Funnel', () => {
                         height: 0,
                     },
                     block: {
-                        proportionalHeight: true,
+                        proportionalLength: true,
                     },
                 });
 
@@ -868,7 +868,7 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        proportionalHeight: true,
+                        proportionalLength: true,
                     },
                 });
 
@@ -879,7 +879,7 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('block.proportionalWidth', () => {
+        describe('block.proportionalBreadth', () => {
             it('should give each block top width relative to its value', () => {
                 getFunnel().draw([
                     { label: 'A', value: 100 },
@@ -891,7 +891,7 @@ describe('D3Funnel', () => {
                         width: 100,
                     },
                     block: {
-                        proportionalWidth: true,
+                        proportionalBreadth: true,
                     },
                 });
 
@@ -914,7 +914,7 @@ describe('D3Funnel', () => {
                         width: 100,
                     },
                     block: {
-                        proportionalWidth: true,
+                        proportionalBreadth: true,
                     },
                 });
 
@@ -924,14 +924,14 @@ describe('D3Funnel', () => {
                 assert.equal(parseFloat(getPathBottomWidth(select(paths[3]))), 74);
             });
 
-            it('should use neckWidth value when false', () => {
+            it('should use neckRatio value when false', () => {
                 getFunnel().draw([
                     { label: 'A', value: 100 },
                     { label: 'B', value: 90 },
                 ], {
                     chart: {
                         width: 100,
-                        neckWidth: 0.4,
+                        neckRatio: 0.4,
                     },
                 });
 
@@ -1179,7 +1179,7 @@ describe('D3Funnel', () => {
             });
         });
 
-        describe('block.minHeight', () => {
+        describe('block.minLength', () => {
             it('should give each block the minimum height specified', () => {
                 getFunnel().draw([
                     { label: 'A', value: 299 },
@@ -1189,8 +1189,8 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        proportionalHeight: true,
-                        minHeight: 10,
+                        proportionalLength: true,
+                        minLength: 10,
                     },
                 });
 
@@ -1209,8 +1209,8 @@ describe('D3Funnel', () => {
                         height: 300,
                     },
                     block: {
-                        proportionalHeight: true,
-                        minHeight: 10,
+                        proportionalLength: true,
+                        minLength: 10,
                     },
                 });
 
@@ -1226,7 +1226,7 @@ describe('D3Funnel', () => {
                     { label: 'A', value: 1 },
                     { label: 'B', value: 1 },
                 ], {
-                    chart: { width: 200, height: 200, neckWidth: 1 / 2 },
+                    chart: { width: 200, height: 200, neckRatio: 1 / 2 },
                     ...options,
                 });
 
@@ -1620,7 +1620,7 @@ describe('D3Funnel', () => {
 
             function drawLabel(label, options = {}) {
                 getFunnel().draw([{ label, value: 1 }], {
-                    chart: { width: 200, height: 100, neckWidth: 1 / 2 },
+                    chart: { width: 200, height: 100, neckRatio: 1 / 2 },
                     ...options,
                     label: { format: '{l}', ...options.label },
                 });

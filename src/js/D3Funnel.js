@@ -18,7 +18,7 @@ class D3Funnel {
         chart: {
             width: 350,
             height: 400,
-            neckWidth: 1 / 3,
+            neckRatio: 1 / 3,
             pinchedBlocks: 0,
             inverted: false,
             animation: {
@@ -32,8 +32,8 @@ class D3Funnel {
             totalValue: null,
         },
         block: {
-            proportionalHeight: false,
-            proportionalWidth: false,
+            proportionalLength: false,
+            proportionalBreadth: false,
             barOverlay: {
                 enabled: false,
                 shade: 0.3,
@@ -43,7 +43,7 @@ class D3Funnel {
                 type: 'solid',
                 gradientShade: -0.2,
             },
-            minHeight: 0,
+            minLength: 0,
             gap: 0,
             highlight: {
                 enabled: false,
@@ -156,7 +156,7 @@ class D3Funnel {
 
         this.width = width;
         this.height = height;
-        this.neckWidth = width * this.options.chart.neckWidth;
+        this.neckWidth = width * this.options.chart.neckRatio;
 
         this.id = `d3-funnel-${nanoid()}`;
 
@@ -407,9 +407,9 @@ class D3Funnel {
     makeBlockShapes() {
         const { inverted, pinchedBlocks, curve } = this.options.chart;
         const {
-            minHeight,
-            proportionalHeight,
-            proportionalWidth,
+            minLength,
+            proportionalLength,
+            proportionalBreadth,
             gap,
         } = this.options.block;
 
@@ -433,7 +433,7 @@ class D3Funnel {
         // This is greedy in that the block will have a guaranteed height and the remaining is
         // shared among the ratio, instead of being shared according to the remaining minus the
         // guaranteed
-        const totalHeight = this.height - (minHeight * this.blocks.length);
+        const totalHeight = this.height - (minLength * this.blocks.length);
 
         // The top and bottom edges of the funnel's sides
         const topY = prevHeight;
@@ -444,7 +444,7 @@ class D3Funnel {
         // Get the proportional height of a block
         const getBlockHeight = (block) => {
             // Slice off the height proportional to this block and add the greedy minimum height
-            let height = (totalHeight * block.ratio) + minHeight;
+            let height = (totalHeight * block.ratio) + minLength;
 
             // Account for any curvature
             if (curve.enabled) {
@@ -484,7 +484,7 @@ class D3Funnel {
             let dy = initialDy;
 
             // Make heights proportional to block weight
-            if (proportionalHeight) {
+            if (proportionalLength) {
                 dy = getBlockHeight(block);
 
                 // Given: y = mx + b
@@ -528,7 +528,7 @@ class D3Funnel {
             }
 
             // Make slope width proportional to change in block value
-            if (proportionalWidth && !inverted) {
+            if (proportionalBreadth && !inverted) {
                 const nextBlockValue = this.blocks[i + 1] ?
                     this.blocks[i + 1].value :
                     block.value;
@@ -546,8 +546,6 @@ class D3Funnel {
             const nextLeftX = inverted ? prevLeftX - dx : prevLeftX + dx;
             const nextRightX = inverted ? prevRightX + dx : prevRightX - dx;
             const nextHeight = prevHeight + dy;
-
-            this.blocks[i].height = dy;
 
             const { top, bottom } = this.carveBlockGap({
                 top: {
