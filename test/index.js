@@ -6,5 +6,6 @@ import './js/D3Funnel.js';
 import './js/LabelFormatter.js';
 import './js/Labeler.js';
 import './js/Navigator.js';
+import './js/Projection.js';
 import './js/Tooltip.js';
 import './js/Utils.js';

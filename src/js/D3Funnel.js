@@ -10,6 +10,7 @@ import Colorizer from '#js/Colorizer.js';
 import LabelFormatter from '#js/LabelFormatter.js';
 import Labeler from '#js/Labeler.js';
 import Navigator from '#js/Navigator.js';
+import Projection from '#js/Projection.js';
 import Tooltip from '#js/Tooltip.js';
 import Utils from '#js/Utils.js';
 
@@ -157,8 +158,10 @@ class D3Funnel {
         this.width = width;
         this.height = height;
 
-        this.length = height;
-        this.breadth = width;
+        // Lay the funnel out in flow space, then project it onto the screen
+        this.projection = new Projection(width, height);
+        this.length = this.projection.length;
+        this.breadth = this.projection.breadth;
         this.neckBreadth = this.breadth * this.options.chart.neckRatio;
 
         this.id = `d3-funnel-${nanoid()}`;
@@ -773,7 +776,7 @@ class D3Funnel {
         // edge. A quadratic curve bulges halfway to its control point
         const curve = 2 * start.curveDepth;
 
-        const path = this.navigator.plot([
+        const path = this.plot([
             ['M', start.crossMin, start.flow],
             ['Q', crossCenter, start.flow + (2 * curve)],
             ['', start.crossMax, start.flow],
@@ -945,7 +948,7 @@ class D3Funnel {
                 [, maxCross, maxFlow],
             ] = paths;
 
-            beforePath = this.navigator.plot([
+            beforePath = this.plot([
                 ['M', minCross, minFlow],
                 ['L', maxCross, maxFlow],
                 ['L', maxCross, maxFlow],
@@ -958,7 +961,7 @@ class D3Funnel {
                 [, maxCross, maxFlow],
             ] = paths;
 
-            beforePath = this.navigator.plot([
+            beforePath = this.plot([
                 ['M', minCross, minFlow],
                 ['Q', controlCross, controlFlow],
                 ['', maxCross, maxFlow],
@@ -1005,7 +1008,19 @@ class D3Funnel {
      * @return {string}
      */
     getPathDefinition(index, isOverlay) {
-        return this.navigator.plot(isOverlay ? this.overlayPaths[index] : this.blockPaths[index]);
+        return this.plot(isOverlay ? this.overlayPaths[index] : this.blockPaths[index]);
+    }
+
+    /**
+     * Project the given flow-space path commands onto the screen and compile them into a path
+     * description. Every path should be drawn through this method.
+     *
+     * @param {Array} commands Each as [command, cross, flow].
+     *
+     * @return {string}
+     */
+    plot(commands) {
+        return this.navigator.plot(this.projection.projectPath(commands));
     }
 
     /**
@@ -1119,13 +1134,12 @@ class D3Funnel {
             visibleEnd = Math.min(visibleEnd, nextShape.start.flow + nextShape.start.curveDepth);
         }
 
-        // The funnel flows down the screen
-        return {
-            centerX: shape.crossCenter,
-            top: visibleStart,
-            bottom: visibleEnd,
-            getWidthAt: (y) => this.getBlockBreadthAt(index, y),
-        };
+        return this.projection.projectBounds({
+            crossCenter: shape.crossCenter,
+            start: visibleStart,
+            end: visibleEnd,
+            getBreadthAt: (flow) => this.getBlockBreadthAt(index, flow),
+        });
     }
 
     /**
