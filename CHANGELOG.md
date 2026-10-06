@@ -65,6 +65,7 @@ These changes affect the TypeScript types.
 
 ### Added
 
+* Add `chart.direction` option to draw funnels that flow `'right'`, `'up'`, or `'left'` instead of `'down'` (#23)
 * Add `label.lineHeight` option to set the height of each line of a label as a multiple of its font size
 * Add `labelFontSize` and `labelFontFamily` data options to override the label font of individual blocks
 * Expose `label.fontSize` and `label.fontFamily` in block event data

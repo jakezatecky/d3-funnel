@@ -546,6 +546,118 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('chart.direction', () => {
+            function drawTwoBlocks(direction, options = {}) {
+                const horizontal = direction === 'right' || direction === 'left';
+
+                getFunnel().draw([
+                    { label: 'A', value: 1 },
+                    { label: 'B', value: 1 },
+                ], {
+                    ...options,
+                    chart: {
+                        width: horizontal ? 400 : 200,
+                        height: horizontal ? 200 : 400,
+                        neckRatio: 1 / 2,
+                        direction,
+                        ...options.chart,
+                    },
+                });
+
+                // Each path's bounding box as [x, y, width, height]
+                return selectAll('#funnel path').nodes().map((path) => {
+                    const {
+                        x,
+                        y,
+                        width,
+                        height,
+                    } = path.getBBox();
+
+                    return [x, y, width, height];
+                });
+            }
+
+            it('should flow down by default', () => {
+                const [first, second] = drawTwoBlocks(undefined);
+
+                assert.deepEqual([0, 0, 200, 200], first);
+                assert.deepEqual([25, 200, 150, 200], second);
+            });
+
+            it('should flow from left to right when set to \'right\'', () => {
+                const [first, second] = drawTwoBlocks('right');
+
+                assert.deepEqual([0, 0, 200, 200], first);
+                assert.deepEqual([200, 25, 200, 150], second);
+            });
+
+            it('should flow from bottom to top when set to \'up\'', () => {
+                const [first, second] = drawTwoBlocks('up');
+
+                assert.deepEqual([0, 200, 200, 200], first);
+                assert.deepEqual([25, 0, 150, 200], second);
+            });
+
+            it('should flow from right to left when set to \'left\'', () => {
+                const [first, second] = drawTwoBlocks('left');
+
+                assert.deepEqual([200, 0, 200, 200], first);
+                assert.deepEqual([0, 25, 200, 150], second);
+            });
+
+            it('should center each label along the flow of a horizontal funnel', () => {
+                drawTwoBlocks('right');
+
+                const positions = selectAll('#funnel text').nodes().map((node) => (
+                    [parseFloat(node.getAttribute('x')), parseFloat(node.getAttribute('y'))]
+                ));
+
+                assert.deepEqual([[100, 100], [300, 100]], positions);
+            });
+
+            it('should shade gradients across a horizontal funnel', () => {
+                drawTwoBlocks('right', { block: { fill: { type: 'gradient' } } });
+
+                const gradient = document.querySelector('#funnel linearGradient');
+
+                assert.equal('0', gradient.getAttribute('x2'));
+                assert.equal('1', gradient.getAttribute('y2'));
+            });
+
+            it('should raise bar overlays from the bottom of a horizontal funnel', () => {
+                drawTwoBlocks('right', { block: { barOverlay: { enabled: true } } });
+
+                const overlay = document.querySelector('#funnel path[data-path-type="foreground"]');
+                const { y, height } = overlay.getBBox();
+
+                // The first block is 200px broad at its start, so half of it rises 100px
+                assert.equal(100, y);
+                assert.equal(200, y + height);
+            });
+
+            it('should fit truncated labels within the length of horizontal blocks', () => {
+                getFunnel().draw([
+                    { label: 'A label that is much too long to fit within its block', value: 1 },
+                    { label: 'B', value: 1 },
+                    { label: 'C', value: 1 },
+                    { label: 'D', value: 1 },
+                ], {
+                    chart: { width: 400, height: 200, direction: 'right' },
+                    label: { format: '{l}', overflow: 'ellipsis' },
+                });
+
+                const tspan = document.querySelector('#funnel tspan');
+
+                // Each block is 100px long, minus 5px padding on each side
+                assert.isTrue(tspan.textContent.endsWith('…'));
+                assert.isAtMost(tspan.getComputedTextLength(), 90);
+            });
+
+            it('should throw an error for an unknown direction', () => {
+                assert.throws(() => drawTwoBlocks('sideways'), 'Unknown chart direction: sideways.');
+            });
+        });
+
         describe('chart.neckRatio', () => {
             it('should set the bottom tip width to the specified percentage', () => {
                 getFunnel().draw(getBasicData(), {

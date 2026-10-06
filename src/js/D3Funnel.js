@@ -19,6 +19,7 @@ class D3Funnel {
         chart: {
             width: 350,
             height: 400,
+            direction: 'down',
             neckRatio: 1 / 3,
             pinchedBlocks: 0,
             inverted: false,
@@ -159,7 +160,7 @@ class D3Funnel {
         this.height = height;
 
         // Lay the funnel out in flow space, then project it onto the screen
-        this.projection = new Projection(width, height);
+        this.projection = new Projection(width, height, this.options.chart.direction);
         this.length = this.projection.length;
         this.breadth = this.projection.breadth;
         this.neckBreadth = this.breadth * this.options.chart.neckRatio;
@@ -743,6 +744,11 @@ class D3Funnel {
         const gradient = defs.append('linearGradient')
             .attr('id', id);
 
+        // Shade across the funnel, which runs down the screen when the funnel is horizontal
+        if (this.projection.isHorizontal) {
+            gradient.attr('x2', 0).attr('y2', 1);
+        }
+
         // Define the gradient stops
         const stops = [
             [0, shadedEdge],
@@ -1139,6 +1145,7 @@ class D3Funnel {
             start: visibleStart,
             end: visibleEnd,
             getBreadthAt: (flow) => this.getBlockBreadthAt(index, flow),
+            getFlowRangeAt: (cross) => this.getBlockFlowRangeAt(index, cross),
         });
     }
 
@@ -1161,6 +1168,57 @@ class D3Funnel {
         const crossMax = start.crossMax + ((end.crossMax - start.crossMax) * t);
 
         return crossMax - crossMin;
+    }
+
+    /**
+     * Returns the flow positions where the given block is visible at the given cross position, or
+     * null if the block does not reach that far across.
+     *
+     * @param {int}    index
+     * @param {Number} cross
+     *
+     * @return {{start: Number, end: Number}|null}
+     */
+    getBlockFlowRangeAt(index, cross) {
+        const { crossCenter, start, end } = this.blockShapes[index];
+        const nextShape = this.blockShapes[index + 1];
+
+        // A curved edge bulges the furthest at the cross center and not at all at its corners
+        const getEdgeFlowAt = (edge) => {
+            const halfBreadth = (edge.crossMax - edge.crossMin) / 2;
+            const offset = halfBreadth > 0 ? (cross - crossCenter) / halfBreadth : 1;
+
+            return edge.flow + (edge.curveDepth * Math.max(1 - (offset ** 2), 0));
+        };
+
+        let rangeStart = getEdgeFlowAt(start);
+        let rangeEnd = getEdgeFlowAt(end);
+
+        // The end of a block may be hidden behind the start of the next block, if one exists
+        if (nextShape) {
+            rangeEnd = Math.min(rangeEnd, getEdgeFlowAt(nextShape.start));
+        }
+
+        // The block's sides are straight, so its breadth changes steadily along the flow. Cut off
+        // the part of the range where the block is too narrow to reach the cross position
+        const startBreadth = start.crossMax - start.crossMin;
+        const endBreadth = end.crossMax - end.crossMin;
+        const neededBreadth = 2 * Math.abs(cross - crossCenter);
+
+        if (startBreadth !== endBreadth) {
+            const t = (neededBreadth - startBreadth) / (endBreadth - startBreadth);
+            const sideFlow = start.flow + ((end.flow - start.flow) * t);
+
+            if (endBreadth < startBreadth) {
+                rangeEnd = Math.min(rangeEnd, sideFlow);
+            } else {
+                rangeStart = Math.max(rangeStart, sideFlow);
+            }
+        } else if (neededBreadth > startBreadth) {
+            return null;
+        }
+
+        return rangeStart <= rangeEnd ? { start: rangeStart, end: rangeEnd } : null;
     }
 }
 

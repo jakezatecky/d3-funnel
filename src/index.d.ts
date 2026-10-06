@@ -105,6 +105,8 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         width: FunnelDimension;
         /** The height of the chart in pixels or a percentage. */
         height: FunnelDimension;
+        /** The direction the funnel flows, from its first block to its last. */
+        direction: 'down' | 'right' | 'up' | 'left';
         /**
          * The breadth of the funnel's neck (its narrow end, which comes first when inverted), as a
          * fraction of the funnel's breadth.

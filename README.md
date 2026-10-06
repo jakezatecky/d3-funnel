@@ -68,6 +68,7 @@ A block's _length_ is its size along the main axis, and its _breadth_ is its siz
 | ------------------------------ | ------------------------------------------------------------------------ | -------- | --------------------- |
 | `chart.width`                  | The width of the chart in pixels or a percentage.                        | mixed    | Container's width     |
 | `chart.height`                 | The height of the chart in pixels or a percentage.                       | mixed    | Container's height    |
+| `chart.direction`              | Which way the funnel flows: `'down'`, `'right'`, `'up'`, or `'left'`.    | string   | `'down'`              |
 | `chart.neckRatio`              | The narrow end's breadth (first when inverted) as a fraction of breadth. | number   | `1 / 3`               |
 | `chart.pinchedBlocks`          | How many blocks at the neck keep its breadth.                            | number   | `0`                   |
 | `chart.inverted`               | Whether the funnel direction is inverted (like a pyramid).               | bool     | `false`               |
