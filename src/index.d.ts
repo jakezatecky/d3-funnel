@@ -125,7 +125,10 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
              * less.
              */
             depth: number;
-            /** The shade adjustment of the top oval, from `-1` to `1`. */
+            /**
+             * The shade adjustment of the full oval at the top of the funnel (or its start when
+             * horizontal), from `-1` to `1`.
+             */
             shade: number;
         };
         /** Override the total value used in ratio calculations. */

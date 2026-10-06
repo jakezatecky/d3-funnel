@@ -15,7 +15,7 @@
 
 * Funnels that flow up, formerly drawn with `chart.inverted`, keep the first block at the wide base instead of the narrow tip
   * Reverse the data to keep the first block at the tip.
-  * Curved funnels that flow up are drawn as if seen from below, and `block.proportionalBreadth` now applies to them.
+  * `block.proportionalBreadth` now applies to them.
 * Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
 * The tooltip element now remains in the container, hidden with `display: none`, after the mouse leaves a block instead of being removed.
 * Highlighted blocks now shade each path from its resting color, so blocks with bar overlays darken by the same amount as other blocks instead of noticeably more

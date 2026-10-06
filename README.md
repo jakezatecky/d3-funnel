@@ -74,7 +74,7 @@ A block's _length_ is its size along the main axis, and its _breadth_ is its siz
 | `chart.animation.duration`     | The duration of each block's load animation in milliseconds.             | number   | `0` (disabled)        |
 | `chart.curve.enabled`          | Whether the funnel is curved.                                            | bool     | `false`               |
 | `chart.curve.depth`            | The pixel curve depth of a full-breadth edge; narrower edges curve less. | number   | `5`                   |
-| `chart.curve.shade`            | The shade adjustment of the oval at the wide end, from `-1` to `1`.      | number   | `-0.4`                |
+| `chart.curve.shade`            | The shade adjustment of a curved funnel's full oval, from `-1` to `1`.   | number   | `-0.4`                |
 | `chart.totalValue`             | Override the total value used in ratio calculations.                     | number   | `null`                |
 | `block.proportionalLength`     | Whether the block lengths are proportional to their value.               | bool     | `false`               |
 | `block.proportionalBreadth`    | Whether the block breadths narrow in proportion to their value decrease. | bool     | `false`               |
@@ -125,7 +125,8 @@ The blocks of a horizontal funnel are often shorter than their labels, so consid
 
 ### Curved Funnels with Gaps
 
-When a curved funnel has a `block.gap`, each block shows its own oval at its start, with the block before it floating over it.
+Curved funnels are drawn as if seen from slightly above, so their full oval is at the top, or at the start of a horizontal funnel.
+When a curved funnel has a `block.gap`, each block shows its own full oval, with the neighboring block floating over it.
 Both options are in pixels, so they are easy to compare: the blocks will look most three-dimensional when `block.gap` is smaller than `chart.curve.depth`.
 For example, pair a deeper curve with a small gap:
 
@@ -144,7 +145,7 @@ chart.draw(data, {
 ```
 
 A shallow curve with a large gap will instead leave a wide band of empty space between the blocks.
-Remember that narrower edges curve less, so the later blocks of a funnel have shallower ovals than the first block.
+Remember that narrower edges curve less, so the blocks at a funnel's narrow end have shallower ovals than those at its wide end.
 
 ### Tooltip Styles
 

@@ -24,6 +24,13 @@ describe('Projection', () => {
             });
         });
 
+        it('should bulge curves toward the start of a funnel only when it flows up', () => {
+            assert.equal(1, getProjection('down').curveDirection);
+            assert.equal(1, getProjection('right').curveDirection);
+            assert.equal(-1, getProjection('up').curveDirection);
+            assert.equal(1, getProjection('left').curveDirection);
+        });
+
         it('should throw an error for an unknown direction', () => {
             assert.throws(() => getProjection('sideways'), 'Unknown chart direction: sideways.');
         });

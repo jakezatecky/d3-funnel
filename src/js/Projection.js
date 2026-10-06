@@ -25,6 +25,12 @@ class Projection {
 
         this.length = this.isHorizontal ? width : height;
         this.breadth = this.isHorizontal ? height : width;
+
+        // Curved edges bulge toward the bottom of the screen, as if the funnel is seen from
+        // slightly above, so a funnel flowing up bulges toward its start. Horizontal funnels have
+        // no bottom to bulge toward, so they bulge toward their end, like funnels flowing down. In
+        // flow space, 1 bulges toward the end of the funnel and -1 toward its start
+        this.curveDirection = direction === 'up' ? -1 : 1;
     }
 
     /**

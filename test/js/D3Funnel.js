@@ -784,7 +784,7 @@ describe('D3Funnel', () => {
                 assert.equal(paths.length, quadraticPaths.length);
             });
 
-            function drawCurved(block = {}) {
+            function drawCurved(block = {}, chart = {}) {
                 getFunnel().draw([
                     { label: 'A', value: 1 },
                     { label: 'B', value: 3 },
@@ -794,6 +794,7 @@ describe('D3Funnel', () => {
                         height: 200,
                         neckRatio: 1 / 4,
                         curve: { enabled: true, depth: 5 },
+                        ...chart,
                     },
                     block,
                 });
@@ -856,6 +857,75 @@ describe('D3Funnel', () => {
                 const [, , second] = drawCurved({ proportionalLength: true });
 
                 assert.closeTo(50, second[3].x - second[6].x, 0.0001);
+            });
+
+            it('should curve the edges of a funnel that flows up toward the bottom of the screen', () => {
+                const [, first, second] = drawCurved({}, { direction: 'up' });
+
+                // Each control point lies below the ends of its edge
+                assert.isAbove(first[1].y, first[0].y);
+                assert.isAbove(second[1].y, second[0].y);
+            });
+
+            it('should draw the oval at the top of a funnel that flows up', () => {
+                const [oval, first, second] = drawCurved({}, { direction: 'up' });
+
+                // The oval sits on the end of the last block, and its back peaks at the top of the
+                // chart
+                assert.closeTo(second[3].y, oval[0].y, 0.0001);
+                assert.closeTo(0, (oval[3].y + oval[4].y) / 2, 0.0001);
+
+                // The start of the first block dips to the bottom of the chart
+                assert.closeTo(200, (first[0].y + first[1].y) / 2, 0.0001);
+            });
+
+            describe('when animated', () => {
+                // A single block starts growing as soon as the chart is drawn
+                function drawAnimated(direction) {
+                    getFunnel().draw(getBasicData(), {
+                        chart: {
+                            direction,
+                            curve: { enabled: true },
+                            animation: { duration: 20 },
+                        },
+                    });
+                }
+
+                function getOvals() {
+                    return document.querySelectorAll('#funnel svg > path');
+                }
+
+                function wait(milliseconds) {
+                    return new Promise((resolve) => {
+                        setTimeout(resolve, milliseconds);
+                    });
+                }
+
+                it('should draw the oval of a funnel that flows down as its block starts growing', () => {
+                    drawAnimated('down');
+
+                    assert.equal(1, getOvals().length);
+                });
+
+                it('should wait to draw the oval of a funnel that flows up until its block has grown', async () => {
+                    drawAnimated('up');
+
+                    // The oval sits on the end of the block, which has only started growing
+                    assert.equal(0, getOvals().length);
+
+                    await wait(200);
+
+                    assert.equal(1, getOvals().length);
+                });
+            });
+
+            it('should extend the end of a block beneath the next block of a funnel that flows up', () => {
+                const [, first, second] = drawCurved({}, { direction: 'up' });
+
+                // The end of the first block runs straight across, beneath the start of the second
+                // block, which curves down into it
+                assert.closeTo(first[4].y, first[5].y, 0.0001);
+                assert.isAbove(second[1].y, first[5].y);
             });
         });
 

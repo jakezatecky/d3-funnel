@@ -364,11 +364,6 @@ class D3Funnel {
             this.defineColorGradients(this.svg);
         }
 
-        // Add start oval if curved
-        if (chart.curve.enabled) {
-            this.drawStartOval(this.svg, 0);
-        }
-
         // Add each block. Animated blocks draw each other in turn, once the block before them
         // finishes
         if (chart.animation.duration !== 0) {
@@ -406,8 +401,9 @@ class D3Funnel {
      * }
      *
      * The `start` edge is the one nearer the first block. Each edge runs across the funnel from
-     * `crossMin` to `crossMax` at `flow`. Its `curveDepth` is how far the edge bulges toward the
-     * end of the funnel at `crossCenter`, which is zero for a straight funnel.
+     * `crossMin` to `crossMax` at `flow`. Its `curveDepth` is how far the edge bulges along the
+     * flow at `crossCenter`, which is zero for a straight funnel. It is positive when the edge
+     * bulges toward the end of the funnel and negative when it bulges toward the start.
      *
      * @return {Array}
      */
@@ -469,9 +465,12 @@ class D3Funnel {
             .filter((block, i) => isPinched(i))
             .reduce((total, block) => total + getBlockLength(block), 0);
 
-        // The depth of an edge's curve is proportional to its breadth
+        // The depth of an edge's curve is proportional to its breadth, and its direction depends on
+        // which way the funnel faces the screen
         const getEdgeCurveDepth = (edge) => (
-            curve.enabled ? this.getCurveDepth(edge.crossMax - edge.crossMin) : 0
+            curve.enabled ?
+                this.projection.curveDirection * this.getCurveDepth(edge.crossMax - edge.crossMin) :
+                0
         );
 
         // The slope will determine the cross positions on each block iteration
@@ -546,10 +545,11 @@ class D3Funnel {
                 },
             }, i);
 
-            // Extend the end of a block beneath the next block when they touch. Sharing the exact
-            // same edge would let the background bleed through the antialiasing along the seam
+            // Extend the end of a block beneath the next block when they touch, by bulging it one
+            // depth further toward the end of the funnel. Sharing the exact same edge would let the
+            // background bleed through the antialiasing along the seam
             const isCovered = i < this.blocks.length - 1 && gap === 0;
-            const endCurveScale = isCovered ? 2 : 1;
+            const endCurveDepth = getEdgeCurveDepth(end);
 
             shapes.push({
                 crossCenter,
@@ -559,7 +559,9 @@ class D3Funnel {
                 },
                 end: {
                     ...end,
-                    curveDepth: endCurveScale * getEdgeCurveDepth(end),
+                    curveDepth: isCovered ?
+                        endCurveDepth + Math.abs(endCurveDepth) :
+                        endCurveDepth,
                 },
             });
 
@@ -637,8 +639,8 @@ class D3Funnel {
     }
 
     /**
-     * Returns how far the curve of an edge of the given breadth bulges toward the end of the funnel
-     * (or, for the back of an oval, toward its start) beyond its corners.
+     * Returns how far the curve of an edge of the given breadth bulges along the flow beyond its
+     * corners, whichever way it bulges.
      *
      * Each edge is drawn as part of an ellipse viewed from a fixed angle, so its depth is
      * proportional to its breadth. An edge spanning the full breadth of the funnel has a depth of
@@ -653,8 +655,8 @@ class D3Funnel {
     }
 
     /**
-     * Returns the length needed before and after the blocks of a curved funnel for the back of the
-     * start oval and the bulge of the end edge.
+     * Returns the length needed before and after the blocks of a curved funnel, where the back of
+     * its oval or the bulge of its outer edge extends past the blocks' corners.
      *
      * @return {Number}
      */
@@ -729,32 +731,50 @@ class D3Funnel {
     }
 
     /**
-     * Draw the start oval of a curved funnel block.
+     * Returns whether the given block shows the full oval of a curved funnel. The oval sits at the
+     * edge that the funnel's curves bulge away from, which is the start of the first block or the
+     * end of the last. When the blocks are separated, each block shows its own oval.
+     *
+     * @param {int} index
+     *
+     * @return {boolean}
+     */
+    hasOval(index) {
+        const { chart, block } = this.options;
+        const ovalIndex = this.projection.curveDirection > 0 ? 0 : this.blocks.length - 1;
+
+        return chart.curve.enabled && (block.gap > 0 || index === ovalIndex);
+    }
+
+    /**
+     * Draw the full oval of a curved funnel block.
      *
      * @param {Object} svg
      * @param {int}    index
      *
      * @return {void}
      */
-    drawStartOval(svg, index) {
+    drawOval(svg, index) {
         const { shade } = this.options.chart.curve;
-        const { crossCenter, start } = this.blockShapes[index];
+        const shape = this.blockShapes[index];
+        const { crossCenter } = shape;
+        const edge = this.projection.curveDirection > 0 ? shape.start : shape.end;
 
-        // Create path from the start of the block, mirroring the block's start curve to form the
-        // back of the oval. The front extends beneath the block to avoid a seam along their shared
-        // edge. A quadratic curve bulges halfway to its control point
-        const curve = 2 * start.curveDepth;
+        // Create path from the block's edge, mirroring the edge's curve to form the back of the
+        // oval. The front extends beneath the block to avoid a seam along their shared edge. A
+        // quadratic curve bulges halfway to its control point
+        const curve = 2 * edge.curveDepth;
 
         const path = this.plot([
-            ['M', start.crossMin, start.flow],
-            ['Q', crossCenter, start.flow + (2 * curve)],
-            ['', start.crossMax, start.flow],
-            ['M', start.crossMax, start.flow],
-            ['Q', crossCenter, start.flow - curve],
-            ['', start.crossMin, start.flow],
+            ['M', edge.crossMin, edge.flow],
+            ['Q', crossCenter, edge.flow + (2 * curve)],
+            ['', edge.crossMax, edge.flow],
+            ['M', edge.crossMax, edge.flow],
+            ['Q', crossCenter, edge.flow - curve],
+            ['', edge.crossMin, edge.flow],
         ]);
 
-        // Draw start oval beneath any other element, so that the block before it (if any) overlaps
+        // Draw the oval beneath any other element, so that a neighboring block (if any) overlaps
         // its back edge
         svg.insert('path', ':first-child')
             .attr('fill', this.colorizer.shade(this.blocks[index].fill.raw, shade))
@@ -771,11 +791,16 @@ class D3Funnel {
      */
     drawBlock(index) {
         const { chart, events, tooltip } = this.options;
-        const { gap, barOverlay, highlight } = this.options.block;
+        const { barOverlay, highlight } = this.options.block;
+        const isAnimated = chart.animation.duration !== 0;
 
-        // Separated blocks of a curved funnel each show their own start oval
-        if (chart.curve.enabled && gap > 0 && index > 0) {
-            this.drawStartOval(this.svg, index);
+        // An animated block grows from its start edge, so an oval on its end edge would float ahead
+        // of it. Such an oval waits until the block has finished growing
+        const hasOval = this.hasOval(index);
+        const isOvalWaiting = hasOval && isAnimated && this.projection.curveDirection < 0;
+
+        if (hasOval && !isOvalWaiting) {
+            this.drawOval(this.svg, index);
         }
 
         // Create a group just for this block
@@ -813,9 +838,15 @@ class D3Funnel {
             .attr('fill', pathColor)
             .attr('d', this.getPathDefinition(index, false));
 
-        if (chart.animation.duration !== 0 && index < this.blocks.length - 1) {
+        if (isAnimated) {
             pathDrawing.on('end', () => {
-                this.drawBlock(index + 1);
+                if (isOvalWaiting) {
+                    this.drawOval(this.svg, index);
+                }
+
+                if (index < this.blocks.length - 1) {
+                    this.drawBlock(index + 1);
+                }
             });
         }
 
