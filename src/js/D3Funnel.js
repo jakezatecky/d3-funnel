@@ -22,7 +22,6 @@ class D3Funnel {
             direction: 'down',
             neckRatio: 1 / 3,
             pinchedBlocks: 0,
-            inverted: false,
             animation: {
                 duration: 0,
             },
@@ -413,7 +412,7 @@ class D3Funnel {
      * @return {Array}
      */
     makeBlockShapes() {
-        const { inverted, pinchedBlocks, curve } = this.options.chart;
+        const { pinchedBlocks, curve } = this.options.chart;
         const {
             minLength,
             proportionalLength,
@@ -431,12 +430,11 @@ class D3Funnel {
         const initialCrossStep = this.getCrossStep(neckCrossMin);
         const initialFlowStep = this.getFlowStep();
 
-        // Start from the neck for inverted
-        let prevCrossMin = inverted ? neckCrossMin : 0;
-        let prevCrossMax = this.breadth - prevCrossMin;
+        let prevCrossMin = 0;
+        let prevCrossMax = this.breadth;
 
         // Move along the flow to make room for the back of the start oval
-        let prevFlow = curve.enabled ? this.getCurveDepth(this.getStartEdgeBreadth()) : 0;
+        let prevFlow = curve.enabled ? this.getCurveDepth(this.breadth) : 0;
 
         // This is greedy in that the block will have a guaranteed length and the remaining is
         // shared among the ratio, instead of being shared according to the remaining minus the
@@ -446,7 +444,7 @@ class D3Funnel {
         // The start and end of the funnel's sides
         const sideStartFlow = prevFlow;
         const sideEndFlow = curve.enabled ?
-            this.length - this.getCurveDepth(this.getEndEdgeBreadth()) :
+            this.length - this.getCurveDepth(this.neckBreadth) :
             this.length;
 
         // Get the proportional length of a block
@@ -463,11 +461,7 @@ class D3Funnel {
         };
 
         // Pinched blocks sit at the narrow end of the funnel and keep its breadth
-        const isPinched = (i) => (
-            inverted ?
-                i < pinchedBlocks :
-                i >= this.blocks.length - pinchedBlocks
-        );
+        const isPinched = (i) => i >= this.blocks.length - pinchedBlocks;
 
         // Correct slope length if there are blocks being pinched (and thus requiring a sharper
         // curve)
@@ -495,26 +489,14 @@ class D3Funnel {
             if (proportionalLength) {
                 flowStep = getBlockLength(block);
 
-                // Given: flow = (slope * cross) + b
-                // Given: b = sideStartFlow (when funnel), b = sideEndFlow (when pyramid)
-                // For funnel, cross_i = (flow_i - sideStartFlow) / slope
+                // Given: flow = (slope * cross) + sideStartFlow
+                // So: cross_i = (flow_i - sideStartFlow) / slope
                 let targetCrossMin = ((prevFlow + flowStep) - sideStartFlow) / slope;
 
-                // For pyramid, cross_i = (flow_i - sideEndFlow) / -slope
-                if (inverted) {
-                    targetCrossMin = ((prevFlow + flowStep) - sideEndFlow) / (-1 * slope);
-                }
-
-                // If the neck has no breadth, adjust the last cross position (to circumvent errors
-                // associated with rounding)
+                // If the neck has no breadth, put the last cross position at the center (to
+                // circumvent errors associated with rounding)
                 if (this.neckBreadth === 0 && i === this.blocks.length - 1) {
-                    // For funnel, last position is the center
                     targetCrossMin = this.breadth / 2;
-
-                    // For pyramid, last position is the origin
-                    if (inverted) {
-                        targetCrossMin = 0;
-                    }
                 }
 
                 // If the neck is as broad as the funnel, stop cross velocity
@@ -529,14 +511,10 @@ class D3Funnel {
 
                 // Calculate the shift necessary for both cross positions
                 crossStep = targetCrossMin - prevCrossMin;
-
-                if (inverted) {
-                    crossStep = prevCrossMin - targetCrossMin;
-                }
             }
 
             // Make breadths proportional to block value
-            if (proportionalBreadth && !inverted) {
+            if (proportionalBreadth) {
                 const nextBlockValue = this.blocks[i + 1] ?
                     this.blocks[i + 1].value :
                     block.value;
@@ -550,9 +528,9 @@ class D3Funnel {
                 crossStep = 0;
             }
 
-            // Calculate the position of next block, expanding outward if inverted
-            const nextCrossMin = inverted ? prevCrossMin - crossStep : prevCrossMin + crossStep;
-            const nextCrossMax = inverted ? prevCrossMax + crossStep : prevCrossMax - crossStep;
+            // Calculate the position of the next block
+            const nextCrossMin = prevCrossMin + crossStep;
+            const nextCrossMax = prevCrossMax - crossStep;
             const nextFlow = prevFlow + flowStep;
 
             const { start, end } = this.carveBlockGap({
@@ -675,28 +653,13 @@ class D3Funnel {
     }
 
     /**
-     * @return {Number}
-     */
-    getStartEdgeBreadth() {
-        return this.options.chart.inverted ? this.neckBreadth : this.breadth;
-    }
-
-    /**
-     * @return {Number}
-     */
-    getEndEdgeBreadth() {
-        return this.options.chart.inverted ? this.breadth : this.neckBreadth;
-    }
-
-    /**
      * Returns the length needed before and after the blocks of a curved funnel for the back of the
      * start oval and the bulge of the end edge.
      *
      * @return {Number}
      */
     getCurveReserve() {
-        return this.getCurveDepth(this.getStartEdgeBreadth()) +
-            this.getCurveDepth(this.getEndEdgeBreadth());
+        return this.getCurveDepth(this.breadth) + this.getCurveDepth(this.neckBreadth);
     }
 
     /**

@@ -45,9 +45,9 @@ const settings = {
             },
         },
     },
-    inverted: {
+    up: {
         chart: {
-            inverted: true,
+            direction: 'up',
         },
     },
     animation: {
@@ -104,7 +104,7 @@ const color = document.querySelector('[value="color"]');
 const click = document.querySelector('[value="click"]');
 
 function onChange() {
-    let data = !color.checked ?
+    const data = !color.checked ?
         [
             { label: 'Applicants', value: 12000 },
             { label: 'Pre-screened', value: 4000 },
@@ -135,12 +135,6 @@ function onChange() {
             options = merge(options, settings[checkbox.value]);
         }
     });
-
-    // Reverse data for inversion
-    if (options.chart.inverted) {
-        options.chart.neckRatio = 1 / 3;
-        data = data.reverse();
-    }
 
     clickStatus.hidden = !click.checked;
     chart.draw(data, options);

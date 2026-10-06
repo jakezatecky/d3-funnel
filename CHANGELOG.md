@@ -13,6 +13,9 @@
 
 #### Runtime
 
+* Funnels that flow up, formerly drawn with `chart.inverted`, keep the first block at the wide base instead of the narrow tip
+  * Reverse the data to keep the first block at the tip.
+  * Curved funnels that flow up are drawn as if seen from below, and `block.proportionalBreadth` now applies to them.
 * Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
 * The tooltip element now remains in the container, hidden with `display: none`, after the mouse leaves a block instead of being removed.
 * Highlighted blocks now shade each path from its resting color, so blocks with bar overlays darken by the same amount as other blocks instead of noticeably more
@@ -44,6 +47,7 @@ Unless a remark says otherwise, their behavior is unchanged.
 | `chart.bottomPinch`   | `chart.pinchedBlocks`       |                                                                                                 |
 | `chart.bottomWidth`   | `chart.neckRatio`           |                                                                                                 |
 | `chart.curve.height`  | `chart.curve.depth`         | Divide by 4. The value is now the pixel depth of a full-breadth edge's curve (default: 20 → 5). |
+| `chart.inverted`      | `chart.direction`           | Use `'up'` instead of `true`. The first block is now at the wide base.                          |
 | `chart.totalCount`    | `chart.totalValue`          |                                                                                                 |
 | `label.fill`          | `label.color`               |                                                                                                 |
 

@@ -108,14 +108,11 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         /** The direction the funnel flows, from its first block to its last. */
         direction: 'down' | 'right' | 'up' | 'left';
         /**
-         * The breadth of the funnel's neck (its narrow end, which comes first when inverted), as a
-         * fraction of the funnel's breadth.
+         * The breadth of the funnel's neck (its narrow end), as a fraction of the funnel's breadth.
          */
         neckRatio: number;
         /** How many blocks at the neck keep its breadth. */
         pinchedBlocks: number;
-        /** Whether the funnel direction is inverted (like a pyramid). */
-        inverted: boolean;
         animation: {
             /** The duration of each block's load animation in milliseconds; `0` disables it. */
             duration: number;

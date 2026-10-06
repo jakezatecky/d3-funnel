@@ -624,6 +624,21 @@ describe('D3Funnel', () => {
                 assert.equal('1', gradient.getAttribute('y2'));
             });
 
+            it('should apply block.proportionalBreadth to funnels that flow up', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 2 },
+                    { label: 'B', value: 1 },
+                ], {
+                    chart: { width: 200, height: 400, direction: 'up' },
+                    block: { proportionalBreadth: true },
+                });
+
+                const widths = selectAll('#funnel path').nodes().map((path) => path.getBBox().width);
+
+                // The second block holds half the value of the first, so it is half as broad
+                assert.deepEqual([200, 100], widths);
+            });
+
             it('should raise bar overlays from the bottom of a horizontal funnel', () => {
                 drawTwoBlocks('right', { block: { barOverlay: { enabled: true } } });
 
@@ -738,43 +753,6 @@ describe('D3Funnel', () => {
                 const paths = selectAll('path').nodes();
 
                 assert.equal(120, paths[4].getBBox().width);
-            });
-        });
-
-        describe('chart.inverted', () => {
-            it('should draw the chart in a top-to-bottom arrangement by default', () => {
-                getFunnel().draw([
-                    { label: 'A', value: 1 },
-                    { label: 'B', value: 2 },
-                ], {
-                    chart: {
-                        width: 200,
-                        neckRatio: 1 / 2,
-                    },
-                });
-
-                const paths = selectAll('path').nodes();
-
-                assert.equal(200, getPathTopWidth(select(paths[0])));
-                assert.equal(100, getPathBottomWidth(select(paths[1])));
-            });
-
-            it('should draw the chart in a bottom-to-top arrangement when true', () => {
-                getFunnel().draw([
-                    { label: 'A', value: 1 },
-                    { label: 'B', value: 2 },
-                ], {
-                    chart: {
-                        width: 200,
-                        neckRatio: 1 / 2,
-                        inverted: true,
-                    },
-                });
-
-                const paths = selectAll('path').nodes();
-
-                assert.equal(100, getPathTopWidth(select(paths[0])));
-                assert.equal(200, getPathBottomWidth(select(paths[1])));
             });
         });
 
