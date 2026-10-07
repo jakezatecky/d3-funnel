@@ -135,11 +135,11 @@ chart.draw(data, {
     chart: {
         curve: {
             enabled: true,
-            depth: 15,
+            depth: 10,
         },
     },
     block: {
-        gap: 4,
+        gap: 2,
     },
 });
 ```

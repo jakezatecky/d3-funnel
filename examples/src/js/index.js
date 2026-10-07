@@ -36,11 +36,11 @@ const settings = {
     gap: {
         chart: {
             curve: {
-                depth: 15,
+                depth: 10,
             },
         },
         block: {
-            gap: 4,
+            gap: 2,
         },
     },
     barOverlay: {
