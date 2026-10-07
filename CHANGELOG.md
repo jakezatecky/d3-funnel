@@ -83,6 +83,9 @@ These changes affect the TypeScript types.
 * Add `label.padding` option to set the space between a label and the edges of its block
 * Add `tooltip.offset` option to set the distance between the tooltip and the mouse
 * Add `tooltip.style` option to customize the tooltip's CSS
+* Expose funnels to screen readers as a list of blocks, hiding the labels, ovals, and tooltip that only repeat their information visually
+* Add `accessibility.chartName` option to name the chart for screen readers
+* Add `accessibility.blockFormat` option to set the text that screen readers announce for each block
 
 ### Fixed
 

@@ -74,6 +74,10 @@ class D3Funnel {
                 'text-align': 'center',
             },
         },
+        accessibility: {
+            chartName: null,
+            blockFormat: '{l}: {f}',
+        },
         events: {
             click: {
                 block: null,
@@ -299,7 +303,7 @@ class D3Funnel {
      * @return {Array}
      */
     standardizeData(data) {
-        const { label, tooltip } = this.options;
+        const { label, tooltip, accessibility } = this.options;
         const totalValue = this.getTotalValue(data);
 
         return data.map((block, index) => {
@@ -326,6 +330,9 @@ class D3Funnel {
                 tooltip: {
                     formatted: LabelFormatter.format(block, tooltip.format),
                 },
+                accessibility: {
+                    formatted: LabelFormatter.format(block, accessibility.blockFormat),
+                },
             };
         });
     }
@@ -336,14 +343,16 @@ class D3Funnel {
      * @return {void}
      */
     drawOntoDom() {
-        const { chart, block } = this.options;
+        const { chart, block, accessibility } = this.options;
 
-        // Add the SVG
+        // Add the SVG. Screen readers announce it as a list with an item for each block
         this.svg = select(this.container)
             .append('svg')
             .attr('id', this.id)
             .attr('width', this.width)
-            .attr('height', this.height);
+            .attr('height', this.height)
+            .attr('role', 'list')
+            .attr('aria-label', accessibility.chartName);
 
         this.blockShapes = this.makeBlockShapes();
         [this.blockPaths, this.overlayPaths] = this.makePaths();
@@ -775,7 +784,8 @@ class D3Funnel {
         // its back edge
         svg.insert('path', ':first-child')
             .attr('fill', this.colorizer.shade(this.blocks[index].fill.raw, shade))
-            .attr('d', path);
+            .attr('d', path)
+            .attr('aria-hidden', 'true');
     }
 
     /**
@@ -800,9 +810,13 @@ class D3Funnel {
             this.drawOval(this.svg, index);
         }
 
-        // Create a group just for this block
-        const group = this.svg.append('g');
         const block = this.blocks[index];
+
+        // Create a group just for this block, which screen readers announce as a list item with
+        // the block's accessible text
+        const group = this.svg.append('g')
+            .attr('role', 'listitem')
+            .attr('aria-label', block.accessibility.formatted);
 
         this.blockGroups[index] = group;
 

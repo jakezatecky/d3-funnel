@@ -43,6 +43,9 @@ By default, the chart will assume the width and height of the parent container:
             proportionalLength: true,
             minLength: 15,
         },
+        accessibility: {
+            chartName: 'Admissions funnel',
+        },
     };
 
     const chart = new D3Funnel('#funnel');
@@ -100,6 +103,8 @@ A block's _length_ is its size along the main axis, and its _breadth_ is its siz
 | `tooltip.format`               | Either `function(label, value)` or a format string. See below.           | mixed    | `'{l}: {f}'`          |
 | `tooltip.offset`               | The pixel distance between the tooltip and the mouse.                    | number   | `5`                   |
 | `tooltip.style`                | CSS properties for the tooltip, keyed by CSS name. See below.            | object   | See below             |
+| `accessibility.chartName`      | The name screen readers announce for the chart. Strongly recommended.    | string   | `null`                |
+| `accessibility.blockFormat`    | Either `function(label, value)` or a format string. See below.           | mixed    | `'{l}: {f}'`          |
 | `events.click.block`           | Callback `function(event, data)` for when a block is clicked.            | function | `null`                |
 | `events.mouseover.block`       | Callback `function(event, data)` for when the mouse enters a block.      | function | `null`                |
 | `events.mouseout.block`        | Callback `function(event, data)` for when the mouse leaves a block.      | function | `null`                |
@@ -180,9 +185,28 @@ chart.draw(data, {
 });
 ```
 
+### Accessibility
+
+Screen readers announce the chart as a list, with one item for each block.
+Each item's text comes from `accessibility.blockFormat`, independent of the visible label, so hidden or truncated labels are still announced in full.
+The chart's labels, ovals, and tooltip are hidden from screen readers, as they only repeat this information visually.
+
+Always set `accessibility.chartName` to describe the chart.
+Without a name, screen readers announce only an unnamed list of blocks, leaving users to guess what the list represents.
+It has no default because d3-funnel cannot know the chart's subject or language:
+
+``` javascript
+chart.draw(data, {
+    accessibility: {
+        chartName: 'Hiring funnel',
+        blockFormat: '{l}: {f} candidates',
+    },
+});
+```
+
 ### Label/Tooltip Format
 
-The option `label.format` can either be a function or a string.
+The options `label.format`, `tooltip.format`, and `accessibility.blockFormat` can each be either a function or a string.
 The following keys will be substituted by the string formatter:
 
 | Key     | Description                  |

@@ -152,6 +152,9 @@ function onChange() {
         label: {
             format: '{l}\n{f}',
         },
+        accessibility: {
+            chartName: !blockLevelColors.checked ? 'Hiring funnel' : 'Color funnel',
+        },
     };
 
     checkboxes.forEach((checkbox) => {

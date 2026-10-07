@@ -40,7 +40,9 @@ class Labeler {
             .attr('font-family', label.fontFamily)
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', 'middle')
-            .attr('pointer-events', 'none');
+            .attr('pointer-events', 'none')
+            // The block's group already gives screen readers its accessible text
+            .attr('aria-hidden', 'true');
 
         // Lines are spaced by the rendered font size, which is only known once the text exists.
         // Fall back to the configured size if the chart is not attached to the document

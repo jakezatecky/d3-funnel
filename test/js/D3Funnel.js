@@ -1970,6 +1970,99 @@ describe('D3Funnel', () => {
             });
         });
 
+        describe('accessibility.chartName', () => {
+            it('should expose the chart to screen readers as a list', () => {
+                getFunnel().draw(getBasicData());
+
+                assert.equal('list', getSvg().attr('role'));
+            });
+
+            it('should name the chart with the given name', () => {
+                getFunnel().draw(getBasicData(), {
+                    accessibility: {
+                        chartName: 'Hiring funnel',
+                    },
+                });
+
+                assert.equal('Hiring funnel', getSvg().attr('aria-label'));
+            });
+
+            it('should leave the chart unnamed by default', () => {
+                getFunnel().draw(getBasicData());
+
+                assert.isNull(getSvg().attr('aria-label'));
+            });
+        });
+
+        describe('accessibility.blockFormat', () => {
+            function getListItems() {
+                return selectAll('#funnel svg > g').nodes();
+            }
+
+            it('should expose each block to screen readers as a list item', () => {
+                getFunnel().draw([
+                    { label: 'A', value: 2000 },
+                    { label: 'B', value: 1000 },
+                ]);
+
+                const items = getListItems();
+
+                assert.equal(2, items.length);
+                assert.deepEqual(['listitem', 'listitem'], items.map((item) => item.getAttribute('role')));
+                assert.deepEqual(['A: 2,000', 'B: 1,000'], items.map((item) => item.getAttribute('aria-label')));
+            });
+
+            it('should describe each block according to the format provided', () => {
+                getFunnel().draw(getBasicData(), {
+                    accessibility: {
+                        blockFormat: '{l} - {v}',
+                    },
+                });
+
+                assert.equal('Node - 1000', getListItems()[0].getAttribute('aria-label'));
+            });
+
+            it('should describe blocks whose labels are hidden', () => {
+                getFunnel().draw([{ label: 'A', value: 1, hideLabel: true }], {
+                    label: {
+                        enabled: false,
+                    },
+                });
+
+                assert.equal('A: 1', getListItems()[0].getAttribute('aria-label'));
+            });
+
+            it('should hide the visible labels from screen readers', () => {
+                getFunnel().draw(getBasicData());
+
+                assert.equal('true', select('#funnel text').attr('aria-hidden'));
+            });
+
+            it('should hide the ovals of a curved funnel from screen readers', () => {
+                getFunnel().draw(getBasicData(), {
+                    chart: {
+                        curve: {
+                            enabled: true,
+                        },
+                    },
+                });
+
+                assert.equal('true', select('#funnel svg > path').attr('aria-hidden'));
+            });
+
+            it('should hide the tooltip from screen readers', () => {
+                getFunnel().draw(getBasicData(), {
+                    tooltip: {
+                        enabled: true,
+                    },
+                });
+
+                select('#funnel path').node().dispatchEvent(new MouseEvent('mousemove'));
+
+                assert.equal('true', select('#funnel .d3-funnel-tooltip').attr('aria-hidden'));
+            });
+        });
+
         describe('events.click.block', () => {
             it('should invoke the callback function with the correct data', () => {
                 const event = new MouseEvent('click');

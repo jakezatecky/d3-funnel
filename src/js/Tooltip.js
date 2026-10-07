@@ -26,6 +26,10 @@ class Tooltip {
         if (!this.element) {
             this.element = document.createElement('div');
             this.element.setAttribute('class', 'd3-funnel-tooltip');
+
+            // The tooltip only shows mouse users what screen readers announce from the chart itself
+            this.element.setAttribute('aria-hidden', 'true');
+
             this.container.appendChild(this.element);
         }
 

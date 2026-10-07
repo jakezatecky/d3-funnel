@@ -11,7 +11,7 @@ export type FunnelDimension = number | `${number}%`;
 export type FunnelColors = readonly string[] | ((index: number) => string);
 
 /**
- * A custom label or tooltip formatter.
+ * A custom label, tooltip, or accessible text formatter.
  */
 export type FunnelFormatFunction = (
     label: string,
@@ -83,6 +83,10 @@ export interface FunnelBlock<TDatum extends FunnelDatum = FunnelDatum> {
     };
     tooltip: {
         /** The result of `tooltip.format`. */
+        formatted: string;
+    };
+    accessibility: {
+        /** The result of `accessibility.blockFormat`. */
         formatted: string;
     };
 }
@@ -196,6 +200,15 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
          * defaults to the block's color.
          */
         style: Record<string, string | null>;
+    };
+    accessibility: {
+        /**
+         * The name that screen readers announce for the chart. Setting one is strongly
+         * recommended, as screen readers otherwise announce only a list of blocks.
+         */
+        chartName: string | null;
+        /** The format of each block's text for screen readers. */
+        blockFormat: FunnelFormat;
     };
     events: {
         click: {
