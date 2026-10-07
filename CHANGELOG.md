@@ -24,9 +24,11 @@
 
 * Require Node.js 22.12 or later, the first version that can `require()` ES modules without a flag
 * Publish the package as ES modules only, removing the `dist/index.cjs` and `dist/index.js` builds
-  CommonJS code can still load the package with `require('d3-funnel')`.
+  * CommonJS code can still load the package with `require('d3-funnel')`.
+* Point the package entry at the source in `src`, which is no longer transpiled, so an app's own bundler decides which browsers to target
 * Restrict imports to the package root, so deep imports such as `d3-funnel/dist/index.js` or `d3-funnel/src/d3-funnel/D3Funnel.js` now fail
 * The browser bundle (`dist/d3-funnel.min.js`) no longer includes D3 and instead uses the global `d3`, so load D3 before it (e.g., from `https://cdn.jsdelivr.net/npm/d3@7`)
+* Replace the `browser` package field with `unpkg` and `jsdelivr` fields, which CDNs use to serve the browser bundle
 
 ### Migrating to v3
 
@@ -79,13 +81,6 @@ These changes affect the TypeScript types.
 * Add `label.padding` option to set the space between a label and the edges of its block
 * Add `tooltip.offset` option to set the distance between the tooltip and the mouse
 * Add `tooltip.style` option to customize the tooltip's CSS
-
-### Changed
-
-* Replace the placeholder TypeScript declaration with full typings for the chart API, options, data, and event handlers
-* Point the package entry at the source in `src`, which is no longer transpiled, so an app's own bundler decides which browsers to target
-* Stop bundling the D3 modules and nanoid into the package entry, so apps share them with their own D3 installation instead of loading a second copy
-* Replace the `browser` package field with `unpkg` and `jsdelivr` fields, which CDNs use to serve the browser bundle
 
 ### Fixed
 
