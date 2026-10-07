@@ -7,15 +7,11 @@
 * Remove the `D3Funnel.LABEL_LINE_HEIGHT` static property in favor of the `label.lineHeight` option
 * Remove the `D3Funnel.LABEL_PADDING` static property in favor of the `label.padding` option
 * Rename the `pathType` attribute on overlay paths to `data-path-type`
-* Remove the `height` property from the block data passed to event handlers
 * Rename and restructure several options to better reflect what they do and reduce ambiguity; see [Migrating to v3](#migrating-to-v3)
 * Remove support for the legacy array-of-arrays data structure, deprecated since v1.1.0; data entries must now be objects (e.g., `{ label: 'Applicants', value: 12000 }`)
 
 #### Runtime
 
-* Funnels that flow up, formerly drawn with `chart.inverted`, keep the first block at the wide base instead of the narrow tip
-  * Reverse the data to keep the first block at the tip.
-  * `block.proportionalBreadth` now applies to them.
 * Label line heights now scale with the label's font size instead of being fixed at 20 pixels, affecting multi-line labels and labels aligned to the `top` or `bottom`
 * The tooltip element now remains in the container, hidden with `display: none`, after the mouse leaves a block instead of being removed.
 * Highlighted blocks now shade each path from its resting color, so blocks with bar overlays darken by the same amount as other blocks instead of noticeably more
@@ -24,11 +20,9 @@
 
 * Require Node.js 22.12 or later, the first version that can `require()` ES modules without a flag
 * Publish the package as ES modules only, removing the `dist/index.cjs` and `dist/index.js` builds
-  * CommonJS code can still load the package with `require('d3-funnel')`.
-* Point the package entry at the source in `src`, which is no longer transpiled, so an app's own bundler decides which browsers to target
+  CommonJS code can still load the package with `require('d3-funnel')`.
 * Restrict imports to the package root, so deep imports such as `d3-funnel/dist/index.js` or `d3-funnel/src/d3-funnel/D3Funnel.js` now fail
 * The browser bundle (`dist/d3-funnel.min.js`) no longer includes D3 and instead uses the global `d3`, so load D3 before it (e.g., from `https://cdn.jsdelivr.net/npm/d3@7`)
-* Replace the `browser` package field with `unpkg` and `jsdelivr` fields, which CDNs use to serve the browser bundle
 
 ### Migrating to v3
 
@@ -37,21 +31,19 @@ Unless a remark says otherwise, their behavior is unchanged.
 
 #### Chart Options
 
-| v2                    | v3                          | Remarks                                                                                         |
-| --------------------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
-| `block.barOverlay`    | `block.barOverlay.enabled`  |                                                                                                 |
-| `block.dynamicHeight` | `block.proportionalLength`  |                                                                                                 |
-| `block.dynamicSlope`  | `block.proportionalBreadth` |                                                                                                 |
-| `block.fill.scale`    | `block.fill.colors`         |                                                                                                 |
-| `block.highlight`     | `block.highlight.enabled`   |                                                                                                 |
-| `block.minHeight`     | `block.minLength`           |                                                                                                 |
-| `chart.animate`       | `chart.animation.duration`  |                                                                                                 |
-| `chart.bottomPinch`   | `chart.pinchedBlocks`       |                                                                                                 |
-| `chart.bottomWidth`   | `chart.neckRatio`           |                                                                                                 |
-| `chart.curve.height`  | `chart.curve.depth`         | Divide by 4. The value is now the pixel depth of a full-breadth edge's curve (default: 20 → 5). |
-| `chart.inverted`      | `chart.direction`           | Use `'up'` instead of `true`. The first block is now at the wide base.                          |
-| `chart.totalCount`    | `chart.totalValue`          |                                                                                                 |
-| `label.fill`          | `label.color`               |                                                                                                 |
+| v2                    | v3                         | Remarks                                                                                        |
+| --------------------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
+| `block.barOverlay`    | `block.barOverlay.enabled` |                                                                                                |
+| `block.dynamicHeight` | `block.proportionalHeight` |                                                                                                |
+| `block.dynamicSlope`  | `block.proportionalWidth`  |                                                                                                |
+| `block.fill.scale`    | `block.fill.colors`        |                                                                                                |
+| `block.highlight`     | `block.highlight.enabled`  |                                                                                                |
+| `chart.animate`       | `chart.animation.duration` |                                                                                                |
+| `chart.bottomPinch`   | `chart.pinchedBlocks`      |                                                                                                |
+| `chart.bottomWidth`   | `chart.neckWidth`          |                                                                                                |
+| `chart.curve.height`  | `chart.curve.depth`        | Divide by 4. The value is now the pixel depth of a full-width edge's curve (default: 20 → 5).  |
+| `chart.totalCount`    | `chart.totalValue`         |                                                                                                |
+| `label.fill`          | `label.color`              |                                                                                                |
 
 #### Data Options
 
@@ -71,7 +63,6 @@ These changes affect the TypeScript types.
 
 ### Added
 
-* Add `chart.direction` option to draw funnels that flow `'right'`, `'up'`, or `'left'` instead of `'down'` (#23)
 * Add `label.lineHeight` option to set the height of each line of a label as a multiple of its font size
 * Add `labelFontSize` and `labelFontFamily` data options to override the label font of individual blocks
 * Expose `label.fontSize` and `label.fontFamily` in block event data
@@ -81,6 +72,13 @@ These changes affect the TypeScript types.
 * Add `label.padding` option to set the space between a label and the edges of its block
 * Add `tooltip.offset` option to set the distance between the tooltip and the mouse
 * Add `tooltip.style` option to customize the tooltip's CSS
+
+### Changed
+
+* Replace the placeholder TypeScript declaration with full typings for the chart API, options, data, and event handlers
+* Point the package entry at the source in `src`, which is no longer transpiled, so an app's own bundler decides which browsers to target
+* Stop bundling the D3 modules and nanoid into the package entry, so apps share them with their own D3 installation instead of loading a second copy
+* Replace the `browser` package field with `unpkg` and `jsdelivr` fields, which CDNs use to serve the browser bundle
 
 ### Fixed
 

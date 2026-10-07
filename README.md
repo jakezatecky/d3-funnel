@@ -40,8 +40,8 @@ By default, the chart will assume the width and height of the parent container:
     ];
     const options = {
         block: {
-            proportionalLength: true,
-            minLength: 15,
+            proportionalHeight: true,
+            minHeight: 15,
         },
     };
 
@@ -61,29 +61,26 @@ Without a bundler, load D3 and then the browser bundle, which provides the globa
 
 ## Options
 
-Some options refer to the funnel's main axis, the direction the funnel flows from its first block to its last.
-A block's _length_ is its size along the main axis, and its _breadth_ is its size across it.
-
 | Option                         | Description                                                              | Type     | Default               |
 | ------------------------------ | ------------------------------------------------------------------------ | -------- | --------------------- |
 | `chart.width`                  | The width of the chart in pixels or a percentage.                        | mixed    | Container's width     |
 | `chart.height`                 | The height of the chart in pixels or a percentage.                       | mixed    | Container's height    |
-| `chart.direction`              | Which way the funnel flows: `'down'`, `'right'`, `'up'`, or `'left'`.    | string   | `'down'`              |
-| `chart.neckRatio`              | The breadth of the narrow end as a fraction of the funnel's breadth.     | number   | `1 / 3`               |
-| `chart.pinchedBlocks`          | How many blocks at the neck keep its breadth.                            | number   | `0`                   |
+| `chart.neckWidth`              | The width of the narrow end (top when inverted) as a fraction of width.  | number   | `1 / 3`               |
+| `chart.pinchedBlocks`          | How many blocks at the neck keep its width.                              | number   | `0`                   |
+| `chart.inverted`               | Whether the funnel direction is inverted (like a pyramid).               | bool     | `false`               |
 | `chart.animation.duration`     | The duration of each block's load animation in milliseconds.             | number   | `0` (disabled)        |
 | `chart.curve.enabled`          | Whether the funnel is curved.                                            | bool     | `false`               |
-| `chart.curve.depth`            | The pixel curve depth of a full-breadth edge; narrower edges curve less. | number   | `5`                   |
-| `chart.curve.shade`            | The shade adjustment of a curved funnel's full oval, from `-1` to `1`.   | number   | `-0.4`                |
+| `chart.curve.depth`            | The pixel depth of a full-width edge's curve; narrower edges curve less. | number   | `5`                   |
+| `chart.curve.shade`            | The shade adjustment of the top oval, from `-1` to `1`.                  | number   | `-0.4`                |
 | `chart.totalValue`             | Override the total value used in ratio calculations.                     | number   | `null`                |
-| `block.proportionalLength`     | Whether the block lengths are proportional to their value.               | bool     | `false`               |
-| `block.proportionalBreadth`    | Whether the block breadths narrow in proportion to their value decrease. | bool     | `false`               |
+| `block.proportionalHeight`     | Whether the block heights are proportional to their value.               | bool     | `false`               |
+| `block.proportionalWidth`      | Whether the block widths narrow in proportion to their value decrease.   | bool     | `false`               |
 | `block.barOverlay.enabled`     | Whether the blocks have bar chart overlays proportional to its weight.   | bool     | `false`               |
 | `block.barOverlay.shade`       | The shade adjustment of the block behind its overlay, from `-1` to `1`.  | number   | `0.3`                 |
 | `block.fill.colors`            | The block colors as a repeating array or a function of the block index.  | mixed    | `d3.schemeCategory10` |
 | `block.fill.type`              | Either `'solid'` or `'gradient'`.                                        | string   | `'solid'`             |
 | `block.fill.gradientShade`     | The shade adjustment of the edges of gradient fills, from `-1` to `1`.   | number   | `-0.2`                |
-| `block.minLength`              | The minimum pixel length of a block.                                     | number   | `0`                   |
+| `block.minHeight`              | The minimum pixel height of a block.                                     | number   | `0`                   |
 | `block.gap`                    | The pixel space between blocks. The funnel's outline is preserved.       | number   | `0`                   |
 | `block.highlight.enabled`      | Whether the blocks are highlighted on hover.                             | bool     | `false`               |
 | `block.highlight.shade`        | The shade adjustment of a highlighted block, from `-1` to `1`.           | number   | `-0.2`                |
@@ -104,29 +101,9 @@ A block's _length_ is its size along the main axis, and its _breadth_ is its siz
 | `events.mouseover.block`       | Callback `function(event, data)` for when the mouse enters a block.      | function | `null`                |
 | `events.mouseout.block`        | Callback `function(event, data)` for when the mouse leaves a block.      | function | `null`                |
 
-### Directions
-
-Funnels flow down by default.
-Set `chart.direction` to `'right'`, `'up'`, or `'left'` to draw them in another direction:
-
-``` javascript
-chart.draw(data, {
-    chart: {
-        direction: 'right',
-    },
-});
-```
-
-The first block is always at the funnel's wide end, so a funnel that flows `'up'` is a pyramid with the first block at its base.
-To put the first block at the narrow tip instead, reverse the data.
-
-The `chart.width` and `chart.height` options always describe the chart on screen, so a horizontal funnel usually suits a container that is wider than it is tall.
-The blocks of a horizontal funnel are often shorter than their labels, so consider setting `label.overflow` to `'ellipsis'`.
-
 ### Curved Funnels with Gaps
 
-Curved funnels are drawn as if seen from slightly above, so their full oval is at the top, or at the start of a horizontal funnel.
-When a curved funnel has a `block.gap`, each block shows its own full oval, with the neighboring block floating over it.
+When a curved funnel has a `block.gap`, each block shows its own top oval, with the block above floating over it.
 Both options are in pixels, so they are easy to compare: the blocks will look most three-dimensional when `block.gap` is smaller than `chart.curve.depth`.
 For example, pair a deeper curve with a small gap:
 
@@ -145,7 +122,7 @@ chart.draw(data, {
 ```
 
 A shallow curve with a large gap will instead leave a wide band of empty space between the blocks.
-Remember that narrower edges curve less, so the blocks at a funnel's narrow end have shallower ovals than those at its wide end.
+Remember that narrower edges curve less, so the lower blocks of a funnel have shallower ovals than the top block.
 
 ### Tooltip Styles
 
@@ -253,11 +230,11 @@ chart.draw(data, options);
 ### Overriding Defaults
 
 You may wish to override the default chart options.
-For example, you may wish for every funnel to have proportional lengths.
+For example, you may wish for every funnel to have proportional heights.
 To do this, simply modify the `D3Funnel.defaults` property:
 
 ``` javascript
-D3Funnel.defaults.block.proportionalLength = true;
+D3Funnel.defaults.block.proportionalHeight = true;
 ```
 
 Should you wish to override multiple properties at a time, you may consider using [lodash's][lodash-merge] `_.merge` or [jQuery's][jquery-extend] `$.extend`:
@@ -265,7 +242,7 @@ Should you wish to override multiple properties at a time, you may consider usin
 ``` javascript
 D3Funnel.defaults = _.merge(D3Funnel.defaults, {
     block: {
-        proportionalLength: true,
+        proportionalHeight: true,
         fill: {
             type: 'gradient',
         },
