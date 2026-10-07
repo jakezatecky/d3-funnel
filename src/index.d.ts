@@ -62,8 +62,6 @@ export interface FunnelBlock<TDatum extends FunnelDatum = FunnelDatum> {
     ratio: number;
     /** The numerical value. */
     value: number;
-    /** The pixel height of the block. */
-    height: number;
     fill: {
         /** The hex background color. */
         raw: string;
@@ -107,15 +105,14 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
         width: FunnelDimension;
         /** The height of the chart in pixels or a percentage. */
         height: FunnelDimension;
+        /** The direction the funnel flows, from its first block to its last. */
+        direction: 'down' | 'right' | 'up' | 'left';
         /**
-         * The width of the funnel's neck (its narrow end, at the top when inverted), as a fraction
-         * of the chart's width.
+         * The breadth of the funnel's neck (its narrow end), as a fraction of the funnel's breadth.
          */
-        neckWidth: number;
-        /** How many blocks at the neck keep its width. */
+        neckRatio: number;
+        /** How many blocks at the neck keep its breadth. */
         pinchedBlocks: number;
-        /** Whether the funnel direction is inverted (like a pyramid). */
-        inverted: boolean;
         animation: {
             /** The duration of each block's load animation in milliseconds; `0` disables it. */
             duration: number;
@@ -124,21 +121,24 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
             /** Whether the funnel is curved. */
             enabled: boolean;
             /**
-             * The pixel depth of a full-width edge's curve. Narrower edges curve proportionally
+             * The pixel depth of a full-breadth edge's curve. Narrower edges curve proportionally
              * less.
              */
             depth: number;
-            /** The shade adjustment of the top oval, from `-1` to `1`. */
+            /**
+             * The shade adjustment of the full oval at the top of the funnel (or its start when
+             * horizontal), from `-1` to `1`.
+             */
             shade: number;
         };
         /** Override the total value used in ratio calculations. */
         totalValue: number | null;
     };
     block: {
-        /** Whether the block heights are proportional to their value. */
-        proportionalHeight: boolean;
-        /** Whether the block widths narrow in proportion to their value decrease. */
-        proportionalWidth: boolean;
+        /** Whether the block lengths are proportional to their value. */
+        proportionalLength: boolean;
+        /** Whether the block breadths narrow in proportion to their value decrease. */
+        proportionalBreadth: boolean;
         barOverlay: {
             /** Whether the blocks have bar chart overlays proportional to their weight. */
             enabled: boolean;
@@ -153,8 +153,8 @@ export interface FunnelSettings<TDatum extends FunnelDatum = FunnelDatum> {
             /** The shade adjustment of the edges of gradient fills, from `-1` to `1`. */
             gradientShade: number;
         };
-        /** The minimum pixel height of a block. */
-        minHeight: number;
+        /** The minimum pixel length of a block. */
+        minLength: number;
         /** The pixel space between blocks. The funnel's outline is preserved. */
         gap: number;
         highlight: {
