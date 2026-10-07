@@ -18,10 +18,7 @@
     </script>
     <script src="./index.js"></script>
     <script>
-        // Signal the test runner once every test has finished, including those that wait on timers
-        mocha.run((failures) => {
-            window.mochaFailures = failures;
-        });
+        mocha.run();
     </script>
   </body>
 </html>

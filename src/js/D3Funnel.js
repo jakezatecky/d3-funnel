@@ -1,14 +1,14 @@
 import { easeLinear } from 'd3-ease';
+import { range } from 'd3-array';
+import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { select } from 'd3-selection';
 import 'd3-transition';
 import { nanoid } from 'nanoid';
 
 import Colorizer from '#js/Colorizer.js';
-import LabelFormatter from '#js/LabelFormatter.js';
-import Labeler from '#js/Labeler.js';
+import Formatter from '#js/Formatter.js';
 import Navigator from '#js/Navigator.js';
-import Projection from '#js/Projection.js';
 import Tooltip from '#js/Tooltip.js';
 import Utils from '#js/Utils.js';
 
@@ -17,9 +17,9 @@ class D3Funnel {
         chart: {
             width: 350,
             height: 400,
-            direction: 'down',
-            neckRatio: 1 / 3,
+            neckWidth: 1 / 3,
             pinchedBlocks: 0,
+            inverted: false,
             animation: {
                 duration: 0,
             },
@@ -31,18 +31,18 @@ class D3Funnel {
             totalValue: null,
         },
         block: {
-            proportionalLength: false,
-            proportionalBreadth: false,
+            proportionalHeight: false,
+            proportionalWidth: false,
             barOverlay: {
                 enabled: false,
                 shade: 0.3,
             },
             fill: {
-                colors: schemeCategory10,
+                colors: scaleOrdinal(schemeCategory10).domain(range(0, 10)),
                 type: 'solid',
                 gradientShade: -0.2,
             },
-            minLength: 0,
+            minHeight: 0,
             gap: 0,
             highlight: {
                 enabled: false,
@@ -155,12 +155,7 @@ class D3Funnel {
 
         this.width = width;
         this.height = height;
-
-        // Lay the funnel out in flow space, then project it onto the screen
-        this.projection = new Projection(width, height, this.options.chart.direction);
-        this.length = this.projection.length;
-        this.breadth = this.projection.breadth;
-        this.neckBreadth = this.breadth * this.options.chart.neckRatio;
+        this.neckWidth = width * this.options.chart.neckWidth;
 
         this.id = `d3-funnel-${nanoid()}`;
 
@@ -319,13 +314,13 @@ class D3Funnel {
                 label: {
                     enabled: !block.hideLabel,
                     raw: block.label,
-                    formatted: LabelFormatter.format(block, label.format),
+                    formatted: Formatter.format(block, label.format),
                     color: this.colorizer.getLabelColor(block.labelColor),
                     fontSize: block.labelFontSize ?? label.fontSize,
                     fontFamily: block.labelFontFamily ?? label.fontFamily,
                 },
                 tooltip: {
-                    formatted: LabelFormatter.format(block, tooltip.format),
+                    formatted: Formatter.format(block, tooltip.format),
                 },
             };
         });
@@ -346,7 +341,6 @@ class D3Funnel {
             .attr('width', this.width)
             .attr('height', this.height);
 
-        this.blockShapes = this.makeBlockShapes();
         [this.blockPaths, this.overlayPaths] = this.makePaths();
 
         // The <g> element of each block, filled in as the blocks are drawn
@@ -355,11 +349,15 @@ class D3Funnel {
         // A fresh tooltip for each drawing, as the previous one is removed along with the rest of
         // the chart
         this.tooltip = new Tooltip(this.container, this.options.tooltip);
-        this.labeler = new Labeler(this.options.label);
 
         // Define color gradients
         if (block.fill.type === 'gradient') {
             this.defineColorGradients(this.svg);
+        }
+
+        // Add top oval if curved
+        if (chart.curve.enabled) {
+            this.drawTopOval(this.svg, 0);
         }
 
         // Add each block. Animated blocks draw each other in turn, once the block before them
@@ -372,204 +370,195 @@ class D3Funnel {
     }
 
     /**
-     * Create the paths of each block, and of each bar overlay if enabled, from the block shapes.
+     * Create the paths to be used to define the discrete funnel blocks and returns the results in
+     * an array.
      *
      * @return {Array, Array}
      */
     makePaths() {
-        const makeBlockPaths = this.options.chart.curve.enabled ?
-            (shape, overlayRatio) => this.navigator.makeCurvedPaths(shape, overlayRatio) :
-            (shape, overlayRatio) => this.navigator.makeStraightPaths(shape, overlayRatio);
-
-        const paths = this.blockShapes.map((shape) => makeBlockPaths(shape));
-        const overlayPaths = this.options.block.barOverlay.enabled ?
-            this.blockShapes.map((shape, i) => makeBlockPaths(shape, this.blocks[i].ratio)) :
-            [];
-
-        return [paths, overlayPaths];
-    }
-
-    /**
-     * Calculate the shape of each funnel block. Each shape has the following form:
-     *
-     * {
-     *   crossCenter,
-     *   start: { crossMin, crossMax, flow, curveDepth },
-     *   end: { crossMin, crossMax, flow, curveDepth },
-     * }
-     *
-     * The `start` edge is the one nearer the first block. Each edge runs across the funnel from
-     * `crossMin` to `crossMax` at `flow`. Its `curveDepth` is how far the edge bulges along the
-     * flow at `crossCenter`, which is zero for a straight funnel. It is positive when the edge
-     * bulges toward the end of the funnel and negative when it bulges toward the start.
-     *
-     * @return {Array}
-     */
-    makeBlockShapes() {
-        const { pinchedBlocks, curve } = this.options.chart;
+        const { inverted, pinchedBlocks, curve } = this.options.chart;
         const {
-            minLength,
-            proportionalLength,
-            proportionalBreadth,
+            minHeight,
+            proportionalHeight,
+            proportionalWidth,
             gap,
+            barOverlay,
         } = this.options.block;
 
         // Calculate the important fixed positions
-        const neckCrossMin = (this.breadth - this.neckBreadth) / 2;
-        const crossCenter = this.breadth / 2;
+        const neckLeftX = (this.width - this.neckWidth) / 2;
+        const centerX = this.width / 2;
 
-        const shapes = [];
+        const paths = [];
+        const overlayPaths = [];
 
-        // The change in cross and flow position of each block, unless adjusted below
-        const initialCrossStep = this.getCrossStep(neckCrossMin);
-        const initialFlowStep = this.getFlowStep();
+        // The change in x, y direction of each block, unless adjusted below
+        const initialDx = this.getDx(neckLeftX);
+        const initialDy = this.getDy();
 
-        let prevCrossMin = 0;
-        let prevCrossMax = this.breadth;
+        // Start from the bottom for inverted
+        let prevLeftX = inverted ? neckLeftX : 0;
+        let prevRightX = this.width - prevLeftX;
 
-        // Move along the flow to make room for the back of the start oval
-        let prevFlow = curve.enabled ? this.getCurveDepth(this.breadth) : 0;
+        // Move down to make room for the back of the top oval
+        let prevHeight = curve.enabled ? this.getCurveDepth(this.getTopEdgeWidth()) : 0;
 
-        // This is greedy in that the block will have a guaranteed length and the remaining is
+        // This is greedy in that the block will have a guaranteed height and the remaining is
         // shared among the ratio, instead of being shared according to the remaining minus the
         // guaranteed
-        const totalLength = this.length - (minLength * this.blocks.length);
+        const totalHeight = this.height - (minHeight * this.blocks.length);
 
-        // The start and end of the funnel's sides
-        const sideStartFlow = prevFlow;
-        const sideEndFlow = curve.enabled ?
-            this.length - this.getCurveDepth(this.neckBreadth) :
-            this.length;
+        // The top and bottom edges of the funnel's sides
+        const topY = prevHeight;
+        const bottomY = curve.enabled ?
+            this.height - this.getCurveDepth(this.getBottomEdgeWidth()) :
+            this.height;
 
-        // Get the proportional length of a block
-        const getBlockLength = (block) => {
-            // Slice off the length proportional to this block and add the greedy minimum length
-            let length = (totalLength * block.ratio) + minLength;
+        // Get the proportional height of a block
+        const getBlockHeight = (block) => {
+            // Slice off the height proportional to this block and add the greedy minimum height
+            let height = (totalHeight * block.ratio) + minHeight;
 
             // Account for any curvature
             if (curve.enabled) {
-                length -= this.getCurveReserve() / this.blocks.length;
+                height -= this.getCurveReserve() / this.blocks.length;
             }
 
-            return length;
+            return height;
         };
 
-        // Pinched blocks sit at the narrow end of the funnel and keep its breadth
-        const isPinched = (i) => i >= this.blocks.length - pinchedBlocks;
-
-        // Correct slope length if there are blocks being pinched (and thus requiring a sharper
-        // curve)
-        const pinchLength = this.blocks
-            .filter((block, i) => isPinched(i))
-            .reduce((total, block) => total + getBlockLength(block), 0);
-
-        // The depth of an edge's curve is proportional to its breadth, and its direction depends on
-        // which way the funnel faces the screen
-        const getEdgeCurveDepth = (edge) => (
-            curve.enabled ?
-                this.projection.curveDirection * this.getCurveDepth(edge.crossMax - edge.crossMin) :
-                0
+        // Pinched blocks sit at the narrow end of the funnel and keep its width
+        const isPinched = (i) => (
+            inverted ?
+                i < pinchedBlocks :
+                i >= this.blocks.length - pinchedBlocks
         );
 
-        // The slope will determine the cross positions on each block iteration
-        // Given: slope = (flow1 - flow2) / (cross1 - cross2)
-        // (cross1, flow1) = (neckCrossMin, the start of any pinch)
-        // (cross2, flow2) = (0, the far edge of the funnel)
-        const slope = (sideEndFlow - sideStartFlow - pinchLength) / neckCrossMin;
+        // Correct slope height if there are blocks being pinched (and thus requiring a sharper
+        // curve)
+        const pinchHeight = this.blocks
+            .filter((block, i) => isPinched(i))
+            .reduce((total, block) => total + getBlockHeight(block), 0);
 
-        // Create the shape of each funnel block
+        const makeBlockPaths = curve.enabled ?
+            (dimensions, isOverlay) => this.navigator.makeCurvedPaths(dimensions, isOverlay) :
+            (dimensions, isOverlay) => this.navigator.makeStraightPaths(dimensions, isOverlay);
+
+        // The slope will determine the x points on each block iteration
+        // Given: slope = (y1 - y2) / (x1 - x2)
+        // (x1, y1) = (neckLeftX, the start of any pinch)
+        // (x2, y2) = (0, the far edge of the funnel)
+        const slope = (bottomY - topY - pinchHeight) / neckLeftX;
+
+        // Create the path definition for each funnel block
+        // Remember to loop back to the beginning point for a closed path
         this.blocks.forEach((block, i) => {
-            let crossStep = initialCrossStep;
-            let flowStep = initialFlowStep;
+            let dx = initialDx;
+            let dy = initialDy;
 
-            // Make lengths proportional to block weight
-            if (proportionalLength) {
-                flowStep = getBlockLength(block);
+            // Make heights proportional to block weight
+            if (proportionalHeight) {
+                dy = getBlockHeight(block);
 
-                // Given: flow = (slope * cross) + sideStartFlow
-                // So: cross_i = (flow_i - sideStartFlow) / slope
-                let targetCrossMin = ((prevFlow + flowStep) - sideStartFlow) / slope;
+                // Given: y = mx + b
+                // Given: b = topY (when funnel), b = bottomY (when pyramid)
+                // For funnel, x_i = (y_i - topY) / slope
+                let targetLeftX = ((prevHeight + dy) - topY) / slope;
 
-                // If the neck has no breadth, put the last cross position at the center (to
-                // circumvent errors associated with rounding)
-                if (this.neckBreadth === 0 && i === this.blocks.length - 1) {
-                    targetCrossMin = this.breadth / 2;
+                // For pyramid, x_i = (y_i - bottomY) / -slope
+                if (inverted) {
+                    targetLeftX = ((prevHeight + dy) - bottomY) / (-1 * slope);
                 }
 
-                // If the neck is as broad as the funnel, stop cross velocity
-                if (this.neckBreadth === this.breadth) {
-                    targetCrossMin = prevCrossMin;
+                // If neckWidth is 0, adjust last x position (to circumvent errors associated with
+                // rounding)
+                if (this.neckWidth === 0 && i === this.blocks.length - 1) {
+                    // For funnel, last position is the center
+                    targetLeftX = this.width / 2;
+
+                    // For pyramid, last position is the origin
+                    if (inverted) {
+                        targetLeftX = 0;
+                    }
                 }
 
-                // Prevent NaN or Infinite values (caused by zero lengths)
-                if (!Number.isFinite(targetCrossMin)) {
-                    targetCrossMin = 0;
+                // If neckWidth is same as width, stop x velocity
+                if (this.neckWidth === this.width) {
+                    targetLeftX = prevLeftX;
                 }
 
-                // Calculate the shift necessary for both cross positions
-                crossStep = targetCrossMin - prevCrossMin;
+                // Prevent NaN or Infinite values (caused by zero heights)
+                if (!Number.isFinite(targetLeftX)) {
+                    targetLeftX = 0;
+                }
+
+                // Calculate the shift necessary for both x points
+                dx = targetLeftX - prevLeftX;
+
+                if (inverted) {
+                    dx = prevLeftX - targetLeftX;
+                }
             }
 
-            // Make breadths proportional to block value
-            if (proportionalBreadth) {
+            // Make slope width proportional to change in block value
+            if (proportionalWidth && !inverted) {
                 const nextBlockValue = this.blocks[i + 1] ?
                     this.blocks[i + 1].value :
                     block.value;
 
-                const breadthRatio = nextBlockValue / block.value;
-                crossStep = (1 - breadthRatio) * (crossCenter - prevCrossMin);
+                const widthRatio = nextBlockValue / block.value;
+                dx = (1 - widthRatio) * (centerX - prevLeftX);
             }
 
             // Stop velocity for pinched blocks
             if (isPinched(i)) {
-                crossStep = 0;
+                dx = 0;
             }
 
-            // Calculate the position of the next block
-            const nextCrossMin = prevCrossMin + crossStep;
-            const nextCrossMax = prevCrossMax - crossStep;
-            const nextFlow = prevFlow + flowStep;
+            // Calculate the position of next block, expanding outward if inverted
+            const nextLeftX = inverted ? prevLeftX - dx : prevLeftX + dx;
+            const nextRightX = inverted ? prevRightX + dx : prevRightX - dx;
+            const nextHeight = prevHeight + dy;
 
-            const { start, end } = this.carveBlockGap({
-                start: {
-                    crossMin: prevCrossMin,
-                    crossMax: prevCrossMax,
-                    flow: prevFlow,
-                },
-                end: {
-                    crossMin: nextCrossMin,
-                    crossMax: nextCrossMax,
-                    flow: nextFlow,
-                },
+            this.blocks[i].height = dy;
+
+            const edges = this.carveBlockGap({
+                prevLeftX,
+                prevRightX,
+                prevHeight,
+                nextLeftX,
+                nextRightX,
+                nextHeight,
             }, i);
 
-            // Extend the end of a block beneath the next block when they touch, by bulging it one
-            // depth further toward the end of the funnel. Sharing the exact same edge would let the
-            // background bleed through the antialiasing along the seam
+            // Extend the bottom of a block beneath the next block when they touch. Sharing the
+            // exact same edge would let the background bleed through the antialiasing along the
+            // seam
             const isCovered = i < this.blocks.length - 1 && gap === 0;
-            const endCurveDepth = getEdgeCurveDepth(end);
+            const nextCurveScale = isCovered ? 4 : 2;
 
-            shapes.push({
-                crossCenter,
-                start: {
-                    ...start,
-                    curveDepth: getEdgeCurveDepth(start),
-                },
-                end: {
-                    ...end,
-                    curveDepth: isCovered ?
-                        endCurveDepth + Math.abs(endCurveDepth) :
-                        endCurveDepth,
-                },
-            });
+            // A quadratic curve dips halfway to its control point
+            const dimensions = {
+                centerX,
+                ...edges,
+                prevCurve: 2 * this.getCurveDepth(edges.prevRightX - edges.prevLeftX),
+                nextCurve: nextCurveScale * this.getCurveDepth(edges.nextRightX - edges.nextLeftX),
+                ratio: block.ratio,
+            };
+
+            paths.push(makeBlockPaths(dimensions, false));
+
+            if (barOverlay.enabled) {
+                overlayPaths.push(makeBlockPaths(dimensions, true));
+            }
 
             // Set the next block's previous position
-            prevCrossMin = nextCrossMin;
-            prevCrossMax = nextCrossMax;
-            prevFlow = nextFlow;
+            prevLeftX = nextLeftX;
+            prevRightX = nextRightX;
+            prevHeight = nextHeight;
         });
 
-        return shapes;
+        return [paths, overlayPaths];
     }
 
     /**
@@ -577,89 +566,110 @@ class D3Funnel {
      * split evenly between the two blocks it separates, and the corners slide along the block's own
      * sides so that the overall funnel shape is preserved.
      *
-     * @param {Object} edges The block's `start` and `end` edges, each with `crossMin`,
-     *                       `crossMax`, and `flow`.
+     * @param {Object} edges
      * @param {int}    index
      *
      * @return {Object}
      */
     carveBlockGap(edges, index) {
-        const { start, end } = edges;
+        const {
+            prevLeftX,
+            prevRightX,
+            prevHeight,
+            nextLeftX,
+            nextRightX,
+            nextHeight,
+        } = edges;
         const { gap } = this.options.block;
-        const length = end.flow - start.flow;
+        const height = nextHeight - prevHeight;
 
-        let trimStart = index > 0 ? gap / 2 : 0;
-        let trimEnd = index < this.blocks.length - 1 ? gap / 2 : 0;
+        let trimTop = index > 0 ? gap / 2 : 0;
+        let trimBottom = index < this.blocks.length - 1 ? gap / 2 : 0;
 
-        if (length <= 0 || trimStart + trimEnd === 0) {
+        if (height <= 0 || trimTop + trimBottom === 0) {
             return edges;
         }
 
-        // Never trim a block past zero length
-        const scale = Math.min(1, length / (trimStart + trimEnd));
-        trimStart *= scale;
-        trimEnd *= scale;
+        // Never trim a block past zero height
+        const scale = Math.min(1, height / (trimTop + trimBottom));
+        trimTop *= scale;
+        trimBottom *= scale;
 
-        // Slide each corner along its side to the edge's new position
+        const top = trimTop / height;
+        const bottom = 1 - (trimBottom / height);
         const lerp = (a, b, t) => a + ((b - a) * t);
-        const makeEdge = (t, flow) => ({
-            crossMin: lerp(start.crossMin, end.crossMin, t),
-            crossMax: lerp(start.crossMax, end.crossMax, t),
-            flow,
-        });
 
         return {
-            start: makeEdge(trimStart / length, start.flow + trimStart),
-            end: makeEdge(1 - (trimEnd / length), end.flow - trimEnd),
+            prevLeftX: lerp(prevLeftX, nextLeftX, top),
+            prevRightX: lerp(prevRightX, nextRightX, top),
+            prevHeight: prevHeight + trimTop,
+            nextLeftX: lerp(prevLeftX, nextLeftX, bottom),
+            nextRightX: lerp(prevRightX, nextRightX, bottom),
+            nextHeight: nextHeight - trimBottom,
         };
     }
 
     /**
-     * @param {Number} neckCrossMin
+     * @param {Number} neckLeftX
      *
      * @return {Number}
      */
-    getCrossStep(neckCrossMin) {
+    getDx(neckLeftX) {
         // Only unpinched blocks narrow, so a pinch makes them sharper
-        return neckCrossMin / (this.blocks.length - this.options.chart.pinchedBlocks);
+        return neckLeftX / (this.blocks.length - this.options.chart.pinchedBlocks);
     }
 
     /**
      * @return {Number}
      */
-    getFlowStep() {
+    getDy() {
         // Curved chart needs reserved pixels to account for curvature
         if (this.options.chart.curve.enabled) {
-            return (this.length - this.getCurveReserve()) / this.blocks.length;
+            return (this.height - this.getCurveReserve()) / this.blocks.length;
         }
 
-        return this.length / this.blocks.length;
+        return this.height / this.blocks.length;
     }
 
     /**
-     * Returns how far the curve of an edge of the given breadth bulges along the flow beyond its
-     * corners, whichever way it bulges.
+     * Returns how far the curve of a horizontal edge of the given width dips below (or, for the
+     * back of an oval, rises above) its endpoints.
      *
      * Each edge is drawn as part of an ellipse viewed from a fixed angle, so its depth is
-     * proportional to its breadth. An edge spanning the full breadth of the funnel has a depth of
+     * proportional to its width. An edge spanning the full width of the chart has a depth of
      * exactly `curve.depth`.
      *
-     * @param {Number} breadth
+     * @param {Number} width
      *
      * @return {Number}
      */
-    getCurveDepth(breadth) {
-        return this.options.chart.curve.depth * (Math.max(breadth, 0) / this.breadth);
+    getCurveDepth(width) {
+        return this.options.chart.curve.depth * (Math.max(width, 0) / this.width);
     }
 
     /**
-     * Returns the length needed before and after the blocks of a curved funnel, where the back of
-     * its oval or the bulge of its outer edge extends past the blocks' corners.
+     * @return {Number}
+     */
+    getTopEdgeWidth() {
+        return this.options.chart.inverted ? this.neckWidth : this.width;
+    }
+
+    /**
+     * @return {Number}
+     */
+    getBottomEdgeWidth() {
+        return this.options.chart.inverted ? this.width : this.neckWidth;
+    }
+
+    /**
+     * Returns the vertical space needed above and below the blocks of a curved funnel for the back
+     * of the top oval and the dip of the bottom edge.
      *
      * @return {Number}
      */
     getCurveReserve() {
-        return this.getCurveDepth(this.breadth) + this.getCurveDepth(this.neckBreadth);
+        return this.getCurveDepth(this.getTopEdgeWidth()) +
+            this.getCurveDepth(this.getBottomEdgeWidth());
     }
 
     /**
@@ -707,11 +717,6 @@ class D3Funnel {
         const gradient = defs.append('linearGradient')
             .attr('id', id);
 
-        // Shade across the funnel, which runs down the screen when the funnel is horizontal
-        if (this.projection.isHorizontal) {
-            gradient.attr('x2', 0).attr('y2', 1);
-        }
-
         // Define the gradient stops
         const stops = [
             [0, shadedEdge],
@@ -729,51 +734,37 @@ class D3Funnel {
     }
 
     /**
-     * Returns whether the given block shows the full oval of a curved funnel. The oval sits at the
-     * edge that the funnel's curves bulge away from, which is the start of the first block or the
-     * end of the last. When the blocks are separated, each block shows its own oval.
-     *
-     * @param {int} index
-     *
-     * @return {boolean}
-     */
-    hasOval(index) {
-        const { chart, block } = this.options;
-        const ovalIndex = this.projection.curveDirection > 0 ? 0 : this.blocks.length - 1;
-
-        return chart.curve.enabled && (block.gap > 0 || index === ovalIndex);
-    }
-
-    /**
-     * Draw the full oval of a curved funnel block.
+     * Draw the top oval of a curved funnel block.
      *
      * @param {Object} svg
      * @param {int}    index
      *
      * @return {void}
      */
-    drawOval(svg, index) {
+    drawTopOval(svg, index) {
         const { shade } = this.options.chart.curve;
-        const shape = this.blockShapes[index];
-        const { crossCenter } = shape;
-        const edge = this.projection.curveDirection > 0 ? shape.start : shape.end;
+        const centerX = this.width / 2;
 
-        // Create path from the block's edge, mirroring the edge's curve to form the back of the
-        // oval. The front extends beneath the block to avoid a seam along their shared edge. A
-        // quadratic curve bulges halfway to its control point
-        const curve = 2 * edge.curveDepth;
+        // Create path from the top of the block, mirroring the block's top curve to form the back
+        // of the oval. The front extends beneath the block to avoid a seam along their shared edge
+        const [
+            [, leftX, topY],
+            [, , controlY],
+            [, rightX],
+        ] = this.blockPaths[index];
+        const curve = controlY - topY;
 
-        const path = this.plot([
-            ['M', edge.crossMin, edge.flow],
-            ['Q', crossCenter, edge.flow + (2 * curve)],
-            ['', edge.crossMax, edge.flow],
-            ['M', edge.crossMax, edge.flow],
-            ['Q', crossCenter, edge.flow - curve],
-            ['', edge.crossMin, edge.flow],
+        const path = this.navigator.plot([
+            ['M', leftX, topY],
+            ['Q', centerX, topY + (2 * curve)],
+            ['', rightX, topY],
+            ['M', rightX, topY],
+            ['Q', centerX, topY - curve],
+            ['', leftX, topY],
         ]);
 
-        // Draw the oval beneath any other element, so that a neighboring block (if any) overlaps
-        // its back edge
+        // Draw top oval beneath any other element, so that the block above it (if any) overlaps its
+        // back edge
         svg.insert('path', ':first-child')
             .attr('fill', this.colorizer.shade(this.blocks[index].fill.raw, shade))
             .attr('d', path);
@@ -789,16 +780,11 @@ class D3Funnel {
      */
     drawBlock(index) {
         const { chart, events, tooltip } = this.options;
-        const { barOverlay, highlight } = this.options.block;
-        const isAnimated = chart.animation.duration !== 0;
+        const { gap, barOverlay, highlight } = this.options.block;
 
-        // An animated block grows from its start edge, so an oval on its end edge would float ahead
-        // of it. Such an oval waits until the block has finished growing
-        const hasOval = this.hasOval(index);
-        const isOvalWaiting = hasOval && isAnimated && this.projection.curveDirection < 0;
-
-        if (hasOval && !isOvalWaiting) {
-            this.drawOval(this.svg, index);
+        // Separated blocks of a curved funnel each show their own top
+        if (chart.curve.enabled && gap > 0 && index > 0) {
+            this.drawTopOval(this.svg, index);
         }
 
         // Create a group just for this block
@@ -836,15 +822,9 @@ class D3Funnel {
             .attr('fill', pathColor)
             .attr('d', this.getPathDefinition(index, false));
 
-        if (isAnimated) {
+        if (chart.animation.duration !== 0 && index < this.blocks.length - 1) {
             pathDrawing.on('end', () => {
-                if (isOvalWaiting) {
-                    this.drawOval(this.svg, index);
-                }
-
-                if (index < this.blocks.length - 1) {
-                    this.drawBlock(index + 1);
-                }
+                this.drawBlock(index + 1);
             });
         }
 
@@ -938,35 +918,35 @@ class D3Funnel {
         let beforePath;
         let beforeFill;
 
-        // Construct the start edge of the path and leave the other points hovering on it to expand
-        // along the flow on animation
+        // Construct the top of the trapezoid and leave the other elements hovering around to expand
+        // downward on animation
         if (!this.options.chart.curve.enabled) {
             const [
-                [, minCross, minFlow],
-                [, maxCross, maxFlow],
+                [, leftX, leftY],
+                [, rightX, rightY],
             ] = paths;
 
-            beforePath = this.plot([
-                ['M', minCross, minFlow],
-                ['L', maxCross, maxFlow],
-                ['L', maxCross, maxFlow],
-                ['L', minCross, minFlow],
+            beforePath = this.navigator.plot([
+                ['M', leftX, leftY],
+                ['L', rightX, rightY],
+                ['L', rightX, rightY],
+                ['L', leftX, leftY],
             ]);
         } else {
             const [
-                [, minCross, minFlow],
-                [, controlCross, controlFlow],
-                [, maxCross, maxFlow],
+                [, leftX, leftY],
+                [, controlX, controlY],
+                [, rightX, rightY],
             ] = paths;
 
-            beforePath = this.plot([
-                ['M', minCross, minFlow],
-                ['Q', controlCross, controlFlow],
-                ['', maxCross, maxFlow],
-                ['L', maxCross, maxFlow],
-                ['M', maxCross, maxFlow],
-                ['Q', controlCross, controlFlow],
-                ['', minCross, minFlow],
+            beforePath = this.navigator.plot([
+                ['M', leftX, leftY],
+                ['Q', controlX, controlY],
+                ['', rightX, rightY],
+                ['L', rightX, rightY],
+                ['M', rightX, rightY],
+                ['Q', controlX, controlY],
+                ['', leftX, leftY],
             ]);
         }
 
@@ -1006,19 +986,7 @@ class D3Funnel {
      * @return {string}
      */
     getPathDefinition(index, isOverlay) {
-        return this.plot(isOverlay ? this.overlayPaths[index] : this.blockPaths[index]);
-    }
-
-    /**
-     * Project the given flow-space path commands onto the screen and compile them into a path
-     * description. Every path should be drawn through this method.
-     *
-     * @param {Array} commands Each as [command, cross, flow].
-     *
-     * @return {string}
-     */
-    plot(commands) {
-        return this.navigator.plot(this.projection.projectPath(commands));
+        return this.navigator.plot(isOverlay ? this.overlayPaths[index] : this.blockPaths[index]);
     }
 
     /**
@@ -1097,6 +1065,8 @@ class D3Funnel {
      */
     drawLabel(index, overrides = {}) {
         const group = this.blockGroups[index];
+        const label = { ...this.blocks[index].label, ...overrides };
+        const labelOptions = this.options.label;
 
         // Blocks not yet drawn, such as during the load animation, will draw their own label once
         // they appear
@@ -1104,113 +1074,181 @@ class D3Funnel {
             return;
         }
 
-        this.labeler.draw(
-            group,
-            { ...this.blocks[index].label, ...overrides },
-            this.getBlockBounds(index),
-        );
-    }
+        // Remove any existing label
+        group.select('text').remove();
 
-    /**
-     * Returns the part of the given block that its label can occupy, in screen space.
-     *
-     * @param {int} index
-     *
-     * @return {{centerX: Number, top: Number, bottom: Number, getWidthAt: Function}}
-     */
-    getBlockBounds(index) {
-        const shape = this.blockShapes[index];
-        const nextShape = this.blockShapes[index + 1];
-
-        // The visible start and end of the block at its cross center, where curved edges bulge the
-        // furthest. The end of a block may be hidden behind the start of the next block, if one
-        // exists
-        const visibleStart = shape.start.flow + shape.start.curveDepth;
-        let visibleEnd = shape.end.flow + shape.end.curveDepth;
-
-        if (nextShape) {
-            visibleEnd = Math.min(visibleEnd, nextShape.start.flow + nextShape.start.curveDepth);
+        if (!labelOptions.enabled || !label.enabled) {
+            return;
         }
 
-        return this.projection.projectBounds({
-            crossCenter: shape.crossCenter,
-            start: visibleStart,
-            end: visibleEnd,
-            getBreadthAt: (flow) => this.getBlockBreadthAt(index, flow),
-            getFlowRangeAt: (cross) => this.getBlockFlowRangeAt(index, cross),
+        const lines = label.formatted.split('\n');
+
+        // Center the text horizontally
+        const x = this.width / 2;
+
+        const text = group.append('text')
+            .attr('x', x)
+            .attr('fill', label.color)
+            .attr('font-size', label.fontSize)
+            .attr('font-family', label.fontFamily)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('pointer-events', 'none');
+
+        // Lines are spaced by the rendered font size, which is only known once the text exists.
+        // Fall back to the configured size if the chart is not attached to the document
+        const fontSize = parseFloat(window.getComputedStyle(text.node()).fontSize) ||
+            parseFloat(label.fontSize);
+        const lineHeight = fontSize * labelOptions.lineHeight;
+
+        // Position the text at the vertical center of all its lines
+        const y = this.getTextY(index, lines.length, lineHeight);
+        const firstLineY = y - ((lineHeight * (lines.length - 1)) / 2);
+
+        text.attr('y', y);
+
+        lines.forEach((line, i) => {
+            // Each line is offset from the one before it
+            const tspan = text.append('tspan')
+                .attr('x', x)
+                .attr('dy', i === 0 ? firstLineY - y : lineHeight)
+                .text(line);
+
+            if (labelOptions.overflow === 'ellipsis') {
+                const lineY = firstLineY + (lineHeight * i);
+
+                // The block is narrowest at either the top or bottom of the line
+                const maxWidth = Math.min(
+                    this.getBlockWidthAt(index, lineY - (lineHeight / 2)),
+                    this.getBlockWidthAt(index, lineY + (lineHeight / 2)),
+                ) - (2 * labelOptions.padding);
+
+                this.truncateText(tspan.node(), maxWidth);
+            }
         });
     }
 
     /**
-     * Returns the breadth of the given block at the given flow position, which is clamped to the
-     * block's start and end.
+     * Shorten the text of the given element with an ellipsis until it is no wider than the given
+     * width.
+     *
+     * @param {SVGTextContentElement} node
+     * @param {Number}                maxWidth
+     *
+     * @return {void}
+     */
+    /* eslint-disable no-param-reassign */
+    truncateText(node, maxWidth) {
+        if (node.getComputedTextLength() <= maxWidth) {
+            return;
+        }
+
+        // Split by code point to avoid breaking apart surrogate pairs
+        const chars = Array.from(node.textContent);
+        const truncate = (length) => `${chars.slice(0, length).join('').trimEnd()}\u2026`;
+
+        // Binary search for the longest prefix that fits
+        let low = 0;
+        let high = chars.length - 1;
+
+        while (low < high) {
+            const mid = Math.ceil((low + high) / 2);
+
+            node.textContent = truncate(mid);
+
+            if (node.getComputedTextLength() <= maxWidth) {
+                low = mid;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        node.textContent = truncate(low);
+
+        // Hide the text entirely if not even the ellipsis fits
+        if (node.getComputedTextLength() > maxWidth) {
+            node.textContent = '';
+        }
+    }
+    /* eslint-enable no-param-reassign */
+
+    /**
+     * Returns the width of the given block at the given y position, which is clamped to the block's
+     * top and bottom.
      *
      * @param {int}    index
-     * @param {Number} flow
+     * @param {Number} y
      *
      * @return {Number}
      */
-    getBlockBreadthAt(index, flow) {
-        const { start, end } = this.blockShapes[index];
+    getBlockWidthAt(index, y) {
+        const paths = this.blockPaths[index];
 
-        const length = end.flow - start.flow;
-        const t = length > 0 ? Math.min(Math.max((flow - start.flow) / length, 0), 1) : 0;
+        // Straight blocks are a simple trapezoid. Curved blocks have their side corners at
+        // different path points
+        const [
+            [, topLeftX, topY],
+            [, topRightX],
+            [, bottomRightX],
+            [, bottomLeftX, bottomY],
+        ] = this.options.chart.curve.enabled ?
+            [paths[0], paths[2], paths[3], paths[6]] :
+            [paths[0], paths[1], paths[2], paths[3]];
 
-        const crossMin = start.crossMin + ((end.crossMin - start.crossMin) * t);
-        const crossMax = start.crossMax + ((end.crossMax - start.crossMax) * t);
+        const height = bottomY - topY;
+        const t = height > 0 ? Math.min(Math.max((y - topY) / height, 0), 1) : 0;
 
-        return crossMax - crossMin;
+        const left = topLeftX + ((bottomLeftX - topLeftX) * t);
+        const right = topRightX + ((bottomRightX - topRightX) * t);
+
+        return right - left;
     }
 
     /**
-     * Returns the flow positions where the given block is visible at the given cross position, or
-     * null if the block does not reach that far across.
+     * Returns the y position of the vertical center of the given label's text, according to the
+     * `label.verticalAlign` setting.
      *
      * @param {int}    index
-     * @param {Number} cross
+     * @param {Number} lineCount
+     * @param {Number} lineHeight
      *
-     * @return {{start: Number, end: Number}|null}
+     * @return {Number}
      */
-    getBlockFlowRangeAt(index, cross) {
-        const { crossCenter, start, end } = this.blockShapes[index];
-        const nextShape = this.blockShapes[index + 1];
+    getTextY(index, lineCount, lineHeight) {
+        const { chart, label } = this.options;
+        const paths = this.blockPaths[index];
+        const offset = label.padding + ((lineHeight * lineCount) / 2);
 
-        // A curved edge bulges the furthest at the cross center and not at all at its corners
-        const getEdgeFlowAt = (edge) => {
-            const halfBreadth = (edge.crossMax - edge.crossMin) / 2;
-            const offset = halfBreadth > 0 ? (cross - crossCenter) / halfBreadth : 1;
+        // The top and bottom edges of the block at its horizontal center; each path command is
+        // [command, x, y]
+        let top = paths[0][2];
+        let bottom = paths[2][2];
+        let middle = (top + bottom) / 2;
 
-            return edge.flow + (edge.curveDepth * Math.max(1 - (offset ** 2), 0));
-        };
+        if (chart.curve.enabled) {
+            const nextPaths = this.blockPaths[index + 1];
 
-        let rangeStart = getEdgeFlowAt(start);
-        let rangeEnd = getEdgeFlowAt(end);
+            // A quadratic curve peaks halfway between its endpoints and its control point. The
+            // bottom of a block may be hidden behind the top of the next block, if one exists
+            top = (paths[0][2] + paths[1][2]) / 2;
+            bottom = (paths[3][2] + paths[5][2]) / 2;
 
-        // The end of a block may be hidden behind the start of the next block, if one exists
-        if (nextShape) {
-            rangeEnd = Math.min(rangeEnd, getEdgeFlowAt(nextShape.start));
-        }
-
-        // The block's sides are straight, so its breadth changes steadily along the flow. Cut off
-        // the part of the range where the block is too narrow to reach the cross position
-        const startBreadth = start.crossMax - start.crossMin;
-        const endBreadth = end.crossMax - end.crossMin;
-        const neededBreadth = 2 * Math.abs(cross - crossCenter);
-
-        if (startBreadth !== endBreadth) {
-            const t = (neededBreadth - startBreadth) / (endBreadth - startBreadth);
-            const sideFlow = start.flow + ((end.flow - start.flow) * t);
-
-            if (endBreadth < startBreadth) {
-                rangeEnd = Math.min(rangeEnd, sideFlow);
-            } else {
-                rangeStart = Math.max(rangeStart, sideFlow);
+            if (nextPaths) {
+                bottom = Math.min(bottom, (nextPaths[0][2] + nextPaths[1][2]) / 2);
             }
-        } else if (neededBreadth > startBreadth) {
-            return null;
+
+            middle = (top + bottom) / 2;
         }
 
-        return rangeStart <= rangeEnd ? { start: rangeStart, end: rangeEnd } : null;
+        if (label.verticalAlign === 'top') {
+            return top + offset;
+        }
+
+        if (label.verticalAlign === 'bottom') {
+            return bottom - offset;
+        }
+
+        return middle;
     }
 }
 

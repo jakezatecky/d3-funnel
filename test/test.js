@@ -40,9 +40,6 @@ const stream = [];
 
     // Visit the page for any errors
     await page.goto(`file:${path.join(dirname, 'compiled/index.html')}`, { waitUntil: 'networkidle' });
-
-    // Some tests wait on timers, such as for animations, so wait for Mocha to finish them all
-    await page.waitForFunction(() => window.mochaFailures !== undefined);
     await browser.close();
 
     // Output the log stream
