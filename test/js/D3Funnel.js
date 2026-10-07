@@ -1966,7 +1966,7 @@ describe('D3Funnel', () => {
 
                 assert.equal('rgb(0, 0, 255)', getComputedStyle(tooltip).backgroundColor);
                 assert.equal('rgb(255, 0, 0)', getComputedStyle(tooltip).borderTopColor);
-                assert.equal('bold', tooltip.style.fontWeight);
+                assert.equal('center', tooltip.style.textAlign);
             });
         });
 

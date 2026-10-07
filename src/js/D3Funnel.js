@@ -70,7 +70,6 @@ class D3Funnel {
                 'border-width': '1px',
                 color: '#000',
                 'font-size': '14px',
-                'font-weight': 'bold',
                 padding: '5px 15px',
                 'text-align': 'center',
             },

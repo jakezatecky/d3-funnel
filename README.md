@@ -160,13 +160,12 @@ The tooltip's border is drawn in the block's color unless you set `border` or `b
     'border-width': '1px',
     color: '#000',
     'font-size': '14px',
-    'font-weight': 'bold',
     padding: '5px 15px',
     'text-align': 'center',
 }
 ```
 
-For example, to use a dark tooltip without bold text:
+For example, to use a dark tooltip without a border:
 
 ``` javascript
 chart.draw(data, {
@@ -175,7 +174,7 @@ chart.draw(data, {
         style: {
             background: '#222',
             color: '#fff',
-            'font-weight': null,
+            'border-style': null,
         },
     },
 });
