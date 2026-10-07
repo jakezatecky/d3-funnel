@@ -86,6 +86,25 @@ const settings = {
             },
         },
     },
+    accessibleColors: {
+        block: {
+            fill: {
+                // A palette where every color has at least a 4.5:1 contrast with white labels
+                colors: [
+                    '#2e78be',
+                    '#a63c0c',
+                    '#32844a',
+                    '#7f387a',
+                    '#a76616',
+                    '#564597',
+                    '#07837e',
+                    '#a6344f',
+                    '#727a23',
+                    '#2e5263',
+                ],
+            },
+        },
+    },
     styleLabels: {
         label: {
             fontFamily: '"Reem Kufi", sans-serif',
@@ -97,7 +116,7 @@ const settings = {
 const checkboxes = [...document.querySelectorAll('input')];
 const horizontal = document.querySelector('[value="horizontal"]');
 const reverse = document.querySelector('[value="reverse"]');
-const color = document.querySelector('[value="color"]');
+const blockLevelColors = document.querySelector('[value="blockLevelColors"]');
 const click = document.querySelector('[value="click"]');
 const funnel = document.querySelector('#funnel');
 
@@ -109,7 +128,7 @@ function onChange() {
         direction = horizontal.checked ? 'left' : 'up';
     }
 
-    const data = !color.checked ?
+    const data = !blockLevelColors.checked ?
         [
             { label: 'Applicants', value: 12000 },
             { label: 'Pre-screened', value: 4000 },
