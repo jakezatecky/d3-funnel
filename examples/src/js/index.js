@@ -16,6 +16,11 @@ const settings = {
             pinchedBlocks: 1,
         },
     },
+    horizontal: {
+        label: {
+            overflow: 'ellipsis',
+        },
+    },
     gradient: {
         block: {
             fill: {
@@ -23,9 +28,9 @@ const settings = {
             },
         },
     },
-    proportionalHeight: {
+    proportionalLength: {
         block: {
-            proportionalHeight: true,
+            proportionalLength: true,
         },
     },
     gap: {
@@ -43,11 +48,6 @@ const settings = {
             barOverlay: {
                 enabled: true,
             },
-        },
-    },
-    inverted: {
-        chart: {
-            inverted: true,
         },
     },
     animation: {
@@ -92,19 +92,24 @@ const settings = {
             fontSize: '16px',
         },
     },
-    alignLabelsTop: {
-        label: {
-            verticalAlign: 'top',
-        },
-    },
 };
 
 const checkboxes = [...document.querySelectorAll('input')];
+const horizontal = document.querySelector('[value="horizontal"]');
+const reverse = document.querySelector('[value="reverse"]');
 const color = document.querySelector('[value="color"]');
 const click = document.querySelector('[value="click"]');
+const funnel = document.querySelector('#funnel');
 
 function onChange() {
-    let data = !color.checked ?
+    // Combine the two direction checkboxes into one of the four directions
+    let direction = horizontal.checked ? 'right' : 'down';
+
+    if (reverse.checked) {
+        direction = horizontal.checked ? 'left' : 'up';
+    }
+
+    const data = !color.checked ?
         [
             { label: 'Applicants', value: 12000 },
             { label: 'Pre-screened', value: 4000 },
@@ -120,10 +125,10 @@ function onChange() {
 
     let options = {
         chart: {
-            neckWidth: 3 / 8,
+            direction,
         },
         block: {
-            minHeight: 25,
+            minLength: 40,
         },
         label: {
             format: '{l}\n{f}',
@@ -136,11 +141,8 @@ function onChange() {
         }
     });
 
-    // Reverse data for inversion
-    if (options.chart.inverted) {
-        options.chart.neckWidth = 1 / 3;
-        data = data.reverse();
-    }
+    // Horizontal funnels need a wider, shorter container, which the chart sizes itself to
+    funnel.classList.toggle('demo-funnel-horizontal', horizontal.checked);
 
     clickStatus.hidden = !click.checked;
     chart.draw(data, options);

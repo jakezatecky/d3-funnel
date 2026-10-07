@@ -1,4 +1,4 @@
-class Formatter {
+class LabelFormatter {
     /**
      * Format the given block according to a format function or a string expression, in which the
      * following keys are substituted:
@@ -31,4 +31,4 @@ class Formatter {
     }
 }
 
-export default Formatter;
+export default LabelFormatter;

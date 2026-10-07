@@ -13,70 +13,50 @@ class Navigator {
     }
 
     /**
-     * @param {Object}  dimensions
-     * @param {boolean} isValueOverlay
+     * @param {Object}      shape        A block shape, as described by `D3Funnel.makeBlockShapes`.
+     * @param {Number|null} overlayRatio When given, the path covers only this fraction of the
+     *                                   block's breadth, as a bar overlay.
      *
      * @return {Array}
      */
-    makeCurvedPaths(dimensions, isValueOverlay = false) {
-        const points = this.makeBezierPoints(dimensions);
-
-        if (isValueOverlay) {
-            return this.makeBezierPath(points, dimensions.ratio);
-        }
-
-        return this.makeBezierPath(points);
+    makeCurvedPaths(shape, overlayRatio = null) {
+        return this.makeBezierPath(this.makeBezierPoints(shape), overlayRatio ?? 1);
     }
 
     /**
-     * @param {Number} centerX
-     * @param {Number} prevLeftX
-     * @param {Number} prevRightX
-     * @param {Number} prevHeight
-     * @param {Number} nextLeftX
-     * @param {Number} nextRightX
-     * @param {Number} nextHeight
-     * @param {Number} prevCurve  The control point offset of the top curve.
-     * @param {Number} nextCurve  The control point offset of the bottom curve.
+     * @param {Number} crossCenter
+     * @param {Object} start
+     * @param {Object} end
      *
      * @return {Object}
      */
-    makeBezierPoints({
-        centerX,
-        prevLeftX,
-        prevRightX,
-        prevHeight,
-        nextLeftX,
-        nextRightX,
-        nextHeight,
-        prevCurve,
-        nextCurve,
-    }) {
+    makeBezierPoints({ crossCenter, start, end }) {
+        // A quadratic curve bulges halfway to its control point
         return {
             p00: {
-                x: prevLeftX,
-                y: prevHeight,
+                cross: start.crossMin,
+                flow: start.flow,
             },
             p01: {
-                x: centerX,
-                y: prevHeight + prevCurve,
+                cross: crossCenter,
+                flow: start.flow + (2 * start.curveDepth),
             },
             p02: {
-                x: prevRightX,
-                y: prevHeight,
+                cross: start.crossMax,
+                flow: start.flow,
             },
 
             p10: {
-                x: nextLeftX,
-                y: nextHeight,
+                cross: end.crossMin,
+                flow: end.flow,
             },
             p11: {
-                x: centerX,
-                y: nextHeight + nextCurve,
+                cross: crossCenter,
+                flow: end.flow + (2 * end.curveDepth),
             },
             p12: {
-                x: nextRightX,
-                y: nextHeight,
+                cross: end.crossMax,
+                flow: end.flow,
             },
         };
     }
@@ -104,18 +84,18 @@ class Navigator {
         const curve1 = this.getQuadraticBezierCurve(p10, p11, p12, ratio);
 
         return [
-            // Top Bézier curve
-            ['M', curve0.p0.x, curve0.p0.y],
-            ['Q', curve0.p1.x, curve0.p1.y],
-            ['', curve0.p2.x, curve0.p2.y],
-            // Right line
-            ['L', curve1.p2.x, curve1.p2.y],
-            // Bottom Bézier curve
-            ['M', curve1.p2.x, curve1.p2.y],
-            ['Q', curve1.p1.x, curve1.p1.y],
-            ['', curve1.p0.x, curve1.p0.y],
-            // Left line
-            ['L', curve0.p0.x, curve0.p0.y],
+            // Start Bézier curve
+            ['M', curve0.p0.cross, curve0.p0.flow],
+            ['Q', curve0.p1.cross, curve0.p1.flow],
+            ['', curve0.p2.cross, curve0.p2.flow],
+            // Side line at the maximum cross position
+            ['L', curve1.p2.cross, curve1.p2.flow],
+            // End Bézier curve
+            ['M', curve1.p2.cross, curve1.p2.flow],
+            ['Q', curve1.p1.cross, curve1.p1.flow],
+            ['', curve1.p0.cross, curve1.p0.flow],
+            // Side line at the minimum cross position
+            ['L', curve0.p0.cross, curve0.p0.flow],
         ];
     }
 
@@ -143,12 +123,12 @@ class Navigator {
         return {
             p0,
             p1: {
-                x: this.getLinearInterpolation(p0, p1, t, 'x'),
-                y: this.getLinearInterpolation(p0, p1, t, 'y'),
+                cross: this.getLinearInterpolation(p0, p1, t, 'cross'),
+                flow: this.getLinearInterpolation(p0, p1, t, 'flow'),
             },
             p2: {
-                x: this.getQuadraticInterpolation(p0, p1, p2, t, 'x'),
-                y: this.getQuadraticInterpolation(p0, p1, p2, t, 'y'),
+                cross: this.getQuadraticInterpolation(p0, p1, p2, t, 'cross'),
+                flow: this.getQuadraticInterpolation(p0, p1, p2, t, 'flow'),
             },
         };
     }
@@ -181,50 +161,38 @@ class Navigator {
     }
 
     /**
-     * @param {Number}  prevLeftX
-     * @param {Number}  prevRightX
-     * @param {Number}  prevHeight
-     * @param {Number}  nextLeftX
-     * @param {Number}  nextRightX
-     * @param {Number}  nextHeight
-     * @param {Number}  ratio
-     * @param {boolean} isValueOverlay
+     * @param {Object}      shape        A block shape, as described by `D3Funnel.makeBlockShapes`.
+     * @param {Number|null} overlayRatio When given, the path covers only this fraction of the
+     *                                   block's breadth, as a bar overlay.
      *
      * @return {Array}
      */
-    makeStraightPaths({
-        prevLeftX,
-        prevRightX,
-        prevHeight,
-        nextLeftX,
-        nextRightX,
-        nextHeight,
-        ratio,
-    }, isValueOverlay = false) {
-        let rightSideTop = prevRightX;
-        let rightSideBtm = nextRightX;
+    makeStraightPaths({ start, end }, overlayRatio = null) {
+        let startCrossMax = start.crossMax;
+        let endCrossMax = end.crossMax;
 
-        if (isValueOverlay) {
-            const lengthTop = (prevRightX - prevLeftX);
-            const lengthBtm = (nextRightX - nextLeftX);
+        if (overlayRatio !== null) {
+            const ratio = overlayRatio || 0;
+            const startBreadth = (start.crossMax - start.crossMin);
+            const endBreadth = (end.crossMax - end.crossMin);
 
-            // Overlay covers its ratio of the path, but should not extend past the right side of
-            // the path
-            rightSideTop = Math.min((lengthTop * (ratio || 0)) + prevLeftX, prevRightX);
-            rightSideBtm = Math.min((lengthBtm * (ratio || 0)) + nextLeftX, nextRightX);
+            // Overlay covers its ratio of the path, but should not extend past the path's side at
+            // the maximum cross position
+            startCrossMax = Math.min((startBreadth * ratio) + start.crossMin, start.crossMax);
+            endCrossMax = Math.min((endBreadth * ratio) + end.crossMin, end.crossMax);
         }
 
         return [
             // Start position
-            ['M', prevLeftX, prevHeight],
-            // Move to right
-            ['L', rightSideTop, prevHeight],
-            // Move down
-            ['L', rightSideBtm, nextHeight],
-            // Move to left
-            ['L', nextLeftX, nextHeight],
-            // Wrap back to top
-            ['L', prevLeftX, prevHeight],
+            ['M', start.crossMin, start.flow],
+            // Move across the start edge
+            ['L', startCrossMax, start.flow],
+            // Move along the flow
+            ['L', endCrossMax, end.flow],
+            // Move back across the end edge
+            ['L', end.crossMin, end.flow],
+            // Wrap back to the start
+            ['L', start.crossMin, start.flow],
         ];
     }
 }
