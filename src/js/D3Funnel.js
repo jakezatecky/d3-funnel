@@ -1,6 +1,4 @@
 import { easeLinear } from 'd3-ease';
-import { range } from 'd3-array';
-import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { select } from 'd3-selection';
 import 'd3-transition';
@@ -40,7 +38,7 @@ class D3Funnel {
                 shade: 0.3,
             },
             fill: {
-                colors: scaleOrdinal(schemeCategory10).domain(range(0, 10)),
+                colors: schemeCategory10,
                 type: 'solid',
                 gradientShade: -0.2,
             },
